@@ -1,0 +1,2 @@
+start wpa_supplicant
+wpa_cli ifname=wlan0 wps_pbc

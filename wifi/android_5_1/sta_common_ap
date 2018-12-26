@@ -1,0 +1,43 @@
+dhd_priv iapsta_init mode apsta
+dhd_priv iapsta_enable ifname wlan1
+
+--------------------------------------------------------------------------------------
+shell@firefly-rk3288:/ # dhd_priv iapsta_init mode apsta
+dhd_priv: Version = 1.3
+argv: dhd_priv iapsta_init mode apsta 
+[ 3008.996659] CFG80211-DEBUG) wl_cfg80211_event :event_type (54):WLC_E_IF
+[ 3008.996737] CFG80211-DEBUG) wl_event_handler :event type (54), ifidx: 0 bssidx: 0 
+[ 3008.996767] CFG80211-DEBUG) wl_event_handler :Unknown Event (54): ignoring
+[ 3008.997473] CFG80211-DEBUG) wl_cfg80211_event :event_type (54):WLC_E_IF
+[ 3008.997496] CFG80211-ERROR) wl_cfg80211_event : ignore event 54, not interested
+[ 3008.997995] wl_ext_iapsta_init: apstamode=3
+[ 3008.998875] Register interface [wlan1]  MAC: ce:b8:a8:c4:a7:5c
+[ 3008.998875] 
+dhd_priv: buf = , len = 0, ret = 0
+
+---------------------------------------------------------------------------------------
+shell@firefly-rk3288:/ # dhd_priv iapsta_enable ifname wlan1
+dhd_priv: Version = 1.3
+argv: dhd_priv iapsta_enable ifname wlan1 
+[ 3034.345641] wl_ext_iapsta_disable: apstamode=3, ifname=wlan1
+[ 3034.349199] wl_ext_set_chanspec: channel 1, 0x1001
+[ 3034.350636] wl_ext_iapsta_enable: Broadcast SSID: ON
+[ 3034.398491] wl_ext_iapsta_event: wlan1 Link UP with BSSID=ce:b8:a8:c4:a7:5c
+[ 3034.398542] CFG80211-DEBUG) wl_cfg80211_event :event_type (16):WLC_E_LINK
+[ 3034.398566] CFG80211-ERROR) wl_cfg80211_event : ignore event 16, not interested
+[ 3034.400136] dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+[ 3034.400723] dhd_wlfc_init: query wlfc_mode succeed, fw_caps=0x1c
+[ 3034.401318] dhd_wlfc_init(): wlfc_mode=0x1c, ret=0
+[ 3034.401854] wl_ext_iapsta_enable: ifname=wlan1, SSID: "tttv"
+[ 3034.401867] dhd_wlfc_enable: ret=0
+[ 3034.401893] CFG80211-DEBUG) wl_cfg80211_event :event_type (74):WLC_E_WLC_E_FIFO_CREDIT_MAP
+[ 3034.401946] CFG80211-DEBUG) wl_event_handler :
+[ 3034.401955] CFG80211-DEBUG) wl_cfg80211_event :event_type (127):WLC_E_Unknown
+[ 3034.401979] CFG80211-DEBUG) wl_cfg80211_event :event_type (54):WLC_E_IF
+[ 3034.401998] event type (74), ifidx: 0 bssidx: 0 
+[ 3034.402012] CFG80211-DEBUG) wl_event_handler :Unknown Event (74): ignoring
+[ 3034.402033] CFG80211-DEBUG) wl_event_handler :event type (127), ifidx: 0 bssidx: 0 
+[ 3034.402054] CFG80211-DEBUG) wl_event_handler :Unknown Event (127): ignoring
+[ 3034.402072] CFG80211-DEBUG) wl_event_handler :event type (54), ifidx: 0 bssidx: 0 
+[ 3034.402091] CFG80211-DEBUG) wl_event_handler :Unknown Event (54): ignoring
+dhd_priv: buf = , len = 0, ret = 0

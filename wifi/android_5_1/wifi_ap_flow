@@ -1,0 +1,864 @@
+TetherSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings)
+->  {
+        public boolean onPreferenceChange(Preference preference, Object value) {
+            boolean enable = (Boolean) value;
+
+            if (enable) {
+                startProvisioningIfNecessary(WIFI_TETHERING);
+            } else {
+                if (isProvisioningNeeded(mProvisionApp)) {
+                    TetherService.cancelRecheckAlarmIfNecessary(getActivity(), WIFI_TETHERING);
+                }
+                mWifiApEnabler.setSoftapEnabled(false);
+            }
+            return false;
+        }
+        ->  {
+                private void startProvisioningIfNecessary(int choice) {
+                    mTetherChoice = choice;
+                    if (isProvisioningNeeded(mProvisionApp)) {
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.setClassName(mProvisionApp[0], mProvisionApp[1]);
+                        intent.putExtra(TETHER_CHOICE, mTetherChoice);
+                        startActivityForResult(intent, PROVISION_REQUEST);
+                    } else {
+                        startTethering();
+                    }
+                }
+            }
+            ->  {
+                    private void startTethering() {
+                        switch (mTetherChoice) {
+                            case WIFI_TETHERING:
+                                mWifiApEnabler.setSoftapEnabled(true);
+                                break;
+                        }
+                    }
+    }
+----------------------------------------------------------------------------------------------------------------->
+WifiApEnabler.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        public void setSoftapEnabled(boolean enable) {
+            mWifiManager.setWifiApEnabled(null, enable);
+        }
+    }
+------------------------------------------------------------------------------------------------------>
+WifiManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi)
+->  {
+        mService.setWifiApEnabled(wifiConfig, enabled);
+    }
+----------------------------------------------------------------------------------------------------------------->
+WifiServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public void setWifiApEnabled(WifiConfiguration wifiConfig, boolean enabled) {
+            if (wifiConfig == null || wifiConfig.isValid()) {
+                mWifiController.obtainMessage(CMD_SET_AP, enabled ? 1 : 0, 0, wifiConfig).sendToTarget();
+            }
+        }
+    }
+----------------------------------------------------------------------------------------------------------->
+WifiController.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        class ApStaDisabledState extends State {
+            public boolean processMessage(Message msg) {
+                switch (msg.what) {
+                    case CMD_SET_AP:
+                        if (msg.arg1 == 1) {
+                            mWifiStateMachine.setHostApRunning((WifiConfiguration) msg.obj,true);
+                            transitionTo(mApEnabledState);  // 这个状态是在WifiController中的状态机
+                        }
+                        break;
+                }
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------->
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public void setHostApRunning(WifiConfiguration wifiConfig, boolean enable) {
+            if (enable) {
+                sendMessage(CMD_START_AP, wifiConfig);
+            } else {
+                sendMessage(CMD_STOP_AP);
+            }
+        }
+    }
+    ->  {
+            // WifiStateMachine状态机的初始状态为InitialState 
+            class InitialState extends State {
+                public void enter() {
+                    if (mWifiApConfigChannel == null) {
+                        mWifiApConfigChannel = new AsyncChannel();
+                        WifiApConfigStore wifiApConfigStore = WifiApConfigStore.makeWifiApConfigStore(
+                                mContext, getHandler());
+                        wifiApConfigStore.loadApConfiguration();        // 在这里就会从/data/misc/wifi/softap.conf文件中读取AP的配置！！
+                                                                        // 并将配置保存在该类的mWifiApConfig变量中, 下面要用到！！
+                        mWifiApConfigChannel.connectSync(mContext, getHandler(),
+                                wifiApConfigStore.getMessenger());      // mWifiApConfigChannel指定wifiApConfigStore为sendMessage的类。
+                    }
+                }
+                public boolean processMessage(Message message) {
+                    switch (message.what) {
+                        case CMD_START_AP:
+                        if (mWifiNative.loadDriver()) {                 // 这里会加载底层驱动，如果是编译成模块，则加载ko文件
+                            setWifiApState(WIFI_AP_STATE_ENABLING);
+                            transitionTo(mSoftApStartingState);
+                        } else {
+                            loge("Failed to load driver for softap");
+                        }
+                    }
+                }
+            }
+        }
+        ->  {
+                class SoftApStartingState extends State {
+                    public void enter() {
+                        if (message.what == CMD_START_AP) {
+                            final WifiConfiguration config = (WifiConfiguration) message.obj;
+
+                            if (config == null) {
+                                mWifiApConfigChannel.sendMessage(CMD_REQUEST_AP_CONFIG);        // 第一次是走这里，没有配置文件
+                            } else {
+                                mWifiApConfigChannel.sendMessage(CMD_SET_AP_CONFIG, config);
+                                startSoftApWithConfig(config);
+                            }
+                        }
+                    }
+                }
+            }
+-------------------------------------------------------------------------------------------------->
+WifiApConfigStore.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        class WifiApConfigStore extends StateMachine {
+            WifiApConfigStore(Context context, Handler target) {
+                addState(mDefaultState);
+                addState(mInactiveState, mDefaultState);
+                addState(mActiveState, mDefaultState);
+
+                setInitialState(mInactiveState);
+            }
+        }
+    }
+虽然初始状态为mInactiveState, 由于mInactiveState状态机中没有对CMD_REQUEST_AP_CONFIG的处理，故追溯到其父类mDefaultState :
+class DefaultState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+           case WifiStateMachine.CMD_REQUEST_AP_CONFIG:
+               mReplyChannel.replyToMessage(message,
+                       WifiStateMachine.CMD_RESPONSE_AP_CONFIG, mWifiApConfig);     // 这里就将上面从/data/misc/wifi/softap.conf读到的配置返回
+               break;
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------------------------------------------->
+回到WifiStateMachine类,上面说到它现在所处状态是SoftApStartingState：
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        class SoftApStartingState extends State {
+            public boolean processMessage(Message message) {
+                switch(message.what) {
+                    case WifiStateMachine.CMD_RESPONSE_AP_CONFIG:
+                        WifiConfiguration config = (WifiConfiguration) message.obj;
+                        if (config != null) {
+                            startSoftApWithConfig(config);
+                        } else {
+                            loge("Softap config is null!");
+                            sendMessage(CMD_START_AP_FAILURE);
+                        }
+                        break;
+                }
+            }
+        }
+    }
+    ->  {
+            private void startSoftApWithConfig(final WifiConfiguration config) {
+                // 在这里创建并启动一个线程
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            mNwService.startAccessPoint(config, mInterfaceName); 
+                        } catch (Exception e) {
+                            loge("Exception in softap start " + e);
+                            try {
+                                mNwService.stopAccessPoint(mInterfaceName);
+                                mNwService.startAccessPoint(config, mInterfaceName);
+                            } catch (Exception e1) {
+                                loge("Exception in softap re-start " + e1);
+                                sendMessage(CMD_START_AP_FAILURE);
+                                return;
+                            }
+                        }
+                        if (DBG) log("Soft AP start successful");
+                        sendMessage(CMD_START_AP_SUCCESS);
+                        if(!mSoftApWakeLock.isHeld()) {
+                            loge("---- mSoftApWakeLock.acquire ----");
+                            mSoftApWakeLock.acquire();
+                        }
+                    }
+                }).start();
+            }
+        }
+其中mNwService定义如下：
+private INetworkManagementService mNwService;
+mNwService = INetworkManagementService.Stub.asInterface(b);
+这里调用了startAccessPoint方法！！
+-------------------------------------------------------------------------------------->
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public void startAccessPoint(
+            WifiConfiguration wifiConfig, String wlanIface) {
+            mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+            try {
+                wifiFirmwareReload(wlanIface, "AP");                                    // 重新加载固件, 因为默认加载的是station的固件
+                if (wifiConfig == null) {
+                    mConnector.execute("softap", "set", wlanIface);
+                } else {
+                    mConnector.execute("softap", "set", wlanIface, wifiConfig.SSID,
+                            "broadcast", "6", getSecurityType(wifiConfig),
+                            new SensitiveArg(wifiConfig.preSharedKey));                 // 先设置要打开的热点
+                }
+                mConnector.execute("softap", "startap");                                // 启动热点
+            } catch (NativeDaemonConnectorException e) {
+                throw e.rethrowAsParcelableException();
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------------------------------------------
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public void wifiFirmwareReload(String wlanIface, String mode) {
+            mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+            try {
+                mConnector.execute("softap", "fwreload", wlanIface, mode);
+            } catch (NativeDaemonConnectorException e) {
+                throw e.rethrowAsParcelableException();
+            }
+        }
+    }
+ 
+上面执行的mConnector.execute，指定的command是“softap”，故执行的是以下命令（具体参见NetworkManager_Service文档）：
+int CommandListener::SoftapCmd::runCommand(SocketClient *cli,
+                                        int argc, char **argv) {
+    if (!strcmp(argv[1], "startap")) {                      // 第三步执行
+        rc = sSoftapCtrl->startSoftap();
+    } else if (!strcmp(argv[1], "stopap")) {
+        rc = sSoftapCtrl->stopSoftap();
+    } else if (!strcmp(argv[1], "fwreload")) {
+       check_wifi_chip_type_string(type);
+       if(!strncmp(type, "ESP", 3))
+        rc = 0;
+       else
+        rc = sSoftapCtrl->fwReloadSoftap(argc, argv);       // 第一步执行
+    } else if (!strcmp(argv[1], "status")) {
+        asprintf(&retbuf, "Softap service %s running",
+                 (sSoftapCtrl->isSoftapStarted() ? "is" : "is not"));
+        cli->sendMsg(rc, retbuf, false);
+        free(retbuf);
+        return 0;
+    } else if (!strcmp(argv[1], "set")) {                   // 第二步执行
+        rc = sSoftapCtrl->setSoftap(argc, argv);
+    } else {
+        cli->sendMsg(ResponseCode::CommandSyntaxError, "Unrecognized SoftAP command", false);
+        return 0;
+    }
+}
+
+其中SoftapController *CommandListener::sSoftapCtrl = NULL;
+
+SoftapController.cpp (system\netd\server)
+->  {
+        static const char HOSTAPD_CONF_FILE[]    = "/data/misc/wifi/hostapd.conf";
+
+        int SoftapController::fwReloadSoftap(int argc, char *argv[])
+        {
+            char *fwpath = NULL;
+
+            if (argc < 4) {
+                ALOGE("SoftAP fwreload is missing arguments. Please use: softap <wlan iface> <AP|P2P|STA>");
+                return ResponseCode::CommandSyntaxError;
+            }
+
+            if (strcmp(argv[3], "AP") == 0) {
+                fwpath = (char *)wifi_get_fw_path(WIFI_GET_FW_PATH_AP);
+            } else if (strcmp(argv[3], "P2P") == 0) {
+                fwpath = (char *)wifi_get_fw_path(WIFI_GET_FW_PATH_P2P);
+            } else if (strcmp(argv[3], "STA") == 0) {
+                fwpath = (char *)wifi_get_fw_path(WIFI_GET_FW_PATH_STA);
+            }
+            if (!fwpath)
+                return ResponseCode::CommandParameterError;
+            if (wifi_change_fw_path((const char *)fwpath)) {
+                ALOGE("Softap fwReload failed");
+                return ResponseCode::OperationFailed;
+            }
+            else {
+                ALOGD("Softap fwReload - Ok");
+            }
+            return ResponseCode::SoftapStatusResult;
+        }
+
+        int SoftapController::setSoftap(int argc, char *argv[]) {
+            int channel = AP_CHANNEL_DEFAULT;
+            char *wbuf = NULL;
+            char *fbuf = NULL;
+
+            if (argc < 5) {
+                ALOGE("Softap set is missing arguments. Please use:");
+                ALOGE("softap <wlan iface> <SSID> <hidden/broadcast> <channel> <wpa2?-psk|open> <passphrase>");
+                return ResponseCode::CommandSyntaxError;
+            }
+
+            if (!strcasecmp(argv[4], "hidden"))
+                hidden = 1;
+
+            if (argc >= 5) {
+                channel = atoi(argv[5]);
+                if (channel <= 0)
+                    channel = AP_CHANNEL_DEFAULT;
+            }
+
+            asprintf(&wbuf, "interface=%s\ndriver=nl80211\nctrl_interface="
+                    "/data/misc/wifi/hostapd\nssid=%s\nchannel=%d\nieee80211n=1\n"
+                    "hw_mode=g\nignore_broadcast_ssid=%d\nwowlan_triggers=any\n",
+                    argv[2], argv[3], channel, hidden);                                 // 有些平台在这里写死了hw_mode和channel
+
+            if (argc > 7) {
+                if (!strcmp(argv[6], "wpa-psk")) {
+                    generatePsk(argv[3], argv[7], psk_str);
+                    asprintf(&fbuf, "%swpa=3\nwpa_pairwise=TKIP CCMP\nwpa_psk=%s\n", wbuf, psk_str);
+                } else if (!strcmp(argv[6], "wpa2-psk")) {
+                    generatePsk(argv[3], argv[7], psk_str);
+                    asprintf(&fbuf, "%swpa=2\nrsn_pairwise=CCMP\nwpa_psk=%s\n", wbuf, psk_str);
+                } else if (!strcmp(argv[6], "open")) {
+                    asprintf(&fbuf, "%s", wbuf);
+                }
+            } else if (argc > 6) {
+                if (!strcmp(argv[6], "open")) {
+                    asprintf(&fbuf, "%s", wbuf);
+                }
+            } else {
+                asprintf(&fbuf, "%s", wbuf);
+            }
+
+            fd = open(HOSTAPD_CONF_FILE, O_CREAT | O_TRUNC | O_WRONLY | O_NOFOLLOW, 0660);
+            write(fd, fbuf, strlen(fbuf);           // 这里会将从/data/misc/wifi/softap.conf读到的配置还有其他默认配置写入hostapd.conf文件
+            fchmod(fd, 0660);                       // 改变文件属性
+            fchown(fd, AID_SYSTEM, AID_WIFI);       // 改变文件属主
+        }
+
+        int SoftapController::startSoftap() {
+
+            // 这里会判断/data/misc/wifi/entropy.bin文件是否存在，不存在则创建之, 并写入固定的加密数组内容！！
+            if (ensure_entropy_file_exists() < 0) {             
+                ALOGE("Wi-Fi entropy file was not created");
+            }
+
+            if ((pid = fork()) < 0) {                           // 这里用fork创建了子进程
+                ALOGE("fork failed (%s)", strerror(errno));
+                return ResponseCode::ServiceStartFailed;
+            }
+
+            if (!pid) {                                         // 在子进程中通过exec函数族替换掉子进程
+                ensure_entropy_file_exists();
+
+                // 这里就会执行hostapd -e /data/misc/wifi/entropy.bin /data/misc/wifi/hostapd.conf, 启动hostapd服务！！
+                if (execl(hostapd_name, hostapd_name,           
+                        "-e", WIFI_ENTROPY_FILE,
+                        HOSTAPD_CONF_FILE, (char *) NULL)) {
+                    ALOGE("execl failed (%s)", strerror(errno));
+                }
+                ALOGE("SoftAP failed to start");
+                return ResponseCode::ServiceStartFailed;
+            } else {
+                mPid = pid;
+                ALOGD("SoftAP started successfully");
+                usleep(AP_BSS_START_DELAY);
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------->
+Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
+->  {
+        const char *wifi_get_fw_path(int fw_type)
+        {
+            switch (fw_type) {
+                case WIFI_GET_FW_PATH_STA:
+                    return WIFI_DRIVER_FW_PATH_STA;         // 这玩意就是在Boardconfig.mk里面配置好的，rk平台上是wifi_bt.mk
+                case WIFI_GET_FW_PATH_AP:
+                    return WIFI_DRIVER_FW_PATH_AP;
+                case WIFI_GET_FW_PATH_P2P:
+                    return WIFI_DRIVER_FW_PATH_P2P;
+            }
+            return NULL;
+        }
+
+        int wifi_change_fw_path(const char *fwpath)
+        {
+            int len;
+            int fd;
+            int ret = 0;
+
+            if (wifi_type[0] == 0)
+                check_wifi_chip_type_string(wifi_type);
+            if (0 != strncmp(wifi_type, "AP", 2)) {
+                return 0;
+            }
+
+            if (!fwpath)
+                return ret;
+            fd = TEMP_FAILURE_RETRY(open(WIFI_DRIVER_FW_PATH_PARAM, O_WRONLY));     //WIFI_DRIVER_FW_PATH_PARAM这个宏也是在Boardconfig.mk配置的 
+            if (fd < 0) {
+                ALOGE("Failed to open wlan fw path param (%s)", strerror(errno));
+                return -1;
+            }
+            len = strlen(fwpath) + 1;
+            if (TEMP_FAILURE_RETRY(write(fd, fwpath, len)) != len) {
+                ALOGE("Failed to write wlan fw path param (%s)", strerror(errno));
+                ret = -1;
+            }
+            close(fd);
+            return ret;
+        }
+    }
+-------------------------------------------------------------------------------------------------------------->
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+回到WifiStateMachine类,上面说到它现在所处状态是SoftApStartingState, 执行到startSoftApWithConfig函数中的
+mNwService.startAccessPoint(config, mInterfaceName); 之后就应该执行sendMessage(CMD_START_AP_SUCCESS);
+class SoftApStartingState extends State {
+    public boolean processMessage(Message message) {
+        switch(message.what) {
+            case CMD_START_AP_SUCCESS:
+                setWifiApState(WIFI_AP_STATE_ENABLED);
+                transitionTo(mSoftApStartedState);
+                break;
+        }
+    }
+}
+->  {
+        class SoftApStartedState extends State {
+            public boolean processMessage(Message message) {
+                switch(message.what) {
+                    case CMD_TETHER_STATE_CHANGE:
+                        TetherStateChange stateChange = (TetherStateChange) message.obj;
+                        if (startTethering(stateChange.available)) {
+                            transitionTo(mTetheringState);
+                        }
+                    break;
+                }
+            }
+        }
+    }
+    ->  {
+            private boolean startTethering(ArrayList<String> available) {
+                String[] wifiRegexs = mCm.getTetherableWifiRegexs();        // wifiRegexs就是支持AP的wlan interface, 在此平台只有一个，即wlan0
+
+                for (String intf : available) {
+                    for (String regex : wifiRegexs) {
+                        if (intf.matches(regex)) {
+
+                            InterfaceConfiguration ifcg = null;
+                            try {
+                                ifcg = mNwService.getInterfaceConfig(intf);
+                                if (ifcg != null) {
+                                    /* IP/netmask: 192.168.43.1/255.255.255.0 */
+                                    ifcg.setLinkAddress(new LinkAddress(
+                                                NetworkUtils.numericToInetAddress("192.168.43.1"), 24));
+                                    ifcg.setInterfaceUp();
+
+                                    mNwService.setInterfaceConfig(intf, ifcg);
+                                }
+                            } catch (Exception e) {
+                                loge("Error configuring interface " + intf + ", :" + e);
+                                return false;
+                            }
+
+                            if(mCm.tether(intf) != ConnectivityManager.TETHER_ERROR_NO_ERROR) {
+                                loge("Error tethering on " + intf);
+                                return false;
+                            }
+                            mTetherInterfaceName = intf;
+                            return true;
+                        }
+                    }
+                }
+                // We found no interfaces to tether
+                return false;
+            }
+        }
+------------------------------------------------------------------------------------------->
+ConnectivityManager.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\net)
+->  {
+        public int tether(String iface) {
+            try {
+                return mService.tether(iface);
+            } catch (RemoteException e) {
+                return TETHER_ERROR_SERVICE_UNAVAIL;
+            }
+        }
+    }
+----------------------------------------------------------------------------------------------------------------->
+ConnectivityService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public int tether(String iface) {
+            ConnectivityManager.enforceTetherChangePermission(mContext);
+            if (isTetheringSupported()) {
+                return mTethering.tether(iface);
+            } else {
+                return ConnectivityManager.TETHER_ERROR_UNSUPPORTED;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------------>
+Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server\connectivity)
+->  {
+        public int tether(String iface) {
+            if (DBG) Log.d(TAG, "Tethering " + iface);
+            TetherInterfaceSM sm = null;
+            sm.sendMessage(TetherInterfaceSM.CMD_TETHER_REQUESTED);
+        }
+    }
+    ->  {
+            TetherInterfaceSM(String name, Looper looper, boolean usb) {
+                mInitialState = new InitialState();
+                setInitialState(mInitialState);
+            }
+
+            class InitialState extends State {
+                    public void enter() {
+                        setAvailable(true);
+                        setTethered(false);
+                        sendTetherStateChangedBroadcast();
+                    }
+
+                    public boolean processMessage(Message message) {
+                        if (DBG) Log.d(TAG, "InitialState.processMessage what=" + message.what);
+                        boolean retValue = true;
+                        switch (message.what) {
+                            case CMD_TETHER_REQUESTED:
+                                setLastError(ConnectivityManager.TETHER_ERROR_NO_ERROR);
+                                mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_REQUESTED,
+                                        TetherInterfaceSM.this);
+                                transitionTo(mStartingState);
+                                break;
+                        }
+                        return retValue;
+                    }
+            }
+        }
+        ->  {
+                TetherMasterSM(String name, Looper looper) {
+                    setInitialState(mInitialState);
+                }
+
+                class InitialState extends TetherMasterUtilState {
+                    public boolean processMessage(Message message) {
+                        switch (message.what) {
+                            case CMD_TETHER_MODE_REQUESTED:
+                                TetherInterfaceSM who = (TetherInterfaceSM)message.obj;
+                                mNotifyList.add(who);
+                                transitionTo(mTetherModeAliveState);
+                                break;
+                        }
+                    }
+                }
+            
+                class TetherModeAliveState extends TetherMasterUtilState {
+                    public void enter() {
+                        turnOnMasterTetherSettings(); // may transition us out
+                        startListeningForSimChanges();
+
+                        mTryCell = !WAIT_FOR_NETWORK_TO_SETTLE; // better try something first pass
+                        // or crazy tests cases will fain
+                        chooseUpstreamType(mTryCell);
+                        mTryCell = !mTryCell;
+                    }
+                }
+            }
+            ->  {
+                    protected boolean turnOnMasterTetherSettings() {
+                        try {
+                            mNMService.setIpForwardingEnabled(true);
+                        } catch (Exception e) {
+                            transitionTo(mSetIpForwardingEnabledErrorState);
+                            return false;
+                        }
+                        try {
+                            mNMService.startTethering(mDhcpRange);
+                        } catch (Exception e) {
+                            try {
+                                mNMService.stopTethering();
+                                mNMService.startTethering(mDhcpRange);
+                            } catch (Exception ee) {
+                                transitionTo(mStartTetheringErrorState);
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                }
+
+这里的mDhcpRange定义如下：
+    mDhcpRange = context.getResources().getStringArray(
+            com.android.internal.R.array.config_tether_dhcp_range);
+    if ((mDhcpRange.length == 0) || (mDhcpRange.length % 2 ==1)) {
+        mDhcpRange = DHCP_DEFAULT_RANGE;
+    }
+其中：
+    private static final String[] DHCP_DEFAULT_RANGE = {
+        "192.168.42.2", "192.168.42.254", "192.168.43.2", "192.168.43.254",
+        "192.168.44.2", "192.168.44.254", "192.168.45.2", "192.168.45.254",
+        "192.168.46.2", "192.168.46.254", "192.168.47.2", "192.168.47.254",
+        "192.168.48.2", "192.168.48.254", "192.168.49.2", "192.168.49.254",
+    };
+------------------------------------------------------------------------------------------------------------------->
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public void setIpForwardingEnabled(boolean enable) {
+            mConnector.execute("ipfwd", enable ? "enable" : "disable");
+        }
+
+        public void startTethering(String[] dhcpRange) {
+            final Command cmd = new Command("tether", "start");
+            for (String d : dhcpRange) {
+                cmd.appendArg(d);
+            }
+            
+            mConnector.execute(cmd);
+        }
+    }
+--------------------------------------------------------------------------------------------------------------->
+CommandListener.cpp (z:\home\ballack\prj\rk3288\system\netd\server)	
+->  {
+        int CommandListener::IpFwdCmd::runCommand(SocketClient *cli,
+                                                      int argc, char **argv) {
+            if (!strcmp(argv[1], "enable")) {
+                rc = sTetherCtrl->setIpFwdEnabled(true);
+            }
+        }
+
+        int CommandListener::TetherCmd::runCommand(SocketClient *cli,
+                                                      int argc, char **argv) {
+            if (!strcmp(argv[1], "start")) {
+                rc = sTetherCtrl->startTethering(num_addrs, addrs);
+            }
+        }
+    }
+--------------------------------------------------------------------------------->
+TetherController.cpp (z:\home\ballack\prj\rk3288\system\netd\server)
+->  {
+        int TetherController::setIpFwdEnabled(bool enable) {
+            ALOGD("Setting IP forward enable = %d", enable);
+            int fd = open("/proc/sys/net/ipv4/ip_forward", O_WRONLY);       // 允许数据包转发
+            write(fd, (enable ? "1" : "0"), 1);
+        }
+
+        int TetherController::startTethering(int num_addrs, struct in_addr* addrs) {
+            ALOGD("Starting tethering services");
+            pid = fork();
+            if (!pid) {
+                int num_processed_args = TETHER_START_CONST_ARG + (num_addrs/2) + 1;
+                char **args = (char **)malloc(sizeof(char *) * num_processed_args);
+                args[num_processed_args - 1] = NULL;
+                args[0] = (char *)"/system/bin/dnsmasq";                    // 这里可以看到是在这里执行的dnsmasq！！！
+                args[1] = (char *)"--keep-in-foreground";                   // 这里带了很多参数，都是固定的！！
+                args[2] = (char *)"--no-resolv";
+                args[3] = (char *)"--no-poll";
+                args[4] = (char *)"--dhcp-authoritative";
+                // TODO: pipe through metered status from ConnService
+                args[5] = (char *)"--dhcp-option-force=43,ANDROID_METERED";
+                args[6] = (char *)"--pid-file";
+                args[7] = (char *)"";
+            }
+
+            int nextArg = TETHER_START_CONST_ARG;
+            for (int addrIndex=0; addrIndex < num_addrs;) {
+                char *start = strdup(inet_ntoa(addrs[addrIndex++]));
+                char *end = strdup(inet_ntoa(addrs[addrIndex++]));
+                asprintf(&(args[nextArg++]),"--dhcp-range=%s,%s,1h", start, end);
+            }
+
+            execv(args[0], args);                                           // 调用exec函数族替代子进程， 执行dnsmasq进程！！
+        }
+    }
+------------------------------------------------------------------------------------------------------------------>
+看看这里的CMD_TETHER_STATE_CHANGE是如何能够接收到的：
+WifiStateMachine构造函数中注册了一个广播接收器：
+public WifiStateMachine(Context context, String wlanInterface, WifiTrafficPoller trafficPoller) {
+    mContext.registerReceiver(
+        new BroadcastReceiver() {
+            @Overridetether
+            public void onReceive(Context context, Intent intent) {
+                ArrayList<String> available = intent.getStringArrayListExtra(
+                    ConnectivityManager.EXTRA_AVAILABLE_TETHER);
+                ArrayList<String> active = intent.getStringArrayListExtra(
+                    ConnectivityManager.EXTRA_ACTIVE_TETHER);
+                sendMessage(CMD_TETHER_STATE_CHANGE, new TetherStateChange(available, active));
+            }
+        },new IntentFilter(ConnectivityManager.ACTION_TETHER_STATE_CHANGED));
+}
+---------------------------------------------------------------------------------------------------------------------->
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public boolean onEvent(int code, String raw, String[] cooked) {
+            String errorMessage = String.format("Invalid event from daemon (%s)", raw);
+            switch (code) {
+                case NetdResponseCode.InterfaceChange:
+                    /*
+                     * a network interface change occured
+                     * Format: "NNN Iface added <name>"
+                     *         "NNN Iface removed <name>"
+                     *         "NNN Iface changed <name> <up/down>"
+                     *         "NNN Iface linkstatus <name> <up/down>"
+                     */
+                    if (cooked.length < 4 || !cooked[1].equals("Iface")) {
+                        throw new IllegalStateException(errorMessage);
+                    }
+                    if (cooked[2].equals("added")) {
+                        notifyInterfaceAdded(cooked[3]);
+                        return true;
+                    } else if (cooked[2].equals("removed")) {
+                        notifyInterfaceRemoved(cooked[3]);
+                        return true;
+                    } else if (cooked[2].equals("changed") && cooked.length == 5) {
+                        notifyInterfaceStatusChanged(cooked[3], cooked[4].equals("up"));
+                        return true;
+                    } else if (cooked[2].equals("linkstate") && cooked.length == 5) {
+                        notifyInterfaceLinkStateChanged(cooked[3], cooked[4].equals("up"));
+                        return true;
+                    }
+                    throw new IllegalStateException(errorMessage);
+                    // break;
+            }
+        }
+    }
+    ->  {
+            private void notifyInterfaceLinkStateChanged(String iface, boolean up) {
+                final int length = mObservers.beginBroadcast();
+                try {
+                    for (int i = 0; i < length; i++) {
+                        try {
+                            mObservers.getBroadcastItem(i).interfaceLinkStateChanged(iface, up);
+                        } catch (RemoteException e) {
+                        } catch (RuntimeException e) {
+                        }
+                    }
+                } finally {
+                    mObservers.finishBroadcast();
+                }
+            }
+        }
+------------------------------------------------------------------------------------------------------------------->
+Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server\connectivity)
+->  {
+        public void interfaceLinkStateChanged(String iface, boolean up) {
+            if (VDBG) Log.d(TAG, "interfaceLinkStateChanged " + iface + ", " + up);
+            interfaceStatusChanged(iface, up);
+        }
+    }
+    ->  {
+            public void interfaceStatusChanged(String iface, boolean up) {
+                if (VDBG) Log.d(TAG, "interfaceStatusChanged " + iface + ", " + up);
+                boolean found = false;
+                boolean usb = false;
+                synchronized (mPublicSync) {
+                    if (isWifi(iface)) {
+                        found = true;
+                    } else if (isUsb(iface)) {
+                        found = true;
+                        usb = true;
+                    } else if (isBluetooth(iface)) {
+                        found = true;
+                    }
+                    if (found == false) return;
+
+                    TetherInterfaceSM sm = mIfaces.get(iface);
+                    if (up) {
+                        if (sm == null) {
+                            sm = new TetherInterfaceSM(iface, mLooper, usb);
+                            mIfaces.put(iface, sm);
+                            sm.start();
+                        }
+                    } else {
+                        if (isUsb(iface)) {
+                            // ignore usb0 down after enabling RNDIS
+                            // we will handle disconnect in interfaceRemoved instead
+                            if (VDBG) Log.d(TAG, "ignore interface down for " + iface);
+                        } else if (sm != null) {
+                            sm.sendMessage(TetherInterfaceSM.CMD_INTERFACE_DOWN);
+                            mIfaces.remove(iface);
+                        }
+                    }
+                }
+            }
+        }
+        ->  {
+                class InitialState extends State {
+                    public void enter() {
+                        setAvailable(true);
+                        setTethered(false);
+                        sendTetherStateChangedBroadcast();
+                    }
+
+                    public boolean processMessage(Message message) {
+                        if (DBG) Log.d(TAG, "InitialState.processMessage what=" + message.what);
+                        boolean retValue = true;
+                        switch (message.what) {
+                            case CMD_TETHER_REQUESTED:
+                                setLastError(ConnectivityManager.TETHER_ERROR_NO_ERROR);
+                                mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_REQUESTED,
+                                        TetherInterfaceSM.this);
+                                transitionTo(mStartingState);
+                                break;
+                            case CMD_INTERFACE_DOWN:
+                                transitionTo(mUnavailableState);
+                                break;
+                            default:
+                                retValue = false;
+                                break;
+                        }
+                        return retValue;
+                    }
+                }
+
+
+
+
+
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        mConnector = new NativeDaemonConnector(
+            new NetdCallbackReceiver(), socket, 10, NETD_TAG, 160, wl,
+            FgThread.get().getLooper());
+    }
+
+private class NetdCallbackReceiver implements INativeDaemonConnectorCallbacks {
+        public boolean onEvent(int code, String raw, String[] cooked) {
+            String errorMessage = String.format("Invalid event from daemon (%s)", raw);
+            switch (code) {
+            case NetdResponseCode.InterfaceChange:
+                    /*
+                     * a network interface change occured
+                     * Format: "NNN Iface added <name>"
+                     *         "NNN Iface removed <name>"
+                     *         "NNN Iface changed <name> <up/down>"
+                     *         "NNN Iface linkstatus <name> <up/down>"
+                     */
+                    if (cooked.length < 4 || !cooked[1].equals("Iface")) {
+                        throw new IllegalStateException(errorMessage);
+                    }
+                    if (cooked[2].equals("added")) {
+                        notifyInterfaceAdded(cooked[3]);
+                        return true;
+                    } else if (cooked[2].equals("removed")) {
+                        notifyInterfaceRemoved(cooked[3]);
+                        return true;
+                    } else if (cooked[2].equals("changed") && cooked.length == 5) {
+                        notifyInterfaceStatusChanged(cooked[3], cooked[4].equals("up"));
+                        return true;
+                    } else if (cooked[2].equals("linkstate") && cooked.length == 5) {
+                        notifyInterfaceLinkStateChanged(cooked[3], cooked[4].equals("up"));
+                        return true;
+                    }
+                    throw new IllegalStateException(errorMessage);
+                    // break;
+}

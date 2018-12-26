@@ -1,0 +1,1806 @@
+<6>[    0.000000] Booting Linux on physical CPU 0x500
+<6>[    0.000000] Initializing cgroup subsys cpu
+<6>[    0.000000] Initializing cgroup subsys cpuacct
+<5>[    0.000000] Linux version 3.10.0 (firefly@tchip-server) (gcc version 4.6.x-google 20120106 (prerelease) (GCC) ) #136 SMP PREEMPT Mon Apr 18 11:01:05 CST 2016
+<4>[    0.000000] CPU: ARMv7 Processor [410fc0d1] revision 1 (ARMv7), cr=10c5387d
+<4>[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+<6>[    0.000000] Machine: Rockchip RK3288 (Flattened Device Tree), model: rockchip,rk3288
+<6>[    0.000000] hdmi init vic is -1
+<4>[    0.000000] rockchip_ion_reserve
+<6>[    0.000000] cma: CMA: reserved 16 MiB at 2e800000
+<4>[    0.000000] Memory policy: ECC disabled, Data cache writealloc
+<4>[    0.000000] Boot mode: PANIC (7) flag: NORMAL (0xc3524200)
+<7>[    0.000000] On node 0 totalpages: 524288
+<7>[    0.000000] free_area_init_node: node 0, pgdat c0d6bb80, node_mem_map c0e8f000
+<7>[    0.000000]   Normal zone: 1520 pages used for memmap
+<7>[    0.000000]   Normal zone: 0 pages reserved
+<7>[    0.000000]   Normal zone: 194560 pages, LIFO batch:31
+<7>[    0.000000]   HighMem zone: 2576 pages used for memmap
+<7>[    0.000000]   HighMem zone: 329728 pages, LIFO batch:31
+<6>[    0.000000] PERCPU: Embedded 9 pages/cpu @c1ec6000 s14016 r8192 d14656 u36864
+<7>[    0.000000] pcpu-alloc: s14016 r8192 d14656 u36864 alloc=9*4096
+<7>[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+<4>[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 522768
+<5>[    0.000000] Kernel command line: console=tty0 console=ttyFIQ0 earlyprintk androidboot.hardware=rk30board androidboot.console=ttyFIQ0 board.ap_has_alsa=0 root=/dev/block/mtd/by-name/linuxroot rw rootfstype=ext4 init=/sbin/init  mtdparts=rk29xxnand:0x00002000@0x00002000(uboot),0x00002000@0x00004000(misc),0x00008000@0x00006000(resource),0x00008000@0x0000e000(kernel),0x00010000@0x00016000(boot),0x00010000@0x00026000(recovery),0x0001a000@0x00036000(backup),0x00040000@0x00050000(cache),0x00002000@0x00090000(kpanic),0x00180000@0x00092000(system),0x00002000@0x00212000(metadata),0x00200000@0x00214000(userdata),0x00620000@0x00414000(linuxroot),-@0x00a34000(user) storagemedia=emmc loader.timestamp=2015-11-13_10:22:31 hdmi.vic=-1
+<6>[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+<6>[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+<6>[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+<6>[    0.000000] Memory: 2048MB = 2048MB total
+<5>[    0.000000] Memory: 2047016k/2047016k available, 50136k reserved, 1318912K highmem
+<5>[    0.000000] Virtual kernel memory layout:
+<5>[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+<5>[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+<5>[    0.000000]     vmalloc : 0xf0000000 - 0xff000000   ( 240 MB)
+<5>[    0.000000]     lowmem  : 0xc0000000 - 0xef800000   ( 760 MB)
+<5>[    0.000000]     pkmap   : 0xbfe00000 - 0xc0000000   (   2 MB)
+<5>[    0.000000]     modules : 0xbf000000 - 0xbfe00000   (  14 MB)
+<5>[    0.000000]       .text : 0xc0008000 - 0xc0a841c8   (10737 kB)
+<5>[    0.000000]       .init : 0xc0a85000 - 0xc0cd46c0   (2366 kB)
+<5>[    0.000000]       .data : 0xc0cd6000 - 0xc0d73288   ( 629 kB)
+<5>[    0.000000]        .bss : 0xc0d73288 - 0xc0e8e004   (1132 kB)
+<6>[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+<6>[    0.000000] Preemptible hierarchical RCU implementation.
+<6>[    0.000000] 	RCU dyntick-idle grace-period acceleration is enabled.
+<6>[    0.000000] NR_IRQS:16 nr_irqs:16 16
+<4>[    0.000000] rk_clk_tree_init start! cru base = 0xfed00000
+<4>[    0.000000] rk_get_uboot_display_flag: uboot_logo_on = 0
+<4>[    0.000000] rkclk_init_clks: cnt_parent = 7
+<4>[    0.000000] rkclk_init_clks: cnt_rate = 32
+<6>[    0.000000] Architected local timer running at 24.00MHz (phys).
+<6>[    0.000000] Switching to timer-based delay loop
+<6>[    0.000000] sched_clock: ARM arch timer >56 bits at 24000kHz, resolution 41ns
+<6>[    0.000000] process version: 3
+<6>[    0.000000] channel:0, lkg:34
+<6>[    0.000000] target-temp:95
+<6>[    0.000000] channel:2, lkg:0
+<6>[    0.000000] target-temp:95
+<6>[    0.000000] channel:0, lkg:34
+<6>[    0.000000] target-temp:95
+<6>[    0.000000] channel:1, lkg:29
+<6>[    0.000000] target-temp:95
+<6>[    0.000000] sched_clock: 32 bits at 100 Hz, resolution 10000000ns, wraps every 4294967286ms
+<6>[    0.525143] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=240000)
+<6>[    0.525196] pid_max: default: 32768 minimum: 301
+<6>[    0.525535] Security Framework initialized
+<6>[    0.525579] SELinux:  Initializing.
+<7>[    0.525657] SELinux:  Starting in permissive mode
+<6>[    0.525811] Mount-cache hash table entries: 512
+<6>[    0.527859] Initializing cgroup subsys debug
+<6>[    0.527903] Initializing cgroup subsys freezer
+<6>[    0.527994] CPU: Testing write buffer coherency: ok
+<3>[    0.528744] /cpus/cpu@0 missing clock-frequency property
+<3>[    0.528789] /cpus/cpu@1 missing clock-frequency property
+<3>[    0.528823] /cpus/cpu@2 missing clock-frequency property
+<3>[    0.528855] /cpus/cpu@3 missing clock-frequency property
+<6>[    0.528978] CPU0: thread -1, cpu 0, socket 5, mpidr 80000500
+<6>[    0.529091] Setting up static identity map for 0xc0795540 - 0xc0795598
+<6>[    0.533463] last_log: 0x2e100000 map to 0xf0004000 and copy to 0xf0086000, size 0x80000 early 0x154b (version 3.0)
+<4>[    0.613023] CPU1: Booted secondary processor
+<6>[    0.613114] CPU1: thread -1, cpu 1, socket 5, mpidr 80000501
+<4>[    0.632751] CPU2: Booted secondary processor
+<6>[    0.632833] CPU2: thread -1, cpu 2, socket 5, mpidr 80000502
+<4>[    0.652537] CPU3: Booted secondary processor
+<6>[    0.652617] CPU3: thread -1, cpu 3, socket 5, mpidr 80000503
+<6>[    0.652988] Brought up 4 CPUs
+<6>[    0.653088] SMP: Total of 4 processors activated (192.00 BogoMIPS).
+<6>[    0.653119] CPU: All CPU(s) started in SVC mode.
+<6>[    0.655353] devtmpfs: initialized
+<6>[    0.673843] pinctrl core: initialized pinctrl subsystem
+<6>[    0.674575] regulator-dummy: no parameters
+<6>[    0.676215] NET: Registered protocol family 16
+<6>[    0.681836] DMA: preallocated 256 KiB pool for atomic coherent allocations
+<6>[    0.682644] ion_snapshot: 0x2e1b0000 map to 0xf0107000 and copy to 0xc0e69654 (version 0.1)
+<6>[    0.683140] Registered FIQ tty driver
+<6>[    0.686580] console [ttyFIQ0] enabled
+<6>[    0.687166] Registered fiq debugger ttyFIQ0
+<4>[    0.689339] rockchip_get_bank_data:name=base start=0xff750000,end=0xff7500ff
+<4>[    0.689428] rockchip_get_bank_data:name=mux_bank0 start=0xff730084,end=0xff73008f
+<4>[    0.689502] rockchip_get_bank_data:name=pull_bank0 start=0xff730064,end=0xff73006f
+<4>[    0.689572] rockchip_get_bank_data:name=drv_bank0 start=0xff730070,end=0xff73007b
+<4>[    0.689831] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio1@ff780000 start=0xff780000,end=0xff7800ff
+<4>[    0.690061] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio2@ff790000 start=0xff790000,end=0xff7900ff
+<4>[    0.690286] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio3@ff7a0000 start=0xff7a0000,end=0xff7a00ff
+<4>[    0.690511] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio4@ff7b0000 start=0xff7b0000,end=0xff7b00ff
+<4>[    0.690736] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio5@ff7c0000 start=0xff7c0000,end=0xff7c00ff
+<4>[    0.690960] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio6@ff7d0000 start=0xff7d0000,end=0xff7d00ff
+<4>[    0.691270] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio7@ff7e0000 start=0xff7e0000,end=0xff7e00ff
+<4>[    0.691511] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio8@ff7f0000 start=0xff7f0000,end=0xff7f00ff
+<4>[    0.691752] rockchip_get_bank_data:name=/pinctrl@ff770000/gpio15@ff7f2000 start=0xff7f2000,end=0xff7f20ff
+<4>[    0.691991] rockchip_pinctrl_probe:name=RK3288-GPIO,type=3
+<4>[    0.692049] rockchip_pinctrl_probe:name=base start=0xff770000,end=0xff77013f
+<4>[    0.692102] rockchip_pinctrl_probe:name=pull start=0xff770140,end=0xff7701bf
+<4>[    0.692154] rockchip_pinctrl_probe:name=drv start=0xff7701c0,end=0xff77023f
+<7>[    0.692362] gpiochip_add: registered GPIOs 0 to 31 on device: gpio0
+<7>[    0.692526] gpiochip_add: registered GPIOs 32 to 63 on device: gpio1
+<7>[    0.692697] gpiochip_add: registered GPIOs 64 to 95 on device: gpio2
+<7>[    0.692853] gpiochip_add: registered GPIOs 96 to 127 on device: gpio3
+<7>[    0.693008] gpiochip_add: registered GPIOs 128 to 159 on device: gpio4
+<7>[    0.693174] gpiochip_add: registered GPIOs 160 to 191 on device: gpio5
+<7>[    0.693331] gpiochip_add: registered GPIOs 192 to 223 on device: gpio6
+<7>[    0.693488] gpiochip_add: registered GPIOs 224 to 255 on device: gpio7
+<7>[    0.693655] gpiochip_add: registered GPIOs 256 to 287 on device: gpio8
+<7>[    0.693815] gpiochip_add: registered GPIOs 288 to 319 on device: gpio15
+<4>[    0.693902] rockchip_interrupts_register:bank_num=7
+<7>[    0.700500] of_get_named_gpio_flags exited with status 256
+<4>[    0.700542] of_get_gpio_init_config:gpio[0] = 256, value = 0
+<7>[    0.700596] of_get_named_gpio_flags exited with status 233
+<4>[    0.700629] of_get_gpio_init_config:gpio[1] = 233, value = 0
+<7>[    0.700680] of_get_named_gpio_flags exited with status 136
+<4>[    0.700712] of_get_gpio_init_config:gpio[2] = 136, value = 0
+<4>[    0.700920] rockchip_pinctrl_probe:init ok
+<6>[    0.721052] rk_iommu ff900800.iep_mmu: (iep) Enter
+<7>[    0.721117] rk_iommu ff900800.iep_mmu: data->num_res_mem=1
+<7>[    0.721159] rk_iommu ff900800.iep_mmu: data->num_res_irq=1
+<7>[    0.721230] rk_iommu ff900800.iep_mmu: res->start = 0xff900800  ioremap to  data->res_bases[0] = 0xf0114800
+<6>[    0.721405] IOVMM: Created 0x3ffff000 B IOVMM from 0x10000000.
+<6>[    0.721460] rk_iommu ff900800.iep_mmu: (iep) Initialized
+<6>[    0.722038] rk_iommu ff950800.vip_mmu: (vip) Enter
+<7>[    0.722095] rk_iommu ff950800.vip_mmu: data->num_res_mem=1
+<7>[    0.722135] rk_iommu ff950800.vip_mmu: data->num_res_irq=1
+<7>[    0.722202] rk_iommu ff950800.vip_mmu: res->start = 0xff950800  ioremap to  data->res_bases[0] = 0xf0116800
+<6>[    0.722364] IOVMM: Created 0x3ffff000 B IOVMM from 0x10000000.
+<6>[    0.722419] rk_iommu ff950800.vip_mmu: (vip) Initialized
+<6>[    0.722978] rk_iommu ff930300.vopb_mmu: (vopb) Enter
+<7>[    0.723035] rk_iommu ff930300.vopb_mmu: data->num_res_mem=1
+<7>[    0.723074] rk_iommu ff930300.vopb_mmu: data->num_res_irq=1
+<7>[    0.723140] rk_iommu ff930300.vopb_mmu: res->start = 0xff930300  ioremap to  data->res_bases[0] = 0xf011e300
+<6>[    0.723300] IOVMM: Created 0x3ffff000 B IOVMM from 0x10000000.
+<6>[    0.723352] rk_iommu ff930300.vopb_mmu: (vopb) Initialized
+<6>[    0.723905] rk_iommu ff940300.vopl_mmu: (vopl) Enter
+<7>[    0.723962] rk_iommu ff940300.vopl_mmu: data->num_res_mem=1
+<7>[    0.724001] rk_iommu ff940300.vopl_mmu: data->num_res_irq=1
+<7>[    0.724067] rk_iommu ff940300.vopl_mmu: res->start = 0xff940300  ioremap to  data->res_bases[0] = 0xf012a300
+<6>[    0.724226] IOVMM: Created 0x3ffff000 B IOVMM from 0x10000000.
+<6>[    0.724280] rk_iommu ff940300.vopl_mmu: (vopl) Initialized
+<6>[    0.724869] rk_iommu ff9c0440.hevc_mmu: (hevc) Enter
+<7>[    0.724925] rk_iommu ff9c0440.hevc_mmu: data->num_res_mem=2
+<7>[    0.724963] rk_iommu ff9c0440.hevc_mmu: data->num_res_irq=1
+<7>[    0.725028] rk_iommu ff9c0440.hevc_mmu: res->start = 0xff9c0440  ioremap to  data->res_bases[0] = 0xf012c440
+<7>[    0.725093] rk_iommu ff9c0440.hevc_mmu: res->start = 0xff9c0480  ioremap to  data->res_bases[1] = 0xf012e480
+<6>[    0.725251] IOVMM: Created 0x3ffff000 B IOVMM from 0x10000000.
+<6>[    0.725303] rk_iommu ff9c0440.hevc_mmu: (hevc) Initialized
+<6>[    0.725856] rk_iommu ff9a0800.vpu_mmu: (vpu) Enter
+<7>[    0.725912] rk_iommu ff9a0800.vpu_mmu: data->num_res_mem=1
+<7>[    0.725951] rk_iommu ff9a0800.vpu_mmu: data->num_res_irq=1
+<7>[    0.726016] rk_iommu ff9a0800.vpu_mmu: res->start = 0xff9a0800  ioremap to  data->res_bases[0] = 0xf0136800
+<6>[    0.726178] IOVMM: Created 0x3ffff000 B IOVMM from 0x10000000.
+<6>[    0.726232] rk_iommu ff9a0800.vpu_mmu: (vpu) Initialized
+<6>[    0.726817] rk_iommu ff914000.isp_mmu: (isp_mmu) Enter
+<7>[    0.726874] rk_iommu ff914000.isp_mmu: data->num_res_mem=2
+<7>[    0.726915] rk_iommu ff914000.isp_mmu: data->num_res_irq=1
+<7>[    0.726981] rk_iommu ff914000.isp_mmu: res->start = 0xff914000  ioremap to  data->res_bases[0] = 0xf0138000
+<7>[    0.727044] rk_iommu ff914000.isp_mmu: res->start = 0xff915000  ioremap to  data->res_bases[1] = 0xf013a000
+<6>[    0.727200] IOVMM: Created 0x3ffff000 B IOVMM from 0x10000000.
+<6>[    0.727253] rk_iommu ff914000.isp_mmu: (isp_mmu) Initialized
+<6>[    0.733032] hw-breakpoint: found 5 (+1 reserved) breakpoint and 4 watchpoint registers.
+<6>[    0.733090] hw-breakpoint: maximum watchpoint size is 4 bytes.
+<4>[    0.733708] DDR DEBUG: version 1.00 20140603 
+<4>[    0.733792] DDR DEBUG: Channel a: 
+<4>[    0.733830] DDR DEBUG: DDR3 Device
+<4>[    0.733878] DDR DEBUG: Bus Width=32 Col=10 Bank=8 Row=15 CS=1 Total Capability=1024MB
+<4>[    0.733920] DDR DEBUG: Channel b: 
+<4>[    0.733951] DDR DEBUG: DDR3 Device
+<4>[    0.733995] DDR DEBUG: Bus Width=32 Col=10 Bank=8 Row=15 CS=1 Total Capability=1024MB
+<4>[    0.734038] DDR DEBUG: addr=0xd79000
+<4>[    0.734077] DDR DEBUG: stride=9, size=256, halfcap=40000000
+<4>[    0.734117] DDR DEBUG: socAddr[0]=0xd79000, socAddr[1]=0xd79100
+<4>[    0.734158] DDR DEBUG: chAddr[0]=0xd79000, chAddr[1]=0xd79000
+<4>[    0.734203] DDR DEBUG: dtar[0]=0x101af000, dtar[1]=0x101af000
+<4>[    0.734364] DDR DEBUG: init success!!! freq=200MHz
+<4>[    0.734399] DDR DEBUG: Channel a: 
+<4>[    0.734447] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.734505] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.734563] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.734620] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.734674] DDR DEBUG: ZERR=0, ZDONE=0, ZPD=0x0, ZPU=0x0, OPD=0x0, OPU=0x0
+<4>[    0.734717] DDR DEBUG: DRV Pull-Up=0x19, DRV Pull-Dwn=0x19
+<4>[    0.734756] DDR DEBUG: ODT Pull-Up=0x2, ODT Pull-Dwn=0x2
+<4>[    0.734789] DDR DEBUG: Channel b: 
+<4>[    0.734836] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.734893] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.734950] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.735007] DDR DEBUG: DTONE=0x1, DTERR=0x0, DTIERR=0x0, DTPASS=4,0, DGSL=1,0 extra clock, DGPS=180,270
+<4>[    0.735058] DDR DEBUG: ZERR=0, ZDONE=0, ZPD=0x0, ZPU=0x0, OPD=0x0, OPU=0x0
+<4>[    0.735100] DDR DEBUG: DRV Pull-Up=0x19, DRV Pull-Dwn=0x19
+<4>[    0.735139] DDR DEBUG: ODT Pull-Up=0x2, ODT Pull-Dwn=0x2
+<6>[    0.811985] bio: create slab <bio-0> at 0
+<6>[    0.813849] Enter firefly_noatx8_init
+<7>[    0.814252] of_get_named_gpio_flags exited with status 245
+<4>[    0.814324] firefly_noatx8_probe 51
+<5>[    0.815055] SCSI subsystem initialized
+<6>[    0.815556] usbcore: registered new interface driver usbfs
+<6>[    0.815708] usbcore: registered new interface driver hub
+<6>[    0.815996] usbcore: registered new device driver usb
+<7>[    0.816807] of_get_named_gpio_flags exited with status 14
+<7>[    0.816884] of_get_named_gpio_flags exited with status 12
+<7>[    0.819876] of_get_named_gpio_flags exited with status 15
+<7>[    0.819940] of_get_named_gpio_flags exited with status 16
+<6>[    0.820471] rockchip_i2c ff650000.i2c: i2c-0: Rockchip I2C adapter
+<7>[    0.824324] of_get_named_gpio_flags exited with status 260
+<7>[    0.824406] of_get_named_gpio_flags exited with status 261
+<6>[    0.824871] rockchip_i2c ff140000.i2c: i2c-1: Rockchip I2C adapter
+<7>[    0.825850] of_get_named_gpio_flags exited with status 201
+<7>[    0.825917] of_get_named_gpio_flags exited with status 202
+<6>[    0.826347] rockchip_i2c ff660000.i2c: i2c-2: Rockchip I2C adapter
+<7>[    0.827328] of_get_named_gpio_flags exited with status 81
+<7>[    0.827394] of_get_named_gpio_flags exited with status 80
+<6>[    0.827817] rockchip_i2c ff150000.i2c: i2c-3: Rockchip I2C adapter
+<7>[    0.828163] of_get_named_gpio_flags exited with status 241
+<7>[    0.828226] of_get_named_gpio_flags exited with status 242
+<6>[    0.828644] rockchip_i2c ff160000.i2c: i2c-4: Rockchip I2C adapter
+<6>[    0.831649] media: Linux media interface: v0.10
+<6>[    0.831809] Linux video capture interface: v2.00
+<6>[    0.831971] pps_core: LinuxPPS API ver. 1 registered
+<6>[    0.832015] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+<6>[    0.832096] PTP clock support registered
+<4>[    0.832527] rockchip_temp_probe,line=362
+<6>[    0.833317] tsadc ff280000.tsadc: initialized
+<6>[    0.834564] rockchip_ion_parse_dt: num_heaps = 1
+<6>[    0.834626] 0:  0  3  vmalloc  0x  (null)
+<6>[    0.835434] Rockchip ion module is successfully loaded (v1.0)
+<6>[    0.835964] Advanced Linux Sound Architecture Driver Initialized.
+<6>[    0.837205] Bluetooth: Core ver 2.16
+<6>[    0.837338] NET: Registered protocol family 31
+<6>[    0.837382] Bluetooth: HCI device and connection manager initialized
+<6>[    0.837442] Bluetooth: HCI socket layer initialized
+<6>[    0.837495] Bluetooth: L2CAP socket layer initialized
+<6>[    0.837589] Bluetooth: SCO socket layer initialized
+<6>[    0.838251] cfg80211: Calling CRDA to update world regulatory domain
+<4>[    0.840592] act8846_i2c_probe,line=898
+<4>[    0.841999] act8846_parse_dt,line=746
+<7>[    0.843342] of_get_named_gpio_flags exited with status 238
+<7>[    0.843388] of_get_named_gpio_flags exited with status 1
+<7>[    0.843428] of_get_named_gpio_flags exited with status 234
+<7>[    0.843465] of_get_named_gpio_flags exited with status 259
+<4>[    0.843527] act8846_i2c_probe: act8846_pmic_hold=1
+<4>[    0.843601] act8846_i2c_probe: act8846_pmic_sleep=1
+<4>[    0.843659] act8846_i2c_probe: act8846_pmic_cpu_det_gpio=1
+<4>[    0.843716] act8846_i2c_probe: act8846_pmic_usb_hub_reset_gpio=1
+<6>[    0.846210] act_dcdc1: 1200 mV 
+<6>[    0.849989] vccio: 3300 mV 
+<6>[    0.852603] vdd_logic: 700 <--> 1500 mV at 1125 mV 
+<6>[    0.856306] act_dcdc4: 2000 mV 
+<6>[    0.858141] vccio_sd: 1800 <--> 3300 mV at 3300 mV 
+<6>[    0.861113] act_ldo2: 1050 mV 
+<6>[    0.864006] act_ldo3: 2800 mV 
+<6>[    0.866904] act_ldo4: 3300 mV 
+<6>[    0.869915] act_ldo5: 3300 mV 
+<6>[    0.872818] act_ldo6: 1100 mV 
+<6>[    0.875697] vcc_18: 1800 mV 
+<6>[    0.878646] act_ldo8: 1850 mV 
+<6>[    0.885257] vdd_arm: 712 <--> 1500 mV at 1200 mV 
+<6>[    0.891686] vdd_gpu: 712 <--> 1500 mV at 900 mV 
+<4>[    0.892650] rk808_i2c_probe,line=1368
+<4>[    0.894307] The device is not rk808 -11
+<4>[    0.894575] rk808: probe of 0-001b failed with error -11
+<6>[    0.896984] i2s: maxburst: 1
+<6>[    0.899669] Switching to clocksource arch_sys_counter
+<4>[    0.911542] rk_battery_charger_detect_cb , battery_charger_detect 1
+<6>[    0.966927] rk-fb rockchip-fb: rk fb ion client create success!
+<6>[    0.966997] rk-fb rockchip-fb: rockchip framebuffer driver probe
+<6>[    0.968067] rk-screen rk_screen.9: rockchip screen probe success
+<6>[    0.968946] rk32-lvds rk32-lvds: rk32 lvds driver probe success
+<3>[    0.969661] rk32-edp ff970000.edp: screen is not edp!
+<4>[    0.969735] rk32-edp: probe of ff970000.edp failed with error -22
+<3>[    0.970870] rk3288-lcdc lcdc0: can't find power_ctr node for lcdc0
+<6>[    0.971678] graphics fb0: rockchip framebuffer registerd:fb0
+<6>[    0.972716] graphics fb1: rockchip framebuffer registerd:fb1
+<6>[    0.973255] graphics fb2: rockchip framebuffer registerd:fb2
+<6>[    0.973798] graphics fb3: rockchip framebuffer registerd:fb3
+<6>[    0.974356] graphics fb4: rockchip framebuffer registerd:fb4
+<6>[    0.976025] rk_iommu ff930300.vopb_mmu: (vopb) Enabled
+<7>[    0.976091] rk_iommu ff930300.vopb_mmu: rockchip_iommu_attach_device: Attached new IOMMU with pgtable 0x2e267000
+<6>[    0.976461] rk3288-lcdc lcdc0: lcdc0: dclk:148500000>>fps:60 
+<6>[    0.976535] rk3288-lcdc lcdc0: wakeup from standby!
+<6>[    1.111201] alloc_buffer:ion_phy_addr=0x10000000
+<6>[    1.154537] fb0:phy:10000000>>vir:f0191000>>len:0x1800000
+<6>[    1.266450] rk3288-lcdc lcdc0: lcdc0 probe ok, iommu enabled
+<4>[    1.267595] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.268033] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.268433] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.268846] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.269222] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.269601] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.270512] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.271031] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.271876] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.272373] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.273200] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.273815] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.274634] rockchip_set_mux:warning ignore bank num 15
+<4>[    1.275146] rockchip_set_mux:warning ignore bank num 15
+<6>[    1.279439] NET: Registered protocol family 2
+<6>[    1.280934] TCP established hash table entries: 8192 (order: 4, 65536 bytes)
+<6>[    1.281424] TCP bind hash table entries: 8192 (order: 4, 65536 bytes)
+<6>[    1.281919] TCP: Hash tables configured (established 8192 bind 8192)
+<6>[    1.282072] TCP: reno registered
+<6>[    1.282126] UDP hash table entries: 512 (order: 2, 16384 bytes)
+<6>[    1.282260] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes)
+<6>[    1.282909] NET: Registered protocol family 1
+<6>[    1.283516] Unpacking initramfs...
+<6>[    1.507466] Freeing initrd memory: 1156K (c4bf0000 - c4d11000)
+<6>[    1.509636] hw perfevents: enabled with ARMv7 Cortex-A12 PMU driver, 7 counters available
+<6>[    1.511148] probe device ff9a0000.vpu_service
+<4>[    1.511599] vpu_service: power on
+<6>[    1.512802] checking hw id 4831
+<6>[    1.513846] vpu_service set to auto frequency mode
+<6>[    1.514015] vcodec vpu_service: vcodec ion client create success!
+<6>[    1.515105] vpu_service: power off...
+<6>[    1.515200] done
+<6>[    1.515232] init success
+<6>[    1.515390] probe device ff9c0000.hevc_service
+<4>[    1.515993] hevc_service: power on
+<6>[    1.517111] checking hw id 6867
+<6>[    1.517934] vcodec hevc_service: vcodec ion client create success!
+<6>[    1.518822] hevc_service: power off...
+<6>[    1.518914] done
+<6>[    1.518945] init success
+<4>[    1.519287] rknandbase v1.0 2014-03-31
+<4>[    1.520053] rknand_probe clk rate = 148500000
+<4>[    1.520442] rknand_driver:ret = 0 
+<6>[    1.521566] audit: initializing netlink socket (disabled)
+<5>[    1.521681] type=2000 audit(1.010:1): initialized
+<4>[    1.524015] bounce pool size: 64 pages
+<6>[    1.539658] fuse init (API version 7.22)
+<6>[    1.540915] msgmni has been set to 1456
+<7>[    1.541073] SELinux:  Registering netfilter hooks
+<6>[    1.547224] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+<6>[    1.547287] io scheduler noop registered
+<6>[    1.547327] io scheduler deadline registered
+<6>[    1.547665] io scheduler cfq registered (default)
+<6>[    1.550031] rga ff920000.rga: rga ion client create success!
+<6>[    1.550479] rga: Driver loaded succesfully
+<4>[    1.551916] IEP Power ON
+<4>[    1.552031] iep ion client create success!
+<6>[    1.553013] rk_iommu ff900800.iep_mmu: (iep) Enabled
+<7>[    1.553075] rk_iommu ff900800.iep_mmu: rockchip_iommu_attach_device: Attached new IOMMU with pgtable 0x2e261000
+<4>[    1.553106] IEP Power OFF
+<6>[    1.553154] rk_iommu ff900800.iep_mmu: (iep) Disabled
+<6>[    1.553207] rk_iommu ff900800.iep_mmu: rockchip_iommu_detach_device: Detached IOMMU with pgtable 0x2e261000
+<4>[    1.553270] IEP Driver loaded succesfully
+<4>[    1.553552] Module initialized.
+<6>[    1.555915] dma-pl330 ffb20000.pdma: Loaded driver for PL330 DMAC-2364208
+<6>[    1.555988] dma-pl330 ffb20000.pdma: 	DBUFF-64x8bytes Num_Chans-5 Num_Peri-6 Num_Events-10
+<6>[    1.560414] dma-pl330 ff250000.pdma: Loaded driver for PL330 DMAC-2364208
+<6>[    1.560487] dma-pl330 ff250000.pdma: 	DBUFF-128x8bytes Num_Chans-8 Num_Peri-20 Num_Events-16
+<3>[    1.561238] pwm-voltage-regulator pwm_regulator.23: unable to request PWM, trying legacy API
+<3>[    1.561302] pwm-voltage-regulator pwm_regulator.23: unable to request legacy PWM
+<4>[    1.561345] pwm_regulator_probe:error
+<6>[    1.561416] platform pwm_regulator.23: Driver pwm-voltage-regulator requests probe deferral
+<4>[    1.562499] rk_serial.c v1.8 2014-03-04
+<6>[    1.563128] ff180000.serial: ttyS0 at MMIO 0xff180000 (irq = 87) is a rk29_serial.0
+<6>[    1.563768] serial ff180000.serial: membase f0172000
+<6>[    1.573545] loop: module loaded
+<6>[    1.575303] SCSI Media Changer driver v0.25 
+<6>[    1.576283] tun: Universal TUN/TAP device driver, 1.6
+<6>[    1.576332] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+<3>[    1.577925] stmmac_probe_config_dt: Can not read property: pmu_regulator.
+<3>[    1.577982] stmmac_probe_config_dt: Can not read property: pmu_enable_level.
+<6>[    1.578031] stmmac_probe_config_dt: clock input or output? (input).
+<6>[    1.578077] stmmac_probe_config_dt: TX delay(0x30).
+<6>[    1.578117] stmmac_probe_config_dt: RX delay(0x20).
+<7>[    1.578171] of_get_named_gpio_flags exited with status 136
+<7>[    1.578203] of_get_named_gpio_flags: can't parse gpios property
+<4>[    1.578238] stmmac_probe_config_dt: is rockchip,rk3288-gmac
+<6>[    1.578278] stmmc_pltfr_init: 
+<3>[    1.578314] stmmc_pltfr_init: ERROR: Get power-gpio failed.
+<7>[    1.578360] _gpio_request: gpio-136 (gmac_phy_reset) status -16
+<3>[    1.578390] stmmc_pltfr_init: ERROR: Request gmac phy reset pin failed.
+<6>[    1.578429] stmmc_pltfr_init: init for RGMII
+<6>[    1.578469] tx delay=0x30
+<6>[    1.578469] rx delay=0x20
+<6>[    1.579947] stmmac - user ID: 0x10, Synopsys ID: 0x35
+<6>[    1.579991]  Normal descriptors
+<6>[    1.580022]  Ring mode enabled
+<6>[    1.580054]  DMA HW capability register supported
+<6>[    1.580093]  RX Checksum Offload Engine supported (type 2)
+<6>[    1.580131]  TX Checksum insertion supported
+<6>[    1.580163]  Wake-Up On Lan supported
+<6>[    1.580292]  Enable RX Mitigation via HW Watchdog Timer
+<6>[    1.581562] PPP generic driver version 2.4.2
+<6>[    1.582042] PPP BSD Compression module registered
+<6>[    1.582089] PPP Deflate Compression module registered
+<6>[    1.582152] PPP MPPE Compression module registered
+<6>[    1.582195] NET: Registered protocol family 24
+<6>[    1.582289] SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256) (6 bit encapsulation enabled).
+<6>[    1.582338] CSLIP: code copyright 1989 Regents of the University of California.
+<4>[    1.582384] Rockchip WiFi SYS interface (V1.00) ... 
+<6>[    1.582637] usbcore: registered new interface driver catc
+<6>[    1.582769] usbcore: registered new interface driver kaweth
+<6>[    1.582815] pegasus: v0.9.3 (2013/04/25), Pegasus/Pegasus II USB Ethernet driver
+<6>[    1.582944] usbcore: registered new interface driver pegasus
+<6>[    1.583070] usbcore: registered new interface driver rtl8150
+<6>[    1.583193] usbcore: registered new interface driver r8152
+<6>[    1.583234] hso: drivers/net/usb/hso.c: Option Wireless
+<6>[    1.583434] usbcore: registered new interface driver hso
+<6>[    1.583598] usbcore: registered new interface driver asix
+<6>[    1.583731] usbcore: registered new interface driver ax88179_178a
+<6>[    1.583861] usbcore: registered new interface driver cdc_ether
+<6>[    1.583987] usbcore: registered new interface driver cdc_eem
+<6>[    1.584111] usbcore: registered new interface driver dm9601
+<6>[    1.584234] usbcore: registered new interface driver dm9620
+<6>[    1.584431] usbcore: registered new interface driver smsc75xx
+<6>[    1.584595] usbcore: registered new interface driver smsc95xx
+<6>[    1.584728] usbcore: registered new interface driver gl620a
+<6>[    1.584857] usbcore: registered new interface driver net1080
+<6>[    1.584984] usbcore: registered new interface driver plusb
+<6>[    1.585113] usbcore: registered new interface driver rndis_host
+<6>[    1.585243] usbcore: registered new interface driver cdc_subset
+<6>[    1.585380] usbcore: registered new interface driver zaurus
+<6>[    1.585517] usbcore: registered new interface driver MOSCHIP usb-ethernet driver
+<6>[    1.585708] usbcore: registered new interface driver int51x1
+<6>[    1.585841] usbcore: registered new interface driver kalmia
+<6>[    1.585969] usbcore: registered new interface driver ipheth
+<6>[    1.586114] usbcore: registered new interface driver sierra_net
+<6>[    1.586246] usbcore: registered new interface driver cx82310_eth
+<6>[    1.586418] usbcore: registered new interface driver cdc_ncm
+<6>[    1.586553] usbcore: registered new interface driver qmi_wwan
+<6>[    1.586685] usbcore: registered new interface driver cdc_mbim
+<6>[    1.586729] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+<6>[    1.590031] EHCI: ehci_rk_probe f1a00000 f1a00010
+<6>[    1.590093] rockchip_ehci_host ff500000.usb: EHCI Host Controller
+<6>[    1.590189] rockchip_ehci_host ff500000.usb: new USB bus registered, assigned bus number 1
+<6>[    1.591196] rockchip_ehci_host ff500000.usb: irq 56, io mem 0xff500000
+<6>[    1.608385] rockchip_ehci_host ff500000.usb: USB 2.0 started, EHCI 1.00
+<6>[    1.608663] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002
+<6>[    1.608726] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+<6>[    1.608781] usb usb1: Product: EHCI Host Controller
+<6>[    1.608828] usb usb1: Manufacturer: Linux 3.10.0 ehci_hcd
+<6>[    1.608876] usb usb1: SerialNumber: ff500000.usb
+<6>[    1.610258] hub 1-0:1.0: USB hub found
+<6>[    1.610339] hub 1-0:1.0: 1 port detected
+<6>[    1.610905] EHCI: ehci_rk_probe ok
+<6>[    1.611387] usbcore: registered new interface driver cdc_acm
+<6>[    1.611434] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+<6>[    1.611619] usbcore: registered new interface driver usblp
+<6>[    1.611765] usbcore: registered new interface driver cdc_wdm
+<6>[    1.611991] usbcore: registered new interface driver usb-storage
+<6>[    1.612130] usbcore: registered new interface driver ums-alauda
+<6>[    1.612262] usbcore: registered new interface driver ums-cypress
+<6>[    1.612389] usbcore: registered new interface driver ums-datafab
+<6>[    1.612514] usbcore: registered new interface driver ums_eneub6250
+<6>[    1.612641] usbcore: registered new interface driver ums-freecom
+<6>[    1.612768] usbcore: registered new interface driver ums-isd200
+<6>[    1.612893] usbcore: registered new interface driver ums-jumpshot
+<6>[    1.613021] usbcore: registered new interface driver ums-karma
+<6>[    1.613161] usbcore: registered new interface driver ums-onetouch
+<6>[    1.613295] usbcore: registered new interface driver ums-sddr09
+<6>[    1.613425] usbcore: registered new interface driver ums-sddr55
+<6>[    1.613553] usbcore: registered new interface driver ums-usbat
+<6>[    1.613831] usbcore: registered new interface driver usbserial
+<6>[    1.613968] usbcore: registered new interface driver usbserial_generic
+<6>[    1.614082] usbserial: USB Serial support registered for generic
+<6>[    1.614220] usbcore: registered new interface driver option
+<6>[    1.614341] usbserial: USB Serial support registered for GSM modem (1-port)
+<6>[    1.614585] usbcore: registered new interface driver trancevibrator
+<6>[    1.614632] usb20_otg: version 3.10a 21-DEC-2012
+<4>[    1.615782] f1a80040
+<4>[    1.615828] Core Release: 3.10a
+<4>[    1.615868] Setting default values for core params
+<4>[    1.616248] Using Buffer DMA mode
+<4>[    1.616293] Periodic Transfer Interrupt Enhancement - disabled
+<4>[    1.616333] Multiprocessor Interrupt Enhancement - disabled
+<4>[    1.616373] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[    1.616409] ^^^^^^^^^^^^^^^^^Device Mode
+<4>[    1.616454] Dedicated Tx FIFOs mode
+<4>[    1.616511] pcd_init otg_dev = ed9de440
+<6>[    1.616981] usb20_otg ff580000.usb: DWC OTG Controller
+<6>[    1.617079] usb20_otg ff580000.usb: new USB bus registered, assigned bus number 2
+<6>[    1.617184] usb20_otg ff580000.usb: irq 55, io mem 0x00000000
+<6>[    1.617381] usb usb2: New USB device found, idVendor=1d6b, idProduct=0002
+<6>[    1.617443] usb usb2: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+<6>[    1.617495] usb usb2: Product: DWC OTG Controller
+<6>[    1.617542] usb usb2: Manufacturer: Linux 3.10.0 dwc_otg_hcd
+<6>[    1.617589] usb usb2: SerialNumber: ff580000.usb
+<6>[    1.618964] hub 2-0:1.0: USB hub found
+<6>[    1.619041] hub 2-0:1.0: 1 port detected
+<6>[    1.620097] usb20_host: version 3.10a 21-DEC-2012
+<4>[    1.623634] f1b00040
+<4>[    1.623680] Core Release: 3.10a
+<4>[    1.623730] Setting default values for core params
+<4>[    1.624094] Using Buffer DMA mode
+<4>[    1.624136] Periodic Transfer Interrupt Enhancement - disabled
+<4>[    1.624175] Multiprocessor Interrupt Enhancement - disabled
+<4>[    1.624215] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[    1.624251] ^^^^^^^^^^^^^^^^^^Host Mode
+<6>[    1.624340] usb20_host ff540000.usb: DWC OTG Controller
+<6>[    1.624430] usb20_host ff540000.usb: new USB bus registered, assigned bus number 3
+<6>[    1.624533] usb20_host ff540000.usb: irq 57, io mem 0x00000000
+<4>[    1.624699] Init: Power Port (0)
+<6>[    1.624881] usb usb3: New USB device found, idVendor=1d6b, idProduct=0002
+<6>[    1.624941] usb usb3: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+<6>[    1.624994] usb usb3: Product: DWC OTG Controller
+<6>[    1.625039] usb usb3: Manufacturer: Linux 3.10.0 dwc_otg_hcd
+<6>[    1.625086] usb usb3: SerialNumber: ff540000.usb
+<6>[    1.626440] hub 3-0:1.0: USB hub found
+<6>[    1.626515] hub 3-0:1.0: 1 port detected
+<4>[    1.628604] .. rk pwm remotectl v1.0 init
+<4>[    1.628859] remotectl probe j=0x0
+<6>[    1.629380] input: ff680000.pwm as /devices/ff680000.pwm/input/input0
+<4>[    1.629947] pwm enable val=0x646205 
+<6>[    1.630797] usbcore: registered new interface driver xpad
+<6>[    1.630967] usbcore: registered new interface driver usb_acecad
+<6>[    1.631128] usbcore: registered new interface driver aiptek
+<6>[    1.631278] usbcore: registered new interface driver gtco
+<6>[    1.631425] usbcore: registered new interface driver hanwang
+<6>[    1.631569] usbcore: registered new interface driver kbtab
+<6>[    1.631735] usbcore: registered new interface driver wacom
+<4>[    1.632782] sensor_register_slave:mma8452,id=17
+<4>[    1.632832] sensor_register_slave:cm3217,id=44
+<4>[    1.632873] sensor_register_slave:cm3218,id=45
+<6>[    1.632909] tchip_rm_init is here!
+<6>[    1.634421] input: tchip_remote_key as /devices/virtual/input/input1
+<6>[    1.634798] tchiprm_register_device is here!
+<6>[    1.635235] input: tchip_remote_touch as /devices/virtual/input/input2
+<6>[    1.635596] tchip_remote_abs_register_device is here!
+<6>[    1.636007] input: tchip_remote_gsensor as /devices/virtual/input/input3
+<6>[    1.636367] tchip_remote_gsensor_register_device is here!
+<7>[    1.640389] of_get_named_gpio_flags exited with status 228
+<6>[    1.643397] rtc_hym8563 0-0051: rtc core: registered hym8563 as rtc0
+<6>[    1.643563] i2c /dev entries driver
+<6>[    1.645875] IR NEC protocol handler initialized
+<6>[    1.645924] IR RC5(x) protocol handler initialized
+<6>[    1.645962] IR RC6 protocol handler initialized
+<6>[    1.645998] IR JVC protocol handler initialized
+<6>[    1.646033] IR Sony protocol handler initialized
+<6>[    1.646068] IR RC5 (streamzap) protocol handler initialized
+<6>[    1.646106] IR SANYO protocol handler initialized
+<6>[    1.646142] IR MCE Keyboard/mouse protocol handler initialized
+<6>[    1.646399] usbcore: registered new interface driver uvcvideo
+<6>[    1.646443] USB Video Class driver (1.1.1)
+<4>[    1.646489] CamSys driver version: v0.19.0,  CamSys head file version: v0.8.0
+<7>[    1.649769] of_get_named_gpio_flags exited with status 236
+<4>[    1.649811] D1:camsys_platform_probe(1061): 1-gpios-cifpower: gpio=236
+<7>[    1.649866] of_get_named_gpio_flags exited with status 236
+<4>[    1.649899] D1:camsys_platform_probe(1064): gpios-cifpower: gpio_request
+<4>[    1.649965] D1:camsys_platform_probe(1066): 1-gpios-cifpower: gpio_request=0
+<4>[    1.650027] D1:camsys_platform_probe(1075): gpios-cifpower: 236 high
+<4>[    1.650243] D1:camsys_mipiphy_probe_cb(163): ff910000.isp mipi phy0 probe success(reg_phy: 0x0  reg_vir: 0x0  size: 0x0)
+<4>[    1.650714] D1:camsys_mipiphy_probe_cb(160): ff910000.isp mipi phy1 probe success(reg_phy: 0xff968000  reg_vir: 0xf19b0000  size: 0x4000)
+<4>[    1.652814] D1:camsys_platform_probe(1208): ff910000.isp memory:
+<4>[    1.652875] D1:camsys_platform_probe(1218):     Register memory (phy: 0xff910000 vir: 0xf19e0000 size: 0x10000)
+<4>[    1.652934] D1:camsys_platform_probe(1213):     I2c memory (phy: 0x2da19000 vir: 0xeda19000 size: 0x1000)
+<4>[    1.652987] D1:camsys_platform_probe(1233): Probe ff910000.isp device success 
+<6>[    1.655958] device-mapper: uevent: version 1.0.3
+<6>[    1.656713] device-mapper: ioctl: 4.24.0-ioctl (2013-01-15) initialised: dm-devel@redhat.com
+<6>[    1.657628] Bluetooth: HCI UART driver ver 2.2
+<6>[    1.657679] Bluetooth: HCI H4 protocol initialized
+<6>[    1.657719] Bluetooth: HCILL protocol initialized
+<4>[    1.663737] cpufreq version 1.0, suspend freq 1200 MHz
+<6>[    1.664336] cpuidle: using governor ladder
+<6>[    1.664382] cpuidle: using governor menu
+<6>[    1.664503] Synopsys Designware Multimedia Card Interface Driver
+<6>[    1.665277] dwmmc_rockchip ff0f0000.rksdmmc: Version ID is 270a
+<6>[    1.666128] dwmmc_rockchip ff0f0000.rksdmmc: Using internal DMA controller.
+<4>[    1.666617] 3291..dw_mci_init_slot: fmin=400000, fmax=100000000 [mmc0]
+<4>[    1.666667] mmc0 : Rockchip specific MHSC: Ver 1.13 2014-09-05
+<7>[    1.666756] of_get_named_gpio_flags: can't parse gpios property
+<4>[    1.667047] 1381..dw_mci_set_ios:  no card. [mmc0]
+<4>[    1.677288] 1381..dw_mci_set_ios:  no card. [mmc0]
+<4>[    1.696897] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 800000Hz for init[mmc0]
+<6>[    1.696952] dwmmc_rockchip ff0f0000.rksdmmc: DW MMC controller at irq 67, 32 bit host data width, 256 deep fifo
+<6>[    1.696978] dwmmc_rockchip ff0f0000.rksdmmc: 1 slots initialized
+<6>[    1.697337] dwmmc_rockchip ff0c0000.rksdmmc: Version ID is 270a
+<6>[    1.698078] dwmmc_rockchip ff0c0000.rksdmmc: Using internal DMA controller.
+<4>[    1.698259] 3285..dw_mci_init_slot: fmin=300000, fmax=50000000 [mmc1]
+<4>[    1.698278] mmc1 : Rockchip specific MHSC: Ver 1.13 2014-09-05
+<7>[    1.698310] of_get_named_gpio_flags: can't parse gpios property
+<4>[    1.698809] 1381..dw_mci_set_ios:  no card. [mmc1]
+<4>[    1.716566] 1381..dw_mci_set_ios:  no card. [mmc1]
+<6>[    1.729145] mmc0: BKOPS_EN bit is not set
+<4>[    1.731069] rk_sdmmc: BOOT Bus speed=0Hz,Bus width=8bits.[mmc0]
+<6>[    1.733381] mmc_host mmc0: Bus speed (slot 0) = 100000000Hz (slot req 100000000Hz, actual 100000000HZ div = 0)
+<4>[    1.733410] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc0]
+<6>[    1.736403] dwmmc_rockchip ff0c0000.rksdmmc: DW MMC controller at irq 64, 32 bit host data width, 256 deep fifo
+<6>[    1.736424] dwmmc_rockchip ff0c0000.rksdmmc: 1 slots initialized
+<6>[    1.736773] dwmmc_rockchip ff0d0000.rksdmmc: Version ID is 270a
+<6>[    1.736993] dwmmc_rockchip ff0d0000.rksdmmc: Using internal DMA controller.
+<4>[    1.737148] 3291..dw_mci_init_slot: fmin=200000, fmax=50000000 [mmc2]
+<4>[    1.737162] mmc2 : Rockchip specific MHSC: Ver 1.13 2014-09-05
+<7>[    1.737186] of_get_named_gpio_flags: can't parse gpios property
+<4>[    1.737272] 1381..dw_mci_set_ios:  no card. [mmc2]
+<4>[    1.748412] rk_sdmmc: BOOT 
+<4>[    1.748412]  execute tuning: candidates_degree = SDMMC_SHIFT_DEGREE_0 	SDMMC_SHIFT_DEGREE_90 	SDMMC_SHIFT_DEGREE_180 	SDMMC_SHIFT_DEGREE_INVALID[mmc0]
+<6>[    1.748510] mmc0: new HS200 MMC card at address 0001
+<6>[    1.748859] mmcblk0: mmc0:0001 AGND3R 14.5 GiB 
+<6>[    1.749245]      uboot: 0x000400000 -- 0x000800000 (4 MB)
+<6>[    1.749263]       misc: 0x000800000 -- 0x000c00000 (4 MB)
+<6>[    1.749277]   resource: 0x000c00000 -- 0x001c00000 (16 MB)
+<6>[    1.749290]     kernel: 0x001c00000 -- 0x002c00000 (16 MB)
+<6>[    1.749302]       boot: 0x002c00000 -- 0x004c00000 (32 MB)
+<6>[    1.749315]   recovery: 0x004c00000 -- 0x006c00000 (32 MB)
+<6>[    1.749327]     backup: 0x006c00000 -- 0x00a000000 (52 MB)
+<6>[    1.749340]      cache: 0x00a000000 -- 0x012000000 (128 MB)
+<6>[    1.749353]     kpanic: 0x012000000 -- 0x012400000 (4 MB)
+<6>[    1.749366]     system: 0x012400000 -- 0x042400000 (768 MB)
+<6>[    1.749378]   metadata: 0x042400000 -- 0x042800000 (4 MB)
+<6>[    1.749391]   userdata: 0x042800000 -- 0x082800000 (1024 MB)
+<6>[    1.749403]  linuxroot: 0x082800000 -- 0x146800000 (3136 MB)
+<6>[    1.749416]       user: 0x146800000 -- 0x3a3a00000 (9682 MB)
+<6>[    1.749461]  mmcblk0: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p141381..dw_mci_set_ios:  no card. [mmc1]
+<4>[    1.755902] 1381..dw_mci_set_ios:  no card. [mmc2]
+<4>[    1.775579] 1381..dw_mci_set_ios:  no card. [mmc2]
+<6>[    1.775784] dwmmc_rockchip ff0d0000.rksdmmc: DW MMC controller at irq 65, 32 bit host data width, 256 deep fifo
+<6>[    1.775797] dwmmc_rockchip ff0d0000.rksdmmc: 1 slots initialized
+<4>[    1.776049] leds-gpio leds.31: pins are not configured from the driver
+<7>[    1.776072] of_get_named_gpio_flags exited with status 257
+<7>[    1.776080] of_get_named_gpio_flags exited with status 258
+<7>[    1.776089] of_get_named_gpio_flags exited with status 257
+<7>[    1.776173] of_get_named_gpio_flags exited with status 258
+<6>[    1.776280] hidraw: raw HID events driver (C) Jiri Kosina
+<6>[    1.777578] usbcore: registered new interface driver usbhid
+<6>[    1.777589] usbhid: USB HID core driver
+<6>[    1.777880] ashmem: initialized
+<6>[    1.777985] logger: created 256K log 'log_main'
+<6>[    1.778081] logger: created 256K log 'log_events'
+<6>[    1.778171] logger: created 256K log 'log_radio'
+<6>[    1.778265] logger: created 256K log 'log_system'
+<7>[    1.779037] of_get_named_gpio_flags exited with status 5
+<7>[    1.779047] of_get_named_gpio_flags exited with status 5
+<6>[    1.779284] input: rk29-keypad as /devices/ff100000.adc/key.34/input/input4
+<3>[    1.779877] rockchip-pinctrl ff770000.pinctrl: pin gpio6-8 already requested by ; cannot claim for 2-0010
+<3>[    1.779894] rockchip-pinctrl ff770000.pinctrl: pin-200 (2-0010) status -22
+<3>[    1.779906] rockchip-pinctrl ff770000.pinctrl: could not request pin 200 on device rockchip-pinctrl
+<3>[    1.779918] ES8323 2-0010: Error applying setting, reverse things back
+<7>[    1.779942] of_get_named_gpio_flags exited with status 10
+<7>[    1.779951] of_get_named_gpio_flags exited with status 239
+<4>[    1.780197] es8323 probe i2c recv ok
+<4>[    1.780422] i2c-core: driver [ES8323] using legacy suspend method
+<4>[    1.780433] i2c-core: driver [ES8323] using legacy resume method
+<3>[    1.780736] rockchip-hdmi-spdif rockchip-hdmi-spdif.27: ASoC: CPU DAI (null) not registered
+<4>[    1.780766] rockchip_hdmi_spdif_audio_probe() register card failed:-517
+<6>[    1.780785] platform rockchip-hdmi-spdif.27: Driver rockchip-hdmi-spdif requests probe deferral
+<4>[    1.781028] es8323_probe
+<4>[    1.781119] es8323_probe:register ISR (irq=194)
+<4>[    2.415535] ES8323 2-0010: ASoC: no dapm match for LINPUT1 --> NULL --> Left Line Mux
+<3>[    2.415549] ES8323 2-0010: ASoC: Failed to add route LINPUT1 -> NULL -> Left Line Mux
+<4>[    2.415559] ES8323 2-0010: ASoC: no dapm match for LINPUT2 --> NULL --> Left Line Mux
+<3>[    2.415567] ES8323 2-0010: ASoC: Failed to add route LINPUT2 -> NULL -> Left Line Mux
+<4>[    2.415577] ES8323 2-0010: ASoC: no dapm match for Left PGA Mux --> NULL --> Left Line Mux
+<3>[    2.415585] ES8323 2-0010: ASoC: Failed to add route Left PGA Mux -> NULL -> Left Line Mux
+<4>[    2.415594] ES8323 2-0010: ASoC: no dapm match for RINPUT1 --> NULL --> Right Line Mux
+<3>[    2.415602] ES8323 2-0010: ASoC: Failed to add route RINPUT1 -> NULL -> Right Line Mux
+<4>[    2.415611] ES8323 2-0010: ASoC: no dapm match for RINPUT2 --> NULL --> Right Line Mux
+<3>[    2.415619] ES8323 2-0010: ASoC: Failed to add route RINPUT2 -> NULL -> Right Line Mux
+<4>[    2.415629] ES8323 2-0010: ASoC: no dapm match for Right PGA Mux --> NULL --> Right Line Mux
+<3>[    2.415638] ES8323 2-0010: ASoC: Failed to add route Right PGA Mux -> NULL -> Right Line Mux
+<4>[    2.415647] ES8323 2-0010: ASoC: no dapm match for LINPUT1 --> LAMP --> Left PGA Mux
+<3>[    2.415656] ES8323 2-0010: ASoC: Failed to add route LINPUT1 -> LAMP -> Left PGA Mux
+<4>[    2.415665] ES8323 2-0010: ASoC: no dapm match for LINPUT2 --> LAMP --> Left PGA Mux
+<3>[    2.415672] ES8323 2-0010: ASoC: Failed to add route LINPUT2 -> LAMP -> Left PGA Mux
+<4>[    2.415681] ES8323 2-0010: ASoC: no dapm match for Differential Mux --> LAMP --> Left PGA Mux
+<3>[    2.415689] ES8323 2-0010: ASoC: Failed to add route Differential Mux -> LAMP -> Left PGA Mux
+<4>[    2.415698] ES8323 2-0010: ASoC: no dapm match for RINPUT1 --> RAMP --> Right PGA Mux
+<3>[    2.415706] ES8323 2-0010: ASoC: Failed to add route RINPUT1 -> RAMP -> Right PGA Mux
+<4>[    2.415715] ES8323 2-0010: ASoC: no dapm match for RINPUT2 --> RAMP --> Right PGA Mux
+<3>[    2.415722] ES8323 2-0010: ASoC: Failed to add route RINPUT2 -> RAMP -> Right PGA Mux
+<4>[    2.415731] ES8323 2-0010: ASoC: no dapm match for Differential Mux --> RAMP --> Right PGA Mux
+<3>[    2.415739] ES8323 2-0010: ASoC: Failed to add route Differential Mux -> RAMP -> Right PGA Mux
+<4>[    2.415749] ES8323 2-0010: ASoC: no dapm match for LINPUT1 --> LAMP --> Differential Mux
+<3>[    2.415757] ES8323 2-0010: ASoC: Failed to add route LINPUT1 -> LAMP -> Differential Mux
+<4>[    2.415766] ES8323 2-0010: ASoC: no dapm match for RINPUT1 --> RAMP --> Differential Mux
+<3>[    2.415774] ES8323 2-0010: ASoC: Failed to add route RINPUT1 -> RAMP -> Differential Mux
+<4>[    2.415782] ES8323 2-0010: ASoC: no dapm match for LINPUT2 --> LAMP --> Differential Mux
+<3>[    2.415790] ES8323 2-0010: ASoC: Failed to add route LINPUT2 -> LAMP -> Differential Mux
+<4>[    2.415798] ES8323 2-0010: ASoC: no dapm match for RINPUT2 --> RAMP --> Differential Mux
+<3>[    2.415806] ES8323 2-0010: ASoC: Failed to add route RINPUT2 -> RAMP -> Differential Mux
+<4>[    2.415826] ES8323 2-0010: ASoC: no dapm match for LINPUT1 --> LAMP --> Left Line Mux
+<3>[    2.415835] ES8323 2-0010: ASoC: Failed to add route LINPUT1 -> LAMP -> Left Line Mux
+<4>[    2.415844] ES8323 2-0010: ASoC: no dapm match for LINPUT2 --> LAMP --> Left Line Mux
+<3>[    2.415851] ES8323 2-0010: ASoC: Failed to add route LINPUT2 -> LAMP -> Left Line Mux
+<4>[    2.415860] ES8323 2-0010: ASoC: no dapm match for Left PGA Mux --> LAMP --> Left Line Mux
+<3>[    2.415868] ES8323 2-0010: ASoC: Failed to add route Left PGA Mux -> LAMP -> Left Line Mux
+<4>[    2.415877] ES8323 2-0010: ASoC: no dapm match for RINPUT1 --> RAMP --> Right Line Mux
+<3>[    2.415885] ES8323 2-0010: ASoC: Failed to add route RINPUT1 -> RAMP -> Right Line Mux
+<4>[    2.415894] ES8323 2-0010: ASoC: no dapm match for RINPUT2 --> RAMP --> Right Line Mux
+<3>[    2.415901] ES8323 2-0010: ASoC: Failed to add route RINPUT2 -> RAMP -> Right Line Mux
+<4>[    2.415911] ES8323 2-0010: ASoC: no dapm match for Right PGA Mux --> RAMP --> Right Line Mux
+<3>[    2.415918] ES8323 2-0010: ASoC: Failed to add route Right PGA Mux -> RAMP -> Right Line Mux
+<3>[    2.416049] ES8323 2-0010: ASoC: mux Right Line Mux has no paths
+<3>[    2.416065] ES8323 2-0010: ASoC: mux Left Line Mux has no paths
+<3>[    2.416076] ES8323 2-0010: ASoC: mux Right PGA Mux has no paths
+<3>[    2.416086] ES8323 2-0010: ASoC: mux Left PGA Mux has no paths
+<3>[    2.416106] ES8323 2-0010: ASoC: mux Differential Mux has no paths
+<6>[    2.418966] Enter::rk29_es8323_init----135
+<6>[    2.422289] rockchip-es8323 rockchip-es8323.29:  ES8323 HiFi <-> rockchip-i2s.0 mapping ok
+<6>[    2.422853] u32 classifier
+<6>[    2.422860]     Actions configured
+<6>[    2.422871] Netfilter messages via NETLINK v0.30.
+<6>[    2.422924] nf_conntrack version 0.5.0 (16384 buckets, 65536 max)
+<6>[    2.423207] ctnetlink v0.93: registering with nfnetlink.
+<6>[    2.423268] NF_TPROXY: Transparent proxy support initialized, version 4.1.0
+<6>[    2.423276] NF_TPROXY: Copyright (c) 2006-2007 BalaBit IT Ltd.
+<6>[    2.423497] xt_time: kernel timezone is -0000
+<6>[    2.423660] ip_tables: (C) 2000-2006 Netfilter Core Team
+<6>[    2.423775] arp_tables: (C) 2002 David S. Miller
+<6>[    2.423808] TCP: cubic registered
+<6>[    2.423815] Initializing XFRM netlink socket
+<6>[    2.423978] NET: Registered protocol family 10
+<6>[    2.424414] mip6: Mobile IPv6
+<6>[    2.424440] ip6_tables: (C) 2000-2006 Netfilter Core Team
+<6>[    2.424541] sit: IPv6 over IPv4 tunneling driver
+<6>[    2.424819] NET: Registered protocol family 17
+<6>[    2.424842] NET: Registered protocol family 15
+<5>[    2.424887] Bridge firewalling registered
+<6>[    2.424898] Ebtables v2.0 registered
+<6>[    2.425051] Bluetooth: RFCOMM TTY layer initialized
+<6>[    2.425071] Bluetooth: RFCOMM socket layer initialized
+<6>[    2.425078] Bluetooth: RFCOMM ver 1.11
+<6>[    2.425085] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+<6>[    2.425090] Bluetooth: BNEP filters: protocol multicast
+<6>[    2.425100] Bluetooth: BNEP socket layer initialized
+<6>[    2.425107] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+<6>[    2.425117] Bluetooth: HIDP socket layer initialized
+<6>[    2.425140] l2tp_core: L2TP core driver, V2.0
+<6>[    2.425153] l2tp_ppp: PPPoL2TP kernel driver, V2.0
+<6>[    2.425160] [WLAN_RFKILL]: Enter rfkill_wlan_init
+<6>[    2.425349] [WLAN_RFKILL]: Enter rfkill_wlan_probe
+<4>[    2.425358] wlan_platdata_parse_dt: wifi_chip_type = bcmwifi
+<6>[    2.425367] [WLAN_RFKILL]: wlan_platdata_parse_dt: enable wifi power control.
+<6>[    2.425374] [WLAN_RFKILL]: wlan_platdata_parse_dt: disable wifi io reference voltage control.
+<6>[    2.425382] [WLAN_RFKILL]: wlan_platdata_parse_dt: wifi power controled by gpio.
+<7>[    2.425399] of_get_named_gpio_flags exited with status 156
+<6>[    2.425404] [WLAN_RFKILL]: wlan_platdata_parse_dt: get property: WIFI,poweren_gpio = 156, flags = 0.
+<7>[    2.425412] of_get_named_gpio_flags: can't parse gpios property
+<7>[    2.425418] of_get_named_gpio_flags exited with status 158
+<6>[    2.425423] [WLAN_RFKILL]: wlan_platdata_parse_dt: get property: WIFI,host_wake_irq = 158, flags = 0.
+<6>[    2.425432] [WLAN_RFKILL]: rfkill_wlan_probe: init gpio
+<6>[    2.425457] [WLAN_RFKILL]: rockchip_wifi_voltage_select: wifi & sdio reference voltage: 1.8V
+<6>[    2.425498] [WLAN_RFKILL]: Exit rfkill_wlan_probe
+<6>[    2.425544] [BT_RFKILL]: Enter rfkill_rk_init
+<7>[    2.425651] of_get_named_gpio_flags exited with status 147
+<6>[    2.425657] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: uart_rts_gpios = 147.
+<7>[    2.425668] of_get_named_gpio_flags exited with status 155
+<6>[    2.425673] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,power_gpio = 155.
+<7>[    2.425680] of_get_named_gpio_flags exited with status 157
+<6>[    2.425685] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,reset_gpio = 157.
+<7>[    2.425693] of_get_named_gpio_flags exited with status 154
+<6>[    2.425698] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,wake_gpio = 154.
+<7>[    2.425706] of_get_named_gpio_flags exited with status 159
+<6>[    2.425711] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,wake_host_irq = 159.
+<6>[    2.425762] [BT_RFKILL]: Request irq for bt wakeup host
+<6>[    2.425850] [BT_RFKILL]: ** disable irq
+<6>[    2.425919] [BT_RFKILL]: ap6335 device registered.
+<3>[    2.818602] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    3.212199] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<6>[    3.586109] EHCI: rk_ehci_hcd_enable, disable host controller
+<4>[    3.595951] dwc_otg_hcd_enable, enable host controller
+<3>[    3.605807] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[    3.718959] Using Buffer DMA mode
+<4>[    3.718966] Periodic Transfer Interrupt Enhancement - disabled
+<4>[    3.718973] Multiprocessor Interrupt Enhancement - disabled
+<4>[    3.718980] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[    3.718986] ^^^^^^^^^^^^^^^^^^Host Mode
+<4>[    3.763319] Init: Power Port (0)
+<3>[    3.999400] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[    4.166692] Indeed it is in host mode hprt0 = 00021501
+<6>[    4.343796] usb 3-1: new high-speed USB device number 2 using usb20_host
+<4>[    4.343870] Indeed it is in host mode hprt0 = 00001101
+<3>[    4.392999] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    4.393008] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[    4.393018] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<6>[    4.550648] usb 3-1: New USB device found, idVendor=1a40, idProduct=0101
+<6>[    4.550657] usb 3-1: New USB device strings: Mfr=0, Product=1, SerialNumber=0
+<6>[    4.550666] usb 3-1: Product: USB 2.0 Hub [MTT]
+<6>[    4.550967] hub 3-1:1.0: USB hub found
+<6>[    4.551015] hub 3-1:1.0: 4 ports detected
+<6>[    4.826694] usb 3-1.4: new low-speed USB device number 3 using usb20_host
+<3>[    4.845815] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<6>[    4.930698] usb 3-1.4: New USB device found, idVendor=093a, idProduct=2510
+<6>[    4.930897] usb 3-1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=0
+<6>[    4.931018] usb 3-1.4: Product: USB OPTICAL MOUSE
+<6>[    4.931121] usb 3-1.4: Manufacturer: PIXART
+<6>[    4.944826] input: PIXART USB OPTICAL MOUSE as /devices/ff540000.usb/usb3/3-1/3-1.4/3-1.4:1.0/input/input5
+<6>[    4.945854] hid-generic 0003:093A:2510.0001: input,hidraw0: USB HID v1.11 Mouse [PIXART USB OPTICAL MOUSE] on usb-ff540000.usb-1.4/input0
+<3>[    5.239446] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[    5.495290] iep dpi mode inactivity
+<3>[    5.633043] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    6.026643] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    6.420323] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    6.420471] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[    6.420576] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<3>[    6.872875] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    7.266487] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    7.660143] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    8.053681] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    8.447327] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    8.447496] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[    8.447644] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<4>[    8.447719] hdmi->edidread:0
+<3>[    8.840918] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[    9.234484] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<6>[    9.500130] [otg id chg] last id -1 current id 1
+<4>[    9.500317] PortPower off
+<4>[    9.500398] rk_battery_charger_detect_cb , battery_charger_detect 6
+<4>[    9.599956] Using Buffer DMA mode
+<4>[    9.599974] Periodic Transfer Interrupt Enhancement - disabled
+<4>[    9.599986] Multiprocessor Interrupt Enhancement - disabled
+<4>[    9.599999] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[    9.600010] ^^^^^^^^^^^^^^^^^Device Mode
+<3>[    9.627906] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[    9.657442] es8323_create file error
+<3>[   10.021684] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[   10.090628] ***************vbus detect*****************
+<4>[   10.092976] rk_battery_charger_detect_cb , battery_charger_detect 1
+<3>[   10.415328] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   10.415499] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   10.415628] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<3>[   10.867923] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   11.261522] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   11.655125] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   12.048722] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   12.442340] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   12.442481] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   12.442587] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<3>[   12.894965] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   13.288671] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   13.682173] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   14.075772] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   14.469505] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   14.469684] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   14.469804] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<3>[   14.469923] rk3288-hdmi ff980000.hdmi: warning: EDID error, assume sink as DVI !!!!
+<6>[   14.470038] rk3288-hdmi ff980000.hdmi: warning: no CEA video mode parsed from EDID !!!!
+<6>[   14.470222] ******** Show Sink Info ********
+<6>[   14.470286] Max tmds clk is 0
+<6>[   14.470359] Support video mode:
+<6>[   14.470416] 	3840x2160p@60Hz
+<6>[   14.470488] 	3840x2160p@50Hz
+<6>[   14.470541] 	3840x2160p@30Hz
+<6>[   14.470613] 	3840x2160p@25Hz
+<6>[   14.470666] 	3840x2160p@24Hz
+<6>[   14.470737] 	1920x1080p@60Hz
+<6>[   14.470790] 	1920x1080p@50Hz
+<6>[   14.470860] 	1920x1080p@30Hz
+<6>[   14.470912] 	1920x1080p@25Hz
+<6>[   14.470983] 	1920x1080p@24Hz
+<6>[   14.471035] 	1280x720p@60Hz
+<6>[   14.471106] 	1280x720p@50Hz
+<6>[   14.471158] 	1280x720p@30Hz
+<6>[   14.471228] 	1280x720p@25Hz
+<6>[   14.471279] 	1280x720p@24Hz
+<6>[   14.471349] 	720x576p@50Hz
+<6>[   14.471401] 	720x480p@60Hz
+<6>[   14.471470] Support video color mode:
+<6>[   14.471524] 	RGB
+<6>[   14.471592] Support video color depth:
+<6>[   14.471648] 	24bit
+<6>[   14.471715] Support audio type:
+<6>[   14.471769] ******** Show Sink Info ********
+<4>[   14.471961] 
+<4>[   14.471961] rk_fb_switch_screen lcdc_id 0 type 6 enable 1
+<4>[   14.472102] fb0 win id 1 state 1
+<6>[   14.472753] rk3288-lcdc lcdc0: lcdc0: dclk:74250000>>fps:60 
+<4>[   14.472935] fb1 win id 0 state 0
+<4>[   14.473003] fb2 win id 2 state 0
+<4>[   14.473085] fb3 win id 3 state 0
+<4>[   14.473170] fb4 win id 4 state 0
+<4>[   14.473236] 
+<4>[   14.473236] rk_fb_switch_screen lcdc_id 0 type 6 enable 1 done
+<4>[   14.473236] 
+<6>[   14.473430] pixel clk is 74250000 tmds clk is 74250000 last tmds clk 0 tmdsclk_ratio_change 0
+<6>[   14.473571] rk3288-hdmi ff980000.hdmi: [hdmi_dev_config_video] sucess output DVI.
+<6>[   14.484369] rk3288-hdmi ff980000.hdmi: rk3288 hdmi probe sucess.
+<6>[   14.488388] VFP support v0.3: implementor 41 architecture 3 part 30 variant d rev 0
+<4>[   14.488533] rk3288_init_suspend
+<4>[   14.488602] rk3288_suspend_init enter
+<4>[   14.489378] rk3288_suspend_init: pm_ctrbits =40017
+<4>[   14.489620] gpio_get_dts_info suspend:8
+<4>[   14.489693] gpio_get_dts_info resume:8
+<4>[   14.489758] rockchip,pmic-suspend_gpios:1007c30 1007c40 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+<4>[   14.490074] rockchip,pmic-resume_gpios:2007c32 2007c42 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+<4>[   14.491183] clks_gating_suspend_init:clkgt info ok
+<5>[   14.491381] Registering SWP/SWPB emulation handler
+<6>[   14.492086] ddrfreq: verion 1.2 20140526
+<6>[   14.492112] ddrfreq: normal 456MHz video_1080p 0MHz video_4k 456MHz dualview 0MHz idle 0MHz suspend 200MHz reboot 456MHz
+<6>[   14.492133] ddrfreq: auto-freq=0
+<6>[   14.492147] ddrfreq: auto-freq-table[0] 240MHz
+<6>[   14.492160] ddrfreq: auto-freq-table[1] 324MHz
+<6>[   14.492173] ddrfreq: auto-freq-table[2] 456MHz
+<6>[   14.492187] ddrfreq: auto-freq-table[3] 528MHz
+<7>[   14.493642] ddrfreq: change freq to 456 MHz when normal
+<3>[   14.494650] act_ldo3: operation not allowed
+<6>[   14.494938] vga_edid_probe: turn on ldo3 done.
+<3>[   14.495000] act_ldo4: operation not allowed
+<6>[   14.495281] vga_edid_probe: turn on ldo done.
+<3>[   14.495360] act_ldo2: operation not allowed
+<6>[   14.495636] vga_edid_probe: turn on ldo2 done.
+<3>[   14.495693] act_ldo8: operation not allowed
+<6>[   14.495959] vga_edid_probe: turn on ldo done.
+<7>[   14.495989] of_get_named_gpio_flags exited with status 17
+<4>[   14.501141] unable to read EDID block.
+<4>[   14.535737] unable to read EDID block.
+<4>[   14.570335] unable to read EDID block.
+<4>[   14.570353] vga-ddc: read and parse edid failed errno:-5.
+<4>[   14.570361] vga_edid_probe: success. 10 
+<4>[   14.570566] firefly_vga_get_enable 180, 0
+<4>[   14.570576] firefly_vga_get_status 186
+<4>[   14.570584] firefly_vga_set_enable 159 enable:0
+<6>[   14.570617] regulator-dummy: disabling
+<3>[   14.570978] rockchip-hdmi-spdif rockchip-hdmi-spdif.27: ASoC: CPU DAI (null) not registered
+<4>[   14.571007] rockchip_hdmi_spdif_audio_probe() register card failed:-517
+<6>[   14.571024] platform rockchip-hdmi-spdif.27: Driver rockchip-hdmi-spdif requests probe deferral
+<4>[   14.571127] pcd_pullup, is_on 0
+<6>[   14.571175] file system registered
+<6>[   14.571874] android_usb gadget: Mass Storage Function, version: 2009/09/11
+<6>[   14.571885] android_usb gadget: Number of LUNs=2
+<6>[   14.571894]  lun0: LUN: removable file: (no medium)
+<6>[   14.571902]  lun1: LUN: removable file: (no medium)
+<6>[   14.572097] android_usb gadget: android_usb ready
+<6>[   14.572196] sensor_init: Probe name sensors
+<4>[   14.572215] sensor-dev.c v1.4 add angle calculation support between two gsensors 2013-09-01
+<6>[   14.572749] rtc_hym8563 0-0051: setting system clock to 2011-01-01 12:08:22 UTC (1293883702)
+<6>[   14.579785] usbcore: registered new interface driver snd-usb-audio
+<6>[   14.579822] ALSA device list:
+<6>[   14.579830]   #0: RK_ES8323
+<6>[   14.581543] rockchip-hdmi-spdif rockchip-hdmi-spdif.27:  rk-hdmi-spdif-hifi <-> rockchip-spdif mapping ok
+<6>[   14.581561] Freeing unused kernel memory: 2364K (c0a85000 - c0cd4000)
+<7>[   14.585992] SELinux: 512 avtab hash slots, 1334 rules.
+<7>[   14.586519] SELinux: 512 avtab hash slots, 1334 rules.
+<7>[   14.586534] SELinux:  1 users, 2 roles, 288 types, 1 bools, 1 sens, 1024 cats
+<7>[   14.586544] SELinux:  84 classes, 1334 rules
+<6>[   14.587422] SELinux:  Permission attach_queue in class tun_socket not defined in policy.
+<6>[   14.587447] SELinux: the above unknown classes and permissions will be denied
+<7>[   14.587474] SELinux:  Completing initialization.
+<7>[   14.587480] SELinux:  Setting up existing superblocks.
+<7>[   14.587495] SELinux: initialized (dev sysfs, type sysfs), uses genfs_contexts
+<7>[   14.587509] SELinux: initialized (dev rootfs, type rootfs), uses genfs_contexts
+<7>[   14.587574] SELinux: initialized (dev bdev, type bdev), not configured for labeling
+<7>[   14.587584] SELinux: initialized (dev proc, type proc), uses genfs_contexts
+<7>[   14.587611] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[   14.587628] SELinux: initialized (dev devtmpfs, type devtmpfs), uses transition SIDs
+<7>[   14.587839] SELinux: initialized (dev debugfs, type debugfs), uses genfs_contexts
+<7>[   14.592402] SELinux: initialized (dev sockfs, type sockfs), uses task SIDs
+<7>[   14.592417] SELinux: initialized (dev pipefs, type pipefs), uses task SIDs
+<7>[   14.592428] SELinux: initialized (dev anon_inodefs, type anon_inodefs), not configured for labeling
+<7>[   14.592440] SELinux: initialized (dev devpts, type devpts), uses transition SIDs
+<7>[   14.592459] SELinux: initialized (dev selinuxfs, type selinuxfs), uses genfs_contexts
+<7>[   14.592517] SELinux: initialized (dev configfs, type configfs), not configured for labeling
+<7>[   14.592527] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[   14.592554] SELinux: initialized (dev sysfs, type sysfs), uses genfs_contexts
+<5>[   15.161928] type=1403 audit(1293883703.090:2): policy loaded auid=4294967295 ses=4294967295
+<12>[   15.162058] SELinux: Loaded policy from /sepolicy
+<5>[   15.163972] type=1404 audit(1293883703.090:3): enforcing=1 old_enforcing=0 auid=4294967295 ses=4294967295
+<4>[   15.531922] 
+<4>[   15.531922] rk_fb_switch_screen lcdc_id 0 type 6 enable 0
+<11>[   16.193875] init: init.rk30board.bootmode.emmc.rc: 8: invalid command '/devices/ff0f0000.rksdmmc/mmc_host/mmc'
+<11>[   16.193907] init: init.rk30board.bootmode.emmc.rc: 9: invalid command '/devices/ff0c0000.rksdmmc/mmc_host/mmc'
+<11>[   16.193920] init: init.rk30board.bootmode.emmc.rc: 10: invalid command '/devices/ff580000.usb'
+<11>[   16.193930] init: init.rk30board.bootmode.emmc.rc: 11: invalid command '/devices/ff580000.usb'
+<11>[   16.193940] init: init.rk30board.bootmode.emmc.rc: 12: invalid command '/devices/ff500000.usb'
+<11>[   16.193950] init: init.rk30board.bootmode.emmc.rc: 13: invalid command '/devices/ff500000.usb'
+<11>[   16.193959] init: init.rk30board.bootmode.emmc.rc: 14: invalid command '/devices/ff540000.usb'
+<11>[   16.193968] init: init.rk30board.bootmode.emmc.rc: 15: invalid command '/devices/ff540000.usb'
+<4>[   16.194255] init (1): /proc/1/oom_adj is deprecated, please use /proc/1/oom_score_adj instead.
+<3>[   16.220708] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<11>[   16.244699] init: /dev/hw_random not found
+<6>[   16.244758] keychord: using input dev ff680000.pwm for fevent
+<6>[   16.244767] keychord: using input dev tchip_remote_key for fevent
+<6>[   16.244778] keychord: using input dev rk29-keypad for fevent
+<7>[   16.245188] SELinux: initialized (dev cgroup, type cgroup), uses genfs_contexts
+<7>[   16.245403] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[   16.246303] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[   16.246569] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[   16.246695] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[   16.247574] SELinux: initialized (dev cgroup, type cgroup), uses genfs_contexts
+<7>[   16.248822] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[   16.249120] SELinux: initialized (dev functionfs, type functionfs), not configured for labeling
+<11>[   16.249704] fs_mgr: parse_link_device : path = NULL
+<11>[   16.249727] fs_mgr: parse_link_device : path = NULL
+<11>[   16.249748] fs_mgr: parse_link_device : path = NULL
+<11>[   16.249764] fs_mgr: parse_link_device : path = NULL
+<11>[   16.249780] fs_mgr: parse_link_device : path = NULL
+<11>[   16.249795] fs_mgr: parse_link_device : path = NULL
+<11>[   16.249810] fs_mgr: parse_link_device : path = NULL
+<11>[   16.249826] fs_mgr: parse_link_device : path = NULL
+<14>[   16.249886] fs_mgr: ---------------resize_fs blk_dev /dev/block/platform/ff0f0000.rksdmmc/by-name/system, type ext4fs_mgr: Running /sbin/resize2fs on /dev/block/platform/ff0f0000.rksdmmc/by-name/system
+<14>[   16.250749] resize2fs: resize2fs 1.41.14 (22-Dec-2010)resize2fs: The filesystem is already 196608 blocks long.  Nothing to do!resize2fs: 
+<6>[   16.256412] EXT4-fs (mmcblk0p10): mounted filesystem with ordered data mode. Opts: noauto_da_alloc
+<7>[   16.256432] SELinux: initialized (dev mmcblk0p10, type ext4), uses xattr
+<6>[   16.262101] EXT4-fs (mmcblk0p8): recovery complete
+<6>[   16.262582] EXT4-fs (mmcblk0p8): mounted filesystem with ordered data mode. Opts: noauto_da_alloc,discard
+<7>[   16.262604] SELinux: initialized (dev mmcblk0p8, type ext4), uses xattr
+<6>[   16.264066] EXT4-fs (mmcblk0p11): recovery complete
+<6>[   16.264077] EXT4-fs (mmcblk0p11): mounted filesystem with ordered data mode. Opts: noauto_da_alloc,discard
+<7>[   16.264092] SELinux: initialized (dev mmcblk0p11, type ext4), uses xattr
+<6>[   16.320582] EXT4-fs (mmcblk0p12): recovery complete
+<6>[   16.320884] EXT4-fs (mmcblk0p12): mounted filesystem with ordered data mode. Opts: noauto_da_alloc,discard
+<7>[   16.320904] SELinux: initialized (dev mmcblk0p12, type ext4), uses xattr
+<4>[   16.327734] drmboot: module license 'unspecified' taints kernel.
+<4>[   16.327744] Disabling lock debugging due to kernel taint
+<4>[   16.327948] drm init, 20140910
+<4>[   16.328374] drm init ok
+<4>[   16.333445] mali pd enabled
+<4>[   16.333458] clk enabled
+<4>[   16.333469] MALI_DVFS_STEP=4,div_dvfs=10
+<4>[   16.333475] mali_dvfs_infotbl[0].clock=198000,min_threshold=0,max_threshold=70
+<4>[   16.333483] mali_dvfs_infotbl[1].clock=297000,min_threshold=70,max_threshold=80
+<4>[   16.333489] mali_dvfs_infotbl[2].clock=417000,min_threshold=80,max_threshold=90
+<4>[   16.333496] mali_dvfs_infotbl[3].clock=480000,min_threshold=94,max_threshold=100
+<3>[   16.333585] turn on mali power
+<6>[   16.333605] mali ffa30000.gpu: GPU identified as 0x0750 r0p0 status 1
+<6>[   16.333949] mali ffa30000.gpu: Probed as mali0
+<3>[   16.336180] rk29_ipp: version magic '3.0.8+ SMP preempt mod_unload ARMv7 ' should be '3.10.0 SMP preempt mod_unload ARMv7 p2v8 '
+<11>[   16.344577] init: /dev/hw_random not found
+<11>[   16.350992] init: cannot find '/system/vendor/bin/pvrsrvctl', disabling 'pvrsrvctl'
+<6>[   16.351166] binder: 134:134 transaction failed 29189, size 0-0
+<11>[   16.353370] init: cannot find '/system/bin/rild3', disabling 'ril-daemon3'
+<11>[   16.354949] init: cannot find '/system/etc/install-recovery.sh', disabling 'flash_recovery'
+<11>[   16.356563] init: cannot find '/system/bin/chrome.sh', disabling 'chrome'
+<11>[   16.356902] init: cannot find '/system/bin/bplus_helper', disabling 'bplus_helper'
+<11>[   16.368032] init: property 'ro.serialno' doesn't exist while expanding '${ro.serialno}'
+<11>[   16.368050] init: cannot expand '${ro.serialno}' while writing to '/sys/class/android_usb/android0/iSerial'
+<11>[   16.368202] init: using deprecated syntax for specifying property 'ro.product.usbfactory', use ${name} instead
+<7>[   16.403891] SELinux: initialized (dev fuse, type fuse), uses genfs_contexts
+<4>[   16.417452] 0,baud is:9600
+<4>[   16.417698] 0,baud is:9600
+<6>[   16.460888] rk3288-lcdc lcdc0: lcdc0: dclk:74250000>>fps:60 
+<11>[   16.514176] fs_mgr: parse_link_device : path = NULL
+<11>[   16.514207] fs_mgr: parse_link_device : path = NULL
+<11>[   16.514227] fs_mgr: parse_link_device : path = NULL
+<11>[   16.514245] fs_mgr: parse_link_device : path = NULL
+<11>[   16.514262] fs_mgr: parse_link_device : path = NULL
+<11>[   16.514279] fs_mgr: parse_link_device : path = NULL
+<11>[   16.514309] fs_mgr: parse_link_device : path = NULL
+<11>[   16.514328] fs_mgr: parse_link_device : path = NULL
+<4>[   16.517005] RKNAND_GET_DRM_KEY
+<4>[   16.517020] return ret = 0
+<11>[   16.568528] init: property 'sys.powerctl' doesn't exist while expanding '${sys.powerctl}'
+<11>[   16.568545] init: powerctl: cannot expand '${sys.powerctl}'
+<11>[   16.568558] init: property 'sys.sysctl.extra_free_kbytes' doesn't exist while expanding '${sys.sysctl.extra_free_kbytes}'
+<11>[   16.568568] init: cannot expand '${sys.sysctl.extra_free_kbytes}' while writing to '/proc/sys/vm/extra_free_kbytes'
+<3>[   16.569341] android_usb: already disabled
+<4>[   16.570152] firefly_vga_get_enable 180, 0
+<4>[   16.570207] firefly_vga_get_status 186
+<6>[   16.571287] read descriptors
+<6>[   16.571301] read strings
+<4>[   16.571329] pcd_pullup, is_on 1
+<3>[   16.614312] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[   16.978378] **************soft reconnect**************
+<3>[   17.007902] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[   17.157727] Using Buffer DMA mode
+<4>[   17.157756] Periodic Transfer Interrupt Enhancement - disabled
+<4>[   17.157769] Multiprocessor Interrupt Enhancement - disabled
+<4>[   17.157781] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[   17.157791] ^^^^^^^^^^^^^^^^^Device Mode
+<4>[   17.157843] *******************soft connect!!!*******************
+<4>[   17.284594] USB RESET
+<6>[   17.343211] rk3288-lcdc lcdc0: blank mode:0
+<3>[   17.401505] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<11>[   17.444539] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_hal.ver
+<11>[   17.450951] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_trace
+<11>[   17.451138] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_camboard.ver
+<11>[   17.451322] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_libisp.ver
+<11>[   17.451468] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_isi.ver
+<4>[   17.458105] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   17.458129] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   17.458140] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<4>[   17.458197] D1:camsys_extdev_register(226): Get RK30_PIN2_PB6(78) gpio(active: 0) for dev_id 0x2000000 success!
+<4>[   17.458215] D1:camsys_extdev_register(226): Get RK30_PIN2_PB7(79) gpio(active: 0) for dev_id 0x2000000 success!
+<4>[   17.458229] D1:camsys_extdev_register(226): Get RK30_PIN0_PB3(11) gpio(active: 1) for dev_id 0x2000000 success!
+<7>[   17.458251] of_get_named_gpio_flags exited with status 237
+<7>[   17.458259] of_get_named_gpio_flags exited with status 237
+<4>[   17.458266] rockchip_gpio_request:GPIO7-13
+<4>[   17.458278] rockchip_gpio_set:GPIO7-13 level = 1
+<4>[   17.458287] rockchip_gpio_direction_output:set GPIO7-13 level 1
+<11>[   17.458297] init: sys_prop: permission denied uid:1003  name:sys.gmali.version
+<4>[   17.458304] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000000,result=0x0
+<4>[   17.458312] rockchip_pmx_gpio_set_direction:gpio_direction for pin 237 as gpio7-13 to output,data=0x207600,result=0x207600
+<4>[   17.458319] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_mipi_fl
+<4>[   17.458339] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000400,result=0x400
+<4>[   17.458350] _rockchip_pinconf_set:GPIO7-13,group=isp_flash_trigger, function=isp_pin, type=3
+<4>[   17.458360] rk3288_calc_drv_reg_and_bit:GPIO7-13, drv_reg=0x74, bit=10
+<4>[   17.458369] _rockchip_pinconf_set:GPIO-7 13 data=0xc000000,type=3
+<4>[   17.458379] D1:camsys_extdev_register(248): Extdev(dev_id: 0x2000000) register success
+<4>[   17.463479] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   17.463497] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   17.463606] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   17.463647] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<4>[   17.464731] D1:camsys_sysctl_extdev(326): Sysctl 11 success, gpio(11) set 1
+<6>[   17.465700] android_work: sent uevent USB_STATE=CONNECTED
+<4>[   17.465924] D1:camsys_sysctl_extdev(330): Sysctl 8 success, gpio(79) set 1
+<4>[   17.467001] D1:camsys_sysctl_extdev(330): Sysctl 7 success, gpio(78) set 1
+<6>[   17.467408] android_usb gadget: high-speed config #1: android
+<6>[   17.467699] android_work: sent uevent USB_STATE=CONFIGURED
+<3>[   17.470306] E:camsys_i2c_write(77): i2c write dev(addr:0x20) failed!
+<3>[   17.471569] E:camsys_i2c_write(77): i2c write dev(addr:0x6c) failed!
+<4>[   17.471634] D1:camsys_sysctl_extdev(326): Sysctl 7 success, gpio(78) set 0
+<4>[   17.471649] D1:camsys_sysctl_extdev(326): Sysctl 8 success, gpio(79) set 0
+<4>[   17.471663] D1:camsys_sysctl_extdev(330): Sysctl 11 success, gpio(11) set 0
+<4>[   17.472803] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   17.472854] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   17.474950] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x2000000) is deregister success
+<4>[   17.474976] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   17.474990] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   17.475001] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   17.475011] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<4>[   17.476914] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   17.476931] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   17.476942] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<4>[   17.476995] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_dvp10bit
+<4>[   17.477114] D1:camsys_extdev_register(248): Extdev(dev_id: 0x1000000) register success
+<4>[   17.482198] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   17.482220] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   17.482332] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   17.482374] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<3>[   17.483460] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<3>[   17.484533] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   17.485605] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   17.488874] E:camsys_i2c_write(77): i2c write dev(addr:0x60) failed!
+<3>[   17.488937] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   17.488952] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   17.488962] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<4>[   17.490106] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   17.490160] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   17.492232] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x1000000) is deregister success
+<4>[   17.492261] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   17.492275] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   17.492284] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   17.492294] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<4>[   17.495118] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   17.495135] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   17.495146] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<7>[   17.495216] of_get_named_gpio_flags exited with status 237
+<7>[   17.495224] of_get_named_gpio_flags exited with status 237
+<7>[   17.495231] _gpio_request: gpio-237 (camsys_gpio) status -16
+<4>[   17.495240] rockchip_gpio_set:GPIO7-13 level = 0
+<4>[   17.495249] rockchip_gpio_direction_output:set GPIO7-13 level 0
+<4>[   17.495262] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000000,result=0x0
+<4>[   17.495273] rockchip_pmx_gpio_set_direction:gpio_direction for pin 237 as gpio7-13 to output,data=0x207600,result=0x207600
+<4>[   17.495284] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_mipi_fl
+<4>[   17.495322] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000400,result=0x400
+<4>[   17.495333] _rockchip_pinconf_set:GPIO7-13,group=isp_flash_trigger, function=isp_pin, type=3
+<4>[   17.495343] rk3288_calc_drv_reg_and_bit:GPIO7-13, drv_reg=0x74, bit=10
+<4>[   17.495352] _rockchip_pinconf_set:GPIO-7 13 data=0xc000000,type=3
+<4>[   17.495362] D1:camsys_extdev_register(248): Extdev(dev_id: 0x2000000) register success
+<4>[   17.500469] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   17.500490] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   17.500598] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   17.500636] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<3>[   17.501703] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<3>[   17.502773] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   17.503851] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   17.507121] E:camsys_i2c_write(77): i2c write dev(addr:0x6c) failed!
+<3>[   17.507171] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   17.507180] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   17.507188] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<4>[   17.508286] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   17.508326] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   17.510383] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x2000000) is deregister success
+<4>[   17.510404] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   17.510415] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   17.510424] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   17.510431] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<3>[   17.795101] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   17.795114] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   17.795125] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<6>[   17.934231] Enter::rk29_hw_params----52
+<6>[   17.935189] Enter:rk29_hw_params, 86, rate=44100
+<6>[   17.935201] Enter:rk29_hw_params, 104, LRCK=64
+<6>[   18.159060] Enter::rk29_hw_params----52
+<6>[   18.160045] Enter:rk29_hw_params, 86, rate=44100
+<6>[   18.160063] Enter:rk29_hw_params, 104, LRCK=64
+<6>[   18.165327] warning: `zygote' uses 32-bit capabilities (legacy support in use)
+<3>[   18.247751] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   18.641352] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   19.034946] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   19.428543] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   19.822137] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   19.822161] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   19.822170] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<3>[   20.274803] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   20.668419] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<6>[   20.747397] lowmemorykiller: lowmem_shrink: convert oom_adj to oom_score_adj:
+<6>[   20.747421] lowmemorykiller: oom_adj 0 => oom_score_adj 0
+<6>[   20.747427] lowmemorykiller: oom_adj 1 => oom_score_adj 58
+<6>[   20.747433] lowmemorykiller: oom_adj 2 => oom_score_adj 117
+<6>[   20.747439] lowmemorykiller: oom_adj 3 => oom_score_adj 176
+<6>[   20.747445] lowmemorykiller: oom_adj 9 => oom_score_adj 529
+<6>[   20.747451] lowmemorykiller: oom_adj 15 => oom_score_adj 1000
+<4>[   20.961608] phy_power_on: enable = 1 
+<4>[   20.996091] Read the Ethernet MAC address from IDB:00:00:00:00:00:00
+<4>[   20.996127] eth0: device MAC address 12:ba:a4:36:3a:d5
+<6>[   21.000091] libphy: stmmac: probed
+<6>[   21.000103] eth0: PHY ID 001cc915 at 0 IRQ 0 (stmmac-0:00) active
+<6>[   21.000110] eth0: PHY ID 001cc915 at 1 IRQ 0 (stmmac-0:01) active
+<3>[   21.061974] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[   21.146155] wifi_driver_write: wifi driver already rmmod
+<6>[   21.343148] acc_open
+<6>[   21.343178] acc_release
+<3>[   21.455577] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   21.849175] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   21.849199] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   21.849211] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<4>[   21.849221] hdmi->edidread:0
+<3>[   22.242787] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   22.636412] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[   22.693201] =======================================================
+<4>[   22.693240] ==== Launching Wi-Fi driver! (Powered by Rockchip) ====
+<4>[   22.693249] =======================================================
+<4>[   22.693259]  WiFi driver (Powered by Rockchip,Ver 4.80.WFD.OOB) init.
+<4>[   22.693289] ======== PULL WL_REG_ON HIGH! ========
+<6>[   22.693299] [WLAN_RFKILL]: rockchip_wifi_power: 1
+<6>[   22.693307] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+<6>[   22.693315] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<6>[   22.793824] [WLAN_RFKILL]: wifi turn on power. 156
+<4>[   22.793851] mmc2:mmc host rescan start!
+<4>[   22.793865] =========== WLAN placed in POWER ON ========
+<4>[   22.793873] bcmsdh_register: Linux Kernel SDIO/MMC Driver
+<4>[   22.794170] 
+<4>[   22.794170] Dongle Host Driver, version 1.88.45.3 (r420671)
+<4>[   22.794170] Compiled in drivers/net/wireless/bcmdhd on Apr 18 2016 at 11:00:37
+<4>[   22.804534] FAT-fs (mmcblk0p14): Volume was not properly unmounted. Some data may be corrupt. Please run fsck.
+<7>[   22.804591] SELinux: initialized (dev mmcblk0p14, type vfat), uses genfs_contexts
+<11>[   22.824171] init: no such service 'fuse_internal_sd'
+<4>[   23.010336] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 800000Hz for init[mmc2]
+<3>[   23.029999] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<4>[   23.045291] mmc2: queuing unknown CIS tuple 0x80 (2 bytes)
+<4>[   23.046833] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[   23.048390] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[   23.051262] mmc2: queuing unknown CIS tuple 0x80 (7 bytes)
+<6>[   23.105435] mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+<4>[   23.105473] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc2]
+<4>[   23.105554] rk_sdmmc: BOOT Bus speed=50000000Hz,Bus width=4bits.[mmc2]
+<4>[   23.109245] mmc2: queuing unknown CIS tuple 0x91 (3 bytes)
+<6>[   23.109276] mmc2: new high speed SDIO card at address 0001
+<6>[   23.109688] [WLAN_RFKILL]: rockchip_wifi_get_oob_irq: Enter
+<4>[   23.109735] alloc static buf at edb80000!
+<4>[   23.110003] FW_PATH = /system/etc/firmware/fw_bcm4339a0_ag.bin
+<4>[   23.110003] NVRAM_PATH = /system/etc/firmware/nvram_AP6335.txt
+<4>[   23.112704] F1 signature OK, socitype:0x1 chip:0x4339 rev:0x1 pkg:0x2
+<4>[   23.113319] DHD: dongle ram size is set to 786432(orig 786432) at 0x180000
+<4>[   23.115167] wl_create_event_handler(): thread:wl_event_handler:2bd started
+<4>[   23.115392] tsk Enter, tsk = 0xed7e8664
+<4>[   23.116750] dhd_attach(): thread:dhd_watchdog_thread:2be started
+<4>[   23.116824] dhd_attach(): thread:dhd_dpc:2bf started
+<4>[   23.116874] dhd_attach(): thread:dhd_sysioc:2c0 started
+<6>[   23.117058] [WLAN_RFKILL]: rockchip_wifi_mac_addr: enter.
+<6>[   23.117072] [WLAN_RFKILL]: falsh wifi_custom_mac_addr=[00:00:00:00:00:00]
+<6>[   23.117080] [WLAN_RFKILL]: This mac address is not valid, ignored...
+<4>[   23.117496] Broadcom Dongle Host Driver: register interface [wlan0] MAC: 00:90:4c:11:22:33
+<4>[   23.118382] ======== PULL WL_REG_ON LOW! (flag = 2) ========
+<6>[   23.118394] [WLAN_RFKILL]: rockchip_wifi_power: 0
+<6>[   23.216941] [WLAN_RFKILL]: wifi shut off power.
+<6>[   23.216962] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 0
+<6>[   23.216970] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<4>[   23.216977] =========== WLAN placed in RESET ========
+<11>[   23.393203] init: sys_prop: permission denied uid:1001  name:media.cfg.audio.soundeffect
+<3>[   23.423591] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<11>[   23.573458] init: sys_prop: permission denied uid:10007  name:sys.gmali.version
+<4>[   23.586666] force_usb_mode_store 0->1
+<4>[   23.590949] pcd_pullup, is_on 0
+<11>[   23.595782] init: sys_prop: permission denied uid:10030  name:sys.gmali.version
+<6>[   23.603178] read descriptors
+<6>[   23.603198] read strings
+<4>[   23.603236] pcd_pullup, is_on 1
+<4>[   23.685181] Using Buffer DMA mode
+<4>[   23.685197] Periodic Transfer Interrupt Enhancement - disabled
+<4>[   23.685204] Multiprocessor Interrupt Enhancement - disabled
+<4>[   23.685211] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[   23.685217] ^^^^^^^^^^^^^^^^^^Host Mode
+<6>[   23.685548] android_work: sent uevent USB_STATE=DISCONNECTED
+<4>[   23.722726] force_usb_mode_store 1->0
+<4>[   23.728695] Init: Power Port (0)
+<4>[   23.728715] rk_battery_charger_detect_cb , battery_charger_detect 5
+<4>[   23.791804] vpu_service: power on
+<6>[   23.791868] rk_iommu ff9a0800.vpu_mmu: (vpu) Enabled
+<7>[   23.791877] rk_iommu ff9a0800.vpu_mmu: rockchip_iommu_attach_device: Attached new IOMMU with pgtable 0x2e26e000
+<3>[   23.817172] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   23.817192] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   23.817202] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<3>[   24.222989] binder: 468: binder_alloc_buf, no vma
+<6>[   24.223014] binder: 542:542 transaction failed 29201, size 80-4
+<3>[   24.227341] binder: 468: binder_alloc_buf, no vma
+<6>[   24.227354] binder: 542:542 transaction failed 29201, size 80-4
+<11>[   24.228542] init: sys_prop: permission denied uid:1003  name:service.bootanim.exit
+<3>[   24.269822] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   24.277488] binder: 468: binder_alloc_buf, no vma
+<6>[   24.277509] binder: 144:464 transaction failed 29201, size 80-4
+<3>[   24.302591] binder: 468: binder_alloc_buf, no vma
+<6>[   24.302615] binder: 858:858 transaction failed 29201, size 108-4
+<3>[   24.302932] binder: 468: binder_alloc_buf, no vma
+<6>[   24.302941] binder: 858:858 transaction failed 29201, size 108-4
+<3>[   24.303144] binder: 468: binder_alloc_buf, no vma
+<6>[   24.303152] binder: 858:858 transaction failed 29201, size 108-4
+<3>[   24.303295] binder: 468: binder_alloc_buf, no vma
+<6>[   24.303305] binder: 858:858 transaction failed 29201, size 300-8
+<3>[   24.303378] binder: 468: binder_alloc_buf, no vma
+<6>[   24.303386] binder: 858:858 transaction failed 29201, size 324-8
+<6>[   24.319864] binder: undelivered transaction 5685
+<6>[   24.332414] binder: 542:542 transaction failed 29189, size 80-4
+<3>[   24.663671] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<6>[   24.989036] alarm_release: clear alarm, pending 0
+<6>[   24.989195] alarm_release: clear alarm, pending 0
+<3>[   25.057408] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   25.450914] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   25.844611] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   25.844774] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   25.844876] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<11>[   26.241603] init: untracked pid 760 exited
+<11>[   26.251435] init: untracked pid 677 exited
+<11>[   26.266554] init: untracked pid 629 exited
+<3>[   26.296914] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<11>[   26.307261] init: untracked pid 825 exited
+<11>[   26.311847] init: untracked pid 743 exited
+<11>[   26.329961] init: untracked pid 721 exited
+<11>[   26.332259] init: untracked pid 542 exited
+<11>[   26.334323] init: untracked pid 858 exited
+<11>[   26.342939] init: untracked pid 791 exited
+<11>[   26.343345] init: untracked pid 707 exited
+<11>[   26.343768] init: untracked pid 842 exited
+<11>[   26.346054] init: untracked pid 616 exited
+<11>[   26.358637] init: untracked pid 646 exited
+<11>[   26.488889] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_hal.ver
+<11>[   26.493948] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_trace
+<11>[   26.494092] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_camboard.ver
+<11>[   26.494208] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_libisp.ver
+<11>[   26.494316] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_isi.ver
+<4>[   26.497035] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   26.497062] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   26.497072] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<4>[   26.497123] D1:camsys_extdev_register(226): Get RK30_PIN2_PB6(78) gpio(active: 0) for dev_id 0x2000000 success!
+<4>[   26.497137] D1:camsys_extdev_register(226): Get RK30_PIN2_PB7(79) gpio(active: 0) for dev_id 0x2000000 success!
+<4>[   26.497149] D1:camsys_extdev_register(226): Get RK30_PIN0_PB3(11) gpio(active: 1) for dev_id 0x2000000 success!
+<7>[   26.497168] of_get_named_gpio_flags exited with status 237
+<7>[   26.497174] of_get_named_gpio_flags exited with status 237
+<7>[   26.497179] _gpio_request: gpio-237 (camsys_gpio) status -16
+<4>[   26.497187] rockchip_gpio_set:GPIO7-13 level = 1
+<4>[   26.497193] rockchip_gpio_direction_output:set GPIO7-13 level 1
+<4>[   26.497204] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000000,result=0x0
+<4>[   26.497213] rockchip_pmx_gpio_set_direction:gpio_direction for pin 237 as gpio7-13 to output,data=0x207600,result=0x207600
+<4>[   26.497221] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_mipi_fl
+<4>[   26.497236] D1:camsys_extdev_register(248): Extdev(dev_id: 0x2000000) register success
+<4>[   26.502301] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   26.502315] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   26.502421] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   26.502448] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<4>[   26.503545] D1:camsys_sysctl_extdev(326): Sysctl 11 success, gpio(11) set 1
+<4>[   26.504628] D1:camsys_sysctl_extdev(330): Sysctl 8 success, gpio(79) set 1
+<4>[   26.505722] D1:camsys_sysctl_extdev(330): Sysctl 7 success, gpio(78) set 1
+<3>[   26.508996] E:camsys_i2c_write(77): i2c write dev(addr:0x20) failed!
+<3>[   26.510231] E:camsys_i2c_write(77): i2c write dev(addr:0x6c) failed!
+<4>[   26.510287] D1:camsys_sysctl_extdev(326): Sysctl 7 success, gpio(78) set 0
+<4>[   26.510300] D1:camsys_sysctl_extdev(326): Sysctl 8 success, gpio(79) set 0
+<4>[   26.510311] D1:camsys_sysctl_extdev(330): Sysctl 11 success, gpio(11) set 0
+<4>[   26.511415] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   26.511453] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   26.513532] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x2000000) is deregister success
+<4>[   26.513553] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   26.513567] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   26.513574] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   26.513582] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<4>[   26.514052] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   26.514065] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   26.514073] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<4>[   26.514111] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_dvp10bit
+<4>[   26.514213] D1:camsys_extdev_register(248): Extdev(dev_id: 0x1000000) register success
+<4>[   26.519289] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   26.519303] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   26.519409] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   26.519439] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<3>[   26.520508] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<3>[   26.521595] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   26.522668] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<11>[   26.525856] init: untracked pid 660 exited
+<3>[   26.525929] E:camsys_i2c_write(77): i2c write dev(addr:0x60) failed!
+<3>[   26.525974] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   26.525982] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   26.525990] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<4>[   26.527100] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   26.527132] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   26.529188] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x1000000) is deregister success
+<4>[   26.529205] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   26.529217] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   26.529224] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   26.529232] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<4>[   26.529782] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   26.529793] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   26.529801] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<7>[   26.529844] of_get_named_gpio_flags exited with status 237
+<7>[   26.529850] of_get_named_gpio_flags exited with status 237
+<7>[   26.529856] _gpio_request: gpio-237 (camsys_gpio) status -16
+<4>[   26.529863] rockchip_gpio_set:GPIO7-13 level = 0
+<4>[   26.529870] rockchip_gpio_direction_output:set GPIO7-13 level 0
+<4>[   26.529880] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000000,result=0x0
+<4>[   26.529889] rockchip_pmx_gpio_set_direction:gpio_direction for pin 237 as gpio7-13 to output,data=0x207600,result=0x207600
+<4>[   26.529900] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_mipi_fl
+<4>[   26.529924] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000400,result=0x400
+<4>[   26.529933] _rockchip_pinconf_set:GPIO7-13,group=isp_flash_trigger, function=isp_pin, type=3
+<4>[   26.529941] rk3288_calc_drv_reg_and_bit:GPIO7-13, drv_reg=0x74, bit=10
+<4>[   26.529948] _rockchip_pinconf_set:GPIO-7 13 data=0xc000000,type=3
+<4>[   26.529955] D1:camsys_extdev_register(248): Extdev(dev_id: 0x2000000) register success
+<4>[   26.535043] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   26.535060] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   26.535167] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   26.535198] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<3>[   26.536278] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<3>[   26.537364] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   26.538435] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   26.541705] E:camsys_i2c_write(77): i2c write dev(addr:0x6c) failed!
+<3>[   26.541755] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   26.541765] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   26.541773] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<4>[   26.542907] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   26.542947] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   26.545007] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x2000000) is deregister success
+<4>[   26.545023] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   26.545036] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   26.545042] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   26.545051] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<6>[   26.664060] Enter::rk29_hw_params----52
+<6>[   26.665034] Enter:rk29_hw_params, 86, rate=44100
+<6>[   26.665046] Enter:rk29_hw_params, 104, LRCK=64
+<3>[   26.690458] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   27.084063] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   27.477662] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<6>[   27.733495] vpu_service: power off...
+<6>[   27.733534] rk_iommu ff9a0800.vpu_mmu: (vpu) Disabled
+<6>[   27.733544] rk_iommu ff9a0800.vpu_mmu: rockchip_iommu_detach_device: Detached IOMMU with pgtable 0x2e26e000
+<6>[   27.733569] done
+<3>[   27.871264] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read 0 error
+<3>[   27.871293] rk3288-hdmi ff980000.hdmi: [hdmi_dev_read_edid] edid read error
+<3>[   27.871303] rk3288-hdmi ff980000.hdmi: [HDMI] read edid base block error
+<3>[   27.871312] rk3288-hdmi ff980000.hdmi: warning: EDID error, assume sink as DVI !!!!
+<6>[   27.871320] rk3288-hdmi ff980000.hdmi: warning: no CEA video mode parsed from EDID !!!!
+<6>[   27.871334] ******** Show Sink Info ********
+<6>[   27.871339] Max tmds clk is 0
+<6>[   27.871343] Support video mode:
+<6>[   27.871348] 	3840x2160p@60Hz
+<6>[   27.871352] 	3840x2160p@50Hz
+<6>[   27.871357] 	3840x2160p@30Hz
+<6>[   27.871361] 	3840x2160p@25Hz
+<6>[   27.871365] 	3840x2160p@24Hz
+<6>[   27.871369] 	1920x1080p@60Hz
+<6>[   27.871373] 	1920x1080p@50Hz
+<6>[   27.871377] 	1920x1080p@30Hz
+<6>[   27.871382] 	1920x1080p@25Hz
+<6>[   27.871386] 	1920x1080p@24Hz
+<6>[   27.871390] 	1280x720p@60Hz
+<6>[   27.871394] 	1280x720p@50Hz
+<6>[   27.871399] 	1280x720p@30Hz
+<6>[   27.871403] 	1280x720p@25Hz
+<6>[   27.871411] 	1280x720p@24Hz
+<6>[   27.871416] 	720x576p@50Hz
+<6>[   27.871420] 	720x480p@60Hz
+<6>[   27.871425] Support video color mode:
+<6>[   27.871429] 	RGB
+<6>[   27.871433] Support video color depth:
+<6>[   27.871437] 	24bit
+<6>[   27.871442] Support audio type:
+<6>[   27.871446] ******** Show Sink Info ********
+<4>[   27.871519] 
+<4>[   27.871519] rk_fb_switch_screen lcdc_id 0 type 6 enable 1
+<4>[   27.871537] fb0 win id 1 state 1
+<6>[   27.871556] rk3288-lcdc lcdc0: lcdc0: dclk:74250000>>fps:60 
+<4>[   27.871563] fb1 win id 0 state 1
+<4>[   27.871569] 
+<4>[   27.871569] rk_fb_switch_screen lcdc_id 0 type 6 enable 1 done
+<4>[   27.871569] 
+<6>[   27.871588] pixel clk is 74250000 tmds clk is 74250000 last tmds clk 0 tmdsclk_ratio_change 0
+<6>[   27.871612] rk3288-hdmi ff980000.hdmi: [hdmi_dev_config_video] sucess output DVI.
+<4>[   27.882763] firefly_vga_set_enable 159 enable:0
+<6>[   28.661064] lowmemorykiller: lowmem_shrink: convert oom_adj to oom_score_adj:
+<6>[   28.661085] lowmemorykiller: oom_adj 0 => oom_score_adj 0
+<6>[   28.661091] lowmemorykiller: oom_adj 1 => oom_score_adj 58
+<6>[   28.661097] lowmemorykiller: oom_adj 2 => oom_score_adj 117
+<6>[   28.661103] lowmemorykiller: oom_adj 3 => oom_score_adj 176
+<6>[   28.661110] lowmemorykiller: oom_adj 9 => oom_score_adj 529
+<6>[   28.661115] lowmemorykiller: oom_adj 15 => oom_score_adj 1000
+<4>[   28.989442] =======================================================
+<4>[   28.989600] == Dis-launching Wi-Fi driver! (Powered by Rockchip) ==
+<4>[   28.989676] =======================================================
+<4>[   29.033371] bcmsdh_unregister_oob_intr: Enter
+<4>[   29.033493] dhd_detach(): thread:dhd_sysioc:2c0 terminated OK
+<6>[   29.143831] acc_open
+<6>[   29.143871] acc_release
+<4>[   29.213942] dhd_detach(): thread:dhd_watchdog_thread:2be terminated OK
+<4>[   29.213976] dhd_dpc_thread: Unexpected up_cnt 0
+<4>[   29.214032] dhd_detach(): thread:dhd_dpc:2bf terminated OK
+<6>[   29.214279] CFG80211-ERROR) wl_event_handler : was terminated
+<4>[   29.214319] wl_destroy_event_handler(): thread:wl_event_handler:2bd terminated OK
+<4>[   29.694315] ======== Card detection to remove SDIO card! ========
+<6>[   29.694493] [WLAN_RFKILL]: rockchip_wifi_power: 1
+<6>[   29.694598] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+<6>[   29.694692] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<6>[   29.800187] [WLAN_RFKILL]: wifi turn on power. 156
+<4>[   29.800334] mmc2:mmc host rescan start!
+<6>[   29.800453] [WLAN_RFKILL]: rockchip_wifi_power: 0
+<6>[   29.908381] [WLAN_RFKILL]: wifi shut off power.
+<6>[   29.908520] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 0
+<6>[   29.908598] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<4>[   29.908687] =========== WLAN placed in POWER OFF ========
+<6>[   29.998009] mmc2: card 0001 removed
+<4>[   29.999291] 1381..dw_mci_set_ios:  no card. [mmc2]
+<6>[   30.717184] binder: release 141:184 transaction 7274 in, still active
+<6>[   30.717342] binder: send failed reply for transaction 7274 to 1160:1257
+<6>[   30.753302] binder: release 1364:1364 transaction 7213 out, still active
+<6>[   30.762811] binder: release 1351:1351 transaction 7180 out, still active
+<6>[   30.774392] binder: release 1229:1229 transaction 7294 out, still active
+<6>[   30.774427] binder: release 1229:1379 transaction 7255 out, still active
+<6>[   30.774550] binder: release 1335:1335 transaction 7311 out, still active
+<6>[   30.778298] binder: release 1318:1318 transaction 7195 out, still active
+<11>[   30.780191] init: untracked pid 1229 exited
+<11>[   30.780319] init: untracked pid 1318 exited
+<11>[   30.780444] init: untracked pid 1335 exited
+<11>[   30.780561] init: untracked pid 1351 exited
+<11>[   30.780674] init: untracked pid 1364 exited
+<6>[   30.781184] binder: release 1303:1303 transaction 7198 out, still active
+<11>[   30.781600] init: untracked pid 1303 exited
+<6>[   30.872952] binder: release 1160:1172 transaction 7213 in, still active
+<6>[   30.872982] binder: send failed reply for transaction 7213, target dead
+<6>[   30.872998] binder: release 1160:1255 transaction 7311 in, still active
+<6>[   30.873010] binder: send failed reply for transaction 7311, target dead
+<6>[   30.873022] binder: release 1160:1257 transaction 7180 in, still active
+<6>[   30.873031] binder: send failed reply for transaction 7180, target dead
+<6>[   30.873041] binder: release 1160:1349 transaction 7195 in, still active
+<6>[   30.873054] binder: send failed reply for transaction 7195, target dead
+<6>[   30.873065] binder: release 1160:1350 transaction 7198 in, still active
+<6>[   30.873074] binder: send failed reply for transaction 7198, target dead
+<6>[   30.873084] binder: release 1160:1377 transaction 7294 in, still active
+<6>[   30.873093] binder: send failed reply for transaction 7294, target dead
+<6>[   30.873104] binder: release 1160:1378 transaction 7255 in, still active
+<6>[   30.873113] binder: send failed reply for transaction 7255, target dead
+<6>[   30.889037] rk3288-lcdc lcdc0: blank mode:0
+<11>[   30.970152] init: sys_prop: permission denied uid:1003  name:sys.gmali.version
+<6>[   31.662185] alarm_release: clear alarm, pending 0
+<6>[   31.662421] alarm_release: clear alarm, pending 0
+<11>[   32.223003] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_hal.ver
+<11>[   32.230571] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_trace
+<11>[   32.230692] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_camboard.ver
+<11>[   32.230800] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_libisp.ver
+<11>[   32.230889] init: sys_prop: permission denied uid:1000  name:sys_graphic.cam_isi.ver
+<4>[   32.233828] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   32.233843] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   32.233852] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<4>[   32.233900] D1:camsys_extdev_register(226): Get RK30_PIN2_PB6(78) gpio(active: 0) for dev_id 0x2000000 success!
+<4>[   32.233913] D1:camsys_extdev_register(226): Get RK30_PIN2_PB7(79) gpio(active: 0) for dev_id 0x2000000 success!
+<4>[   32.233925] D1:camsys_extdev_register(226): Get RK30_PIN0_PB3(11) gpio(active: 1) for dev_id 0x2000000 success!
+<7>[   32.233943] of_get_named_gpio_flags exited with status 237
+<7>[   32.233949] of_get_named_gpio_flags exited with status 237
+<7>[   32.233954] _gpio_request: gpio-237 (camsys_gpio) status -16
+<4>[   32.233961] rockchip_gpio_set:GPIO7-13 level = 1
+<4>[   32.233968] rockchip_gpio_direction_output:set GPIO7-13 level 1
+<4>[   32.233978] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000000,result=0x0
+<4>[   32.233988] rockchip_pmx_gpio_set_direction:gpio_direction for pin 237 as gpio7-13 to output,data=0x207600,result=0x207600
+<4>[   32.233997] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_mipi_fl
+<4>[   32.234011] D1:camsys_extdev_register(248): Extdev(dev_id: 0x2000000) register success
+<4>[   32.239086] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   32.239110] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   32.239217] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   32.239249] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<4>[   32.240333] D1:camsys_sysctl_extdev(326): Sysctl 11 success, gpio(11) set 1
+<4>[   32.241421] D1:camsys_sysctl_extdev(330): Sysctl 8 success, gpio(79) set 1
+<4>[   32.242506] D1:camsys_sysctl_extdev(330): Sysctl 7 success, gpio(78) set 1
+<3>[   32.245818] E:camsys_i2c_write(77): i2c write dev(addr:0x20) failed!
+<3>[   32.247082] E:camsys_i2c_write(77): i2c write dev(addr:0x6c) failed!
+<4>[   32.247144] D1:camsys_sysctl_extdev(326): Sysctl 7 success, gpio(78) set 0
+<4>[   32.247157] D1:camsys_sysctl_extdev(326): Sysctl 8 success, gpio(79) set 0
+<4>[   32.247169] D1:camsys_sysctl_extdev(330): Sysctl 11 success, gpio(11) set 0
+<4>[   32.248280] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   32.248323] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   32.250422] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x2000000) is deregister success
+<4>[   32.250444] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   32.250458] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   32.250468] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   32.250477] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<4>[   32.250962] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   32.250974] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   32.250982] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<4>[   32.251017] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_dvp10bit
+<4>[   32.251112] D1:camsys_extdev_register(248): Extdev(dev_id: 0x1000000) register success
+<4>[   32.256188] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   32.256200] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   32.256306] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   32.256337] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<3>[   32.257416] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<3>[   32.258495] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   32.259568] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   32.262853] E:camsys_i2c_write(77): i2c write dev(addr:0x60) failed!
+<3>[   32.262907] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   32.262916] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   32.262925] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<4>[   32.264029] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   32.264072] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   32.266136] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x1000000) is deregister success
+<4>[   32.266158] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   32.266171] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   32.266178] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   32.266186] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<4>[   32.266774] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   32.266787] D1:camsys_mipiphy_clkin_cb(29): camsys_marvin mipi phy clk in turn on
+<4>[   32.266795] D1:camsys_open(710): camsys_marvin(ed9dfb10) is opened!
+<7>[   32.266842] of_get_named_gpio_flags exited with status 237
+<7>[   32.266849] of_get_named_gpio_flags exited with status 237
+<7>[   32.266855] _gpio_request: gpio-237 (camsys_gpio) status -16
+<4>[   32.266863] rockchip_gpio_set:GPIO7-13 level = 0
+<4>[   32.266871] rockchip_gpio_direction_output:set GPIO7-13 level 0
+<4>[   32.266888] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000000,result=0x0
+<4>[   32.266899] rockchip_pmx_gpio_set_direction:gpio_direction for pin 237 as gpio7-13 to output,data=0x207600,result=0x207600
+<4>[   32.266909] D1:camsys_mrv_iomux_cb(90): marvin pinctrl select: isp_mipi_fl
+<4>[   32.266938] rk32_iomux_bit_op:GPIO7-13,reg=0x70,data=0xc000400,result=0x400
+<4>[   32.266949] _rockchip_pinconf_set:GPIO7-13,group=isp_flash_trigger, function=isp_pin, type=3
+<4>[   32.266957] rk3288_calc_drv_reg_and_bit:GPIO7-13, drv_reg=0x74, bit=10
+<4>[   32.266965] _rockchip_pinconf_set:GPIO-7 13 data=0xc000000,type=3
+<4>[   32.266973] D1:camsys_extdev_register(248): Extdev(dev_id: 0x2000000) register success
+<4>[   32.272038] D1:camsys_mrv_clkin_cb(344): camsys_marvin clock(f: 210000000 Hz) in turn on
+<4>[   32.272060] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 1
+<4>[   32.272169] D1:camsys_rk3288_cfg(49): Isp_SoftRst: 0
+<4>[   32.272205] D1:camsys_mrv_clkout_cb(379): camsys_marvin clock out(rate: 24000000Hz) turn on
+<3>[   32.273278] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<3>[   32.274375] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   32.275456] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   32.278785] E:camsys_i2c_write(77): i2c write dev(addr:0x6c) failed!
+<3>[   32.278831] E:camsys_sysctl_extdev(333): Sysctl 7 failed, because gpio is NULL!
+<3>[   32.278840] E:camsys_sysctl_extdev(333): Sysctl 8 failed, because gpio is NULL!
+<3>[   32.278847] E:camsys_sysctl_extdev(333): Sysctl 11 failed, because gpio is NULL!
+<4>[   32.279970] D1:camsys_mrv_clkin_cb(361): camsys_marvin clock in turn off
+<4>[   32.280008] D1:camsys_mrv_clkout_cb(391): camsys_marvin clock out turn off
+<4>[   32.282086] D1:camsys_extdev_deregister(308): Extdev(dev_id: 0x2000000) is deregister success
+<4>[   32.282109] D1:camsys_irq_disconnect(635): All thread disconnect camsys_marvin irq success!
+<4>[   32.282121] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   32.282129] D1:camsys_mipiphy_clkin_cb(31): camsys_marvin mipi phy clk in turn off
+<4>[   32.282136] D1:camsys_release(734): camsys_marvin(ed9dfb10) is closed
+<6>[   32.416247] Enter::rk29_hw_params----52
+<6>[   32.417261] Enter:rk29_hw_params, 86, rate=44100
+<6>[   32.417278] Enter:rk29_hw_params, 104, LRCK=64
+<11>[   32.852502] init: untracked pid 1160 exited
+<6>[   34.442724] lowmemorykiller: lowmem_shrink: convert oom_adj to oom_score_adj:
+<6>[   34.442750] lowmemorykiller: oom_adj 0 => oom_score_adj 0
+<6>[   34.442757] lowmemorykiller: oom_adj 1 => oom_score_adj 58
+<6>[   34.442763] lowmemorykiller: oom_adj 2 => oom_score_adj 117
+<6>[   34.442769] lowmemorykiller: oom_adj 3 => oom_score_adj 176
+<6>[   34.442775] lowmemorykiller: oom_adj 9 => oom_score_adj 529
+<6>[   34.442781] lowmemorykiller: oom_adj 15 => oom_score_adj 1000
+<4>[   34.781293] wifi_driver_write: wifi driver already rmmod
+<6>[   34.970325] acc_open
+<6>[   34.970370] acc_release
+<4>[   36.261027] =======================================================
+<4>[   36.261058] ==== Launching Wi-Fi driver! (Powered by Rockchip) ====
+<4>[   36.261069] =======================================================
+<4>[   36.261080]  WiFi driver (Powered by Rockchip,Ver 4.80.WFD.OOB) init.
+<4>[   36.261116] ======== PULL WL_REG_ON HIGH! ========
+<6>[   36.261127] [WLAN_RFKILL]: rockchip_wifi_power: 1
+<6>[   36.261136] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+<6>[   36.261145] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<6>[   36.363201] [WLAN_RFKILL]: wifi turn on power. 156
+<4>[   36.363224] mmc2:mmc host rescan start!
+<4>[   36.363243] =========== WLAN placed in POWER ON ========
+<4>[   36.363252] bcmsdh_register: Linux Kernel SDIO/MMC Driver
+<4>[   36.363357] 
+<4>[   36.363357] Dongle Host Driver, version 1.88.45.3 (r420671)
+<4>[   36.363357] Compiled in drivers/net/wireless/bcmdhd on Apr 18 2016 at 11:00:37
+<6>[   36.579762] mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 400000Hz, actual 396825HZ div = 63)
+<4>[   36.579860] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 800000Hz for init[mmc2]
+<4>[   36.615189] mmc2: queuing unknown CIS tuple 0x80 (2 bytes)
+<4>[   36.616841] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[   36.618476] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[   36.621361] mmc2: queuing unknown CIS tuple 0x80 (7 bytes)
+<6>[   36.677023] mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+<4>[   36.677067] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc2]
+<4>[   36.677178] rk_sdmmc: BOOT Bus speed=50000000Hz,Bus width=4bits.[mmc2]
+<4>[   36.681077] mmc2: queuing unknown CIS tuple 0x91 (3 bytes)
+<6>[   36.681124] mmc2: new high speed SDIO card at address 0001
+<6>[   36.682103] [WLAN_RFKILL]: rockchip_wifi_get_oob_irq: Enter
+<4>[   36.682156] alloc static buf at edb80000!
+<4>[   36.682547] FW_PATH = /system/etc/firmware/fw_bcm4339a0_ag.bin
+<4>[   36.682547] NVRAM_PATH = /system/etc/firmware/nvram_AP6335.txt
+<4>[   36.686527] F1 signature OK, socitype:0x1 chip:0x4339 rev:0x1 pkg:0x2
+<4>[   36.687167] DHD: dongle ram size is set to 786432(orig 786432) at 0x180000
+<4>[   36.687282] dhd_conf_set_fw_name_by_chip: firmware_path=/system/etc/firmware/fw_bcm4339a0_ag.bin
+<4>[   36.688008] wl_create_event_handler(): thread:wl_event_handler:777 started
+<4>[   36.688017] tsk Enter, tsk = 0xedb72664
+<4>[   36.688404] dhd_attach(): thread:dhd_watchdog_thread:778 started
+<4>[   36.688497] dhd_attach(): thread:dhd_dpc:779 started
+<4>[   36.688566] dhd_attach(): thread:dhd_sysioc:77a started
+<6>[   36.688832] [WLAN_RFKILL]: rockchip_wifi_mac_addr: enter.
+<6>[   36.688851] [WLAN_RFKILL]: falsh wifi_custom_mac_addr=[00:00:00:00:00:00]
+<6>[   36.688863] [WLAN_RFKILL]: This mac address is not valid, ignored...
+<4>[   36.689929] Broadcom Dongle Host Driver: register interface [wlan0] MAC: 00:90:4c:11:22:33
+<4>[   36.690792] ======== PULL WL_REG_ON LOW! (flag = 2) ========
+<6>[   36.690806] [WLAN_RFKILL]: rockchip_wifi_power: 0
+<6>[   36.805979] [WLAN_RFKILL]: wifi shut off power.
+<6>[   36.805994] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 0
+<6>[   36.806001] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<4>[   36.806009] =========== WLAN placed in RESET ========
+<11>[   36.989761] init: sys_prop: permission denied uid:10007  name:sys.gmali.version
+<11>[   36.993549] init: sys_prop: permission denied uid:1001  name:media.cfg.audio.soundeffect
+<11>[   37.111374] init: sys_prop: permission denied uid:10030  name:sys.gmali.version
+<4>[   37.175616] vpu_service: power on
+<6>[   37.175678] rk_iommu ff9a0800.vpu_mmu: (vpu) Enabled
+<7>[   37.175687] rk_iommu ff9a0800.vpu_mmu: rockchip_iommu_attach_device: Attached new IOMMU with pgtable 0x2e26e000
+<11>[   37.459630] init: sys_prop: permission denied uid:1003  name:service.bootanim.exit
+<4>[   37.541342] force_usb_mode_store 0->1
+<4>[   37.541366] dwc_otg_force_host,already in A_HOST mode,everest
+<4>[   37.976679] dhd_conf_set_fw_name_by_chip: firmware_path=/system/etc/firmware/fw_bcm4339a0_ag.bin
+<4>[   37.976729] 
+<4>[   37.976729] Dongle Host Driver, version 1.88.45.3 (r420671)
+<4>[   37.976729] Compiled in drivers/net/wireless/bcmdhd on Apr 18 2016 at 11:00:37
+<4>[   37.976768] wl_android_wifi_on in 1
+<4>[   37.976781] wl_android_wifi_on in 2: g_wifi_on=0
+<4>[   37.976797] ======== PULL WL_REG_ON HIGH! (flag = 2) ========
+<6>[   37.976812] [WLAN_RFKILL]: rockchip_wifi_power: 1
+<6>[   37.976827] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+<6>[   37.976842] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<6>[   38.075348] [WLAN_RFKILL]: wifi turn on power. 156
+<4>[   38.075375] =========== WLAN going back to live  ========
+<4>[   38.075394] sdio_reset_comm():
+<6>[   38.078399] mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 200000Hz, actual 200000HZ div = 125)
+<4>[   38.078418] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 400000Hz for init[mmc2]
+<4>[   38.097798] mmc2: queuing unknown CIS tuple 0x80 (2 bytes)
+<4>[   38.100844] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[   38.103905] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[   38.109362] mmc2: queuing unknown CIS tuple 0x80 (7 bytes)
+<6>[   38.220221] mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+<4>[   38.220472] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc2]
+<4>[   38.222238] 
+<4>[   38.222238] 
+<4>[   38.222238] dhd_bus_devreset: == WLAN ON ==
+<4>[   38.222438] dhd_bus_devreset called when dongle is not in reset
+<4>[   38.222506] Will call dhd_bus_start instead
+<4>[   38.222783] dhd_conf_set_fw_name_by_chip: firmware_path=/system/etc/firmware/fw_bcm4339a0_ag.bin
+<4>[   38.224745] Final fw_path=/system/etc/firmware/fw_bcm4339a0_ag.bin
+<4>[   38.224802] Final nv_path=/system/etc/firmware/nvram_AP6335.txt
+<4>[   38.224844] Final conf_path=/system/etc/firmware/config.txt
+<4>[   38.317223] NVRAM version: AP6335_NVRAM_V1.7_04102014
+<4>[   38.317934] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+<4>[   38.490593] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+<4>[   38.490845] bcmsdh_set_drvdata: Enter
+<4>[   38.490858] bcmsdh_register_oob_intr: Enter 
+<4>[   38.490874] bcmsdh_register_oob_intr: IRQ=196 Type=414 
+<4>[   38.492286] dhd_conf_set_band: Set band 0
+<6>[   38.492517] [WLAN_RFKILL]: rockchip_wifi_mac_addr: enter.
+<6>[   38.492535] [WLAN_RFKILL]: falsh wifi_custom_mac_addr=[00:00:00:00:00:00]
+<6>[   38.492547] [WLAN_RFKILL]: This mac address is not valid, ignored...
+<4>[   38.502400] Firmware up: op_mode=0x0005, Broadcom Dongle Host Driver mac=94:a1:a2:f7:55:53
+<4>[   38.502417] dhd_conf_set_country: Set country ALL, revision 0
+<4>[   38.502814] dhd_conf_set_country: country code setting failed -2
+<4>[   38.503192] Country code: US (US/0)
+<4>[   38.503502] dhd_conf_set_roam: Set roam_off 1
+<4>[   38.505431] dhd_conf_set_bw: Enable HT40 in 2.4 GHz
+<4>[   38.517016] Firmware version = wl0: Apr  3 2014 12:12:42 version 6.37.32.28.2_ip (r424058)
+<4>[   38.517034]   Driver: 1.88.45.3 (r420671)
+<4>[   38.517034]   Firmware: wl0: Apr  3 2014 12:12:42 version 6.37.32.28.2_ip (r424058) 
+<4>[   38.519922] wl_android_wifi_on: Success
+<4>[   39.605702] force_usb_mode_store 1->0
+<4>[   39.605747] PortPower off
+<4>[   39.605765] rk_battery_charger_detect_cb , battery_charger_detect 6
+<4>[   39.803631] Using Buffer DMA mode
+<4>[   39.803654] Periodic Transfer Interrupt Enhancement - disabled
+<4>[   39.803663] Multiprocessor Interrupt Enhancement - disabled
+<4>[   39.803671] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[   39.803679] ^^^^^^^^^^^^^^^^^Device Mode
+<4>[   40.092813] ***************vbus detect*****************
+<4>[   40.095165] rk_battery_charger_detect_cb , battery_charger_detect 1
+<4>[   40.272751] Using Buffer DMA mode
+<4>[   40.272770] Periodic Transfer Interrupt Enhancement - disabled
+<4>[   40.272779] Multiprocessor Interrupt Enhancement - disabled
+<4>[   40.272788] OTG VER PARAM: 0, OTG VER FLAG: 0
+<4>[   40.272796] ^^^^^^^^^^^^^^^^^Device Mode
+<4>[   40.272838] *******************soft connect!!!*******************
+<4>[   40.397340] USB RESET
+<6>[   40.583869] android_usb gadget: high-speed config #1: android
+<6>[   40.585790] android_work: sent uevent USB_STATE=CONNECTED
+<6>[   40.586965] android_work: sent uevent USB_STATE=CONFIGURED
+<6>[   41.115979] vpu_service: power off...
+<6>[   41.116032] rk_iommu ff9a0800.vpu_mmu: (vpu) Disabled
+<6>[   41.116049] rk_iommu ff9a0800.vpu_mmu: rockchip_iommu_detach_device: Detached IOMMU with pgtable 0x2e26e000
+<6>[   41.116082] done
+<6>[   86.408512] Enter::rk29_hw_params----52
+<6>[   86.409526] Enter:rk29_hw_params, 86, rate=44100
+<6>[   86.409542] Enter:rk29_hw_params, 104, LRCK=64
+<6>[   90.296227] [BT_RFKILL]: bt shut off power
+<6>[   90.906568] [BT_RFKILL]: ENABLE UART_RTS
+<6>[   91.014735] [BT_RFKILL]: DISABLE UART_RTS
+<6>[   91.014927] [BT_RFKILL]: bt turn on power
+<4>[   91.706844] 0,baud is:9600
+<4>[   91.707164] 0,baud is:9600
+<4>[   91.707361] 0,baud is:115200
+<4>[   91.718025] 0,baud is:1500000
+<4>[   92.265324] 0,baud is:115200
+<4>[   92.367174] 0,baud is:1500000
+<6>[  100.121386] Enter::rk29_hw_params----52
+<6>[  100.122831] Enter:rk29_hw_params, 86, rate=44100
+<6>[  100.122859] Enter:rk29_hw_params, 104, LRCK=64
+<6>[  116.747788] Enter::rk29_hw_params----52
+<6>[  116.748840] Enter:rk29_hw_params, 86, rate=44100
+<6>[  116.748861] Enter:rk29_hw_params, 104, LRCK=64

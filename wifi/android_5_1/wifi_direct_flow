@@ -1,0 +1,264 @@
+SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)	
+->  {
+        private static final String WIFI_P2P_SERVICE_CLASS =
+            "com.android.server.wifi.p2p.WifiP2pService";
+
+        mSystemServiceManager.startService(WIFI_P2P_SERVICE_CLASS);
+    }
+------------------------------------------------------------------------------------------>
+WifiP2pService.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        final WifiP2pServiceImpl mImpl;
+
+        public WifiP2pService(Context context) {
+            super(context);
+            mImpl = new WifiP2pServiceImpl(context);
+        }
+
+        public void onStart() {
+            Log.i(TAG, "Registering " + Context.WIFI_P2P_SERVICE);
+            publishBinderService(Context.WIFI_P2P_SERVICE, mImpl);
+        }
+    }
+---------------------------------------------------------------------------------------------------------------------->
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        public WifiP2pServiceImpl(Context context) {
+            mP2pStateMachine = new P2pStateMachine(TAG, wifiP2pThread.getLooper(), mP2pSupported);
+            mP2pStateMachine.start();
+        }
+    }
+    ->  {
+            private class P2pStateMachine extends StateMachine {
+                if (p2pSupported) {
+                    setInitialState(mP2pDisabledState);
+                } else {
+                    setInitialState(mP2pNotSupportedState);
+                }
+            }
+        }
+wifi_direct的功能，首先是需要打开wifi，然后在选择wifi直连功能， 根据之前的知识可以知道，
+打开wifi的时候会向mP2pStateMachine发送CMD_ENABLE_P2P消息， 此时由mP2pDisabledState处理：
+class P2pDisabledState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case WifiStateMachine.CMD_ENABLE_P2P:
+                mNwService.setInterfaceUp(mInterface);
+                mWifiMonitor.startMonitoring();                 // 这里会向mP2pStateMachine发送SUP_CONNECTION_EVENT
+                transitionTo(mP2pEnablingState);
+        }
+    }
+}
+->  {
+        class P2pEnablingState extends State {
+            public boolean processMessage(Message message) {
+            switch (message.what) {
+                case WifiMonitor.SUP_CONNECTION_EVENT:
+                    transitionTo(mInactiveState);               // 切换到mInactiveState状态
+                    break;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------>
+WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
+->  {
+        public boolean onOptionsItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+                case MENU_ID_SEARCH:
+                    startSearch();
+                    return true;
+                case MENU_ID_RENAME:
+                    showDialog(DIALOG_RENAME);
+                    return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+    ->  {
+            private void startSearch() {
+                if (mWifiP2pManager != null && !mWifiP2pSearching) {
+                    mWifiP2pManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+                        public void onSuccess() {
+                            // 这里啥都不做！！！！
+                        }
+                        public void onFailure(int reason) {
+                            if (DBG) Log.d(TAG, " discover fail " + reason);
+                        }
+                    });
+                }
+            }
+        }
+---------------------------------------------------------------------------------------------------->
+WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi\p2p)	
+->  {
+        public void discoverPeers(Channel c, ActionListener listener) {
+            checkChannel(c);
+            c.mAsyncChannel.sendMessage(DISCOVER_PEERS, 0, c.putListener(listener));
+        }
+    }
+---------------------------------------------------------------------------------------------------->
+由前面的知识可以知道， WifiP2pServiceImpl的Handler会处理DISCOVER_PEERS消息：
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        private class ClientHandler extends Handler {
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case WifiP2pManager.DISCOVER_PEERS:
+                        mP2pStateMachine.sendMessage(Message.obtain(msg));
+                        break;
+                }
+            }
+    }
+
+由上面可知道，mP2pStateMachine当前处在mInactiveState状态， 那么由于其不处理DISCOVER_PEERS消息，故由其父类mP2pEnabledState处理：
+addState(mInactiveState, mP2pEnabledState);
+
+class P2pEnabledState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {   
+            case WifiP2pManager.DISCOVER_PEERS:
+                if (mWifiNative.p2pFind(DISCOVER_TIMEOUT_S)) {          // DISCOVER_TIMEOUT_S = 120, 这里会查找P2P设备，超时时间120s
+                    replyToMessage(message, WifiP2pManager.DISCOVER_PEERS_SUCCEEDED);
+                    sendP2pDiscoveryChangedBroadcast(true);
+                } else {
+                    replyToMessage(message, WifiP2pManager.DISCOVER_PEERS_FAILED,
+                            WifiP2pManager.ERROR);
+                }
+                break;
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------->
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean p2pFind(int timeout) {
+            if (timeout <= 0) {
+                return p2pFind();
+            }
+            return doBooleanCommand("P2P_FIND " + timeout);
+        }
+    }
+-------------------------------------------------------------------------------------------------->
+WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi\p2p)	
+->  {
+        class P2pHandler extends Handler {
+            public void handleMessage(Message message) {
+                case DISCOVER_PEERS_SUCCEEDED:
+                    if (listener != null) {
+                        ((ActionListener) listener).onSuccess();        // 上面可以看到， 返回去后啥都不做！！
+                    }
+                    break;
+                case RESPONSE_PEERS:                                    // 收到p2p设备的回应，添加到显示列表中
+                    WifiP2pDeviceList peers = (WifiP2pDeviceList) message.obj;
+                    if (listener != null) {
+                        ((PeerListListener) listener).onPeersAvailable(peers);
+                    }
+                    break;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
+->  {
+        public void onPeersAvailable(WifiP2pDeviceList peers) {
+            mPeers = peers;
+            handlePeersChanged();
+        }       
+    }
+    ->  {
+            private void handlePeersChanged() {           
+                mPeersGroup.removeAll();
+
+                mConnectedDevices = 0;
+                for (WifiP2pDevice peer: mPeers.getDeviceList()) {
+                    mPeersGroup.addPreference(new WifiP2pPeer(getActivity(), peer));
+                    if (peer.status == WifiP2pDevice.CONNECTED) mConnectedDevices++;
+                }
+            }
+        }
+
+选择一个需要连接的p2p设备：
+public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
+    if (preference instanceof WifiP2pPeer) {
+        mWifiP2pManager.connect(mChannel, config,
+                new WifiP2pManager.ActionListener() {
+                    public void onSuccess() {
+                        if (DBG) Log.d(TAG, " connect success");
+                    }
+
+                    public void onFailure(int reason) {
+                        Log.e(TAG, " connect fail " + reason);
+                        Toast.makeText(getActivity(),
+                            R.string.wifi_p2p_failed_connect_message,
+                            Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+}
+--------------------------------------------------------------------------------------------------->
+WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi\p2p)	
+->  {
+        public void connect(Channel c, WifiP2pConfig config, ActionListener listener) {
+            checkChannel(c);
+            checkP2pConfig(config);
+            c.mAsyncChannel.sendMessage(CONNECT, 0, c.putListener(listener), config);
+        }
+    }
+--------------------------------------------------------------------------------------------------->
+由上面可知道，mP2pStateMachine当前处在mInactiveState状态：
+class InactiveState extends State {
+    public boolean processMessage(Message message) {
+            switch (message.what) {
+                case WifiP2pManager.CONNECT:
+                    mWifiNative.p2pStopFind();
+                    if (reinvokePersistentGroup(config)) {
+                        transitionTo(mGroupNegotiationState);
+                    } else {
+                        transitionTo(mProvisionDiscoveryState);
+                    }
+                    sendPeersChangedBroadcast();                                // 发送WIFI_P2P_PEERS_CHANGED_ACTION消息
+                    replyToMessage(message, WifiP2pManager.CONNECT_SUCCEEDED);
+            }
+    }
+}
+----------------------------------------------------------------------------------------------------->
+WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
+->  {
+        private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+                    mPeers = (WifiP2pDeviceList) intent.getParcelableExtra(
+                            WifiP2pManager.EXTRA_P2P_DEVICE_LIST);
+                    handlePeersChanged();
+                }
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------>
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        // 利用 Wi-Fi Direct 功能在两个安卓收件之间传送文件的操作步骤：
+        // 1. 确认其中有一个安卓手机支持 Wi-Fi Direct 功能。
+        // 2. 在支持 Wi-Fi Direct 的手机里 设置 -> 无线与网络的“更多” -> 勾选 Wi-Fi Direct。
+        // 3. Wi-Fi Direct 采用了 WPS (Wi-Fi Protected Setup) 的机制， 选择 Wi-Fi Direct 的安全连接模式，有三种：
+            // (1) PIN模式，PIN (Personal Information Number)，即个人信息数字，直接输入一组数字（4或8位数）。
+            //      这种方式连接速度快，只要输入完成即可连接。
+            // (2) PBC模式，PBC (Push Button Configuration)，即按按钮配置（软件模拟的按钮或硬按钮）。
+            //      分别按下两个设备的按钮，即可完成连接。这种连接方式的连接速度较慢。
+            // (3) WPA2加密模式，此模式和第一种模式一样，是输入密码，输入完成即可开始连接。
+            // 设置一种加密方式即可。
+        // 4. 然后另外一台手机就按照使用 Wi-Fi 的方式去找到开启了 Wi-Fi Direct 的手机，在 设置 -> 无线与网络 -> 开启 Wi-Fi，
+        //    然后选择 Wi-Fi Direct 的手机，输入安全密码，两者即可开始连接。
+        // 5. 然后利用可以支持 Wi-Fi Direct 的软件，如三星的 AllShare，摩托罗拉的媒体中心，或者 iMediaShare 软件。
+        //    一般都是在软件中，先选择需要传送的设备，然后再选择需要传送的文件即可。
+        public boolean processMessage(Message message) {
+            switch (message.what) {
+                case WifiMonitor.P2P_PROV_DISC_PBC_RSP_EVENT:
+                case WifiMonitor.P2P_PROV_DISC_ENTER_PIN_EVENT:
+                case WifiMonitor.P2P_PROV_DISC_SHOW_PIN_EVENT:
+                case WifiMonitor.P2P_PROV_DISC_FAILURE_EVENT:
+                    // 各种处理！！！！
+                    break;
+        }
+    }
+ 

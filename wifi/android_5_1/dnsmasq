@@ -1,0 +1,20 @@
+ifconfig wlan0 192.168.49.1 netmask 255.255.255.0
+
+dnsmasq --keep-in-foreground --no-resolv --no-poll --dhcp-authoritative --dhcp-option-force=43,ANDROID_METERED --pid-file --dhcp-range=192.168.49.2,192.168.49.254,1h &
+
+可以搜索到TanKaiSoftAP热点，并链接；卡在了获取IP地址这里
+
+设置无线网卡IP
+ifconfig wlan0 192.168.49.1 netmask 255.255.255.0
+
+启动DHCP
+dnsmasq --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &
+当然也可以把相关配置写成文件再执行dnsmasq --conf-file=/*path*/dnsmasq.conf
+至此，可以搜索到SoftAP并获取IP地址；但不能上外网。
+
+可以获取IP地址，但不能上网；iptables设置
+echo 1 > /proc/sys/net/ipv4/ip_forward              // 允许数据包转发 
+iptables -A FORWARD -i wlap0 -o eth0 -m state --state ESTABLISHED,RELATED -j ACCEPT   
+iptables -A FORWARD -i wlap0 -o eth0 -j ACCEPT   
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE 
+

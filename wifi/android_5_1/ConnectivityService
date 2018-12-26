@@ -1,0 +1,155 @@
+SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)
+->  startOtherServices
+    ->  {
+            try {
+                Slog.i(TAG, "Connectivity Service");
+                connectivity = new ConnectivityService(
+                        context, networkManagement, networkStats, networkPolicy);
+                ServiceManager.addService(Context.CONNECTIVITY_SERVICE, connectivity);
+                networkStats.bindConnectivityManager(connectivity);
+                networkPolicy.bindConnectivityManager(connectivity);
+            } catch (Throwable e) {
+                reportWtf("starting Connectivity Service", e);
+            }
+        }
+----------------------------------------------------------------------------------------->
+ConnectivityService.java (z:\home\hwlxhy\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public class ConnectivityService extends IConnectivityManager.Stub
+                implements PendingIntent.OnFinished {
+            public ConnectivityService(Context context, INetworkManagementService netManager,
+                    INetworkStatsService statsService, INetworkPolicyManager policyManager) {
+                mTethering = new Tethering(mContext, mNetd, statsService, mHandler.getLooper());
+            }
+        }
+    }
+-------------------------------------------------------------------------------------------------->
+Tethering.java (z:\home\hwlxhy\prj\rk3288\frameworks\base\services\core\java\com\android\server\connectivity)
+->  {
+        public Tethering(Context context, INetworkManagementService nmService,
+                INetworkStatsService statsService, Looper looper) {
+            // make our own thread so we don't anr the system
+            mLooper = IoThread.get().getLooper();
+            mTetherMasterSM = new TetherMasterSM("TetherMaster", mLooper);
+            mTetherMasterSM.start();
+        }
+    }
+    ->  {
+            class TetherMasterSM extends StateMachine {
+                TetherMasterSM(String name, Looper looper) {
+                    mInitialState = new InitialState();
+                    setInitialState(mInitialState);
+                }
+
+                class InitialState extends TetherMasterUtilState {
+                    public boolean processMessage(Message message) {
+                        switch (message.what) {
+                            case CMD_TETHER_MODE_REQUESTED:
+                                TetherInterfaceSM who = (TetherInterfaceSM)message.obj;
+                                if (VDBG) Log.d(TAG, "Tether Mode requested by " + who);
+                                mNotifyList.add(who);
+                                transitionTo(mTetherModeAliveState);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        ->  {
+                mTetherModeAliveState = new TetherModeAliveState();
+                class TetherModeAliveState extends TetherMasterUtilState {
+                    public void enter() {
+                        turnOnMasterTetherSettings(); // may transition us out
+                    }
+                }
+            }
+            ->  {
+                    protected boolean turnOnMasterTetherSettings() {
+                        mNMService.setIpForwardingEnabled(true);
+                        mNMService.startTethering(mDhcpRange);
+                    }
+                }
+这里的mDhcpRange定义如下：
+    mDhcpRange = context.getResources().getStringArray(
+            com.android.internal.R.array.config_tether_dhcp_range);
+    if ((mDhcpRange.length == 0) || (mDhcpRange.length % 2 ==1)) {
+        mDhcpRange = DHCP_DEFAULT_RANGE;
+    }
+其中：
+    private static final String[] DHCP_DEFAULT_RANGE = {
+        "192.168.42.2", "192.168.42.254", "192.168.43.2", "192.168.43.254",
+        "192.168.44.2", "192.168.44.254", "192.168.45.2", "192.168.45.254",
+        "192.168.46.2", "192.168.46.254", "192.168.47.2", "192.168.47.254",
+        "192.168.48.2", "192.168.48.254", "192.168.49.2", "192.168.49.254",
+    };
+--------------------------------------------------------------------------------->
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public void setIpForwardingEnabled(boolean enable) {
+            mConnector.execute("ipfwd", enable ? "enable" : "disable");
+        }
+
+        public void startTethering(String[] dhcpRange) {
+            final Command cmd = new Command("tether", "start");
+            for (String d : dhcpRange) {
+                cmd.appendArg(d);
+            }
+            
+            mConnector.execute(cmd);
+        }
+    }
+-------------------------------------------------------------------------------->
+CommandListener.cpp (z:\home\ballack\prj\rk3288\system\netd\server)	
+->  {
+        int CommandListener::IpFwdCmd::runCommand(SocketClient *cli,
+                                                      int argc, char **argv) {
+            if (!strcmp(argv[1], "enable")) {
+                rc = sTetherCtrl->setIpFwdEnabled(true);
+            }
+        }
+
+        int CommandListener::TetherCmd::runCommand(SocketClient *cli,
+                                                      int argc, char **argv) {
+            if (!strcmp(argv[1], "start")) {
+                rc = sTetherCtrl->startTethering(num_addrs, addrs);
+            }
+        }
+    }
+--------------------------------------------------------------------------------->
+TetherController.cpp (z:\home\ballack\prj\rk3288\system\netd\server)
+->  {
+        int TetherController::setIpFwdEnabled(bool enable) {
+            ALOGD("Setting IP forward enable = %d", enable);
+            int fd = open("/proc/sys/net/ipv4/ip_forward", O_WRONLY);       // 允许数据包转发
+            write(fd, (enable ? "1" : "0"), 1);
+        }
+
+        int TetherController::startTethering(int num_addrs, struct in_addr* addrs) {
+            ALOGD("Starting tethering services");
+            pid = fork();
+            if (!pid) {
+                int num_processed_args = TETHER_START_CONST_ARG + (num_addrs/2) + 1;
+                char **args = (char **)malloc(sizeof(char *) * num_processed_args);
+                args[num_processed_args - 1] = NULL;
+                args[0] = (char *)"/system/bin/dnsmasq";                    // 这里可以看到是在这里执行的dnsmasq！！！
+                args[1] = (char *)"--keep-in-foreground";                   // 这里带了很多参数，都是固定的！！
+                args[2] = (char *)"--no-resolv";
+                args[3] = (char *)"--no-poll";
+                args[4] = (char *)"--dhcp-authoritative";
+                // TODO: pipe through metered status from ConnService
+                args[5] = (char *)"--dhcp-option-force=43,ANDROID_METERED";
+                args[6] = (char *)"--pid-file";
+                args[7] = (char *)"";
+            }
+
+            int nextArg = TETHER_START_CONST_ARG;
+            for (int addrIndex=0; addrIndex < num_addrs;) {
+                char *start = strdup(inet_ntoa(addrs[addrIndex++]));
+                char *end = strdup(inet_ntoa(addrs[addrIndex++]));
+                asprintf(&(args[nextArg++]),"--dhcp-range=%s,%s,1h", start, end);
+            }
+
+            execv(args[0], args);                                           // 调用exec函数族替代子进程， 执行dnsmasq进程！！
+        }
+    }
+

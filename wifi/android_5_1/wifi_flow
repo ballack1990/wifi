@@ -1,0 +1,1210 @@
+WifiSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi)	
+->  {
+        private WifiEnabler mWifiEnabler;
+
+        // 以下为WifiSettings界面处在Active的状态下创建的！！
+        @Override
+        public void onStart() {
+            super.onStart();
+
+            // On/off switch is hidden for Setup Wizard (returns null)
+            mWifiEnabler = createWifiEnabler();
+        }
+    }
+
+
+WifiEnabler.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        private final WifiManager mWifiManager;
+
+        public void onSwitchChanged(Switch switchView, boolean isChecked) {
+            mSwitchBar.setEnabled(false);
+            
+            // 这里就调用WifiManager的打开/关闭wifi功能
+            if (!mWifiManager.setWifiEnabled(isChecked)) {
+                // Error
+                mSwitchBar.setEnabled(true);
+                Toast.makeText(mContext, R.string.wifi_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+WifiManager.java (base\wifi\java\android\net\wifi)
+->  {
+        IWifiManager mService;
+    
+        public boolean setWifiEnabled(boolean enabled) {
+            return mService.setWifiEnabled(enabled);
+        }      
+    }
+
+
+WifiServiceImpl.java (opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public final class WifiServiceImpl extends IWifiManager.Stub {
+            public synchronized boolean setWifiEnabled(boolean enable) {
+                mWifiController.sendMessage(CMD_WIFI_TOGGLED);
+            }
+        }
+    }
+------------------------------------------------------------------------->
+在WifiControl类构造函数中已经将状态机处在mApStaDisabledState下，如下：
+WifiController(Context context, WifiServiceImpl service, Looper looper) {
+    if (isScanningAlwaysAvailable) {
+        setInitialState(mStaDisabledWithScanState);
+    } else {
+        setInitialState(mApStaDisabledState);
+    }
+}
+
+故上面发送的CMD_WIFI_TOGGLED应该由mApStaDisabledState类来接收！！
+
+WifiController.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        class ApStaDisabledState extends State {
+            class ApStaDisabledState extends State { 
+                public boolean processMessage(Message msg) {
+                switch (msg.what) {
+                    case CMD_WIFI_TOGGLED:
+                    case CMD_AIRPLANE_TOGGLED:
+                        if (mDeviceIdle == false) {
+                            transitionTo(mDeviceActiveState);
+                        } else {
+                            checkLocksAndTransitionWhenDeviceIdle();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+由于之前WifiController构造函数中有如下定义：addState(mDeviceActiveState, mStaEnabledState);
+所以transitionTo(mDeviceActiveState);会先调用父类mStaEnabledState的Enter函数。
+class StaEnabledState extends State {
+    public void enter() {
+        mWifiStateMachine.setSupplicantRunning(true);
+    }
+}
+
+class DeviceActiveState extends State {
+    public void enter() {
+        // 这三条命令都会由WifiStateMachine类的mSupplicantStartingState状态接收到！！！！
+        mWifiStateMachine.setOperationalMode(WifiStateMachine.CONNECT_MODE);    // 发送 CMD_SET_OPERATIONAL_MODE
+        mWifiStateMachine.setDriverStart(true);                                 // 发送 CMD_START_DRIVER
+        mWifiStateMachine.setHighPerfModeEnabled(false);                        // 发送 CMD_SET_HIGH_PERF_MODE
+    }
+}
+
+mWifiStateMachine定义如下：
+    mWifiStateMachine = new WifiStateMachine(mContext, mInterfaceName, mTrafficPoller);
+
+setSupplicantRunning定义如下：
+    public void setSupplicantRunning(boolean enable) {
+        if (enable)
+            sendMessage(CMD_START_SUPPLICANT);
+        } else {
+            sendMessage(CMD_STOP_SUPPLICANT);
+        }
+    }
+
+WifiStateMachine构造函数中：
+    setInitialState(mInitialState);
+
+则此时的由mInitialState状态来接收CMD_START_SUPPLICANT命令：
+class InitialState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case CMD_START_SUPPLICANT:
+                // 在这里insmod 对应的ko文件
+                if (mWifiNative.loadDriver()) {
+                    mWifiMonitor.killSupplicant(mP2pSupported);
+                    if(mWifiNative.startSupplicant(mP2pSupported)) {
+                        setWifiState(WIFI_STATE_ENABLING);
+                        if (DBG) log("Supplicant start successful");
+                        mWifiMonitor.startMonitoring();
+                        transitionTo(mSupplicantStartingState);
+                    } else {
+                        loge("Failed to start supplicant!");
+                    } 
+                }
+        }
+    }
+}
+
+-------------------------------------------------------------------------------->
+com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jni)
+->  {
+        static JNINativeMethod gWifiMethods[] = {
+            { "loadDriver", "()Z",  (void *)android_net_wifi_loadDriver },
+        }
+    }
+    ->  {
+            static jboolean android_net_wifi_loadDriver(JNIEnv* env, jobject)
+            {
+                return (::wifi_load_driver() == 0);
+            }
+        }
+-------------------------------------------------------------------------------->
+Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
+->  {
+        int wifi_load_driver() {
+            if (rk_wifi_load_driver(1) < 0)
+                return -1;
+        }
+    }
+--------------------------------------------->
+Rk_wifi_ctrl.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
+->  {
+        #define WIFI_DRIVER_INF         "/sys/class/rkwifi/driver"
+        
+        int rk_wifi_load_driver(int enable) {
+            switch(enable)
+            {
+                case 0:
+                    buffer = '0';
+                    break;
+
+                case 1:
+                    buffer = '1';
+                    break;
+            }            
+
+            fd = open(WIFI_DRIVER_INF, O_WRONLY);
+            
+            sz = write(fd, &buffer, 1);            
+        }     
+    }
+---------------------------------------------------------------------------->
+上面使用的"/sys/class/rkwifi/driver"是在以下文件定义的:
+Rkwifi_sys_iface.c (drivers\net\wireless\rockchip_wlan\wifi_sys)
+->  {
+        static CLASS_ATTR(driver, 0660, NULL, wifi_driver_write);
+
+        int rkwifi_sysif_init(void) {
+            rkwifi_class = class_create(THIS_MODULE, "rkwifi");
+            ret =  class_create_file(rkwifi_class, &class_attr_driver);
+        }
+    }
+所以上面调用write函数， 其实就是调用wifi_driver_write函数：
+static ssize_t wifi_driver_write(struct class *cls, struct class_attribute *attr, const char *_buf, size_t _count) {
+    if(enable > 0) {
+        ret = wifi_init_exit_module(enable);
+        if (ret >= 0)
+            wifi_driver_insmod = enable;
+    } else {
+        wifi_init_exit_module(enable);
+        wifi_driver_insmod = enable;
+    }     
+}
+->  {
+        static int wifi_init_exit_module(int enable) {
+            int type = get_wifi_chip_type();
+            
+            if (enable > 0)
+                ret = rockchip_wifi_init_module_rkwifi();
+            else
+                rockchip_wifi_exit_module_rkwifi();
+        }
+    }
+------------------------------------------------------------>
+Dhd_linux.c (drivers\net\wireless\rockchip_wlan\rkwifi\bcmdhd)
+->  {
+        int rockchip_wifi_init_module_rkwifi(void) {
+            return dhd_module_init();
+        }
+    }
+
+以上动作是在代码中加载ko文件的流程。
+和通过如下命令编译到内核是一样的：
+late_initcall(rockchip_wifi_init_module_rkwifi);
+------------------------------------------------------------------------>
+其中mWifiNative定义如下：
+mWifiNative = new WifiNative(mInterfaceName);
+   
+mInterfaceName在WifiServiceImpl类中定义：
+mInterfaceName =  SystemProperties.get("wifi.interface", "wlan0");
+
+先来看看WifiNative类做了写什么：
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->
+    private static native int registerNatives();
+
+    public native static boolean loadDriver();
+
+    public native static boolean isDriverLoaded();
+
+    public native static boolean unloadDriver();
+
+    public native static boolean startSupplicant(boolean p2pSupported);
+
+    /* Sends a kill signal to supplicant. To be used when we have lost connection
+       or when the supplicant is hung */
+    public native static boolean killSupplicant(boolean p2pSupported);
+
+    private native boolean connectToSupplicantNative();
+
+    private native void closeSupplicantConnectionNative();
+
+    /**
+     * Wait for the supplicant to send an event, returning the event string.
+     * @return the event string sent by the supplicant.
+     */
+    private native String waitForEventNative();
+
+    private native boolean doBooleanCommandNative(String command);
+
+    private native int doIntCommandNative(String command);
+
+    private native String doStringCommandNative(String command);
+以上这些本地方法都是在下面方法定义的：
+com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jni)	
+->  int register_android_net_wifi_WifiNative(JNIEnv* env) {
+        return AndroidRuntime::registerNativeMethods(env,
+                "com/android/server/wifi/WifiNative", gWifiMethods, NELEM(gWifiMethods));
+    }
+
+可以看到，上面除了有loadDriver调用到wifi.c外， 还有诸如doIntCommandNative的命令调用， 包括scan等动作。
+---------------------------------------------------------------------------------------------------------
+继续来看上面执行loadDriver之后的动作：
+mWifiNative.startSupplicant(mP2pSupported)
+---------------------------------------------------------------------->
+Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
+->  {
+        static const char BCM_SUPPLICANT_NAME[] = "wpa_supplicant";
+        static const char BCM_PROP_NAME[]       = "init.svc.wpa_supplicant";
+
+        int wifi_start_supplicant(int p2p_supported) {
+            property_set("ctl.start", supplicant_name);                         // 这里就会启动init.connectivity.rc中的wpa_supplicant服务
+
+            while(count-- > 0) {
+                if (property_get(supplicant_prop_name, supp_status, NULL)) {    // 判断是否init.svc.wpa_supplicant处于running状态
+                    if (strcmp(supp_status, "running") == 0)
+                        return 0;                                               // 正常则返回0
+                }
+            }
+
+            return -1;                                                          // 其他情况返回-1
+        }
+    }
+--------------------------------------------------------------------------------------------------->
+/home/ballack/prj/rk3288/device/rockchip/common/init.connectivity.rc
+
+########## kernel version >= 3.10.x ##########
+service wpa_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/wpa_supplicant_overlay.conf \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+------------------------------------------------------------------------
+回到上面的函数调用：
+mWifiMonitor.startMonitoring();
+其中mWifiMonitor是在WifiStateMachine类中的构造函数中定义的：
+mWifiMonitor = new WifiMonitor(this, mWifiNative);
+
+来看看WifiMonitor类：
+WifiMonitor.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public synchronized void startMonitoring(String iface) {
+            while (true) {
+                if (mWifiNative.connectToSupplicant()) {
+                    m.mMonitoring = true;
+                    m.mStateMachine.sendMessage(SUP_CONNECTION_EVENT);          // 连接成功后就会向WifiStateMachine发送SUP_CONNECT_EVENT
+                    new MonitorThread(mWifiNative, this).start();               // 启动MonitorThread线程监听底层的消息
+                    mConnected = true;
+                    break;
+                }
+                if (connectTries++ < 5) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignore) {
+                    }
+                } else {
+                    //mIfaceMap.remove(iface);
+                    m.mStateMachine.sendMessage(SUP_DISCONNECTION_EVENT);
+                    Log.e(TAG, "startMonitoring(" + iface + ") failed!");
+                    break;
+                }
+            }
+        }
+    }
+    ->  {
+            private static class MonitorThread extends Thread {
+                private final WifiNative mWifiNative;
+                private final WifiMonitorSingleton mWifiMonitorSingleton;
+
+                public MonitorThread(WifiNative wifiNative, WifiMonitorSingleton wifiMonitorSingleton) {
+                    super("WifiMonitor");
+                    mWifiNative = wifiNative;
+                    mWifiMonitorSingleton = wifiMonitorSingleton;
+                }
+
+                public void run() {
+                    for (;;) {
+                        String eventStr = mWifiNative.waitForEvent();
+
+                        // Skip logging the common but mostly uninteresting scan-results event
+                        if (DBG && eventStr.indexOf(SCAN_RESULTS_STR) == -1) {
+                            Log.d(TAG, "Event [" + eventStr + "]");
+                        }
+
+                        if (mWifiMonitorSingleton.dispatchEvent(eventStr)) {
+                            if (DBG) Log.d(TAG, "Disconnecting from the supplicant, no more events");
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+------------------------------------------------------------------------------>
+Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
+->  {
+        int wifi_connect_to_supplicant()
+        {
+            static char path[PATH_MAX];
+
+            if (access(IFACE_DIR, F_OK) == 0) {
+                snprintf(path, sizeof(path), "%s/%s", IFACE_DIR, primary_iface);
+            } else {
+                snprintf(path, sizeof(path), "@android:wpa_%s", primary_iface);
+            }
+
+            ALOGD("open connection to supplicant on \"%s\"", path);                 // @android:wpa_wlan0
+            return wifi_connect_on_socket_path(path);
+        }
+    }
+    ->  {
+            int wifi_connect_on_socket_path(const char *path) {
+                ctrl_conn = wpa_ctrl_open(path);                    // 创建了两个套接字，ctrl_conn用于发送，monitor_conn用于接收
+                monitor_conn = wpa_ctrl_open(path);
+                wpa_ctrl_attach(monitor_conn);
+            }
+        }
+
+wifi_connect_to_supplicant之后， 会发送一个SUP_CONNECTION_EVENT的消息给到WifiStateMachine:
+    m.mStateMachine.sendMessage(SUP_CONNECTION_EVENT);
+
+--------------------------------------------------------------------------------------------------------------->
+接着走transitionTo(mSupplicantStartingState);
+
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)	
+->  {
+        class SupplicantStartingState extends State {
+            public boolean processMessage(Message message) {
+                switch(message.what) {
+                    case WifiMonitor.SUP_CONNECTION_EVENT:
+                        sendSupplicantConnectionChangedBroadcast(true);
+                        transitionTo(mDriverStartedState);
+                        break;
+
+                    case CMD_START_DRIVER:
+                    case CMD_SET_OPERATIONAL_MODE:
+                        messageHandlingStatus = MESSAGE_HANDLING_STATUS_DEFERRED;
+                        deferMessage(message);                                      // 上面发送的这两个命令，都延迟处理！！！ 
+                        break;
+                }
+            }
+        }
+    }
+    ->  {
+            class DriverStartedState extends State {
+                public void enter() {
+                    if (mOperationalMode != CONNECT_MODE) 
+                        transitionTo(mScanModeState);
+                    else
+                        transitionTo(mDisconnectedState);
+
+                    if (mP2pSupported) {                         //注意这里， 如果是支持wifi direct的话会在这里发送CMD_ENABLE_P2P命令！！
+                        if (mOperationalMode == CONNECT_MODE) {
+                            mWifiP2pChannel.sendMessage(WifiStateMachine.CMD_ENABLE_P2P);
+                        }
+                    }
+                }
+            }
+        }  
+        ->  {
+                class DisconnectedState extends State {
+                    public void enter() {
+                        startDelayedScan(mDisconnectedScanPeriodMs, null, null);        // 开始扫描
+                    }
+
+                    public boolean processMessage(Message message) {
+                        switch (message.what) {
+                            case WifiMonitor.SCAN_RESULTS_EVENT:
+                                ret = NOT_HANDLED;                                      // 不处理，抛给父类
+                                break;
+                            case CMD_START_SCAN:
+                                handleScanRequest(WifiNative.SCAN_WITHOUT_CONNECTION_SETUP, message);
+                                break;
+                            case CMD_SET_OPERATIONAL_MODE:                              // 在这里处理CMD_SET_OPERATIONAL_MODE消息
+                                if (message.arg1 != CONNECT_MODE) {
+                                    mOperationalMode = message.arg1;
+
+                                    mWifiConfigStore.disableAllNetworks();
+                                    if (mOperationalMode == SCAN_ONLY_WITH_WIFI_OFF_MODE) {
+                                        mWifiP2pChannel.sendMessage(CMD_DISABLE_P2P_REQ);
+                                        setWifiState(WIFI_STATE_DISABLED);
+                                    }
+                                    transitionTo(mScanModeState);
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            ->  {
+                    private void startDelayedScan(int milli, ScanSettings settings, WorkSource workSource) {
+                        sendMessageDelayed(CMD_START_SCAN, SCAN_ALARM_SOURCE,
+                                mDelayedScanCounter.get(), bundle, milli);
+                    }
+
+                    private void handleScanRequest(int type, Message message) {
+                        startScanNative(type, freqs);
+                    }
+                }
+                ->  {
+                        private boolean startScanNative(int type, String freqs) {
+                            mWifiNative.scan(type, freqs);
+                        }
+                    }
+
+startScanNative会向wpa_supplicant发送SCAN的命令，当wpa_suppliant执行完SCAN并成功找到一些AP后，
+就会给WifiMonitor发送CTRL-EVENT-SCAN-RESULTS的event，WifiMonitor会parse出这个event，
+并向WifiStateMachine发送SCAN_RESULTS_EVENT消息，由于DisconnectedState类不处理， 一直往上抛到父类，
+WifiStateMachine的SupplicantStartedState会处理这个消息，如下：
+class SupplicantStartedState extends State {
+    public boolean processMessage(Message message) {
+        switch(message.what) {
+            // 这里主要做了两件事，一是去获取scanResults，另外会发送一个广播信息出去，
+            // 如果有检测这个广播的receive收到这个广播后，就可以调用函数去获取到scanResults并显示到listview上面，例如WifiSettings
+            case WifiMonitor.SCAN_RESULTS_EVENT:
+                setScanResults();
+                sendScanResultsAvailableBroadcast();
+        }
+    }
+}
+->  {
+        private void setScanResults() {
+            /*
+            这个函数看起来比较复杂，其实仔细分析，它只是循环的parse从WifiNative获取到AP列表信息，
+            WifiNative.scanResult的返回结果如下，每个AP之间用"===="分割，末尾以“####”来表示结束。
+
+                id=1
+                bssid=68:7f:76:d7:1a:6e
+                freq=2412
+                level=-44
+                tsf=1344626243700342
+                flags=[WPA2-PSK-CCMP][WPS][ESS]
+                ssid=zfdy
+                ====
+                id=2
+                bssid=68:5f:74:d7:1a:6f
+                req=5180
+                level=-73
+                tsf=1344626243700373
+                flags=[WPA2-PSK-CCMP][WPS][ESS]
+                ssid=zuby
+                ####
+
+            当所有的结果都被parse出来后，会被存到mScanResults这个ArrayList当中，
+            另外会用bssid+ssid做key值，将这个scanResult存到mScanResultCache这个LRU（最近最少使用） cache当中。
+            当然随着wifi driver不断的scan，发现新的AP，mScanResults和mScanResultCache中的数据也在不断的变化。
+
+            当应用程序收到sendScanResultsAvailableBroadcast发送的WifiManager.SCAN_RESULTS_AVAILABLE_ACTION这个broadcast后，
+            就可以去获取上面提供的mScanResults信息了，获取过程很简单，直接复制mScanResults这个ArrayList里面的成员，然后返回。
+            值得注意的是！！！sendScanResultsAvailableBroadcast设置了Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT这个属性，
+            所以只有动态注册的broadcastReceive才会收到这个broadcast。
+            */
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------------------->
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean scan(int type, String freqList) {
+            if (type == SCAN_WITHOUT_CONNECTION_SETUP) {
+                if (freqList == null) return doBooleanCommand("SCAN TYPE=ONLY");
+                else return doBooleanCommand("SCAN TYPE=ONLY freq=" + freqList);
+            } else if (type == SCAN_WITH_CONNECTION_SETUP) {
+                if (freqList == null) return doBooleanCommand("SCAN");
+                else return doBooleanCommand("SCAN freq=" + freqList);
+            } 
+        }
+    }
+    ->  {
+            public WifiNative(String interfaceName) {
+                mInterfaceName = interfaceName;
+                mTAG = "WifiNative-" + interfaceName;
+                if (!interfaceName.equals("p2p0")) {
+                    mInterfacePrefix = "IFNAME=" + interfaceName + " ";
+                } else {
+                    // commands for p2p0 interface don't need prefix
+                    mInterfacePrefix = "";
+                }
+            }
+
+            private boolean doBooleanCommand(String command) {
+                synchronized (mLock) {
+                    int cmdId = getNewCmdIdLocked();
+                    String toLog = Integer.toString(cmdId) + ":" + mInterfacePrefix + command;      // 即IFNAME=wlan0 SCAN TYPE=ONLY
+                    boolean result = doBooleanCommandNative(mInterfacePrefix + command);
+                    localLog(toLog + " -> " + result);
+                    if (DBG) Log.d(mTAG, command + ": returned " + result);
+                    return result;
+                }
+            }
+        }
+---------------------------------------------------------------------------------------------------------------------------------->
+com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jni)
+->  {
+        static JNINativeMethod gWifiMethods[] = {
+            { "doBooleanCommandNative", "(Ljava/lang/String;)Z", (void*)android_net_wifi_doBooleanCommand },
+        }
+    }
+    ->  {
+            static jboolean android_net_wifi_doBooleanCommand(JNIEnv* env, jobject, jstring javaCommand) {
+                return doBooleanCommand(env, javaCommand);
+            }
+        }
+        ->  {
+                static jboolean doBooleanCommand(JNIEnv* env, jstring javaCommand) {
+                    char reply[REPLY_BUF_SIZE];
+                    if (!doCommand(env, javaCommand, reply, sizeof(reply))) {
+                        return JNI_FALSE;
+                    }
+                    return (strcmp(reply, "OK") == 0);
+                }
+            }
+            ->  {
+                    static bool doCommand(JNIEnv* env, jstring javaCommand, char* reply, size_t reply_len) {
+                        ScopedUtfChars command(env, javaCommand);
+                        if (command.c_str() == NULL) {
+                            return false; // ScopedUtfChars already threw on error.
+                        }
+
+                        if (DBG) {
+                            ALOGD("doCommand: %s", command.c_str());
+                        }
+
+                        --reply_len; // Ensure we have room to add NUL termination.
+                        if (::wifi_command(command.c_str(), reply, &reply_len) != 0) {
+                            return false;
+                        }
+
+                        // Strip off trailing newline.
+                        if (reply_len > 0 && reply[reply_len-1] == '\n') {
+                            reply[reply_len-1] = '\0';
+                        } else {
+                            reply[reply_len] = '\0';
+                        }
+                        return true;
+                    }
+                }
+
+最终就会调用wifi.c的wifi_command函数，从而通过ctrl_conn给wpa_supplicant发送SCAN TYPE=ONLY命令：
+---------------------------------------------------------------------------------------------------------------------------------->
+那么hardware中wifi.c的ctrl_conn如何与wpa_supplicant建立通信呢：
+
+Wpa_ctrl.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\common)
+->  {
+        struct wpa_ctrl * wpa_ctrl_open(const char *ctrl_path)
+        {
+            struct wpa_ctrl *ctrl;
+            static int counter = 0;
+
+            ctrl->s = socket(PF_UNIX, SOCK_DGRAM, 0);
+
+            ctrl->local.sun_family = AF_UNIX;
+            counter++;
+            ret = os_snprintf(ctrl->local.sun_path, sizeof(ctrl->local.sun_path),
+                    CONFIG_CTRL_IFACE_CLIENT_DIR "/"
+                    CONFIG_CTRL_IFACE_CLIENT_PREFIX "%d-%d",
+                    (int) getpid(), counter);
+
+            tries++;
+            if (bind(ctrl->s, (struct sockaddr *) &ctrl->local,                     // 绑定
+                        sizeof(ctrl->local)) < 0) {
+                if (errno == EADDRINUSE && tries < 2) {
+                    /*
+                     * getpid() returns unique identifier for this instance
+                     * of wpa_ctrl, so the existing socket file must have
+                     * been left by unclean termination of an earlier run.
+                     * Remove the file and try again.
+                     */
+                    unlink(ctrl->local.sun_path);
+                         goto try_again;
+                }
+                close(ctrl->s);
+                os_free(ctrl);
+                return NULL;
+            }
+
+        #ifdef ANDROID
+            chmod(ctrl->local.sun_path, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+            chown(ctrl->local.sun_path, AID_SYSTEM, AID_WIFI);
+
+            if (os_strncmp(ctrl_path, "@android:", 9) == 0) {       // @android:wpa_wlan0, 这个和wpa_supplicant服务建立时的socket是同样名称的
+                if (socket_local_client_connect(
+                            ctrl->s, ctrl_path + 9,
+                            ANDROID_SOCKET_NAMESPACE_RESERVED,
+                            SOCK_DGRAM) < 0) {
+                    close(ctrl->s);
+                    unlink(ctrl->local.sun_path);
+                    os_free(ctrl);
+                    return NULL;
+                }
+                return ctrl;
+            }
+
+            /*
+             * If the ctrl_path isn't an absolute pathname, assume that
+             * it's the name of a socket in the Android reserved namespace.
+             * Otherwise, it's a normal UNIX domain socket appearing in the
+             * filesystem.
+             */
+            if (*ctrl_path != '/') {
+                char buf[21];
+                os_snprintf(buf, sizeof(buf), "wpa_%s", ctrl_path);
+                if (socket_local_client_connect(
+                            ctrl->s, buf,
+                            ANDROID_SOCKET_NAMESPACE_RESERVED,
+                            SOCK_DGRAM) < 0) {
+                    close(ctrl->s);
+                    unlink(ctrl->local.sun_path);
+                    os_free(ctrl);
+                    return NULL;
+                }
+                return ctrl;
+            }
+        #endif /* ANDROID */
+
+            ctrl->dest.sun_family = AF_UNIX;
+            if (os_strncmp(ctrl_path, "@abstract:", 10) == 0) {
+                ctrl->dest.sun_path[0] = '\0';
+                os_strlcpy(ctrl->dest.sun_path + 1, ctrl_path + 10,
+                        sizeof(ctrl->dest.sun_path) - 1);
+            } else {
+                res = os_strlcpy(ctrl->dest.sun_path, ctrl_path,
+                        sizeof(ctrl->dest.sun_path));
+                if (res >= sizeof(ctrl->dest.sun_path)) {
+                    close(ctrl->s);
+                    os_free(ctrl);
+                    return NULL;
+                }
+            }
+            if (connect(ctrl->s, (struct sockaddr *) &ctrl->dest,                   // 连接
+                        sizeof(ctrl->dest)) < 0) {
+                close(ctrl->s);
+                unlink(ctrl->local.sun_path);
+                os_free(ctrl);
+                return NULL;
+            }
+
+            /*
+             * Make socket non-blocking so that we don't hang forever if
+             * target dies unexpectedly.
+             */
+            flags = fcntl(ctrl->s, F_GETFL);
+            if (flags >= 0) {
+                flags |= O_NONBLOCK;
+                if (fcntl(ctrl->s, F_SETFL, flags) < 0) {
+                    perror("fcntl(ctrl->s, O_NONBLOCK)");
+                    /* Not fatal, continue on.*/
+                }
+            }
+
+            return ctrl;
+        }
+    }
+
+上述通过wpa_ctrl_open， 就将hardware和wpa_supplicant服务联系在一起了。  
+
+int wifi_command(const char *command, char *reply, size_t *reply_len)
+{
+    return wifi_send_command(command, reply, reply_len);
+}
+->  {
+        int wifi_send_command(const char *cmd, char *reply, size_t *reply_len)
+        {
+            int ret;
+            if (ctrl_conn == NULL) {
+                ALOGV("Not connected to wpa_supplicant - \"%s\" command dropped.\n", cmd);
+                return -1;
+            }
+            ret = wpa_ctrl_request(ctrl_conn, cmd, strlen(cmd), reply, reply_len, NULL);
+            if (ret == -2) {
+                ALOGD("'%s' command timed out.\n", cmd);
+                /* unblocks the monitor receive socket for termination */
+                TEMP_FAILURE_RETRY(write(exit_sockets[0], "T", 1));
+                return -2;
+            } else if (ret < 0 || strncmp(reply, "FAIL", 4) == 0) {
+                return -1;
+            }
+            if (strncmp(cmd, "PING", 4) == 0) {
+                reply[*reply_len] = '\0';
+            }
+            return 0;
+        }
+    }
+---------------------------------------------------------------------------------------------------------------------------------->
+Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        char * wpa_supplicant_ctrl_iface_process(struct wpa_supplicant *wpa_s, char *buf, size_t *resp_len) {
+            if (os_strncmp(buf, "SCAN ", 5) == 0) {
+                wpas_ctrl_scan(wpa_s, buf + 5, reply, reply_size, &reply_len);
+            } 
+        }
+    }
+    ->  {
+            static void wpas_ctrl_scan(struct wpa_supplicant *wpa_s, char *params, char *reply, int reply_size, int *reply_len) {
+                if (params) {
+                    if (os_strncasecmp(params, "TYPE=ONLY", 9) == 0)
+                        wpa_s->scan_res_handler = scan_only_handler;
+                }
+
+                if (!wpa_s->sched_scanning && !wpa_s->scanning &&           // 当前是空闲状态
+                        ((wpa_s->wpa_state <= WPA_SCANNING) ||
+                         (wpa_s->wpa_state == WPA_COMPLETED))) {
+                    wpa_s->normal_scans = 0;
+                    wpa_s->scan_req = MANUAL_SCAN_REQ;
+                    wpa_s->after_wps = 0;
+                    wpa_s->known_wps_freq = 0;
+                    wpa_supplicant_req_scan(wpa_s, 0, 0);
+                    if (wpa_s->manual_scan_use_id) {
+                        wpa_s->manual_scan_id++;
+                        wpa_dbg(wpa_s, MSG_DEBUG, "Assigned scan id %u",
+                                wpa_s->manual_scan_id);
+                        *reply_len = os_snprintf(reply, reply_size, "%u\n",
+                                wpa_s->manual_scan_id);
+                    }
+                } else if (wpa_s->sched_scanning) {                         // 当前已经在扫描
+                    wpa_printf(MSG_DEBUG, "Stop ongoing sched_scan to allow requested full scan to proceed");
+                    wpa_supplicant_cancel_sched_scan(wpa_s);
+                    wpa_s->scan_req = MANUAL_SCAN_REQ;
+                    wpa_supplicant_req_scan(wpa_s, 0, 0);
+                    if (wpa_s->manual_scan_use_id) {
+                        wpa_s->manual_scan_id++;
+                        *reply_len = os_snprintf(reply, reply_size, "%u\n",
+                                wpa_s->manual_scan_id);
+                        wpa_dbg(wpa_s, MSG_DEBUG, "Assigned scan id %u",
+                                wpa_s->manual_scan_id);
+                    }
+                } else {
+                    wpa_printf(MSG_DEBUG, "Ongoing scan action - reject new request");
+                    *reply_len = os_snprintf(reply, reply_size, "FAIL-BUSY\n");
+                }
+            }
+        }
+-------------------------------------------------------------------------------------------------------------->
+Scan.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        void wpa_supplicant_req_scan(struct wpa_supplicant *wpa_s, int sec, int usec)
+        {
+            int res = eloop_deplete_timeout(sec, usec, wpa_supplicant_scan, wpa_s, NULL);
+
+            if (res == 1) {
+                wpa_dbg(wpa_s, MSG_DEBUG, "Rescheduling scan request: %d.%06d sec",
+                        sec, usec);
+            } else if (res == 0) {
+                wpa_dbg(wpa_s, MSG_DEBUG, "Ignore new scan request for %d.%06d sec since an earlier request is scheduled to trigger sooner",
+                        sec, usec);
+            } else {
+                wpa_dbg(wpa_s, MSG_DEBUG, "Setting scan request: %d.%06d sec",
+                        sec, usec);
+                eloop_register_timeout(sec, usec, wpa_supplicant_scan, wpa_s, NULL);
+            }
+        }
+    }
+    ->  {
+            static void wpa_supplicant_scan(void *eloop_ctx, void *timeout_ctx) {
+                ret = wpa_supplicant_trigger_scan(wpa_s, scan_params);
+            } 
+        }
+        ->  {
+                int wpa_supplicant_trigger_scan(struct wpa_supplicant *wpa_s, struct wpa_driver_scan_params *params) {
+                    radio_add_work(wpa_s, 0, "scan", 0, wpas_trigger_scan_cb, ctx);
+                }
+            }
+            ->  {
+                    static void wpas_trigger_scan_cb(struct wpa_radio_work *work, int deinit) {
+                        ret = wpa_drv_scan(wpa_s, params);
+                    }
+                }
+--------------------------------------------------------------------------------------------------------------------->
+Driver_i.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        static inline int wpa_drv_scan(struct wpa_supplicant *wpa_s,
+			       struct wpa_driver_scan_params *params)
+        {
+            if (wpa_s->driver->scan2)
+                return wpa_s->driver->scan2(wpa_s->drv_priv, params);
+            return -1;
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        const struct wpa_driver_ops wpa_driver_nl80211_ops = {
+            .name = "nl80211",
+            .desc = "Linux nl80211/cfg80211",
+            .scan2 = driver_nl80211_scan2,
+            .get_scan_results2 = wpa_driver_nl80211_get_scan_results,
+        };
+
+        
+        static int driver_nl80211_scan2(void *priv,
+                struct wpa_driver_scan_params *params)
+        {
+            struct i802_bss *bss = priv;
+            return wpa_driver_nl80211_scan(bss, params);
+        }
+        ->  {
+                static int wpa_driver_nl80211_scan(struct i802_bss *bss,
+				   struct wpa_driver_scan_params *params) {
+                    msg = nl80211_scan_common(drv, NL80211_CMD_TRIGGER_SCAN, params,
+                            bss->wdev_id_set ? &bss->wdev_id : NULL);
+                    ret = send_and_recv_msgs(drv, msg, NULL, NULL);
+
+                    drv->scan_state = SCAN_REQUESTED;
+
+                    /* Not all drivers generate "scan completed" wireless event, so try to
+                     * read results after a timeout. */
+                    timeout = 10;                                                   // scan超时时间，默认为10s，如果driver为nl80211，则为30s
+                    if (drv->scan_complete_events) {
+                        /*
+                         * The driver seems to deliver events to notify when scan is
+                         * complete, so use longer timeout to avoid race conditions
+                         * with scanning and following association request.
+                         */
+                        timeout = 30;
+                    }
+
+                    eloop_cancel_timeout(wpa_driver_nl80211_scan_timeout, drv, drv->ctx);
+                    eloop_register_timeout(timeout, 0, wpa_driver_nl80211_scan_timeout,         //最终会调用wpa_driver_nl80211_scan_timeout
+                            drv, drv->ctx);
+                }
+            }
+            ->  {
+                    static void do_process_drv_event(struct i802_bss *bss, int cmd, struct nlattr **tb) {
+                        switch (cmd) {
+                            case NL80211_CMD_TRIGGER_SCAN:
+                                wpa_dbg(drv->ctx, MSG_DEBUG, "nl80211: Scan trigger");
+                                drv->scan_state = SCAN_STARTED;
+                                if (drv->scan_for_auth) {
+                                    /*
+                                     * Cannot indicate EVENT_SCAN_STARTED here since we skip
+                                     * EVENT_SCAN_RESULTS in scan_for_auth case and the
+                                     * upper layer implementation could get confused about
+                                     * scanning state.
+                                     */
+                                    wpa_printf(MSG_DEBUG, "nl80211: Do not indicate scan-start event due to internal scan_for_auth");
+                                    break;
+                                }
+                                wpa_supplicant_event(drv->ctx, EVENT_SCAN_STARTED, NULL);       // 基本没做什么事
+                                break;
+                        }
+                    }
+                }
+                ->  {
+                        static void wpa_driver_nl80211_scan_timeout(void *eloop_ctx, void *timeout_ctx)
+                        {
+                            struct wpa_driver_nl80211_data *drv = eloop_ctx;
+                            if (drv->ap_scan_as_station != NL80211_IFTYPE_UNSPECIFIED) {
+                                wpa_driver_nl80211_set_mode(drv->first_bss,
+                                        drv->ap_scan_as_station);
+                                drv->ap_scan_as_station = NL80211_IFTYPE_UNSPECIFIED;
+                            }
+                            wpa_printf(MSG_DEBUG, "Scan timeout - try to get results");
+                            wpa_supplicant_event(timeout_ctx, EVENT_SCAN_RESULTS, NULL);
+                        }
+                    }
+    } 
+--------------------------------------------------------------------------------------------------------------------------->
+events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
+->  {
+        void wpa_supplicant_event(void *ctx, enum wpa_event_type event, union wpa_event_data *data) {
+            switch (event) {
+                case EVENT_AUTH:
+                    sme_event_auth(wpa_s, data);
+                    break;
+                case EVENT_ASSOC:
+                    wpa_supplicant_event_assoc(wpa_s, data);
+                    break;
+                case EVENT_DISASSOC:
+                    wpas_event_disassoc(wpa_s,
+                            data ? &data->disassoc_info : NULL);
+                    break;
+                case EVENT_DEAUTH:
+                    wpas_event_deauth(wpa_s,
+                            data ? &data->deauth_info : NULL);
+                    break;
+            #ifndef CONFIG_NO_SCAN_PROCESSING
+                case EVENT_SCAN_STARTED:
+                    os_get_reltime(&wpa_s->scan_start_time);
+                    if (wpa_s->own_scan_requested) {
+                        struct os_reltime diff;
+
+                        os_reltime_sub(&wpa_s->scan_start_time,
+                                &wpa_s->scan_trigger_time, &diff);
+                        wpa_dbg(wpa_s, MSG_DEBUG, "Own scan request started a scan in %ld.%06ld seconds",
+                                diff.sec, diff.usec);
+                        wpa_s->own_scan_requested = 0;
+                        wpa_s->own_scan_running = 1;
+                        if (wpa_s->last_scan_req == MANUAL_SCAN_REQ &&
+                                wpa_s->manual_scan_use_id) {
+                            wpa_msg_ctrl(wpa_s, MSG_INFO,
+                                    WPA_EVENT_SCAN_STARTED "id=%u",
+                                    wpa_s->manual_scan_id);
+                        } else {
+                            wpa_msg_ctrl(wpa_s, MSG_INFO,
+                                    WPA_EVENT_SCAN_STARTED);
+                        }
+                    } else {
+                        wpa_dbg(wpa_s, MSG_DEBUG, "External program started a scan");
+                        wpa_s->external_scan_running = 1;
+                        wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_STARTED);
+                    }
+                    break;
+                case EVENT_SCAN_RESULTS:
+                    if (os_reltime_initialized(&wpa_s->scan_start_time)) {
+                        struct os_reltime now, diff;
+                        os_get_reltime(&now);
+                        os_reltime_sub(&now, &wpa_s->scan_start_time, &diff);
+                        wpa_s->scan_start_time.sec = 0;
+                        wpa_s->scan_start_time.usec = 0;
+                        wpa_dbg(wpa_s, MSG_DEBUG, "Scan completed in %ld.%06ld seconds",
+                                diff.sec, diff.usec);
+                    }
+                    wpa_supplicant_event_scan_results(wpa_s, data);
+                    wpa_s->own_scan_running = 0;
+                    wpa_s->external_scan_running = 0;
+                    radio_work_check_next(wpa_s);
+                    break;
+            #endif /* CONFIG_NO_SCAN_PROCESSING */
+            }
+        }
+        ->  {
+                static int _wpa_supplicant_event_scan_results(struct wpa_supplicant *wpa_s, union wpa_event_data *data, int own_request) {
+                    wpa_supplicant_notify_scanning(wpa_s, 0);
+
+                    scan_res = wpa_supplicant_get_scan_results(wpa_s,
+                            data ? &data->scan_info :
+                            NULL, 1);
+                    if (scan_res == NULL) {
+                        if (wpa_s->conf->ap_scan == 2 || ap ||
+                                wpa_s->scan_res_handler == scan_only_handler)
+                            return -1;
+                        if (!own_request)
+                            return -1;
+                        wpa_dbg(wpa_s, MSG_DEBUG, "Failed to get scan results - try "
+                                "scanning again");
+                        wpa_supplicant_req_new_scan(wpa_s, 1, 0);
+                        ret = -1;
+                        goto scan_work_done;
+                    }
+
+                    wpas_notify_scan_results(wpa_s);
+
+                    wpas_notify_scan_done(wpa_s, 1);
+
+                    return wpas_select_network_from_last_scan(wpa_s, 1, own_request);
+                }
+            }
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+scan.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
+->  {
+        struct wpa_scan_results * wpa_supplicant_get_scan_results(struct wpa_supplicant *wpa_s, struct scan_info *info, int new_scan) {
+            scan_res = wpa_drv_get_scan_results2(wpa_s);
+    
+            filter_scan_res(wpa_s, scan_res);
+
+            qsort(scan_res->res, scan_res->num, sizeof(struct wpa_scan_res *),
+                    compar);
+            dump_scan_res(scan_res);
+
+            wpa_bss_update_start(wpa_s);
+            for (i = 0; i < scan_res->num; i++)
+                wpa_bss_update_scan_res(wpa_s, scan_res->res[i],
+                        &scan_res->fetch_time);
+            wpa_bss_update_end(wpa_s, info, new_scan);
+        }        
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+driver_i.h (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
+->  {
+        static inline struct wpa_scan_results * wpa_drv_get_scan_results2(
+                struct wpa_supplicant *wpa_s)
+        {
+            if (wpa_s->driver->get_scan_results2)
+                return wpa_s->driver->get_scan_results2(wpa_s->drv_priv);
+            return NULL;
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        static struct wpa_scan_results * wpa_driver_nl80211_get_scan_results(void *priv) {
+            struct i802_bss *bss = priv;
+            struct wpa_driver_nl80211_data *drv = bss->drv;
+            struct wpa_scan_results *res;
+
+            res = nl80211_get_scan_results(drv);
+            if (res)
+                wpa_driver_nl80211_check_bss_status(drv, res);
+            return res;
+        }
+        ->  {
+                static struct wpa_scan_results * nl80211_get_scan_results(struct wpa_driver_nl80211_data *drv) {
+                    msg = nlmsg_alloc();
+                    nl80211_cmd(drv, msg, NLM_F_DUMP, NL80211_CMD_GET_SCAN);
+                    if (nl80211_set_iface_id(msg, drv->first_bss) < 0)
+                        goto nla_put_failure;
+
+                    arg.drv = drv;
+                    arg.res = res;
+                    ret = send_and_recv_msgs(drv, msg, bss_info_handler, &arg);
+                }    
+            }
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+Bss.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public String waitForEvent() {
+            // No synchronization necessary .. it is implemented in WifiMonitor
+            return waitForEventNative();
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jni)
+->  {
+        static JNINativeMethod gWifiMethods[] = {
+            { "waitForEventNative", "()Ljava/lang/String;", (void*)android_net_wifi_waitForEvent },
+        }
+        ->  {
+                static jstring android_net_wifi_waitForEvent(JNIEnv* env, jobject)
+                {
+                    char buf[EVENT_BUF_SIZE];
+                    int nread = ::wifi_wait_for_event(buf, sizeof buf);
+                    if (nread > 0) {
+                        return env->NewStringUTF(buf);
+                    } else {
+                        return NULL;
+                    }
+                }
+            }
+    }
+---------------------------------------------------------------------------------------------------------------------------->
+Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
+->  {
+        int wifi_wait_for_event(char *buf, size_t buflen)
+        {
+            return wifi_wait_on_socket(buf, buflen);
+        }
+        ->  {
+                int wifi_wait_on_socket(char *buf, size_t buflen) {
+                    size_t nread = buflen - 1;
+                    int result;
+                    char *match, *match2;
+
+                    result = wifi_ctrl_recv(buf, &nread);
+
+                    /*
+                     * Events strings are in the format
+                     *
+                     *     IFNAME=iface <N>CTRL-EVENT-XXX 
+                     *        or
+                     *     <N>CTRL-EVENT-XXX 
+                     *
+                     * where N is the message level in numerical form (0=VERBOSE, 1=DEBUG,
+                     * etc.) and XXX is the event name. The level information is not useful
+                     * to us, so strip it off.
+                     */
+
+                    if (strncmp(buf, IFNAME, IFNAMELEN) == 0) {
+                        match = strchr(buf, ' ');
+                        if (match != NULL) {
+                            if (match[1] == '<') {
+                                match2 = strchr(match + 2, '>');
+                                if (match2 != NULL) {
+                                    nread -= (match2 - match);
+                                    memmove(match + 1, match2 + 1, nread - (match - buf) + 1);
+                                }
+                            }
+                        } else {
+                            return snprintf(buf, buflen, "%s", WPA_EVENT_IGNORE);
+                        }
+                    } else if (buf[0] == '<') {
+                        match = strchr(buf, '>');
+                        if (match != NULL) {
+                            nread -= (match + 1 - buf);
+                            memmove(buf, match + 1, nread + 1);
+                            ALOGV("supplicant generated event without interface - %s\n", buf);
+                        }
+                    } else {
+                        /* let the event go as is! */
+                        ALOGW("supplicant generated event without interface and without message level - %s\n", buf);
+                    }
+
+                    return nread;
+                }
+            }
+    }
+
+-------------------------------------------------------------------------------------------------------------------------->
+Drivers.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        struct wpa_driver_ops *wpa_drivers[] =
+        {
+#ifdef CONFIG_DRIVER_NL80211
+            &wpa_driver_nl80211_ops,
+#endif /* CONFIG_DRIVER_NL80211 */
+#ifdef CONFIG_DRIVER_WEXT
+            &wpa_driver_wext_ops,
+#endif /* CONFIG_DRIVER_WEXT */
+#ifdef CONFIG_DRIVER_HOSTAP
+            &wpa_driver_hostap_ops,
+#endif /* CONFIG_DRIVER_HOSTAP */
+#ifdef CONFIG_DRIVER_MADWIFI
+            &wpa_driver_madwifi_ops,
+#endif /* CONFIG_DRIVER_MADWIFI */
+#ifdef CONFIG_DRIVER_BSD
+            &wpa_driver_bsd_ops,
+#endif /* CONFIG_DRIVER_BSD */
+#ifdef CONFIG_DRIVER_OPENBSD
+            &wpa_driver_openbsd_ops,
+#endif /* CONFIG_DRIVER_OPENBSD */
+#ifdef CONFIG_DRIVER_NDIS
+            &wpa_driver_ndis_ops,
+#endif /* CONFIG_DRIVER_NDIS */
+#ifdef CONFIG_DRIVER_WIRED
+            &wpa_driver_wired_ops,
+#endif /* CONFIG_DRIVER_WIRED */
+#ifdef CONFIG_DRIVER_MACSEC_QCA
+            &wpa_driver_macsec_qca_ops,
+#endif /* CONFIG_DRIVER_MACSEC_QCA */
+#ifdef CONFIG_DRIVER_TEST
+            &wpa_driver_test_ops,
+#endif /* CONFIG_DRIVER_TEST */
+#ifdef CONFIG_DRIVER_ROBOSWITCH
+            &wpa_driver_roboswitch_ops,
+#endif /* CONFIG_DRIVER_ROBOSWITCH */
+#ifdef CONFIG_DRIVER_ATHEROS
+            &wpa_driver_atheros_ops,
+#endif /* CONFIG_DRIVER_ATHEROS */
+#ifdef CONFIG_DRIVER_NONE
+            &wpa_driver_none_ops,
+#endif /* CONFIG_DRIVER_NONE */
+            NULL
+        };
+    }
+
+
+

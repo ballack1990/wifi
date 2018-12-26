@@ -1,0 +1,7 @@
+insmod /mnt/bcmdhd.ko "firmware_path=/etc/ap6181/fw_bcm40181a2_apsta.bin nvram_path=/etc/ap6181/nvram_ap6181.txt"
+ifconfig wlan0 192.168.3.1 up
+hostapd /etc/hostapd.conf -B
+udhcpd -fS /etc/udhcpd.conf &
+
+iwconfig wlan0 mode master
+/usr/local/bin/ecapp &

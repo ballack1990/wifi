@@ -1,0 +1,245 @@
+--------- beginning of system
+01-01 14:22:15.526 D/PowerManagerService(  450): LockScreenOff10
+--------- beginning of main
+01-01 14:22:16.613 D/PowerManagerService(  450): LockScreenOff10
+01-01 14:22:16.748 D/PowerManagerService(  450): LockScreenOff10
+01-01 14:22:16.765 D/BluetoothManagerService(  450): enable():  mBluetooth =null mBinding = false
+01-01 14:22:16.787 D/BluetoothManagerService(  450): Message: 1
+01-01 14:22:16.787 D/BluetoothManagerService(  450): MESSAGE_ENABLE: mBluetooth = null
+01-01 14:22:16.803 D/BluetoothServiceJni( 1859): int android::check_wifi_chip_type_string(char*): AP6210
+01-01 14:22:16.803 D/BluetoothServiceJni( 1859): void android::classInitNative(JNIEnv*, jclass), load bluetooth.default.so
+01-01 14:22:16.811 W/AudioTrack(  450): AUDIO_OUTPUT_FLAG_FAST denied by client
+01-01 14:22:16.814 W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+01-01 14:22:16.819 D/BluetoothManagerService(  450): Message: 20
+01-01 14:22:16.819 D/BluetoothManagerService(  450): Added callback: android.bluetooth.IBluetoothManagerCallback$Stub$Proxy@243a0bf6:true
+01-01 14:22:16.820 D/BluetoothAdapterState( 1859): make
+01-01 14:22:16.825 I/bluedroid( 1859): init
+01-01 14:22:16.825 I/BluetoothAdapterState( 1859): Entering OffState
+01-01 14:22:16.826 I/bte_conf( 1859): bte_load_conf attempt to load stack conf from /etc/bluetooth/bt_stack.conf
+01-01 14:22:16.826 I/bte_conf( 1859): bte_load_ble_conf attempt to load ble stack conf from /etc/bluetooth/ble_stack.conf
+01-01 14:22:16.826 E/bt_osi_config( 1859): config_new unable to open file '/etc/bluetooth/ble_stack.conf': No such file or directory
+01-01 14:22:16.826 I/bte_conf( 1859): bte_load_ble_conf file >/etc/bluetooth/ble_stack.conf< not found
+01-01 14:22:16.827 I/bluedroid( 1859): get_profile_interface socket
+01-01 14:22:16.827 I/bluedroid( 1859): get_profile_interface map_client
+01-01 14:22:16.827 I/GKI_LINUX( 1859): gki_task_entry task_id=1 [BTIF] starting
+01-01 14:22:16.831 D/BluetoothAdapterProperties( 1859): Address is:22:22:2F:88:A2:9D
+01-01 14:22:16.833 D/BluetoothManagerService(  450): BluetoothServiceConnection: com.android.bluetooth.btservice.AdapterService
+01-01 14:22:16.833 D/BluetoothManagerService(  450): Message: 40
+01-01 14:22:16.834 D/BluetoothManagerService(  450): MESSAGE_BLUETOOTH_SERVICE_CONNECTED: 1
+01-01 14:22:16.834 D/BluetoothAdapterProperties( 1859): Name is: firefly
+01-01 14:22:16.835 D/BluetoothManagerService(  450): Bluetooth Adapter name changed to firefly
+01-01 14:22:16.835 I/bluedroid( 1859): config_hci_snoop_log
+01-01 14:22:16.837 D/BluetoothManagerService(  450): Stored Bluetooth name: firefly
+01-01 14:22:16.837 D/AudioHardwareTiny(  161): start_output_stream
+01-01 14:22:16.838 D/AudioHardwareTiny(  161): Audio HAL start_output_stream  out->device = 0x80400
+01-01 14:22:16.838 D/AudioHardwareTiny(  161): The current HDMI is DVI mode
+01-01 14:22:16.838 W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+01-01 14:22:16.840 D/BluetoothManagerService(  450): Calling onBluetoothServiceUp callbacks
+01-01 14:22:16.840 D/BluetoothManagerService(  450): Broadcasting onBluetoothServiceUp() to 5 receivers.
+01-01 14:22:16.844 D/BluetoothAdapterState( 1859): CURRENT_STATE=OFF, MESSAGE = USER_TURN_ON
+01-01 14:22:16.845 D/BluetoothAdapterProperties( 1859): Setting state to 11
+01-01 14:22:16.845 I/BluetoothAdapterState( 1859): Bluetooth adapter state changed: 10-> 11
+01-01 14:22:16.846 D/BluetoothManagerService(  450): Message: 60
+01-01 14:22:16.849 D/BluetoothManagerService(  450): MESSAGE_BLUETOOTH_STATE_CHANGE: prevState = 10, newState=11
+01-01 14:22:16.849 D/BluetoothBondStateMachine( 1859): make
+01-01 14:22:16.849 D/BluetoothManagerService(  450): Bluetooth State Change Intent: 10 -> 11
+01-01 14:22:16.851 I/BluetoothBondStateMachine( 1859): StableState(): Entering Off State
+01-01 14:22:16.862 D/BluetoothAdapterService( 1859): getAdapterService() - returning com.android.bluetooth.btservice.AdapterService@3284ddc0
+01-01 14:22:16.865 D/HeadsetService( 1859): Received start request. Starting profile...
+01-01 14:22:16.866 I/BluetoothHeadsetServiceJni( 1859): classInitNative: succeeds
+01-01 14:22:16.866 D/HeadsetStateMachine( 1859): make
+01-01 14:22:16.881 D/HeadsetStateMachine( 1859): max_hf_connections = 1
+01-01 14:22:16.881 I/bluedroid( 1859): get_profile_interface handsfree
+01-01 14:22:16.885 I/BluetoothAdapterState( 1859): Entering PendingCommandState State: isTurningOn()=true, isTurningOff()=false
+01-01 14:22:16.885 D/HeadsetStateMachine( 1859): Enter Disconnected: -2, size: 0
+01-01 14:22:16.891 D/BluetoothAdapterService( 1859): getAdapterService() - returning com.android.bluetooth.btservice.AdapterService@3284ddc0
+01-01 14:22:16.892 D/A2dpService( 1859): Received start request. Starting profile...
+01-01 14:22:16.893 I/BluetoothAvrcpServiceJni( 1859): classInitNative: succeeds
+01-01 14:22:16.893 I/bluedroid( 1859): get_profile_interface avrcp
+01-01 14:22:16.900 E/RemoteController( 1859): Cannot set synchronization mode on an unregistered RemoteController
+01-01 14:22:16.900 I/BluetoothA2dpServiceJni( 1859): classInitNative: succeeds
+01-01 14:22:16.900 D/A2dpStateMachine( 1859): make
+01-01 14:22:16.902 I/bluedroid( 1859): get_profile_interface a2dp
+01-01 14:22:16.902 I/GKI_LINUX( 1859): gki_task_entry task_id=2 [A2DP-MEDIA] starting
+01-01 14:22:16.904 D/A2dpStateMachine( 1859): Enter Disconnected: -2
+01-01 14:22:16.905 I/BluetoothHidServiceJni( 1859): classInitNative: succeeds
+01-01 14:22:16.906 D/BluetoothAdapterService( 1859): getAdapterService() - returning com.android.bluetooth.btservice.AdapterService@3284ddc0
+01-01 14:22:16.907 D/HidService( 1859): Received start request. Starting profile...
+01-01 14:22:16.907 I/bluedroid( 1859): get_profile_interface hidhost
+01-01 14:22:16.909 I/BluetoothHealthServiceJni( 1859): classInitNative: succeeds
+01-01 14:22:16.910 D/BluetoothAdapterService( 1859): getAdapterService() - returning com.android.bluetooth.btservice.AdapterService@3284ddc0
+01-01 14:22:16.911 D/HealthService( 1859): Received start request. Starting profile...
+01-01 14:22:16.913 I/bluedroid( 1859): get_profile_interface health
+01-01 14:22:16.914 I/BluetoothPanServiceJni( 1859): classInitNative(L105): succeeds
+01-01 14:22:16.915 D/BluetoothAdapterService( 1859): getAdapterService() - returning com.android.bluetooth.btservice.AdapterService@3284ddc0
+01-01 14:22:16.916 D/PanService( 1859): Received start request. Starting profile...
+01-01 14:22:16.916 D/BluetoothPanServiceJni( 1859): initializeNative(L110): pan
+01-01 14:22:16.916 I/bluedroid( 1859): get_profile_interface pan
+01-01 14:22:16.918 D/HeadsetStateMachine( 1859): Proxy object connected
+01-01 14:22:16.921 I/BtGatt.JNI( 1859): classInitNative(L873): classInitNative: Success!
+01-01 14:22:16.923 D/BluetoothAdapterService( 1859): getAdapterService() - returning com.android.bluetooth.btservice.AdapterService@3284ddc0
+01-01 14:22:16.924 D/BtGatt.DebugUtils( 1859): handleDebugAction() action=null
+01-01 14:22:16.925 D/BtGatt.GattService( 1859): Received start request. Starting profile...
+01-01 14:22:16.925 D/BtGatt.GattService( 1859): start()
+01-01 14:22:16.925 I/bluedroid( 1859): get_profile_interface gatt
+01-01 14:22:16.926 D/BluetoothAdapterService( 1859): getAdapterService() - returning com.android.bluetooth.btservice.AdapterService@3284ddc0
+01-01 14:22:16.926 D/BtGatt.AdvertiseManager( 1859): advertise manager created
+01-01 14:22:16.936 D/HeadsetStateMachine( 1859): Disconnected process message: 10, size: 0
+01-01 14:22:16.937 D/HeadsetPhoneState( 1859): sendDeviceStateChanged. mService=0 mSignal=0 mRoam=0 mBatteryCharge=5
+01-01 14:22:16.938 D/BluetoothAdapterState( 1859): CURRENT_STATE=PENDING, MESSAGE = STARTED, isTurningOn=true, isTurningOff=false
+01-01 14:22:16.938 I/bluedroid( 1859): enable
+01-01 14:22:16.938 I/bt_hci_bdroid( 1859): init
+01-01 14:22:16.939 D/HeadsetStateMachine( 1859): Disconnected process message: 11, size: 0
+01-01 14:22:16.939 I/GKI_LINUX( 1859): gki_task_entry task_id=0 [BTU] starting
+01-01 14:22:16.939 I/bt-btu  ( 1859): btu_task pending for preload complete event
+01-01 14:22:16.943 D/RkWifiCtrl( 1859): check_wifi_chip_type_string: AP6210
+01-01 14:22:16.943 D/bt_vendor( 1859): vendor_open load libbt-vendor.so
+01-01 14:22:16.944 I/bt_vendor( 1859): init
+01-01 14:22:16.944 I/bt_vnd_conf( 1859): Attempt to load conf from /etc/bluetooth/bt_vendor.conf
+01-01 14:22:16.944 I/bt_vnd_conf( 1859): vnd_load_conf file >/etc/bluetooth/bt_vendor.conf< not found
+01-01 14:22:16.944 D/RkWifiCtrl( 1859): check_wifi_chip_type_string: AP6210
+01-01 14:22:16.944 D/bt_hci_bdroid( 1859): init, use hci h4
+01-01 14:22:16.944 D/bt_userial( 1859): userial_init
+01-01 14:22:16.997 D/bt_upio ( 1859): Delay 500ms for bluetooth power up
+01-01 14:22:17.060 W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+01-01 14:22:17.452 D/PowerManagerService(  450): LockScreenOff10
+01-01 14:22:17.698 D/bt_upio ( 1859): Delay 500ms for bluetooth power up
+01-01 14:22:18.399 I/bt_userial_vendor( 1859): userial vendor open: opening /dev/ttyS0
+01-01 14:22:18.400 I/bt_userial_vendor( 1859): device fd = 55 open
+01-01 14:22:18.400 D/bt_userial( 1859): Entering userial_read_thread()
+01-01 14:22:18.410 I/bt_hwcfg( 1859): bt vendor lib: set UART baud 1500000
+01-01 14:22:18.414 D/bt_hwcfg( 1859): Chipset BCM43430B0
+01-01 14:22:18.414 D/bt_hwcfg( 1859): Target name = [BCM43430B0]
+01-01 14:22:18.414 D/RkWifiCtrl( 1859): check_wifi_chip_type_string: AP6210
+01-01 14:22:18.414 I/bt_hwcfg( 1859): BT module name is: AP6210, p_chip_id_str = BCM43430B0
+01-01 14:22:18.415 I/bt_hwcfg( 1859): Target HCD file name is: BCM43430B0.hcd
+01-01 14:22:18.416 I/bt_hwcfg( 1859): Found patchfile: /vendor/firmware//BCM43430B0.hcd
+01-01 14:22:18.954 I/bt_hwcfg( 1859): bt vendor lib: set UART baud 115200
+01-01 14:22:18.954 D/bt_hwcfg( 1859): Settlement delay -- 100 ms
+01-01 14:22:18.954 I/bt_hwcfg( 1859): Setting fw settlement delay to 100 
+01-01 14:22:19.061 I/bt_hwcfg( 1859): bt vendor lib: set UART baud 1500000
+01-01 14:22:19.062 I/bt_hwcfg( 1859): Setting local bd addr to 22:22:2F:88:A2:9D
+01-01 14:22:19.063 I/bt_hwcfg( 1859): vendor lib fwcfg completed
+01-01 14:22:19.064 I/bt-btu  ( 1859): btu_task received preload complete event
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_HCI
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_L2CAP
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_RFCOMM
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_AVDT
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_AVRC
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_A2D
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_BNEP
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_BTM
+01-01 14:22:19.080 I/        ( 1859): BTE_InitTraceLevels -- TRC_GAP
+01-01 14:22:19.081 I/        ( 1859): BTE_InitTraceLevels -- TRC_PAN
+01-01 14:22:19.081 I/        ( 1859): BTE_InitTraceLevels -- TRC_SDP
+01-01 14:22:19.081 I/        ( 1859): BTE_InitTraceLevels -- TRC_GATT
+01-01 14:22:19.081 I/        ( 1859): BTE_InitTraceLevels -- TRC_SMP
+01-01 14:22:19.081 I/        ( 1859): BTE_InitTraceLevels -- TRC_BTAPP
+01-01 14:22:19.081 I/        ( 1859): BTE_InitTraceLevels -- TRC_BTIF
+01-01 14:22:19.157 E/bt-btm  ( 1859): BTM_SecRegister:p_cb_info->p_le_callback == 0xa3377271 
+01-01 14:22:19.158 E/bt-btm  ( 1859): BTM_SecRegister: btm_cb.api.p_le_callback = 0xa3377271 
+01-01 14:22:19.229 E/bt-btif ( 1859): Calling BTA_HhEnable
+01-01 14:22:19.229 E/bt-btif ( 1859): btif_storage_get_adapter_property service_mask:0x2140040
+01-01 14:22:19.238 W/bt-btm  ( 1859): Stopping oneshot timer
+01-01 14:22:19.246 D/BluetoothAdapterProperties( 1859): Address is:22:22:2F:88:A2:9D
+01-01 14:22:19.256 D/BluetoothAdapterProperties( 1859): Name is: firefly
+01-01 14:22:19.259 D/BluetoothManagerService(  450): Bluetooth Adapter name changed to firefly
+01-01 14:22:19.264 D/BluetoothAdapterProperties( 1859): Scan Mode:20
+01-01 14:22:19.265 D/BluetoothAdapterProperties( 1859): Discoverable Timeout:120
+01-01 14:22:19.265 D/BluetoothManagerService(  450): Stored Bluetooth name: firefly
+01-01 14:22:19.267 D/bt_vendor( 1859): SCO config
+01-01 14:22:19.268 D/bte_conf( 1859): Device ID record 1 : primary
+01-01 14:22:19.268 D/bte_conf( 1859):   vendorId            = 000f
+01-01 14:22:19.268 D/bte_conf( 1859):   vendorIdSource      = 0001
+01-01 14:22:19.268 D/bte_conf( 1859):   product             = 1200
+01-01 14:22:19.268 D/bte_conf( 1859):   version             = 1436
+01-01 14:22:19.268 D/bte_conf( 1859):   clientExecutableURL = 
+01-01 14:22:19.268 D/bte_conf( 1859):   serviceDescription  = 
+01-01 14:22:19.268 D/bte_conf( 1859):   documentationURL    = 
+01-01 14:22:19.268 D/bte_conf( 1859): bte_load_did_conf no section named DID2.
+01-01 14:22:19.269 D/BluetoothPanServiceJni( 1859): control_state_callback(L61): state:0, local_role:3, ifname:bt-pan
+01-01 14:22:19.269 D/BluetoothAdapterState( 1859): CURRENT_STATE=PENDING, MESSAGE = ENABLE_READY, isTurningOn=true, isTurningOff=false
+01-01 14:22:19.269 D/BluetoothAdapterProperties( 1859): ScanMode =  20
+01-01 14:22:19.270 D/BluetoothAdapterProperties( 1859): State =  11
+01-01 14:22:19.270 D/BluetoothAdapterProperties( 1859): Setting state to 12
+01-01 14:22:19.271 I/BluetoothAdapterState( 1859): Bluetooth adapter state changed: 11-> 12
+01-01 14:22:19.273 D/BluetoothManagerService(  450): Message: 60
+01-01 14:22:19.273 D/BluetoothManagerService(  450): MESSAGE_BLUETOOTH_STATE_CHANGE: prevState = 11, newState=12
+01-01 14:22:19.273 I/BluetoothAdapterState( 1859): Entering On State
+01-01 14:22:19.274 D/BluetoothManagerService(  450): Broadcasting onBluetoothStateChange(true) to 19 receivers.
+01-01 14:22:19.275 D/BluetoothA2dpSink(  570): onBluetoothStateChange: up=true
+01-01 14:22:19.276 D/BluetoothAdapterProperties( 1859): Scan Mode:21
+01-01 14:22:19.276 D/BluetoothAdapterProperties( 1859): Discoverable Timeout:120
+01-01 14:22:19.279 E/BluetoothA2dpSink(  570): Could not bind to Bluetooth A2DP Service with Intent { act=android.bluetooth.IBluetoothA2dpSink }
+01-01 14:22:19.280 E/bt_h4   ( 1859): vendor lib postload completed
+01-01 14:22:19.280 D/BluetoothPan( 1072): onBluetoothStateChange(on) call bindService
+01-01 14:22:19.290 D/BluetoothA2dp(  450): onBluetoothStateChange: up=true
+01-01 14:22:19.292 D/BluetoothPan( 1072): BluetoothPAN Proxy object connected
+01-01 14:22:19.292 D/PanProfile( 1072): Bluetooth service connected
+01-01 14:22:19.296 D/BluetoothAvrcpController(  570): onBluetoothStateChange: up=true
+01-01 14:22:19.297 D/BluetoothA2dp(  450): Proxy object connected
+01-01 14:22:19.299 E/BluetoothAvrcpController(  570): Could not bind to Bluetooth AVRCP Controller Service with Intent { act=android.bluetooth.IBluetoothAvrcpController }
+01-01 14:22:19.300 D/BluetoothHeadset(  570): onBluetoothStateChange: up=true
+01-01 14:22:19.301 D/BluetoothManagerService(  450): Creating new ProfileServiceConnections object for profile: 1
+01-01 14:22:19.306 D/BluetoothHeadsetClient(  570): onBluetoothStateChange: up=true
+01-01 14:22:19.307 D/BluetoothManagerService(  450): com.android.bluetooth:com.android.bluetooth.hfp.HeadsetService:onServiceConnected() 
+01-01 14:22:19.308 E/BluetoothHeadsetClient(  570): Could not bind to Bluetooth Headset Client Service with Intent { act=android.bluetooth.IBluetoothHeadsetClient }
+01-01 14:22:19.308 D/BluetoothHeadset(  450): onBluetoothStateChange: up=true
+01-01 14:22:19.309 D/BluetoothMap(  570): onBluetoothStateChange: up=true
+01-01 14:22:19.311 E/BluetoothMap(  570): Could not bind to Bluetooth MAP Service with Intent { act=android.bluetooth.IBluetoothMap }
+01-01 14:22:19.312 D/BluetoothA2dp(  570): onBluetoothStateChange: up=true
+01-01 14:22:19.318 D/BluetoothA2dp(  570): Proxy object connected
+01-01 14:22:19.319 D/BluetoothInputDevice(  570): onBluetoothStateChange: up=true
+01-01 14:22:19.326 D/BluetoothPan(  570): onBluetoothStateChange(on) call bindService
+01-01 14:22:19.327 D/BluetoothInputDevice(  570): Proxy object connected
+01-01 14:22:19.332 D/BluetoothPan(  570): BluetoothPAN Proxy object connected
+01-01 14:22:19.333 D/BluetoothHeadset( 1072): onBluetoothStateChange: up=true
+01-01 14:22:19.335 D/BluetoothHeadset(  800): onBluetoothStateChange: up=true
+01-01 14:22:19.336 D/BluetoothHeadset(  450): onBluetoothStateChange: up=true
+01-01 14:22:19.337 D/BluetoothPbap( 1072): onBluetoothStateChange: up=true
+01-01 14:22:19.344 D/BluetoothInputDevice( 1072): onBluetoothStateChange: up=true
+01-01 14:22:19.351 D/BluetoothInputDevice( 1072): Proxy object connected
+01-01 14:22:19.351 D/HidProfile( 1072): Bluetooth service connected
+01-01 14:22:19.351 D/BluetoothHeadset(  450): onBluetoothStateChange: up=true
+01-01 14:22:19.352 D/BluetoothA2dp( 1072): onBluetoothStateChange: up=true
+01-01 14:22:19.358 D/BluetoothA2dp( 1072): Proxy object connected
+01-01 14:22:19.358 D/A2dpProfile( 1072): Bluetooth service connected
+01-01 14:22:19.358 D/BluetoothMap( 1072): onBluetoothStateChange: up=true
+01-01 14:22:19.360 E/BluetoothMap( 1072): Could not bind to Bluetooth MAP Service with Intent { act=android.bluetooth.IBluetoothMap }
+01-01 14:22:19.363 D/BluetoothManagerService(  450): Bluetooth State Change Intent: 11 -> 12
+01-01 14:22:19.367 D/BluetoothManagerService(  450): BluetoothServiceConnection: com.android.bluetooth.gatt.GattService
+01-01 14:22:19.367 D/BluetoothManagerService(  450): Message: 40
+01-01 14:22:19.368 D/BluetoothManagerService(  450): MESSAGE_BLUETOOTH_SERVICE_CONNECTED: 2
+01-01 14:22:19.401 E/bt-btif ( 1859): bte_scan_filt_param_cfg_evt, 1
+01-01 14:22:19.401 E/bt-btif ( 1859): bte_scan_filt_param_cfg_evt, 1
+01-01 14:22:19.401 W/bt-btif ( 1859): bta_dm_check_av:0
+01-01 14:22:19.405 D/BluetoothManagerService(  450): Message: 400
+01-01 14:22:19.406 D/BluetoothHeadset(  570): Proxy object connected
+01-01 14:22:19.408 D/BluetoothManagerService(  450): Message: 400
+01-01 14:22:19.408 D/BluetoothHeadset(  450): Proxy object connected
+01-01 14:22:19.418 D/BluetoothAdapterProperties( 1859): Discoverable Timeout:120
+01-01 14:22:19.421 D/BluetoothAdapterProperties( 1859): Scan Mode:23
+01-01 14:22:19.435 D/BluetoothManagerService(  450): Message: 400
+01-01 14:22:19.436 D/BluetoothHeadset( 1072): Proxy object connected
+01-01 14:22:19.437 D/BluetoothManagerService(  450): Message: 400
+01-01 14:22:19.438 D/BluetoothHeadset(  800): Proxy object connected
+01-01 14:22:19.439 D/BluetoothManagerService(  450): Message: 400
+01-01 14:22:19.439 D/BluetoothHeadset(  450): Proxy object connected
+01-01 14:22:19.451 D/BluetoothManagerService(  450): Message: 400
+01-01 14:22:19.451 D/BluetoothHeadset(  450): Proxy object connected
+01-01 14:22:19.481 W/ContextImpl( 1072): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1704 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.android.settings.bluetooth.DockEventReceiver.beginStartingService:134 com.android.settings.bluetooth.DockEventReceiver.onReceive:115 
+01-01 14:22:19.487 D/HeadsetProfile( 1072): Bluetooth service connected
+01-01 14:22:19.496 D/Index   ( 1072): Deleting data for locale 'en_US' took 6 millis
+01-01 14:22:19.504 D/Index   ( 1072): Indexing locale 'en_US' took 7 millis
+01-01 14:22:19.530 D/BluetoothManagerService(  450): checkIfCallerIsForegroundUser: valid=true callingUser=0 parentUser=-10000 foregroundUser=0
+01-01 14:22:19.534 W/BluetoothAdapter( 1859): getBluetoothService() called with no BluetoothManagerCallback
+01-01 14:22:19.550 D/BluetoothManagerService(  450): checkIfCallerIsForegroundUser: valid=true callingUser=0 parentUser=-10000 foregroundUser=0
+01-01 14:22:19.554 W/BluetoothAdapter( 1859): getBluetoothService() called with no BluetoothManagerCallback
+01-01 14:22:19.556 I/BtOppRfcommListener( 1859): Accept thread started.
+01-01 14:22:19.606 D/DockEventReceiver( 1072): finishStartingService: stopping service
+01-01 14:22:19.616 D/BluetoothPbap( 1072): Proxy object connected
+01-01 14:22:19.616 D/PbapServerProfile( 1072): Bluetooth service connected
+01-01 14:22:19.617 V/BluetoothDiscoveryReceiver( 1072): Received: android.bluetooth.adapter.action.DISCOVERY_STARTED
+01-01 14:22:20.000 D/AudioHardwareTiny(  161): close device
+01-01 14:22:20.002 W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+01-01 14:22:22.595 D/BluetoothEventManager( 1072): DeviceFoundHandler created new CachedBluetoothDevice: BE:EF:BE:EF:00:01

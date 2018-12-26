@@ -1,0 +1,625 @@
+WifiSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        public boolean onContextItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+                case MENU_ID_CONNECT: {
+                    if (mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
+                        connect(mSelectedAccessPoint.networkId);
+                    } else if (mSelectedAccessPoint.security == AccessPoint.SECURITY_NONE) {
+                        /** Bypass dialog for unsecured networks */
+                        mSelectedAccessPoint.generateOpenNetworkConfig();
+                        connect(mSelectedAccessPoint.getConfig());
+                    } else {
+                        showDialog(mSelectedAccessPoint, true);
+                    }
+                    return true;
+                }
+            }
+        }
+    }
+    ->  {
+            protected void connect(final WifiConfiguration config) {
+                mWifiManager.connect(config, mConnectListener);
+            }
+
+            protected void connect(final int networkId) {
+                mWifiManager.connect(networkId, mConnectListener);
+            }
+        }
+------------------------------------------------------------------------------------------------->
+WifiManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi)
+->  {
+        // 其中第一个参数WifiConfiguration是当前需要连接的AP的配置信息，包括SSID、BSSID、密码以及加密方式等信息；
+        // ActionListener作为callback来通知客户程序connect方法是否调用成功，这里的调用成功只是指参数是否正确，并不表示AP是否连接成功
+        public void connect(WifiConfiguration config, ActionListener listener) {
+            sAsyncChannel.sendMessage(CONNECT_NETWORK, WifiConfiguration.INVALID_NETWORK_ID,
+                    putListener(listener), config);
+        }
+    }
+---------------------------------------------------------------------------------------------------------------->
+由sAsyncChannel的知识可以知道， 这时候是WifiService来处理这个CONNECT_NETWORK消息：
+WifiServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        private class ClientHandler extends Handler {
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case WifiManager.CONNECT_NETWORK:
+                        if (DBG) Slog.d(TAG, "Connect with config" + config);
+                        mWifiStateMachine.sendMessage(Message.obtain(msg));
+                }
+            }
+        }
+    }
+
+前面scan的流程可以知道， 当前是处在mDisconnectedState状态的， 那么该状态没有处理CONNECT_NETWORK事件，由其父类mConnectModeState处理：
+class ConnectModeState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case WifiManager.CONNECT_NETWORK:
+                // WifiConfigStore.saveNetwork(config)将AP的配置信息写入到wpa_supplicant.conf中；
+                // WifiConfigStore.selectNetwork(netId)用于enable即将要连接的AP，而disable掉其它的AP；
+                // WifiNative.reconnect()发起重新连接的请求给wpa_supplicant。接着transition到DisconnectingState
+                
+                mWifiConfigStore.saveNetwork(config, message.sendingUid);
+                if (mWifiConfigStore.selectNetwork(netId) &&
+                        mWifiNative.reconnect()) {
+                    transitionTo(mDisconnectingState);
+                }
+        }
+    }
+}
+->  {
+        // 当执行完WifiNative.reconnect()，wpa_supplicant会不断的往WifiMonitor发送包括CTRL-EVENT-STATE-CHANGE、
+        // ASSOCIATING、ASSOCIATED、FOUR_WAY_HANDSHARK、GROUP_HANDSHARK等event，WifiMonitor会不断的去parse这些event
+        // 并向WifiStatemachine发送消息，其中一个比较重要的消息就是当wpa_supplicant的状态改变是会发送
+        // WifiMonitor.SUPPLICANT_STATE_CHANGE_EVENT，上面的DisconnectiongState 收到这个消息后，会transition到DisconnectedState
+        class DisconnectingState extends State {
+            public boolean processMessage(Message message) {
+                switch (message.what) {
+                    case WifiMonitor.SUPPLICANT_STATE_CHANGE_EVENT:
+                        deferMessage(message);
+                        handleNetworkDisconnect();
+                        transitionTo(mDisconnectedState);
+                }
+            }
+        }
+    }
+
+当Wifi和AP之间已经连接成功后，就会收到wpa_supplicant发送上来的CTRL-EVENT-CONNECTED这个event，
+WifiMonitor收到这个消息后，会向WifiStateMachine发送NETWORK_CONNECTION_EVENT表示已经和AP之间成功的连线，
+由于WifiStateMachine的DisconnectedState不处理这个消息， 故其父类ConnectModeState会来处理这个消息：
+class ConnectModeState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case WifiMonitor.NETWORK_CONNECTION_EVENT:
+                transitionTo(mObtainingIpState);
+        }
+    }
+}
+->  {
+        class ObtainingIpState extends State {
+            if (!mWifiConfigStore.isUsingStaticIp(mLastNetworkId)) {
+                if (isRoaming()) {                                              // 是否正在漫游，以后再研究 
+                    renewDhcp();
+                } else {
+                    // Remove any IP address on the interface in case we're switching from static
+                    // IP configuration to DHCP. This is safe because if we get here when not
+                    // roaming, we don't have a usable address.
+                    clearIPv4Address(mInterfaceName);
+                    startDhcp();                                                // 动态获取ip地址
+                }
+            } else {
+                stopDhcp();
+                StaticIpConfiguration config = mWifiConfigStore.getStaticIpConfiguration(mLastNetworkId);
+                InterfaceConfiguration ifcg = new InterfaceConfiguration();
+                ifcg.setLinkAddress(config.ipAddress);                          // 从配置里面读取固定ip地址
+                ifcg.setInterfaceUp();
+
+                mNwService.setInterfaceConfig(mInterfaceName, ifcg);
+                if (DBG) log("Static IP configuration succeeded");
+                DhcpResults dhcpResults = new DhcpResults(config);
+                sendMessage(CMD_STATIC_IP_SUCCESS, dhcpResults);                // 发送设置成功的标志
+            }
+        }
+    }
+    ->  {
+            void startDhcp() {
+                if (mDhcpStateMachine == null) {
+                    mDhcpStateMachine = DhcpStateMachine.makeDhcpStateMachine(
+                            mContext, WifiStateMachine.this, mInterfaceName);
+
+                }
+                mDhcpStateMachine.registerForPreDhcpNotification();                 // mRegisteredForPreDhcpNotification = true
+                mDhcpStateMachine.sendMessage(DhcpStateMachine.CMD_START_DHCP);     // 发送CMD_START_DHCP消息
+            }
+        }
+----------------------------------------------------------------------------------->
+DhcpStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\net)
+->  {
+        public class DhcpStateMachine extends StateMachine {
+            public static DhcpStateMachine makeDhcpStateMachine(Context context, StateMachine controller, String intf) {
+                DhcpStateMachine dsm = new DhcpStateMachine(context, controller, intf);
+                dsm.start();
+                return dsm;
+            }
+
+            private DhcpStateMachine(Context context, StateMachine controller, String intf) {
+                mController = controller;                                       // 可以知道mController指向WifiStateMachine类的对象
+                setInitialState(mStoppedState);
+            }
+
+            class StoppedState extends State {
+                public boolean processMessage(Message message) {
+                    switch (message.what) {
+                        case CMD_START_DHCP:
+                            if (mRegisteredForPreDhcpNotification) {
+                                /* Notify controller before starting DHCP */
+                                mController.sendMessage(CMD_PRE_DHCP_ACTION);   // 向WifiStateMachine类发送CMD_PRE_DHCP_ACTION消息
+                                transitionTo(mWaitBeforeStartState);            // 切换到mWaitBeforeStartState状态
+                            } else {
+                                if (runDhcp(DhcpAction.START)) {
+                                    transitionTo(mRunningState);
+                                }
+                            }
+                            break;
+                    }
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------>
+由上面可以知道WifiStateMachine的当前状态是ObtainingIpState, 而ObtainingIpState不处理CMD_PRE_DHCP_ACTION消息,
+交由其父类mL2ConnectedState处理：
+class L2ConnectedState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case DhcpStateMachine.CMD_PRE_DHCP_ACTION:
+                handlePreDhcpSetup();
+                break;
+    }
+}
+->  {
+        void handlePreDhcpSetup() {
+            Message msg = new Message();
+            msg.what = WifiP2pServiceImpl.BLOCK_DISCOVERY;
+            msg.arg1 = WifiP2pServiceImpl.ENABLED;
+            msg.arg2 = DhcpStateMachine.CMD_PRE_DHCP_ACTION_COMPLETE;
+            msg.obj = mDhcpStateMachine;
+            mWifiP2pChannel.sendMessage(msg);
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------------------->
+这里mWifiP2pChannel.connect(mContext, getHandler(), mWifiP2pServiceImpl.getP2pStateMachineMessenger());
+故上面是向mWifiP2pServiceImpl发送WifiP2pServiceImpl.BLOCK_DISCOVERY消息，那当前WifiP2pServiceImpl处在什么状态呢？
+还记得在打开wifi的时候，会执行以下命令：
+mWifiP2pChannel.sendMessage(WifiStateMachine.CMD_ENABLE_P2P);
+
+class P2pDisabledState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case WifiStateMachine.CMD_ENABLE_P2P:
+                mNwService.setInterfaceUp(mInterface);
+                mWifiMonitor.startMonitoring();
+                transitionTo(mP2pEnablingState);
+        }
+    }
+}
+P2pStateMachine会切换到mP2pEnablingState状态， 由于mP2pEnablingState状态不处理BLOCK_DISCOVERY消息，故由其父类mDefaultState处理:
+
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+    class DefaultState extends State {
+        public boolean processMessage(Message message) {
+            switch (message.what) {
+                case BLOCK_DISCOVERY:
+                    mDiscoveryBlocked = (message.arg1 == ENABLED ? true : false);
+                    mDiscoveryPostponed = false;
+                    if (mDiscoveryBlocked) {
+                        StateMachine m = (StateMachine)message.obj;     // 这里message.obj就是mDHCPStateMachine
+                        m.sendMessage(message.arg2);                    // 这里message.arg2就是DhcpStateMachine.CMD_PRE_DHCP_ACTION_COMPLETE
+                    }
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------------->
+从上面可以知道， handlePreDhcpSetup其实就是向DhcpStateMachine类发送CMD_PRE_DHCP_ACTION_COMPLETE消息：
+当前DhcpStateMachine类处于mWaitBeforeStartState状态：
+
+DhcpStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\net)
+class WaitBeforeStartState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case CMD_PRE_DHCP_ACTION_COMPLETE:
+                if (runDhcp(DhcpAction.START)) {
+                    transitionTo(mRunningState);
+                } else {
+                    transitionTo(mStoppedState);
+                }
+        }
+    }
+}
+->  {
+        private boolean runDhcp(DhcpAction dhcpAction) {
+            if (dhcpAction == DhcpAction.START) {
+                /* Stop any existing DHCP daemon before starting new */
+                NetworkUtils.stopDhcp(mInterfaceName);
+                success = NetworkUtils.runDhcp(mInterfaceName, dhcpResults);
+
+                mDhcpResults = dhcpResults;
+
+                // 向WifiStateMachine发送CMD_POST_DHCP_ACTION消息
+                mController.obtainMessage(CMD_POST_DHCP_ACTION, DHCP_SUCCESS, 0, dhcpResults).sendToTarget();   
+            }
+    }
+----------------------------------------------------------------------------------------------->
+android_net_NetUtils.cpp (z:\home\ballack\prj\rk3288\frameworks\base\core\jni)
+->  {
+        static JNINativeMethod gNetworkUtilMethods[] = {
+            { "runDhcp", "(Ljava/lang/String;Landroid/net/DhcpResults;)Z",  (void *)android_net_utils_runDhcp },
+        }
+
+        static jboolean android_net_utils_runDhcp(JNIEnv* env, jobject clazz, jstring ifname, jobject info)
+        {
+            return android_net_utils_runDhcpCommon(env, clazz, ifname, info, false);
+        }
+    }
+    ->  {
+            static jboolean android_net_utils_runDhcpCommon(JNIEnv* env, jobject clazz, jstring ifname, jobject dhcpResults, bool renew) {
+                if (renew) {
+                    result = ::dhcp_do_request_renew(nameStr, ipaddr, gateway, &prefixLength,
+                            dns, server, &lease, vendorInfo, domains, mtu);
+                } else {
+                    result = ::dhcp_do_request(nameStr, ipaddr, gateway, &prefixLength,
+                            dns, server, &lease, vendorInfo, domains, mtu);
+                }
+            }
+        }
+--------------------------------------------------------------------------------------------------->
+Dhcp_utils.c (z:\home\ballack\prj\rk3288\system\core\libnetutils)
+->  {
+        static const char DAEMON_NAME[]        = "dhcpcd";
+        static const char DAEMON_PROP_NAME[]   = "init.svc.dhcpcd";
+        static const char HOSTNAME_PROP_NAME[] = "net.hostname";
+        static const char DHCP_PROP_NAME_PREFIX[]  = "dhcp";
+        static const char DHCP_CONFIG_PATH[]   = "/system/etc/dhcpcd/dhcpcd.conf";
+
+        int dhcp_do_request(const char *interface,
+                char *ipaddr,
+                char *gateway,
+                uint32_t *prefixLength,
+                char *dns[],
+                char *server,
+                uint32_t *lease,
+                char *vendorInfo,
+                char *domain,
+                char *mtu)
+        {
+            char daemon_cmd[PROPERTY_VALUE_MAX * 2 + sizeof(DHCP_CONFIG_PATH)];
+            const char *ctrl_prop = "ctl.start";
+            const char *desired_status = "running";
+            /* Interface name after converting p2p0-p2p0-X to p2p to reuse system properties */
+            char p2p_interface[MAX_INTERFACE_LENGTH];
+
+            get_p2p_interface_replacement(interface, p2p_interface);                    // 获取p2p_interface
+
+            snprintf(result_prop_name, sizeof(result_prop_name), "%s.%s.result",        // 例：dhcp.wlan0.result
+                    DHCP_PROP_NAME_PREFIX,
+                    p2p_interface);
+
+            snprintf(daemon_prop_name, sizeof(daemon_prop_name), "%s_%s",               // 例：init.svc.dhcpcd_wlan0
+                    DAEMON_PROP_NAME,
+                    p2p_interface);
+
+            /* Erase any previous setting of the dhcp result property */
+            property_set(result_prop_name, "");
+
+            /* Start the daemon and wait until it's ready */
+            if (property_get(HOSTNAME_PROP_NAME, prop_value, NULL) && (prop_value[0] != '\0')) {
+
+                // -----------------prop_value实例： [net.hostname]: [android-7a296df9ee18dade]
+                // dhcpcd_wlan0:-f /system/etc/dhcpcd/dhcpcd.conf -h android-7a296df9ee18dade wlan0 -t 60
+ 
+                snprintf(daemon_cmd, sizeof(daemon_cmd), "%s_%s:-f %s -h %s %s -t 60", DAEMON_NAME,
+                        p2p_interface, DHCP_CONFIG_PATH, prop_value, interface);
+            }
+            else {
+                // dhcpcd_wlan0:-f /system/etc/dhcpcd/dhcpcd.conf  wlan0 -t 60
+
+                snprintf(daemon_cmd, sizeof(daemon_cmd), "%s_%s:-f %s %s -t 60", DAEMON_NAME,
+                        p2p_interface, DHCP_CONFIG_PATH, interface);
+            }
+            memset(prop_value, '\0', PROPERTY_VALUE_MAX);
+            property_set(ctrl_prop, daemon_cmd);                                    // ctl.start -----
+            if (wait_for_property(daemon_prop_name, desired_status, 10) < 0) {      // wait for init.svc.dhcpcd_wlan0 changed to running
+                snprintf(errmsg, sizeof(errmsg), "%s", "Timed out waiting for dhcpcd to start");
+                return -1;
+            }
+
+            /* Wait for the daemon to return a result */
+            if (wait_for_property(result_prop_name, NULL, 60) < 0) {
+                snprintf(errmsg, sizeof(errmsg), "%s", "Timed out waiting for DHCP to finish");
+                return -1;
+            }
+
+            if (strcmp(prop_value, "ok") == 0) {
+                char dns_prop_name[PROPERTY_KEY_MAX];
+
+                // fill_ip_info函数用于填充传入的参数， 包括ipaddr, gateway, prefixLength, dns, server, lease, vendorInfo, domain, mtu
+                if (fill_ip_info(interface, ipaddr, gateway, prefixLength, dns,
+                            server, lease, vendorInfo, domain, mtu) == -1) {
+                    return -1;
+                }
+                return 0;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------------->
+由上面可以知道WifiStateMachine的当前状态是ObtainingIpState, 而ObtainingIpState不处理CMD_POST_DHCP_ACTION消息,
+交由其父类mL2ConnectedState处理：
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)	
+->  {
+        class L2ConnectedState extends State {
+            public boolean processMessage(Message message) {
+                switch (message.what) {
+                    case DhcpStateMachine.CMD_POST_DHCP_ACTION:
+                        handlePostDhcpSetup();
+                        if (message.arg1 == DhcpStateMachine.DHCP_SUCCESS) {
+                            if (DBG) log("WifiStateMachine DHCP successful");
+                            handleIPv4Success((DhcpResults) message.obj, DhcpStateMachine.DHCP_SUCCESS);
+                            // We advance to mVerifyingLinkState because handleIPv4Success will call
+                            // updateLinkProperties, which then sends CMD_IP_CONFIGURATION_SUCCESSFUL.      // 发送CMD_IP_CONFIGURATION_SUCCESSFUL
+                        }
+                        break;
+                    case CMD_IP_CONFIGURATION_SUCCESSFUL:
+                        handleSuccessfulIpConfiguration();
+                        sendConnectedState();
+                        transitionTo(mConnectedState);
+                        break;
+                }
+            }
+        }
+    }
+    ->  {
+            class ConnectedState extends State {
+                public boolean processMessage(Message message) {
+                    switch (message.what) {
+                        // 如果信号不好， 则跳转到mVerifyingLinkState状态
+                        case WifiWatchdogStateMachine.POOR_LINK_DETECTED:
+                            if (DBG) log("Watchdog reports poor link");
+                            transitionTo(mVerifyingLinkState);
+                            break;
+                    }
+                }
+            }
+        }
+        ->  {
+                class VerifyingLinkState extends State {
+
+                    // 在VerifyingLinkState主要是来验证当前连接状况的，主要方式是通过统计信号强度以及丢包率，
+                    // 这些工作是交给WifiWatchdogStateMachine来做的，当WifiAP的信号强度增强或者变弱，会发送两种消息给WifiStateMachine，
+                    // 一种是WifiWatchdogStateMachine.GOOD_LINK_DETECTED，另一种是WifiWatchdogStateMachine.POOR_LINK_DETECTED。
+                    // 当收到GOOD_LINK_DETECTED消息后，就会跳转到mConnectedState中；当收到的是POOR_LINK_DETECTED，则维持原来的状态不变。
+                    public void enter() {
+                        setNetworkDetailedState(DetailedState.VERIFYING_POOR_LINK);
+                        mWifiConfigStore.updateStatus(mLastNetworkId, DetailedState.VERIFYING_POOR_LINK);
+                        sendNetworkStateChangeBroadcast(mLastBssid);
+                        // End roaming
+                        mAutoRoaming = WifiAutoJoinController.AUTO_JOIN_IDLE;
+                    }
+
+                    public boolean processMessage(Message message) {
+                        switch (message.what) {
+                            case WifiWatchdogStateMachine.POOR_LINK_DETECTED:
+                                log(getName() + " POOR_LINK_DETECTED: no transition");
+                                break;
+                            case WifiWatchdogStateMachine.GOOD_LINK_DETECTED:
+                                log(getName() + " GOOD_LINK_DETECTED: transition to CONNECTED");
+                                sendConnectedState();
+                                transitionTo(mConnectedState);
+                                break;
+                        }
+                    }
+                }
+            }
+
+来看下handlePostDhcpSetup函数：
+void handlePostDhcpSetup() {
+    /* Restore power save and suspend optimizations */
+    setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, true);
+    mWifiNative.setPowerSave(true);
+
+    mWifiP2pChannel.sendMessage(WifiP2pServiceImpl.BLOCK_DISCOVERY, WifiP2pServiceImpl.DISABLED);
+
+    // Set the coexistence mode back to its default value
+    mWifiNative.setBluetoothCoexistenceMode(
+            mWifiNative.BLUETOOTH_COEXISTENCE_MODE_SENSE);
+
+    mDhcpActive = false;
+
+    startBatchedScan();
+    WifiNative.restartScan();
+}
+------------------------------------------------------------------------------------------------------------->
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public void setPowerSave(boolean enabled) {
+            if (enabled) {
+                doBooleanCommand("SET ps 1");
+            } else {
+                doBooleanCommand("SET ps 0");
+            }
+        }
+    
+------------------------------------------------------------------------------------------------------------->
+Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        char * wpa_supplicant_ctrl_iface_process(struct wpa_supplicant *wpa_s, char *buf, size_t *resp_len) {
+            if (os_strncmp(buf, "SET ", 4) == 0) {
+                if (wpa_supplicant_ctrl_iface_set(wpa_s, buf + 4))
+                    reply_len = -1;
+            }
+        }
+        ->  {
+            static int wpa_supplicant_ctrl_iface_set(struct wpa_supplicant *wpa_s, char *cmd) {
+                if (os_strcasecmp(cmd, "ps") == 0) {
+                    ret = wpa_drv_set_p2p_powersave(wpa_s, atoi(value), -1, -1);
+                }
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------->
+Driver_i.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        static inline int wpa_drv_set_p2p_powersave(struct wpa_supplicant *wpa_s, int legacy_ps, int opp_ps, int ctwindow)
+        {
+            if (!wpa_s->driver->set_p2p_powersave)
+                return -1;
+            return wpa_s->driver->set_p2p_powersave(wpa_s->drv_priv, legacy_ps,
+                    opp_ps, ctwindow);
+        }
+    }
+------------------------------------------------------------------------------------------------------->
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        const struct wpa_driver_ops wpa_driver_nl80211_ops = {
+            .set_p2p_powersave = nl80211_set_p2p_powersave,
+        }
+
+        static int nl80211_set_p2p_powersave(void *priv, int legacy_ps, int opp_ps, int ctwindow)
+        {
+            struct i802_bss *bss = priv;
+
+            wpa_printf(MSG_DEBUG, "nl80211: set_p2p_powersave (legacy_ps=%d "
+                    "opp_ps=%d ctwindow=%d)", legacy_ps, opp_ps, ctwindow);
+
+            if (opp_ps != -1 || ctwindow != -1) {
+        #ifdef ANDROID_P2P
+                wpa_driver_set_p2p_ps(priv, legacy_ps, opp_ps, ctwindow);
+        #else /* ANDROID_P2P */
+                return -1; /* Not yet supported */
+        #endif /* ANDROID_P2P */
+            }
+
+            if (legacy_ps == -1)
+                return 0;
+            if (legacy_ps != 0 && legacy_ps != 1)
+                return -1; /* Not yet supported */
+
+            return nl80211_set_power_save(bss, legacy_ps);
+        }
+        ->  {
+                static int nl80211_set_power_save(struct i802_bss *bss, int enabled)
+                {
+                    struct nl_msg *msg;
+
+                    msg = nlmsg_alloc();
+                    if (!msg)
+                        return -ENOMEM;
+
+                    nl80211_cmd(bss->drv, msg, 0, NL80211_CMD_SET_POWER_SAVE);
+                    NLA_PUT_U32(msg, NL80211_ATTR_IFINDEX, bss->ifindex);
+                    NLA_PUT_U32(msg, NL80211_ATTR_PS_STATE,
+                            enabled ? NL80211_PS_ENABLED : NL80211_PS_DISABLED);
+                    return send_and_recv_msgs(bss->drv, msg, NULL, NULL);
+                nla_put_failure:
+                    nlmsg_free(msg);
+                    return -ENOBUFS;
+                }
+            }
+    }
+------------------------------------------------------------------------------------------->
+Nl80211.c (net\wireless)
+->  {
+        static struct genl_ops nl80211_ops[] = {
+            {
+                .cmd = NL80211_CMD_SET_POWER_SAVE,
+                .doit = nl80211_set_power_save,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+        }
+
+        static int nl80211_set_power_save(struct sk_buff *skb, struct genl_info *info)
+        {
+            struct cfg80211_registered_device *rdev = info->user_ptr[0];
+            struct wireless_dev *wdev;
+            struct net_device *dev = info->user_ptr[1];
+            u8 ps_state;
+            bool state;
+            int err;
+
+            if (!info->attrs[NL80211_ATTR_PS_STATE])
+                return -EINVAL;
+
+            ps_state = nla_get_u32(info->attrs[NL80211_ATTR_PS_STATE]);
+
+            if (ps_state != NL80211_PS_DISABLED && ps_state != NL80211_PS_ENABLED)
+                return -EINVAL;
+
+            wdev = dev->ieee80211_ptr;
+
+            if (!rdev->ops->set_power_mgmt)
+                return -EOPNOTSUPP;
+
+            state = (ps_state == NL80211_PS_ENABLED) ? true : false;
+
+            if (state == wdev->ps)
+                return 0;
+
+            err = rdev_set_power_mgmt(rdev, dev, state, wdev->ps_timeout);
+            if (!err)
+                wdev->ps = state;
+            return err;
+        }
+    }
+-------------------------------------------------------------------------------------->
+Rdev-ops.h (net\wireless)
+->  {
+        static inline int rdev_set_power_mgmt(struct cfg80211_registered_device *rdev, struct net_device *dev, bool enabled, int timeout)
+        {
+            int ret;
+            trace_rdev_set_power_mgmt(&rdev->wiphy, dev, enabled, timeout);
+            ret = rdev->ops->set_power_mgmt(&rdev->wiphy, dev, enabled, timeout);
+            trace_rdev_return_int(&rdev->wiphy, ret);
+            return ret;
+        }
+    }
+---------------------------------------------------------------------------------------->
+Cfg.c (net\mac80211)
+->  {
+        struct cfg80211_ops mac80211_config_ops = {
+            .set_power_mgmt = ieee80211_set_power_mgmt,
+        }
+
+        static int ieee80211_set_power_mgmt(struct wiphy *wiphy, struct net_device *dev, bool enabled, int timeout) {
+            struct ieee80211_sub_if_data *sdata = IEEE80211_DEV_TO_SUB_IF(dev);
+            struct ieee80211_local *local = wdev_priv(dev->ieee80211_ptr);
+
+            if (sdata->vif.type != NL80211_IFTYPE_STATION)
+                return -EOPNOTSUPP;
+
+            if (!(local->hw.flags & IEEE80211_HW_SUPPORTS_PS))
+                return -EOPNOTSUPP;
+
+            if (enabled == sdata->u.mgd.powersave &&
+                    timeout == local->dynamic_ps_forced_timeout)
+                return 0;
+
+            sdata->u.mgd.powersave = enabled;
+            local->dynamic_ps_forced_timeout = timeout;
+
+            /* no change, but if automatic follow powersave */
+            mutex_lock(&sdata->u.mgd.mtx);
+            __ieee80211_request_smps(sdata, sdata->u.mgd.req_smps);
+            mutex_unlock(&sdata->u.mgd.mtx);
+
+            if (local->hw.flags & IEEE80211_HW_SUPPORTS_DYNAMIC_PS)
+                ieee80211_hw_config(local, IEEE80211_CONF_CHANGE_PS);
+
+            ieee80211_recalc_ps(local, -1);
+            ieee80211_recalc_ps_vif(sdata);
+
+            return 0;
+        }
+    }
+

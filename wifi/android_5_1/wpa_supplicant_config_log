@@ -1,0 +1,5 @@
+
+wpa_cli IFNAME=wlan0 log_level excessive
+
+rekey log:
+Group rekeying completed with

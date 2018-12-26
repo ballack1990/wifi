@@ -1,0 +1,169 @@
+在wifi_connect_flow中讲到，在wifi连接ap成功之后，如果当前没有打开漫游模式，那么通过dhcp动态获取ip地址，
+如果打开了漫游模式，那么流程如下：
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        class ObtainingIpState extends State {
+            if (!mWifiConfigStore.isUsingStaticIp(mLastNetworkId)) {
+                if (isRoaming()) {                                              // 如果正在漫游，那么走这里！！ 
+                    renewDhcp();
+                } else {
+                    // Remove any IP address on the interface in case we're switching from static
+                    // IP configuration to DHCP. This is safe because if we get here when not
+                    // roaming, we don't have a usable address.
+                    clearIPv4Address(mInterfaceName);
+                    startDhcp();                                                // 动态获取ip地址
+                }
+            } 
+        }
+    }
+    ->  {
+            boolean isRoaming() {
+                return mAutoRoaming == WifiAutoJoinController.AUTO_JOIN_ROAMING
+                    || mAutoRoaming == WifiAutoJoinController.AUTO_JOIN_EXTENDED_ROAMING;
+            }
+
+            void renewDhcp() {
+                if (mDhcpStateMachine == null) {
+                    mDhcpStateMachine = DhcpStateMachine.makeDhcpStateMachine(
+                            mContext, WifiStateMachine.this, mInterfaceName);
+                }
+                mDhcpStateMachine.registerForPreDhcpNotification();
+                mDhcpStateMachine.sendMessage(DhcpStateMachine.CMD_RENEW_DHCP);
+            }
+        }
+----------------------------------------------------------------------------------------------------------------------->
+根据wifi_connect_flow流程可以知道，之前是已经执行过startDhcp流程，所以此时DhcpStateMachine处在mRunningState状态：
+DhcpStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\net)
+->  {
+        class RunningState extends State {
+            public boolean processMessage(Message message) {
+                switch (message.what) {
+                    case CMD_RENEW_DHCP:
+                        if (mRegisteredForPreDhcpNotification) {
+                            /* Notify controller before starting DHCP */
+                            mController.sendMessage(CMD_PRE_DHCP_ACTION);
+                            transitionTo(mWaitBeforeRenewalState);
+                        } else {
+                            if (!runDhcp(DhcpAction.RENEW)) {
+                                transitionTo(mStoppedState);
+                            }
+                            mDhcpRenewWakeLock.release();
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+然后流程和wifi_connect_flow的一样，DhcpStateMachine会收到CMD_PRE_DHCP_ACTION_COMPLETE消息，此时处在WaitBeforeRenewalState状态：
+
+class WaitBeforeRenewalState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case CMD_PRE_DHCP_ACTION_COMPLETE:
+                if (runDhcp(DhcpAction.RENEW)) {
+                    transitionTo(mRunningState);
+                } else {
+                    transitionTo(mStoppedState);
+                }
+                break;
+        }
+    }
+}
+->  {
+        private boolean runDhcp(DhcpAction dhcpAction) {
+            if (dhcpAction == DhcpAction.RENEW) {
+                if (DBG) Log.d(TAG, "DHCP renewal on " + mInterfaceName);
+                success = NetworkUtils.runDhcpRenew(mInterfaceName, dhcpResults);
+                if (success) dhcpResults.updateFromDhcpRequest(mDhcpResults);
+            }
+        }
+    }
+-------------------------------------------------------------------------------------->
+android_net_NetUtils.cpp (z:\home\ballack\prj\rk3288\frameworks\base\core\jni)
+->  {
+        static JNINativeMethod gNetworkUtilMethods[] = {
+            { "runDhcpRenew", "(Ljava/lang/String;Landroid/net/DhcpResults;)Z",  (void *)android_net_utils_runDhcpRenew },
+        }
+    }
+    ->  {
+            static jboolean android_net_utils_runDhcpRenew(JNIEnv* env, jobject clazz, jstring ifname, jobject info)
+            {
+                return android_net_utils_runDhcpCommon(env, clazz, ifname, info, true);
+            }
+        }
+        ->  {
+                static jboolean android_net_utils_runDhcpCommon(JNIEnv* env, jobject clazz, jstring ifname, jobject dhcpResults, bool renew) {
+                    if (renew) {
+                        result = ::dhcp_do_request_renew(nameStr, ipaddr, gateway, &prefixLength,
+                                dns, server, &lease, vendorInfo, domains, mtu);
+                    } else {
+                        result = ::dhcp_do_request(nameStr, ipaddr, gateway, &prefixLength,
+                                dns, server, &lease, vendorInfo, domains, mtu);
+                    }
+                }
+            }
+---------------------------------------------------------------------------------------------------------------->
+Dhcp_utils.c (z:\home\ballack\prj\rk3288\system\core\libnetutils)
+->  {
+        static const char DHCP_PROP_NAME_PREFIX[]  = "dhcp";
+        static const char DAEMON_NAME_RENEW[]  = "iprenew";
+
+        int dhcp_do_request_renew(const char *interface,
+            char *ipaddr,
+            char *gateway,
+            uint32_t *prefixLength,
+            char *dns[],
+            char *server,
+            uint32_t *lease,
+            char *vendorInfo,
+            char *domain,
+            char *mtu)
+        {
+            char result_prop_name[PROPERTY_KEY_MAX];
+            char prop_value[PROPERTY_VALUE_MAX] = {'\0'};
+            char daemon_cmd[PROPERTY_VALUE_MAX * 2];
+            const char *ctrl_prop = "ctl.start";
+
+            char p2p_interface[MAX_INTERFACE_LENGTH];
+
+            get_p2p_interface_replacement(interface, p2p_interface);
+
+            // iprenew.wlan0.result
+            snprintf(result_prop_name, sizeof(result_prop_name), "%s.%s.result",
+                    DHCP_PROP_NAME_PREFIX,
+                    p2p_interface);
+
+            /* Erase any previous setting of the dhcp result property */
+            property_set(result_prop_name, "");
+
+            /* Start the renew daemon and wait until it's ready */
+
+            //   iprenew_wlan0:wlan0 -t 60
+            snprintf(daemon_cmd, sizeof(daemon_cmd), "%s_%s:%s -t 60", DAEMON_NAME_RENEW,
+                    p2p_interface, interface);
+            memset(prop_value, '\0', PROPERTY_VALUE_MAX);
+            property_set(ctrl_prop, daemon_cmd);
+
+            /* Wait for the daemon to return a result */
+            if (wait_for_property(result_prop_name, NULL, 60) < 0) {
+                snprintf(errmsg, sizeof(errmsg), "%s", "Timed out waiting for DHCP Renew to finish");
+                return -1;
+            }
+
+            if (!property_get(result_prop_name, prop_value, NULL)) {
+                /* shouldn't ever happen, given the success of wait_for_property() */
+                snprintf(errmsg, sizeof(errmsg), "%s", "DHCP Renew result property was not set");
+                return -1;
+            }
+            if (strcmp(prop_value, "ok") == 0) {
+                return fill_ip_info(interface, ipaddr, gateway, prefixLength, dns,
+                        server, lease, vendorInfo, domain, mtu);
+            } else {
+                snprintf(errmsg, sizeof(errmsg), "DHCP Renew result was %s", prop_value);
+                return -1;
+            }
+        }
+    }
+
+

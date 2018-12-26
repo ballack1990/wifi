@@ -1,0 +1,318 @@
+Settings.java (z:\home\ballack\prj\rk3288_4.4\packages\apps\settings\src\com\android\settings)
+->  {
+        public View getView(int position, View convertView, ViewGroup parent) {
+            mWifiEnabler.setSwitch(holder.switch_);
+        }
+    }
+--------------------------------------------------------------------------------------------------------->
+WifiEnabler.java (z:\home\ballack\prj\rk3288_4.4\packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        public void setSwitch(Switch switch_) {
+            if (mSwitch == switch_) return;
+            mSwitch.setOnCheckedChangeListener(null);
+            mSwitch = switch_;
+            mSwitch.setOnCheckedChangeListener(this);
+
+            final int wifiState = mWifiManager.getWifiState();
+            boolean isEnabled = wifiState == WifiManager.WIFI_STATE_ENABLED;
+            boolean isDisabled = wifiState == WifiManager.WIFI_STATE_DISABLED;
+            mSwitch.setChecked(isEnabled);
+            mSwitch.setEnabled(isEnabled || isDisabled);
+        }
+        
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            int wifiApState = mWifiManager.getWifiApState();
+            if (isChecked && ((wifiApState == WifiManager.WIFI_AP_STATE_ENABLING) ||
+                        (wifiApState == WifiManager.WIFI_AP_STATE_ENABLED))) {
+                mWifiManager.setWifiApEnabled(null, false);                             // 如果当前处在ap模式，则关掉ap模式
+            }
+
+            mSwitch.setEnabled(false);
+            if (!mWifiManager.setWifiEnabled(isChecked)) {                              // 打开station模式
+                // Error
+                mSwitch.setEnabled(true);
+                Toast.makeText(mContext, R.string.wifi_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+WifiManager.java (base\wifi\java\android\net\wifi)
+->  {
+        public boolean setWifiEnabled(boolean enabled) {
+            return mService.setWifiEnabled(enabled);
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+WifiService.java (base\services\java\com\android\server\wifi)
+->  {
+        public WifiService(Context context) {
+            mWifiStateMachine = new WifiStateMachine(mContext, mInterfaceName);                 // 构建WifiStateMachine状态机
+            mWifiStateMachine.enableRssiPolling(true);
+    
+            mWifiController = new WifiController(mContext, this, wifiThread.getLooper());       // 构建WifiController状态机
+            mWifiController.start();
+        }
+
+        public synchronized boolean setWifiEnabled(boolean enable) {
+            mWifiController.sendMessage(CMD_WIFI_TOGGLED);                  // 向mWifiController状态机发送CMD_WIFI_TOGGLED命令
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+WifiController.java (base\services\java\com\android\server\wifi)
+->  {
+        WifiController(Context context, WifiService service, Looper looper) {
+            addState(mDefaultState);
+                addState(mApStaDisabledState, mDefaultState);
+                addState(mStaEnabledState, mDefaultState);
+                    addState(mDeviceActiveState, mStaEnabledState);
+                    addState(mDeviceInactiveState, mStaEnabledState);
+                        addState(mScanOnlyLockHeldState, mDeviceInactiveState);
+                        addState(mFullLockHeldState, mDeviceInactiveState);
+                        addState(mFullHighPerfLockHeldState, mDeviceInactiveState);
+                        addState(mNoLockHeldState, mDeviceInactiveState);
+                addState(mStaDisabledWithScanState, mDefaultState);
+                addState(mApEnabledState, mDefaultState);
+                addState(mEcmState, mDefaultState);
+
+            if (mSettingsStore.isScanAlwaysAvailable()) {
+                setInitialState(mStaDisabledWithScanState);
+            } else {
+                setInitialState(mApStaDisabledState);                       // 初始状态在mApStaDisabledState模式
+            }
+        }
+
+        class ApStaDisabledState extends State {
+            public void enter() {
+                mWifiStateMachine.setSupplicantRunning(false);              // 向mWifiStateMachine状态机发送CMD_STOP_SUPPLICANT命令
+            }
+
+            public boolean processMessage(Message msg) {
+                switch (msg.what) {
+                    case CMD_WIFI_TOGGLED:
+                        transitionTo(mDeviceActiveState);
+                }
+            }
+        }
+
+        // 由于之前WifiController构造函数中有如下定义：addState(mDeviceActiveState, mStaEnabledState);
+        // 所以transitionTo(mDeviceActiveState);会先调用父类mStaEnabledState的Enter函数。
+        class StaEnabledState extends State {
+            public void enter() {
+                mWifiStateMachine.setSupplicantRunning(true);               // 向mWifiStateMachine状态机发送CMD_START_SUPPLICANT命令
+            }
+        }
+
+        class DeviceActiveState extends State {
+            public void enter() {
+                mWifiStateMachine.setOperationalMode(WifiStateMachine.CONNECT_MODE);  // 向mWifiStateMachine状态机发送CMD_SET_OPERATIONAL_MODE命令
+                mWifiStateMachine.setDriverStart(true);                               // 向mWifiStateMachine状态机发送CMD_START_DRIVER命令
+                mWifiStateMachine.setHighPerfModeEnabled(false);                      // 向mWifiStateMachine状态机发送CMD_SET_HIGH_PERF_MODE命令
+            }
+    }
+----------------------------------------------------------------------------------------------------------->
+WifiStateMachine.java (base\wifi\java\android\net\wifi)
+->  {
+        public class WifiStateMachine extends StateMachine {
+            public WifiStateMachine(Context context, String wlanInterface) {
+                mWifiNative = new WifiNative(mInterfaceName);
+                mWifiConfigStore = new WifiConfigStore(context, mWifiNative);
+                mWifiMonitor = new WifiMonitor(this, mWifiNative);
+
+                addState(mDefaultState);
+                    addState(mInitialState, mDefaultState);
+                    addState(mSupplicantStartingState, mDefaultState);
+                    addState(mSupplicantStartedState, mDefaultState);
+                        addState(mDriverStartingState, mSupplicantStartedState);
+                        addState(mDriverStartedState, mSupplicantStartedState);
+                            addState(mScanModeState, mDriverStartedState);
+                            addState(mConnectModeState, mDriverStartedState);
+                                addState(mL2ConnectedState, mConnectModeState);
+                                    addState(mObtainingIpState, mL2ConnectedState);
+                                    addState(mVerifyingLinkState, mL2ConnectedState);
+                                    addState(mCaptivePortalCheckState, mL2ConnectedState);
+                                    addState(mConnectedState, mL2ConnectedState);
+                                addState(mDisconnectingState, mConnectModeState);
+                                addState(mDisconnectedState, mConnectModeState);
+                                addState(mWpsRunningState, mConnectModeState);
+                        addState(mWaitForP2pDisableState, mSupplicantStartedState);
+                        addState(mDriverStoppingState, mSupplicantStartedState);
+                        addState(mDriverStoppedState, mSupplicantStartedState);
+                    addState(mSupplicantStoppingState, mDefaultState);
+                    addState(mSoftApStartingState, mDefaultState);
+                    addState(mSoftApStartedState, mDefaultState);
+                        addState(mTetheringState, mSoftApStartedState);
+                        addState(mTetheredState, mSoftApStartedState);
+                        addState(mUntetheringState, mSoftApStartedState);
+
+                setInitialState(mInitialState);
+            }
+        }
+
+        class InitialState extends State { 
+            public boolean processMessage(Message message) {
+                switch (message.what) {
+                    case CMD_START_SUPPLICANT:
+                        if (mWifiNative.loadDriver()) {                                         // 加载wifi驱动
+                            mNwService.wifiFirmwareReload(mInterfaceName, "STA");               // 重新加载station的固件版本
+
+                            // A runtime crash can leave the interface up and
+                            // this affects connectivity when supplicant starts up.
+                            // Ensure interface is down before a supplicant start.
+                            mNwService.setInterfaceDown(mInterfaceName);                        // 在启动supplicant之前节点要处于down状态
+                            // Set privacy extensions
+                            mNwService.setInterfaceIpv6PrivacyExtensions(mInterfaceName, true);
+
+                            // IPv6 is enabled only as long as access point is connected since:
+                            // - IPv6 addresses and routes stick around after disconnection
+                            // - kernel is unaware when connected and fails to start IPv6 negotiation
+                            // - kernel can start autoconfiguration when 802.1x is not complete
+                            mNwService.disableIpv6(mInterfaceName);
+
+                            /* Stop a running supplicant after a runtime restart
+                             * Avoids issues with drivers that do not handle interface down
+                             * on a running supplicant properly.
+                             */
+                            mWifiMonitor.killSupplicant(mP2pSupported);
+                            if(mWifiNative.startSupplicant(mP2pSupported)) {                    // 启动supplicant
+                                setWifiState(WIFI_STATE_ENABLING);
+                                if (DBG) log("Supplicant start successful");
+                                mWifiMonitor.startMonitoring();                                 // 监听supplicant上传的消息
+                                transitionTo(mSupplicantStartingState);                         // 切换到mSupplicantStartingStat状态
+                            } else {
+                                loge("Failed to start supplicant!");
+                            }
+                        }
+                        break;
+                }
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+android_net_wifi_WifiNative.cpp (base\core\jni)
+->  {
+        static JNINativeMethod gWifiMethods[] = {
+            /* name, signature, funcPtr */
+
+            { "loadDriver", "()Z",  (void *)android_net_wifi_loadDriver },
+            { "isDriverLoaded", "()Z",  (void *)android_net_wifi_isDriverLoaded },
+            { "unloadDriver", "()Z",  (void *)android_net_wifi_unloadDriver },
+            { "startSupplicant", "(Z)Z",  (void *)android_net_wifi_startSupplicant },
+            { "killSupplicant", "(Z)Z",  (void *)android_net_wifi_killSupplicant },
+            { "connectToSupplicantNative", "()Z", (void *)android_net_wifi_connectToSupplicant },
+            { "closeSupplicantConnectionNative", "()V",
+                (void *)android_net_wifi_closeSupplicantConnection },
+            { "waitForEventNative", "()Ljava/lang/String;", (void*)android_net_wifi_waitForEvent },
+            { "doBooleanCommandNative", "(Ljava/lang/String;)Z", (void*)android_net_wifi_doBooleanCommand },
+            { "doIntCommandNative", "(Ljava/lang/String;)I", (void*)android_net_wifi_doIntCommand },
+            { "doStringCommandNative", "(Ljava/lang/String;)Ljava/lang/String;",
+                (void*) android_net_wifi_doStringCommand },
+        };
+
+        static jboolean android_net_wifi_loadDriver(JNIEnv* env, jobject)
+        {
+            return (::wifi_load_driver() == 0);
+        }
+
+        static jboolean android_net_wifi_startSupplicant(JNIEnv* env, jobject, jboolean p2pSupported)
+        {
+            return (::wifi_start_supplicant(p2pSupported) == 0);
+        }
+
+        static jstring android_net_wifi_waitForEvent(JNIEnv* env, jobject)
+        {
+            char buf[EVENT_BUF_SIZE];
+            int nread = ::wifi_wait_for_event(buf, sizeof buf);
+            if (nread > 0) {
+                return env->NewStringUTF(buf);
+            } else {
+                return NULL;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+WifiMonitor.java (base\wifi\java\android\net\wifi)
+->  {
+        public void startMonitoring() {
+            WifiMonitorSingleton.getMonitor().startMonitoring(mInterfaceName);
+        }
+
+        public synchronized void startMonitoring(String iface) {
+            if (mConnected) {
+                m.mMonitoring = true;
+                m.mWifiStateMachine.sendMessage(SUP_CONNECTION_EVENT);
+            } else {
+                if (DBG) Log.d(TAG, "connecting to supplicant");
+                int connectTries = 0;
+                while (true) {
+                    if (mWifiNative.connectToSupplicant()) {                        // 连接到supplicant
+                        m.mMonitoring = true;
+                        m.mWifiStateMachine.sendMessage(SUP_CONNECTION_EVENT);      // 发送连接supplicant成功的消息
+                                                                                    // 向mWifiStateMachine状态机发送SUP_CONNECTION_EVENT命令
+
+                        new MonitorThread(mWifiNative, this).start();               // 创建监听线程，用于接收supplicant上传的消息
+                        mConnected = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private static class MonitorThread extends Thread {
+            public void run() {
+                //noinspection InfiniteLoopStatement
+                for (;;) {
+                    String eventStr = mWifiNative.waitForEvent();                   // 等待supplicant上传的消息
+                    dispatchEvent(eventStr);                                        // 分发消息
+                }
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+WifiStateMachine.java (base\wifi\java\android\net\wifi)
+->  {
+        class SupplicantStartingState extends State {
+            public boolean processMessage(Message message) {
+                switch(message.what) {
+                    case WifiMonitor.SUP_CONNECTION_EVENT:
+                        if (DBG) log("Supplicant connection established");
+                        setWifiState(WIFI_STATE_ENABLED);
+                        mSupplicantRestartCount = 0;
+                        /* Reset the supplicant state to indicate the supplicant
+                         * state is not known at this time */
+                        mSupplicantStateTracker.sendMessage(CMD_RESET_SUPPLICANT_STATE);
+                        /* Initialize data structures */
+                        mLastBssid = null;
+                        mLastNetworkId = WifiConfiguration.INVALID_NETWORK_ID;
+                        mLastSignalLevel = -1;
+
+                        mWifiInfo.setMacAddress(mWifiNative.getMacAddress());       // 记录MAC地址
+                        mWifiConfigStore.loadAndEnableAllNetworks();
+                        initializeWpsDetails();
+
+                        sendSupplicantConnectionChangedBroadcast(true);
+                        transitionTo(mDriverStartedState);                          // 切换到mDriverStartedState状态
+                        break;
+                }
+        }
+
+        // 由于之前WifiStateMachine构造函数中有如下定义：addState(mDriverStartedState, mSupplicantStartedState);
+        // 所以transitionTo(mDriverStartedState);会先调用父类mSupplicantStartedState的Enter函数。
+        class SupplicantStartedState extends State {
+            public void enter() {
+                /* Wifi is available as long as we have a connection to supplicant */
+                mNetworkInfo.setIsAvailable(true);
+
+                int defaultInterval = mContext.getResources().getInteger(                   // 获取supplicant默认的扫描间隔
+                        R.integer.config_wifi_supplicant_scan_interval);
+
+                mSupplicantScanIntervalMs = Settings.Global.getLong(mContext.getContentResolver(),
+                        Settings.Global.WIFI_SUPPLICANT_SCAN_INTERVAL_MS,
+                        defaultInterval);
+
+                mWifiNative.setScanInterval((int)mSupplicantScanIntervalMs / 1000);         // 设置扫描间隔
+            }
+        }
+
+        class DriverStartedState extends State {
+
+        }
+    }

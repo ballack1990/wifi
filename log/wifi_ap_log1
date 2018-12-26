@@ -1,0 +1,144 @@
+--------- beginning of system
+D/PowerManagerService(  452): LockScreenOff10
+--------- beginning of main
+D/SurfaceFlinger(  155): shader cache generated - 24 shaders in 223.576492 ms
+D/PowerManagerService(  452): LockScreenOff10
+D/PowerManagerService(  452): LockScreenOff10
+D/PowerManagerService(  452): LockScreenOff10
+D/PowerManagerService(  452): LockScreenOff10
+D/PowerManagerService(  452): LockScreenOff10
+D/PowerManagerService(  452): LockScreenOff10
+W/AudioTrack(  452): AUDIO_OUTPUT_FLAG_FAST denied by client
+W/AppOps  (  452): Bad call: specified package media under uid 1000 but it is really 1013
+D/RkWifiCtrl(  452): check_wifi_preload: Wifi driver is preload when bootup.
+E/WifiStateMachine(  452): setWifiApState: enabling
+W/AppOps  (  452): Bad call: specified package media under uid 1000 but it is really 1013
+D/AudioHardwareTiny(  165): start_output_stream
+D/AudioHardwareTiny(  165): Audio HAL start_output_stream  out->device = 0x80400
+D/RkWifiCtrl(  161): check_wifi_chip_type_string: AP6210
+D/SoftapController(  161): Softap fwReload - Ok
+D/RkWifiCtrl(  161): check_wifi_chip_type_string: AP6210
+D/SoftapController(  161): int SoftapController::startSoftap(): /system/bin/hostapd
+D/SoftapController(  161): SoftAP started successfully
+E/hostapd ( 1345): Configuration file: /data/misc/wifi/hostapd.conf
+W/AppOps  (  452): Bad call: specified package media under uid 1000 but it is really 1013
+E/WifiStateMachine(  452): Soft AP start successful
+E/WifiStateMachine(  452): ---- mSoftApWakeLock.acquire ----
+E/WifiStateMachine(  452): setWifiApState: enabled
+D/PowerManagerService(  452): LockScreenOff10
+D/Tethering(  452): sendTetherStateChangedBroadcast 1, 0, 0
+D/BluetoothAdapter( 1041): 879509774: getState() :  mService = null. Returning STATE_OFF
+E/hostapd ( 1345): Using interface wlan0 with hwaddr 02:1a:11:f3:53:a8 and ssid "firefly"
+E/WifiStateMachine(  452): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:53a8/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  452): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES
+I/hostapd ( 1345): wlan0: interface state UNINITIALIZED->ENABLED
+I/hostapd ( 1345): wlan0: AP-ENABLED 
+D/CommandListener(  161): Setting iface cfg
+D/CommandListener(  161): Trying to bring up wlan0
+D/Tethering(  452): Tethering wlan0
+D/Tethering(  452): InitialState.processMessage what=2
+D/Tethering(  452): sendTetherStateChangedBroadcast 0, 0, 0
+D/TetherController(  161): tetherInterface(wlan0)
+D/BluetoothAdapter( 1041): 879509774: getState() :  mService = null. Returning STATE_OFF
+E/WifiStateMachine(  452): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:53a8/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:53a8/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  452): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES v4
+D/Tethering(  452): Tethered wlan0
+D/Tethering(  452): sendTetherStateChangedBroadcast 0, 1, 0
+D/Tethering(  452): MasterInitialState.processMessage what=1
+D/BluetoothAdapter( 1041): 879509774: getState() :  mService = null. Returning STATE_OFF
+D/TetherController(  161): Setting IP forward enable = 1
+D/TetherController(  161): Starting tethering services
+D/TetherController(  161): Sending update msg to dnsmasq [update_ifaces:wlan0]
+D/TetherController(  161): Tethering services running
+D/Tethering(  452): startListeningForSimChanges
+D/Tethering(  452): simchange mGenerationNumber=3, current generationNumber=3
+D/Tethering(  452): got Sim changed to state NOT_READY, mSimAbsentSeen=false
+I/dnsmasq ( 1348): started, version 2.51 cachesize 150
+I/dnsmasq ( 1348): compile time options: no-IPv6 GNU-getopt no-DBus no-I18N DHCP no-scripts no-TFTP
+W/dnsmasq ( 1348): warning: no upstream servers configured
+I/dnsmasq ( 1348): DHCP, IP range 192.168.49.2 -- 192.168.49.254, lease time 1h
+I/dnsmasq ( 1348): DHCP, IP range 192.168.48.2 -- 192.168.48.254, lease time 1h
+I/dnsmasq ( 1348): DHCP, IP range 192.168.47.2 -- 192.168.47.254, lease time 1h
+I/dnsmasq ( 1348): DHCP, IP range 192.168.46.2 -- 192.168.46.254, lease time 1h
+I/dnsmasq ( 1348): DHCP, IP range 192.168.45.2 -- 192.168.45.254, lease time 1h
+I/dnsmasq ( 1348): DHCP, IP range 192.168.44.2 -- 192.168.44.254, lease time 1h
+I/dnsmasq ( 1348): DHCP, IP range 192.168.43.2 -- 192.168.43.254, lease time 1h
+I/dnsmasq ( 1348): DHCP, IP range 192.168.42.2 -- 192.168.42.254, lease time 1h
+I/dnsmasq ( 1348): read /etc/hosts - 1 addresses
+D/Tethering(  452): chooseUpstreamType(true), preferredApn =5, got type=-1
+D/ConnectivityService(  452): requestNetwork for NetworkRequest [ id=4, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+D/ConnectivityService(  452): sending new NetworkRequest to factories
+D/ConnectivityManager(  452): sending expire msg with seqNum 0 and delay 60000
+D/Ethernet(  452): got request NetworkRequest [ id=4, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/PPPOE   (  452): got request NetworkRequest [ id=4, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/ConnectivityManager(  452): starting startUsingNetworkFeature for request NetworkRequest [ id=4, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+D/Tethering(  452): notifying tethered with iface =null
+E/WifiStateMachine(  452): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:53a8/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:53a8/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+D/Tethering(  452): TetheredState.processMessage what=12
+E/WifiStateMachine(  452): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES v4
+D/WIFI_UT (  452): got request NetworkRequest [ id=4, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/WIFI    (  452): got request NetworkRequest [ id=4, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+E/WifiStateMachine(  452): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:53a8/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:53a8/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  452): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES v4
+D/AudioHardwareTiny(  165): close device
+W/AppOps  (  452): Bad call: specified package media under uid 1000 but it is really 1013
+D/SystemDeviceService( 1125): Network changed, but ipaddress not changed. 
+D/PowerManagerService(  452): screen time out
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  452): write_int failed to open /sys/class/backlight/rk28_bl/brightness

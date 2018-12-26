@@ -1,0 +1,20 @@
+--------- beginning of main
+D/AudioHardwareTiny(  161): close device
+--------- beginning of system
+W/AppOps  (  466): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  466): screen time out
+D/ConnectivityManager.CallbackHandler(  466): CM callback handler got msg 524298
+D/ConnectivityManager(  466): expireRequest with 84, 83
+I/hostapd ( 1981): wlan0: STA 8c:be:be:65:38:3d IEEE 802.11: associated
+I/hostapd ( 1981): wlan0: STA 8c:be:be:65:38:3d IEEE 802.11: associated
+I/hostapd ( 1981): wlan0: AP-STA-CONNECTED 8c:be:be:65:38:3d
+I/hostapd ( 1981): wlan0: STA 8c:be:be:65:38:3d WPA: pairwise key handshake completed (RSN)
+I/hostapd ( 1981): wlan0: STA 8c:be:be:65:38:3d WPA: pairwise key handshake completed (RSN)
+I/dnsmasq ( 1984): DHCPREQUEST(wlan0) 192.168.1.109 8c:be:be:65:38:3d 
+I/dnsmasq ( 1984): DHCPNAK(wlan0) 192.168.1.109 8c:be:be:65:38:3d wrong address
+I/dnsmasq ( 1984): DHCPREQUEST(wlan0) 192.168.1.109 8c:be:be:65:38:3d 
+I/dnsmasq ( 1984): DHCPNAK(wlan0) 192.168.1.109 8c:be:be:65:38:3d wrong network
+I/dnsmasq ( 1984): DHCPDISCOVER(wlan0) 8c:be:be:65:38:3d 
+I/dnsmasq ( 1984): DHCPOFFER(wlan0) 192.168.43.235 8c:be:be:65:38:3d 
+I/dnsmasq ( 1984): DHCPREQUEST(wlan0) 192.168.43.235 8c:be:be:65:38:3d 
+I/dnsmasq ( 1984): DHCPACK(wlan0) 192.168.43.235 8c:be:be:65:38:3d 

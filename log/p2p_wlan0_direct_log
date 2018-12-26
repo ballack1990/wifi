@@ -1,0 +1,34 @@
+
+-01 12:03:38.577 D/AudioHardwareTiny(  174): The current HDMI is DVI mode
+01-01 12:03:38.592 I/wpa_supplicant(  591): p2p-wlan0-0: WPS-PBC-ACTIVE 
+01-01 12:03:38.612 E/WifiStateMachine(  452): Turn on scanning after p2p disconnected
+01-01 12:03:38.803 W/AppOps  (  452): Bad call: specified package media under uid 1000 but it is really 1013
+01-01 12:03:39.318 D/PowerManagerService(  452): LockScreenOff10
+<4>[  216.397555] wl_notify_connect_status_ap: connected device b2:f1:ec:33:a5:5e
+01-01 12:03:39.743 I/wpa_supplicant(  591): p2p-wlan0-0: CTRL-EVENT-EAP-STARTED b2:f1:ec:33:a5:5e
+01-01 12:03:39.743 I/wpa_supplicant(  591): p2p-wlan0-0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=1
+01-01 12:03:39.772 I/wpa_supplicant(  591): p2p-wlan0-0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=14122 method=254
+01-01 12:03:39.870 D/PowerManagerService(  452): LockScreenOff10
+01-01 12:03:40.072 I/wpa_supplicant(  591): p2p-wlan0-0: WPS-REG-SUCCESS b2:f1:ec:33:a5:5e 2d3136d9-08c5-50eb-b67a-3d7ffefd9ebf
+01-01 12:03:40.075 I/wpa_supplicant(  591): p2p-wlan0-0: WPS-PBC-DISABLE 
+01-01 12:03:40.075 I/wpa_supplicant(  591): p2p-wlan0-0: WPS-SUCCESS 
+01-01 12:03:40.075 I/wpa_supplicant(  591): p2p-wlan0-0: CTRL-EVENT-EAP-FAILURE b2:f1:ec:33:a5:5e
+<6>[  216.738829] CFG80211-ERROR) wl_notify_connect_status_ap : event WLC_E_DISASSOC_IND(12) status 0 reason 8
+<4>[  216.738992] wl_notify_connect_status_ap: disassociated device b2:f1:ec:33:a5:5e
+<4>[  216.748417] Disconnect STA : b2:f1:ec:33:a5:5e scb_val.val 3
+<6>[  216.749189] CFG80211-ERROR) wl_notify_connect_status_ap : event WLC_E_DEAUTH(5) status 0 reason 3
+<4>[  216.749251] wl_notify_connect_status_ap: deauthenticated device b2:f1:ec:33:a5:5e
+<4>[  216.752829] Disconnect STA : b2:f1:ec:33:a5:5e scb_val.val 3
+<4>[  216.778111] wl_notify_connect_status_ap: connected device b2:f1:ec:33:a5:5e
+01-01 12:03:40.151 I/wpa_supplicant(  591): p2p-wlan0-0: AP-STA-CONNECTED b2:f1:ec:33:a5:5e p2p_dev_addr=b2:f1:ec:33:25:5e
+01-01 12:03:40.151 I/wpa_supplicant(  591): AP-STA-CONNECTED b2:f1:ec:33:a5:5e p2p_dev_addr=b2:f1:ec:33:25:5e
+01-01 12:03:40.151 E/wpa_supplicant(  591): Writing configuration file '/data/misc/wifi/p2p_supplicant.conf.tmp'
+01-01 12:03:40.428 I/dnsmasq ( 1338): DHCPREQUEST(p2p-wlan0-0) 192.168.49.150 b2:f1:ec:33:a5:5e 
+01-01 12:03:40.428 I/dnsmasq ( 1338): DHCPACK(p2p-wlan0-0) 192.168.49.150 b2:f1:ec:33:a5:5e android-4c2ac8b2e9506d2
+01-01 12:03:41.744 D/AudioHardwareTiny(  174): close device
+01-01 12:03:41.745 W/AppOps  (  452): Bad call: specified package media under uid 1000 but it is really 1013
+01-01 12:03:42.265 D/SystemDeviceService( 1158): Network changed, but ipaddress not changed. 
+01-01 12:03:45.195 E/WifiStateMachine(  452): startDelayedScan send -> 23 milli 10000
+01-01 12:03:45.201 E/WifiStateMachine(  452): [1,293,883,425,200 ms] noteScanstart no scan source uid -2
+01-01 12:03:47.417 E/WifiStateMachine(  452): [1,293,883,427,416 ms] noteScanEnd no scan source onTime=0
+01-01 12:03:47.425 E/WifiStateMachine(  452): wifi setScanResults statecom.android.server.wifi.WifiStateMachine$DisconnectedState@1cfcc8b sup_state=SCANNING debouncing=false mConnectionRequests=1 selection=<none>

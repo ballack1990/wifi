@@ -1,0 +1,1933 @@
+/home/ballack/prj/rk3288/device/rockchip/common/init.connectivity.rc
+
+########## kernel version >= 3.10.x ##########
+service wpa_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/wpa_supplicant_overlay.conf \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+
+service p2p_supplicant /system/bin/wpa_supplicant \
+    -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \
+    -I/system/etc/wifi/p2p_supplicant_overlay.conf \
+    -puse_p2p_group_interface=1p2p_device=1 \
+    -m/data/misc/wifi/p2p_supplicant.conf \
+    -e/data/misc/wifi/entropy.bin -g@android:wpa_wlan0
+    class main
+    socket wpa_wlan0 dgram 660 wifi wifi
+    disabled
+    oneshot
+---------------------------------------------------------------------------------------------------->
+Main.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        os_program_init();
+
+        for (;;) {
+            c = getopt(argc, argv,
+                    "b:Bc:C:D:de:f:g:G:hi:I:KLm:No:O:p:P:qsTtuvW");
+            if (c < 0)
+                break;
+            switch (c) {
+                case 'c':
+                    iface->confname = optarg;
+                    break;
+                case 'D':
+                    iface->driver = optarg;
+                    break;
+                case 'e':
+                    params.entropy_file = optarg;
+                    break;
+                case 'g':
+                    params.ctrl_interface = optarg;
+                    break;
+                case 'i':
+                    iface->ifname = optarg;
+                    break;
+                case 'I':
+                    iface->confanother = optarg;
+                    break;
+            #ifdef CONFIG_P2P
+                case 'm':
+                    iface->conf_p2p_dev = optarg;
+                    break;
+            #endif /* CONFIG_P2P */
+            }
+        }
+
+        global = wpa_supplicant_init(&params);
+
+        wpa_s = wpa_supplicant_add_iface(global, &ifaces[i]);
+
+    #ifdef CONFIG_P2P
+        if (wpa_s->global->p2p == NULL &&
+                (wpa_s->drv_flags &
+                 WPA_DRIVER_FLAGS_DEDICATED_P2P_DEVICE) &&
+                wpas_p2p_add_p2pdev_interface(wpa_s, iface->conf_p2p_dev) < 0)
+            exitcode = -1;
+    #endif /* CONFIG_P2P */
+
+        wpa_supplicant_run(global);
+
+        wpa_supplicant_deinit(global);
+    }
+}
+-------------------------------------------------------------------------------------------------->
+Os_unix.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\utils)
+->  {
+        int os_program_init(void) {
+            setgid(AID_WIFI);           // 设置进程组ID为   AID_WIFI
+            setuid(AID_WIFI);           // 设置进程用户ID为 AID_WIFI
+        }
+    }
+----------------------------------------------------------------------------------------------------->
+Wpa_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        struct wpa_global * wpa_supplicant_init(struct wpa_params *params) {
+            #ifndef CONFIG_NO_WPA_MSG
+                wpa_msg_register_ifname_cb(wpa_supplicant_msg_ifname_cb);   // 注册ifname callback
+            #endif /* CONFIG_NO_WPA_MSG */
+
+            eap_register_methods();                                         // 注册各种EAP函数！！！
+
+            if (params->ctrl_interface)
+                global->params.ctrl_interface = os_strdup(params->ctrl_interface);
+
+            eloop_init();
+
+            global->ctrl_iface = wpa_supplicant_global_ctrl_iface_init(global);
+
+            #ifdef CONFIG_WIFI_DISPLAY                              // wifi display初始化, 其实只是做了一个动作：global->wifi_display = 1;
+            if (wifi_display_init(global) < 0) {
+                wpa_printf(MSG_ERROR, "Failed to initialize Wi-Fi Display");
+                wpa_supplicant_deinit(global);
+                return NULL;
+            }
+            #endif /* CONFIG_WIFI_DISPLAY */
+        }
+    }
+------------------------------------------------------------------------------------------------------>
+Ctrl_iface_unix.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        struct ctrl_iface_global_priv *wpa_supplicant_global_ctrl_iface_init(struct wpa_global *global) {
+            if (wpas_global_ctrl_iface_open_sock(global, priv) < 0) {
+                os_free(priv);
+                return NULL;
+            }
+
+            wpa_msg_register_cb(wpa_supplicant_ctrl_iface_msg_cb);          // 注册msg callback, 貌似是用来给上层发消息的接口？？？ 
+        }
+    }
+    ->  {
+            static int wpas_global_ctrl_iface_open_sock(struct wpa_global *global, struct ctrl_iface_global_priv *priv) {
+                if (os_strncmp(ctrl, "@android:", 9) == 0) {                        // @android:wpa_wlan0
+                    priv->sock = android_get_control_socket(ctrl + 9);              // wpa_wlan0，获取在wpa_ctrl_open创建的socket
+                    if (priv->sock < 0) {
+                        wpa_printf(MSG_ERROR, "Failed to open Android control "
+                                "socket '%s'", ctrl + 9);
+                        goto fail;
+                    }
+                    wpa_printf(MSG_DEBUG, "Using Android control socket '%s'",
+                            ctrl + 9);
+                    goto havesock;
+                }
+
+            havesock:
+
+                /*
+                 * Make socket non-blocking so that we don't hang forever if
+                 * target dies unexpectedly.
+                 */
+                flags = fcntl(priv->sock, F_GETFL);
+                if (flags >= 0) 
+                    flags |= O_NONBLOCK;
+                    if (fcntl(priv->sock, F_SETFL, flags) < 0) {
+                        wpa_printf(MSG_INFO, "fcntl(ctrl, O_NONBLOCK): %s",
+                                strerror(errno));
+                        /* Not fatal, continue on.*/
+                    }
+                }
+
+                eloop_register_read_sock(priv->sock,                             
+                        wpa_supplicant_global_ctrl_iface_receive,               // 绑定socket接收处理函数
+                        global, priv);
+
+                return 0;
+            }
+        }
+------------------------------------------------------------------------------------------->
+Ctrl_iface_unix.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)	
+->  {
+        static void wpa_supplicant_global_ctrl_iface_receive(int sock, void *eloop_ctx, void *sock_ctx)
+        {
+            struct wpa_global *global = eloop_ctx;
+            struct ctrl_iface_global_priv *priv = sock_ctx;
+            char buf[4096];
+            int res;
+            struct sockaddr_un from;
+            socklen_t fromlen = sizeof(from);
+            char *reply = NULL, *reply_buf = NULL;
+            size_t reply_len;
+
+            res = recvfrom(sock, buf, sizeof(buf) - 1, 0,                   // 等待hareware层wifi.c中调用wpa_ctrl_request下发指令
+                    (struct sockaddr *) &from, &fromlen);
+            if (res < 0) {
+                wpa_printf(MSG_ERROR, "recvfrom(ctrl_iface): %s",
+                        strerror(errno));
+                return;
+            }
+            buf[res] = '\0';
+
+            if (os_strcmp(buf, "ATTACH") == 0) {
+                if (wpa_supplicant_ctrl_iface_attach(&priv->ctrl_dst, &from,
+                            fromlen))
+                    reply_len = 1;
+                else
+                    reply_len = 2;
+            } else if (os_strcmp(buf, "DETACH") == 0) {
+                if (wpa_supplicant_ctrl_iface_detach(&priv->ctrl_dst, &from,
+                            fromlen))
+                    reply_len = 1;
+                else
+                    reply_len = 2;
+            } else {
+                reply_buf = wpa_supplicant_global_ctrl_iface_process(
+                        global, buf, &reply_len);
+                reply = reply_buf;
+            }
+
+            if (!reply && reply_len == 1) {
+                reply = "FAIL\n";
+                reply_len = 5;
+            } else if (!reply && reply_len == 2) {
+                reply = "OK\n";
+                reply_len = 3;
+            }
+
+            if (reply) {
+                if (sendto(sock, reply, reply_len, 0, (struct sockaddr *) &from,
+                            fromlen) < 0) {
+                    wpa_printf(MSG_DEBUG, "ctrl_iface sendto failed: %s",
+                            strerror(errno));
+                }
+            }
+            os_free(reply_buf);
+        }
+    }
+-------------------------------------------------------------------------------------->
+Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        char * wpa_supplicant_global_ctrl_iface_process(struct wpa_global *global, char *buf, size_t *resp_len)
+        {
+            char *reply;
+            const int reply_size = 2048;
+            int reply_len;
+            int level = MSG_DEBUG;
+
+            if (os_strncmp(buf, "IFNAME=", 7) == 0) {                   // IFNAME开头的命令都在此处理!!!
+                char *pos = os_strchr(buf + 7, ' ');
+                if (pos) {
+                    *pos++ = '\0';
+                    return wpas_global_ctrl_iface_ifname(global,
+                            buf + 7, pos,
+                            resp_len);
+                }
+            }
+
+            reply = wpas_global_ctrl_iface_redir(global, buf, resp_len);
+            if (reply)
+                return reply;
+
+            if (os_strcmp(buf, "PING") == 0)
+                level = MSG_EXCESSIVE;
+            wpa_hexdump_ascii(level, "RX global ctrl_iface",
+                    (const u8 *) buf, os_strlen(buf));
+
+            reply = os_malloc(reply_size);
+            if (reply == NULL) {
+                *resp_len = 1;
+                return NULL;
+            }
+
+            os_memcpy(reply, "OK\n", 3);
+            reply_len = 3;
+
+            if (os_strcmp(buf, "PING") == 0) {
+                os_memcpy(reply, "PONG\n", 5);
+                reply_len = 5;
+            } else if (os_strncmp(buf, "INTERFACE_ADD ", 14) == 0) {
+                if (wpa_supplicant_global_iface_add(global, buf + 14))
+                    reply_len = -1;
+            } else if (os_strncmp(buf, "INTERFACE_REMOVE ", 17) == 0) {
+                if (wpa_supplicant_global_iface_remove(global, buf + 17))
+                    reply_len = -1;
+            } else if (os_strcmp(buf, "INTERFACE_LIST") == 0) {
+                reply_len = wpa_supplicant_global_iface_list(
+                        global, reply, reply_size);
+            } else if (os_strcmp(buf, "INTERFACES") == 0) {
+                reply_len = wpa_supplicant_global_iface_interfaces(
+                        global, reply, reply_size);
+            } else if (os_strcmp(buf, "TERMINATE") == 0) {
+                wpa_supplicant_terminate_proc(global);
+            } else if (os_strcmp(buf, "SUSPEND") == 0) {
+                wpas_notify_suspend(global);
+            } else if (os_strcmp(buf, "RESUME") == 0) {
+                wpas_notify_resume(global);
+            } else if (os_strncmp(buf, "SET ", 4) == 0) {
+                if (wpas_global_ctrl_iface_set(global, buf + 4)) {
+#ifdef CONFIG_P2P
+                    if (global->p2p_init_wpa_s) {
+                        os_free(reply);
+                        /* Check if P2P redirection would work for this
+                         * command. */
+                        return wpa_supplicant_ctrl_iface_process(
+                                global->p2p_init_wpa_s,
+                                buf, resp_len);
+                    }
+#endif /* CONFIG_P2P */
+                    reply_len = -1;
+                }
+#ifndef CONFIG_NO_CONFIG_WRITE
+            } else if (os_strcmp(buf, "SAVE_CONFIG") == 0) {
+                if (wpas_global_ctrl_iface_save_config(global))
+                    reply_len = -1;
+#endif /* CONFIG_NO_CONFIG_WRITE */
+            } else if (os_strcmp(buf, "STATUS") == 0) {
+                reply_len = wpas_global_ctrl_iface_status(global, reply,
+                        reply_size);
+#ifdef CONFIG_MODULE_TESTS
+            } else if (os_strcmp(buf, "MODULE_TESTS") == 0) {
+                int wpas_module_tests(void);
+                if (wpas_module_tests() < 0)
+                    reply_len = -1;
+#endif /* CONFIG_MODULE_TESTS */
+            } else {
+                os_memcpy(reply, "UNKNOWN COMMAND\n", 16);
+                reply_len = 16;
+            }
+
+            if (reply_len < 0) {
+                os_memcpy(reply, "FAIL\n", 5);
+                reply_len = 5;
+            }
+
+            *resp_len = reply_len;
+            return reply;
+        }
+        ->  {
+                static char * wpas_global_ctrl_iface_ifname(struct wpa_global *global,
+                        const char *ifname,
+                        char *cmd, size_t *resp_len)
+                {
+                    struct wpa_supplicant *wpa_s;
+
+                    for (wpa_s = global->ifaces; wpa_s; wpa_s = wpa_s->next) {
+                        if (os_strcmp(ifname, wpa_s->ifname) == 0)
+                            break;
+                    }
+
+                    if (wpa_s == NULL) {
+                        char *resp = os_strdup("FAIL-NO-IFNAME-MATCH\n");
+                        if (resp)
+                            *resp_len = os_strlen(resp);
+                        else
+                            *resp_len = 1;
+                        return resp;
+                    }
+
+                    return wpa_supplicant_ctrl_iface_process(wpa_s, cmd, resp_len);     // 所有的消息都在这个函数处理，核心函数！！！
+                }
+            }
+    }
+--------------------------------------------------------------------------------------------------->
+Wpa_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        struct wpa_supplicant * wpa_supplicant_add_iface(struct wpa_global *global, struct wpa_interface *iface) {
+            struct wpa_supplicant *wpa_s;
+            struct wpa_interface t_iface;
+
+            wpa_s = wpa_supplicant_alloc();
+            if (wpa_s == NULL)
+                return NULL;
+
+            wpa_s->global = global;
+
+            t_iface = *iface;
+
+            wpa_supplicant_init_iface(wpa_s, &t_iface);
+            wpas_notify_iface_added(wpa_s);
+
+            for (ssid = wpa_s->conf->ssid; ssid; ssid = ssid->next)
+                wpas_notify_network_added(wpa_s, ssid);
+
+            wpa_supplicant_set_state(wpa_s, WPA_DISCONNECTED);
+        }
+    }
+    ->  {
+            static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s, struct wpa_interface *iface) {
+                if (iface->confname) {
+                #ifdef CONFIG_BACKEND_FILE
+                    wpa_s->confname = os_rel2abs_path(iface->confname);
+                #else /* CONFIG_BACKEND_FILE */
+                    wpa_s->confname = os_strdup(iface->confname);
+                #endif /* CONFIG_BACKEND_FILE */
+                    wpa_s->conf = wpa_config_read(wpa_s->confname, NULL);           // 读取 /data/misc/wifi/wpa_supplicant.conf 文件
+
+                    wpa_s->confanother = os_rel2abs_path(iface->confanother);
+                    wpa_config_read(wpa_s->confanother, wpa_s->conf);               // 读取 /system/etc/wifi/wpa_supplicant_overlay.conf 文件
+
+
+                    // 分析 wpa_config_read函数，其实是生成一个链表，根据network优先级排序，优先连接最高优先级的AP
+                    // 也就是说， /data/misc/wifi/wpa_supplicant.conf 或 /system/etc/wifi/wpa_supplicant_overlay.conf 都可以配置要连接的AP
+                    // 比如：
+                    // network={
+                    //      ssid="AMPAK_WIFI_2.4G"
+                    //      psk="ampak@office"
+                    //      priority=22
+                    // }
+                    // 启动wpa_supplicant服务就可以连接上该AP
+
+                    /*
+                     * Override ctrl_interface and driver_param if set on command
+                     * line.
+                     */
+                    if (iface->ctrl_interface) {
+                        os_free(wpa_s->conf->ctrl_interface);
+                        wpa_s->conf->ctrl_interface =
+                            os_strdup(iface->ctrl_interface);
+                    }
+                }	
+
+                os_strlcpy(wpa_s->ifname, iface->ifname, sizeof(wpa_s->ifname));
+
+                if (wpas_init_driver(wpa_s, iface) < 0)
+                    return -1;
+
+                if (wpa_supplicant_init_wpa(wpa_s) < 0)
+                    return -1;
+
+                wpa_sm_set_ifname(wpa_s->wpa, wpa_s->ifname,
+                        wpa_s->bridge_ifname[0] ? wpa_s->bridge_ifname :
+                        NULL);
+                wpa_sm_set_fast_reauth(wpa_s->wpa, wpa_s->conf->fast_reauth);
+                
+                if (wpa_supplicant_driver_init(wpa_s) < 0)
+                    return -1;
+
+                if (wpa_s->conf->country[0] && wpa_s->conf->country[1] &&
+                        wpa_drv_set_country(wpa_s, wpa_s->conf->country)) {
+                    wpa_dbg(wpa_s, MSG_DEBUG, "Failed to set country");
+                    return -1;
+                }
+
+                if (wpas_wps_init(wpa_s))                                       // WPS功能初始化！！！
+                    return -1;
+
+                if (wpa_supplicant_init_eapol(wpa_s) < 0)
+                    return -1;
+                wpa_sm_set_eapol(wpa_s->wpa, wpa_s->eapol);
+
+                wpa_s->ctrl_iface = wpa_supplicant_ctrl_iface_init(wpa_s);
+                if (wpa_s->ctrl_iface == NULL) {
+                    wpa_printf(MSG_ERROR,
+                            "Failed to initialize control interface '%s'.\n"
+                            "You may have another wpa_supplicant process "
+                            "already running or the file was\n"
+                            "left by an unclean termination of wpa_supplicant "
+                            "in which case you will need\n"
+                            "to manually remove this file before starting "
+                            "wpa_supplicant again.\n",
+                            wpa_s->conf->ctrl_interface);
+                    return -1;
+                }
+
+                wpa_s->gas = gas_query_init(wpa_s);
+                if (wpa_s->gas == NULL) {
+                    wpa_printf(MSG_ERROR, "Failed to initialize GAS query");
+                    return -1;
+                }
+
+                if (iface->p2p_mgmt && wpas_p2p_init(wpa_s->global, wpa_s) < 0) {
+                    wpa_msg(wpa_s, MSG_ERROR, "Failed to init P2P");
+                    return -1;
+                }
+
+                if (wpa_bss_init(wpa_s) < 0)
+                    return -1;
+
+                /*
+                 * Set Wake-on-WLAN triggers, if configured.
+                 * Note: We don't restore/remove the triggers on shutdown (it doesn't
+                 * have effect anyway when the interface is down).
+                 */
+                if (wpas_set_wowlan_triggers(wpa_s, &capa) < 0)
+                    return -1;
+
+                if (pcsc_reader_init(wpa_s) < 0)
+                    return -1;
+
+                if (wpas_init_ext_pw(wpa_s) < 0)
+                    return -1;
+            }
+        }
+---------------------------------------------------------------------------------------------------->
+Wpa_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        static int wpas_init_driver(struct wpa_supplicant *wpa_s, struct wpa_interface *iface)
+        {
+            const char *ifname, *driver, *rn;
+
+            driver = iface->driver;
+        next_driver:
+            if (wpa_supplicant_set_driver(wpa_s, driver) < 0)
+                return -1;
+
+            wpa_s->drv_priv = wpa_drv_init(wpa_s, wpa_s->ifname);
+            if (wpa_s->drv_priv == NULL) {
+                const char *pos;
+                pos = driver ? os_strchr(driver, ',') : NULL;
+                if (pos) {
+                    wpa_dbg(wpa_s, MSG_DEBUG, "Failed to initialize "
+                            "driver interface - try next driver wrapper");
+                    driver = pos + 1;
+                    goto next_driver;
+                }
+                wpa_msg(wpa_s, MSG_ERROR, "Failed to initialize driver "
+                        "interface");
+                return -1;
+            }
+            if (wpa_drv_set_param(wpa_s, wpa_s->conf->driver_param) < 0) {
+                wpa_msg(wpa_s, MSG_ERROR, "Driver interface rejected "
+                        "driver_param '%s'", wpa_s->conf->driver_param);
+                return -1;
+            }
+
+            ifname = wpa_drv_get_ifname(wpa_s);
+            if (ifname && os_strcmp(ifname, wpa_s->ifname) != 0) {
+                wpa_dbg(wpa_s, MSG_DEBUG, "Driver interface replaced "
+                        "interface name with '%s'", ifname);
+                os_strlcpy(wpa_s->ifname, ifname, sizeof(wpa_s->ifname));
+            }
+
+            rn = wpa_driver_get_radio_name(wpa_s);
+            if (rn && rn[0] == '\0')
+                rn = NULL;
+
+            wpa_s->radio = radio_add_interface(wpa_s, rn);
+            if (wpa_s->radio == NULL)
+                return -1;
+
+            return 0;
+        }
+
+        static int wpa_supplicant_set_driver(struct wpa_supplicant *wpa_s, const char *name)
+        {
+            int i;
+            size_t len;
+            const char *pos, *driver = name;
+
+            if (wpa_s == NULL)
+                return -1;
+
+            if (wpa_drivers[0] == NULL) {
+                wpa_msg(wpa_s, MSG_ERROR, "No driver interfaces build into "
+                        "wpa_supplicant");
+                return -1;
+            }
+
+            if (name == NULL) {
+                /* default to first driver in the list */
+                return select_driver(wpa_s, 0);
+            }
+
+            do {
+                pos = os_strchr(driver, ',');
+                if (pos)
+                    len = pos - driver;
+                else
+                    len = os_strlen(driver);
+
+                for (i = 0; wpa_drivers[i]; i++) {
+                    if (os_strlen(wpa_drivers[i]->name) == len &&
+                            os_strncmp(driver, wpa_drivers[i]->name, len) ==
+                            0) {
+                        /* First driver that succeeds wins */
+                        if (select_driver(wpa_s, i) == 0)                           // 根据driver选择对应的wpa_driver
+                            return 0;
+                    }
+                }
+
+                driver = pos + 1;
+            } while (pos);
+
+            wpa_msg(wpa_s, MSG_ERROR, "Unsupported driver '%s'", name);
+            return -1;
+        }
+    }
+------------------------------------------------------------------------------------->
+Drivers.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        struct wpa_driver_ops *wpa_drivers[] =
+        {
+#ifdef CONFIG_DRIVER_NL80211
+            &wpa_driver_nl80211_ops,
+#endif /* CONFIG_DRIVER_NL80211 */
+#ifdef CONFIG_DRIVER_WEXT
+            &wpa_driver_wext_ops,
+#endif /* CONFIG_DRIVER_WEXT */
+#ifdef CONFIG_DRIVER_HOSTAP
+            &wpa_driver_hostap_ops,
+#endif /* CONFIG_DRIVER_HOSTAP */
+#ifdef CONFIG_DRIVER_MADWIFI
+            &wpa_driver_madwifi_ops,
+#endif /* CONFIG_DRIVER_MADWIFI */
+#ifdef CONFIG_DRIVER_BSD
+            &wpa_driver_bsd_ops,
+#endif /* CONFIG_DRIVER_BSD */
+#ifdef CONFIG_DRIVER_OPENBSD
+            &wpa_driver_openbsd_ops,
+#endif /* CONFIG_DRIVER_OPENBSD */
+#ifdef CONFIG_DRIVER_NDIS
+            &wpa_driver_ndis_ops,
+#endif /* CONFIG_DRIVER_NDIS */
+#ifdef CONFIG_DRIVER_WIRED
+            &wpa_driver_wired_ops,
+#endif /* CONFIG_DRIVER_WIRED */
+#ifdef CONFIG_DRIVER_MACSEC_QCA
+            &wpa_driver_macsec_qca_ops,
+#endif /* CONFIG_DRIVER_MACSEC_QCA */
+#ifdef CONFIG_DRIVER_TEST
+            &wpa_driver_test_ops,
+#endif /* CONFIG_DRIVER_TEST */
+#ifdef CONFIG_DRIVER_ROBOSWITCH
+            &wpa_driver_roboswitch_ops,
+#endif /* CONFIG_DRIVER_ROBOSWITCH */
+#ifdef CONFIG_DRIVER_ATHEROS
+            &wpa_driver_atheros_ops,
+#endif /* CONFIG_DRIVER_ATHEROS */
+#ifdef CONFIG_DRIVER_NONE
+            &wpa_driver_none_ops,
+#endif /* CONFIG_DRIVER_NONE */
+            NULL
+        };
+    }
+---------------------------------------------------------------------------------------->
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        const struct wpa_driver_ops wpa_driver_nl80211_ops = {
+            .name = "nl80211",
+            .desc = "Linux nl80211/cfg80211",
+            .get_bssid = wpa_driver_nl80211_get_bssid,
+            .get_ssid = wpa_driver_nl80211_get_ssid,
+            .set_key = driver_nl80211_set_key,
+            .scan2 = driver_nl80211_scan2,
+            .sched_scan = wpa_driver_nl80211_sched_scan,
+            .stop_sched_scan = wpa_driver_nl80211_stop_sched_scan,
+            .get_scan_results2 = wpa_driver_nl80211_get_scan_results,
+            .deauthenticate = driver_nl80211_deauthenticate,
+            .authenticate = driver_nl80211_authenticate,
+            .associate = wpa_driver_nl80211_associate,
+            .global_init = nl80211_global_init,
+            .global_deinit = nl80211_global_deinit,
+            .init2 = wpa_driver_nl80211_init,
+            .deinit = driver_nl80211_deinit,
+            .get_capa = wpa_driver_nl80211_get_capa,
+            .set_operstate = wpa_driver_nl80211_set_operstate,
+            .set_supp_port = wpa_driver_nl80211_set_supp_port,
+            .set_country = wpa_driver_nl80211_set_country,
+            .get_country = wpa_driver_nl80211_get_country,
+            .set_ap = wpa_driver_nl80211_set_ap,
+            .set_acl = wpa_driver_nl80211_set_acl,
+            .if_add = wpa_driver_nl80211_if_add,
+            .if_remove = driver_nl80211_if_remove,
+            .send_mlme = driver_nl80211_send_mlme,
+            .get_hw_feature_data = wpa_driver_nl80211_get_hw_feature_data,
+            .sta_add = wpa_driver_nl80211_sta_add,
+            .sta_remove = driver_nl80211_sta_remove,
+            .hapd_send_eapol = wpa_driver_nl80211_hapd_send_eapol,
+            .sta_set_flags = wpa_driver_nl80211_sta_set_flags,
+            .hapd_init = i802_init,
+            .hapd_deinit = i802_deinit,
+            .set_wds_sta = i802_set_wds_sta,
+            .get_seqnum = i802_get_seqnum,
+            .flush = i802_flush,
+            .get_inact_sec = i802_get_inact_sec,
+            .sta_clear_stats = i802_sta_clear_stats,
+            .set_rts = i802_set_rts,
+            .set_frag = i802_set_frag,
+            .set_tx_queue_params = i802_set_tx_queue_params,
+            .set_sta_vlan = driver_nl80211_set_sta_vlan,
+            .sta_deauth = i802_sta_deauth,
+            .sta_disassoc = i802_sta_disassoc,
+            .read_sta_data = driver_nl80211_read_sta_data,
+            .set_freq = i802_set_freq,
+            .send_action = driver_nl80211_send_action,
+            .send_action_cancel_wait = wpa_driver_nl80211_send_action_cancel_wait,
+            .remain_on_channel = wpa_driver_nl80211_remain_on_channel,
+            .cancel_remain_on_channel =
+                wpa_driver_nl80211_cancel_remain_on_channel,
+            .probe_req_report = driver_nl80211_probe_req_report,
+            .deinit_ap = wpa_driver_nl80211_deinit_ap,
+            .deinit_p2p_cli = wpa_driver_nl80211_deinit_p2p_cli,
+            .resume = wpa_driver_nl80211_resume,
+            .send_ft_action = nl80211_send_ft_action,
+            .signal_monitor = nl80211_signal_monitor,
+            .signal_poll = nl80211_signal_poll,
+            .send_frame = nl80211_send_frame,
+            .shared_freq = wpa_driver_nl80211_shared_freq,
+            .set_param = nl80211_set_param,
+            .get_radio_name = nl80211_get_radio_name,
+            .add_pmkid = nl80211_add_pmkid,
+            .remove_pmkid = nl80211_remove_pmkid,
+            .flush_pmkid = nl80211_flush_pmkid,
+            .set_rekey_info = nl80211_set_rekey_info,
+            .poll_client = nl80211_poll_client,
+            .set_p2p_powersave = nl80211_set_p2p_powersave,
+            .start_dfs_cac = nl80211_start_radar_detection,
+            .stop_ap = wpa_driver_nl80211_stop_ap,
+#ifdef CONFIG_TDLS
+            .send_tdls_mgmt = nl80211_send_tdls_mgmt,
+            .tdls_oper = nl80211_tdls_oper,
+#endif /* CONFIG_TDLS */
+            .update_ft_ies = wpa_driver_nl80211_update_ft_ies,
+            .get_mac_addr = wpa_driver_nl80211_get_macaddr,
+            .get_survey = wpa_driver_nl80211_get_survey,
+            .status = wpa_driver_nl80211_status,
+            .switch_channel = nl80211_switch_channel,
+#ifdef ANDROID_P2P
+            .set_noa = wpa_driver_set_p2p_noa,
+            .get_noa = wpa_driver_get_p2p_noa,
+            .set_ap_wps_ie = wpa_driver_set_ap_wps_p2p_ie,
+#endif /* ANDROID_P2P */
+#ifdef ANDROID
+            .driver_cmd = wpa_driver_nl80211_driver_cmd,
+#endif /* ANDROID */
+            .vendor_cmd = nl80211_vendor_cmd,
+            .set_qos_map = nl80211_set_qos_map,
+            .set_wowlan = nl80211_set_wowlan,
+            .roaming = nl80211_roaming,
+            .set_mac_addr = nl80211_set_mac_addr,
+        };
+    }
+---------------------------------------------------------------------------------------->
+Wpa_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        static int select_driver(struct wpa_supplicant *wpa_s, int i)
+        {
+            struct wpa_global *global = wpa_s->global;
+
+            if (wpa_drivers[i]->global_init && global->drv_priv[i] == NULL) {
+                global->drv_priv[i] = wpa_drivers[i]->global_init();                    // 调用global_init
+                if (global->drv_priv[i] == NULL) {
+                    wpa_printf(MSG_ERROR, "Failed to initialize driver "
+                            "'%s'", wpa_drivers[i]->name);
+                    return -1;
+                }
+            }
+
+            wpa_s->driver = wpa_drivers[i];
+            wpa_s->global_drv_priv = global->drv_priv[i];
+
+            return 0;
+        }
+    }
+---------------------------------------------------------------------------------------->
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        static void * nl80211_global_init(void)
+        {
+            struct nl80211_global *global;
+            struct netlink_config *cfg;
+
+            global = os_zalloc(sizeof(*global));
+            if (global == NULL)
+                return NULL;
+            global->ioctl_sock = -1;
+            dl_list_init(&global->interfaces);
+            global->if_add_ifindex = -1;
+
+            cfg = os_zalloc(sizeof(*cfg));
+            if (cfg == NULL)
+                goto err;
+
+            cfg->ctx = global;
+            cfg->newlink_cb = wpa_driver_nl80211_event_rtm_newlink;
+            cfg->dellink_cb = wpa_driver_nl80211_event_rtm_dellink;
+            global->netlink = netlink_init(cfg);                                            // netlink_init调用
+            if (global->netlink == NULL) {
+                os_free(cfg);
+                goto err;
+            }
+
+            if (wpa_driver_nl80211_init_nl_global(global) < 0)
+                goto err;
+
+            global->ioctl_sock = socket(PF_INET, SOCK_DGRAM, 0);                            // 在此创建套接字，作用未知，以后继续研究！！！
+            if (global->ioctl_sock < 0) {
+                wpa_printf(MSG_ERROR, "nl80211: socket(PF_INET,SOCK_DGRAM) failed: %s",
+                        strerror(errno));
+                goto err;
+            }
+
+            return global;
+
+        err:
+            nl80211_global_deinit(global);
+            return NULL;
+        }
+
+        static int wpa_driver_nl80211_init_nl_global(struct nl80211_global *global)         // 这个函数以后继续研究！！！
+        {
+            int ret;
+
+            global->nl_cb = nl_cb_alloc(NL_CB_DEFAULT);
+            if (global->nl_cb == NULL) {
+                wpa_printf(MSG_ERROR, "nl80211: Failed to allocate netlink "
+                        "callbacks");
+                return -1;
+            }
+
+            global->nl = nl_create_handle(global->nl_cb, "nl");
+            if (global->nl == NULL)
+                goto err;
+
+            global->nl80211_id = genl_ctrl_resolve(global->nl, "nl80211");
+            if (global->nl80211_id < 0) {
+                wpa_printf(MSG_ERROR, "nl80211: 'nl80211' generic netlink not "
+                        "found");
+                goto err;
+            }
+
+            global->nl_event = nl_create_handle(global->nl_cb, "event");
+            if (global->nl_event == NULL)
+                goto err;
+
+            ret = nl_get_multicast_id(global, "nl80211", "scan");
+            if (ret >= 0)
+                ret = nl_socket_add_membership(global->nl_event, ret);
+            if (ret < 0) {
+                wpa_printf(MSG_ERROR, "nl80211: Could not add multicast "
+                        "membership for scan events: %d (%s)",
+                        ret, strerror(-ret));
+                goto err;
+            }
+
+            ret = nl_get_multicast_id(global, "nl80211", "mlme");
+            if (ret >= 0)
+                ret = nl_socket_add_membership(global->nl_event, ret);
+            if (ret < 0) {
+                wpa_printf(MSG_ERROR, "nl80211: Could not add multicast "
+                        "membership for mlme events: %d (%s)",
+                        ret, strerror(-ret));
+                goto err;
+            }
+
+            ret = nl_get_multicast_id(global, "nl80211", "regulatory");
+            if (ret >= 0)
+                ret = nl_socket_add_membership(global->nl_event, ret);
+            if (ret < 0) {
+                wpa_printf(MSG_DEBUG, "nl80211: Could not add multicast "
+                        "membership for regulatory events: %d (%s)",
+                        ret, strerror(-ret));
+                /* Continue without regulatory events */
+            }
+
+            ret = nl_get_multicast_id(global, "nl80211", "vendor");
+            if (ret >= 0)
+                ret = nl_socket_add_membership(global->nl_event, ret);
+            if (ret < 0) {
+                wpa_printf(MSG_DEBUG, "nl80211: Could not add multicast "
+                        "membership for vendor events: %d (%s)",
+                        ret, strerror(-ret));
+                /* Continue without vendor events */
+            }
+
+            nl_cb_set(global->nl_cb, NL_CB_SEQ_CHECK, NL_CB_CUSTOM,
+                    no_seq_check, NULL);
+            nl_cb_set(global->nl_cb, NL_CB_VALID, NL_CB_CUSTOM,
+                    process_global_event, global);
+
+            nl80211_register_eloop_read(&global->nl_event,
+                    wpa_driver_nl80211_event_receive,
+                    global->nl_cb);
+
+            return 0;
+
+err:
+            nl_destroy_handles(&global->nl_event);
+            nl_destroy_handles(&global->nl);
+            nl_cb_put(global->nl_cb);
+            global->nl_cb = NULL;
+            return -1;
+        }
+    }
+------------------------------------------------------------------------------------------>
+Driver_i.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        /* driver_ops */
+        static inline void * wpa_drv_init(struct wpa_supplicant *wpa_s, const char *ifname)
+        {
+            if (wpa_s->driver->init2)
+                return wpa_s->driver->init2(wpa_s, ifname,
+                        wpa_s->global_drv_priv);
+            if (wpa_s->driver->init) {
+                return wpa_s->driver->init(wpa_s, ifname);
+            }
+            return NULL;
+        }
+    }
+---------------------------------------------------------------------------------------->
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        static void * wpa_driver_nl80211_init(void *ctx, const char *ifname, void *global_priv)
+        {
+            return wpa_driver_nl80211_drv_init(ctx, ifname, global_priv, 0, NULL);
+        }
+
+        static void * wpa_driver_nl80211_drv_init(void *ctx, const char *ifname,
+					  void *global_priv, int hostapd,
+					  const u8 *set_addr)
+        {
+            if (wpa_driver_nl80211_init_nl(drv)) {
+                os_free(drv);
+                return NULL;
+            }
+
+            if (nl80211_init_bss(bss))
+                goto failed;
+
+            rcfg = os_zalloc(sizeof(*rcfg));
+            if (rcfg == NULL)
+                goto failed;
+            rcfg->ctx = drv;
+            os_strlcpy(rcfg->ifname, ifname, sizeof(rcfg->ifname));
+            rcfg->blocked_cb = wpa_driver_nl80211_rfkill_blocked;                   // blocked_cb
+            rcfg->unblocked_cb = wpa_driver_nl80211_rfkill_unblocked;               // unblocked_cb
+            drv->rfkill = rfkill_init(rcfg);                                        // rfkill_init
+
+            if (linux_iface_up(drv->global->ioctl_sock, ifname) > 0)                // ioctl_sock up
+                drv->start_iface_up = 1;
+
+            if (wpa_driver_nl80211_finish_drv_init(drv, set_addr, 1))
+                goto failed;
+
+            drv->eapol_tx_sock = socket(PF_PACKET, SOCK_DGRAM, 0);
+            if (drv->eapol_tx_sock < 0)
+                goto failed;
+
+            if (drv->data_tx_status) {
+                int enabled = 1;
+
+                if (setsockopt(drv->eapol_tx_sock, SOL_SOCKET, SO_WIFI_STATUS,
+                            &enabled, sizeof(enabled)) < 0) {
+                    wpa_printf(MSG_DEBUG,
+                            "nl80211: wifi status sockopt failed\n");
+                    drv->data_tx_status = 0;
+                    if (!drv->use_monitor)
+                        drv->capa.flags &=
+                            ~WPA_DRIVER_FLAGS_EAPOL_TX_STATUS;
+                } else {
+                    eloop_register_read_sock(drv->eapol_tx_sock,
+                            wpa_driver_nl80211_handle_eapol_tx_status,
+                            drv, NULL);
+                }
+            }
+
+            if (drv->global) {
+                dl_list_add(&drv->global->interfaces, &drv->list);
+                drv->in_interface_list = 1;
+            }
+
+            return bss;
+        }
+
+        static void wpa_driver_nl80211_handle_eapol_tx_status(int sock, void *eloop_ctx, void *handle)
+        {
+            struct wpa_driver_nl80211_data *drv = eloop_ctx;
+            u8 data[2048];
+            struct msghdr msg;
+            struct iovec entry;
+            u8 control[512];
+            struct cmsghdr *cmsg;
+            int res, found_ee = 0, found_wifi = 0, acked = 0;
+            union wpa_event_data event;
+
+            memset(&msg, 0, sizeof(msg));
+            msg.msg_iov = &entry;
+            msg.msg_iovlen = 1;
+            entry.iov_base = data;
+            entry.iov_len = sizeof(data);
+            msg.msg_control = &control;
+            msg.msg_controllen = sizeof(control);
+
+            res = recvmsg(sock, &msg, MSG_ERRQUEUE);
+            /* if error or not fitting 802.3 header, return */
+            if (res < 14)
+                return;
+
+            for (cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg))
+            {
+                if (cmsg->cmsg_level == SOL_SOCKET &&
+                        cmsg->cmsg_type == SCM_WIFI_STATUS) {
+                    int *ack;
+
+                    found_wifi = 1;
+                    ack = (void *)CMSG_DATA(cmsg);
+                    acked = *ack;
+                }
+
+                if (cmsg->cmsg_level == SOL_PACKET &&
+                        cmsg->cmsg_type == PACKET_TX_TIMESTAMP) {
+                    struct sock_extended_err *err =
+                        (struct sock_extended_err *)CMSG_DATA(cmsg);
+
+                    if (err->ee_origin == SO_EE_ORIGIN_TXSTATUS)
+                        found_ee = 1;
+                }
+            }
+
+            if (!found_ee || !found_wifi)
+                return;
+
+            memset(&event, 0, sizeof(event));
+            event.eapol_tx_status.dst = data;
+            event.eapol_tx_status.data = data + 14;
+            event.eapol_tx_status.data_len = res - 14;
+            event.eapol_tx_status.ack = acked;
+            wpa_supplicant_event(drv->ctx, EVENT_EAPOL_TX_STATUS, &event);                  
+        }
+}
+------------------------------------------------------------------------------------------>
+Events.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        void wpa_supplicant_event(void *ctx, enum wpa_event_type event, union wpa_event_data *data)
+        {
+            switch (event) {
+                case EVENT_AUTH:
+                    sme_event_auth(wpa_s, data);
+                    break;
+                case EVENT_ASSOC:
+                    wpa_supplicant_event_assoc(wpa_s, data);
+                    break;
+                case EVENT_DISASSOC:
+                    wpas_event_disassoc(wpa_s,
+                            data ? &data->disassoc_info : NULL);
+                    break;
+                case EVENT_DEAUTH:
+                    wpas_event_deauth(wpa_s,
+                            data ? &data->deauth_info : NULL);
+                    break;
+                case EVENT_MICHAEL_MIC_FAILURE:
+                    wpa_supplicant_event_michael_mic_failure(wpa_s, data);
+                    break;
+#ifndef CONFIG_NO_SCAN_PROCESSING
+                case EVENT_SCAN_STARTED:
+                    os_get_reltime(&wpa_s->scan_start_time);
+                    if (wpa_s->own_scan_requested) {
+                        struct os_reltime diff;
+
+                        os_reltime_sub(&wpa_s->scan_start_time,
+                                &wpa_s->scan_trigger_time, &diff);
+                        wpa_dbg(wpa_s, MSG_DEBUG, "Own scan request started a scan in %ld.%06ld seconds",
+                                diff.sec, diff.usec);
+                        wpa_s->own_scan_requested = 0;
+                        wpa_s->own_scan_running = 1;
+                        if (wpa_s->last_scan_req == MANUAL_SCAN_REQ &&
+                                wpa_s->manual_scan_use_id) {
+                            wpa_msg_ctrl(wpa_s, MSG_INFO,
+                                    WPA_EVENT_SCAN_STARTED "id=%u",
+                                    wpa_s->manual_scan_id);
+                        } else {
+                            wpa_msg_ctrl(wpa_s, MSG_INFO,
+                                    WPA_EVENT_SCAN_STARTED);
+                        }
+                    } else {
+                        wpa_dbg(wpa_s, MSG_DEBUG, "External program started a scan");
+                        wpa_s->external_scan_running = 1;
+                        wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_STARTED);
+                    }
+                    break;
+                case EVENT_SCAN_RESULTS:
+                    if (os_reltime_initialized(&wpa_s->scan_start_time)) {
+                        struct os_reltime now, diff;
+                        os_get_reltime(&now);
+                        os_reltime_sub(&now, &wpa_s->scan_start_time, &diff);
+                        wpa_s->scan_start_time.sec = 0;
+                        wpa_s->scan_start_time.usec = 0;
+                        wpa_dbg(wpa_s, MSG_DEBUG, "Scan completed in %ld.%06ld seconds",
+                                diff.sec, diff.usec);
+                    }
+                    wpa_supplicant_event_scan_results(wpa_s, data);
+                    wpa_s->own_scan_running = 0;
+                    wpa_s->external_scan_running = 0;
+                    radio_work_check_next(wpa_s);
+                    break;
+#endif /* CONFIG_NO_SCAN_PROCESSING */
+                case EVENT_ASSOCINFO:
+                    wpa_supplicant_event_associnfo(wpa_s, data);
+                    break;
+                case EVENT_INTERFACE_STATUS:
+                    wpa_supplicant_event_interface_status(wpa_s, data);
+                    break;
+                case EVENT_PMKID_CANDIDATE:
+                    wpa_supplicant_event_pmkid_candidate(wpa_s, data);
+                    break;
+#ifdef CONFIG_PEERKEY
+                case EVENT_STKSTART:
+                    wpa_supplicant_event_stkstart(wpa_s, data);
+                    break;
+#endif /* CONFIG_PEERKEY */
+#ifdef CONFIG_TDLS
+                case EVENT_TDLS:
+                    wpa_supplicant_event_tdls(wpa_s, data);
+                    break;
+#endif /* CONFIG_TDLS */
+#ifdef CONFIG_WNM
+                case EVENT_WNM:
+                    wpa_supplicant_event_wnm(wpa_s, data);
+                    break;
+#endif /* CONFIG_WNM */
+#ifdef CONFIG_IEEE80211R
+                case EVENT_FT_RESPONSE:
+                    wpa_supplicant_event_ft_response(wpa_s, data);
+                    break;
+#endif /* CONFIG_IEEE80211R */
+#ifdef CONFIG_IBSS_RSN
+                case EVENT_IBSS_RSN_START:
+                    wpa_supplicant_event_ibss_rsn_start(wpa_s, data);
+                    break;
+#endif /* CONFIG_IBSS_RSN */
+                case EVENT_ASSOC_REJECT:
+                    if (data->assoc_reject.bssid)
+                        wpa_msg(wpa_s, MSG_INFO, WPA_EVENT_ASSOC_REJECT
+                                "bssid=" MACSTR	" status_code=%u",
+                                MAC2STR(data->assoc_reject.bssid),
+                                data->assoc_reject.status_code);
+                    else
+                        wpa_msg(wpa_s, MSG_INFO, WPA_EVENT_ASSOC_REJECT
+                                "status_code=%u",
+                                data->assoc_reject.status_code);
+                    if (wpa_s->drv_flags & WPA_DRIVER_FLAGS_SME)
+                        sme_event_assoc_reject(wpa_s, data);
+                    else {
+                        const u8 *bssid = data->assoc_reject.bssid;
+                        if (bssid == NULL || is_zero_ether_addr(bssid))
+                            bssid = wpa_s->pending_bssid;
+                        wpas_connection_failed(wpa_s, bssid);
+                        wpa_supplicant_mark_disassoc(wpa_s);
+                    }
+                    break;
+                case EVENT_AUTH_TIMED_OUT:
+                    if (wpa_s->drv_flags & WPA_DRIVER_FLAGS_SME)
+                        sme_event_auth_timed_out(wpa_s, data);
+                    break;
+                case EVENT_ASSOC_TIMED_OUT:
+                    if (wpa_s->drv_flags & WPA_DRIVER_FLAGS_SME)
+                        sme_event_assoc_timed_out(wpa_s, data);
+                    break;
+                case EVENT_TX_STATUS:
+                    wpa_dbg(wpa_s, MSG_DEBUG, "EVENT_TX_STATUS dst=" MACSTR
+                            " type=%d stype=%d",
+                            MAC2STR(data->tx_status.dst),
+                            data->tx_status.type, data->tx_status.stype);
+#ifdef CONFIG_AP
+                    if (wpa_s->ap_iface == NULL) {
+#ifdef CONFIG_OFFCHANNEL
+                        if (data->tx_status.type == WLAN_FC_TYPE_MGMT &&
+                                data->tx_status.stype == WLAN_FC_STYPE_ACTION)
+                            offchannel_send_action_tx_status(
+                                    wpa_s, data->tx_status.dst,
+                                    data->tx_status.data,
+                                    data->tx_status.data_len,
+                                    data->tx_status.ack ?
+                                    OFFCHANNEL_SEND_ACTION_SUCCESS :
+                                    OFFCHANNEL_SEND_ACTION_NO_ACK);
+#endif /* CONFIG_OFFCHANNEL */
+                        break;
+                    }
+#endif /* CONFIG_AP */
+#ifdef CONFIG_OFFCHANNEL
+                    wpa_dbg(wpa_s, MSG_DEBUG, "EVENT_TX_STATUS pending_dst="
+                            MACSTR, MAC2STR(wpa_s->parent->pending_action_dst));
+                    /*
+                     * Catch TX status events for Action frames we sent via group
+                     * interface in GO mode.
+                     */
+                    if (data->tx_status.type == WLAN_FC_TYPE_MGMT &&
+                            data->tx_status.stype == WLAN_FC_STYPE_ACTION &&
+                            os_memcmp(wpa_s->parent->pending_action_dst,
+                                data->tx_status.dst, ETH_ALEN) == 0) {
+                        offchannel_send_action_tx_status(
+                                wpa_s->parent, data->tx_status.dst,
+                                data->tx_status.data,
+                                data->tx_status.data_len,
+                                data->tx_status.ack ?
+                                OFFCHANNEL_SEND_ACTION_SUCCESS :
+                                OFFCHANNEL_SEND_ACTION_NO_ACK);
+                        break;
+                    }
+#endif /* CONFIG_OFFCHANNEL */
+#ifdef CONFIG_AP
+                    switch (data->tx_status.type) {
+                        case WLAN_FC_TYPE_MGMT:
+                            ap_mgmt_tx_cb(wpa_s, data->tx_status.data,
+                                    data->tx_status.data_len,
+                                    data->tx_status.stype,
+                                    data->tx_status.ack);
+                            break;
+                        case WLAN_FC_TYPE_DATA:
+                            ap_tx_status(wpa_s, data->tx_status.dst,
+                                    data->tx_status.data,
+                                    data->tx_status.data_len,
+                                    data->tx_status.ack);
+                            break;
+                    }
+#endif /* CONFIG_AP */
+                    break;
+#ifdef CONFIG_AP
+                case EVENT_EAPOL_TX_STATUS:
+                    ap_eapol_tx_status(wpa_s, data->eapol_tx_status.dst,
+                            data->eapol_tx_status.data,
+                            data->eapol_tx_status.data_len,
+                            data->eapol_tx_status.ack);
+                    break;
+                case EVENT_DRIVER_CLIENT_POLL_OK:
+                    ap_client_poll_ok(wpa_s, data->client_poll.addr);
+                    break;
+                case EVENT_RX_FROM_UNKNOWN:
+                    if (wpa_s->ap_iface == NULL)
+                        break;
+                    ap_rx_from_unknown_sta(wpa_s, data->rx_from_unknown.addr,
+                            data->rx_from_unknown.wds);
+                    break;
+                case EVENT_CH_SWITCH:
+                    if (!data)
+                        break;
+                    if (!wpa_s->ap_iface) {
+                        wpa_dbg(wpa_s, MSG_DEBUG, "AP: Ignore channel switch "
+                                "event in non-AP mode");
+                        break;
+                    }
+
+                    wpas_ap_ch_switch(wpa_s, data->ch_switch.freq,
+                            data->ch_switch.ht_enabled,
+                            data->ch_switch.ch_offset,
+                            data->ch_switch.ch_width,
+                            data->ch_switch.cf1,
+                            data->ch_switch.cf2);
+                    break;
+#endif /* CONFIG_AP */
+                case EVENT_RX_MGMT: {
+                                        u16 fc, stype;
+                                        const struct ieee80211_mgmt *mgmt;
+
+#ifdef CONFIG_TESTING_OPTIONS
+                                        if (wpa_s->ext_mgmt_frame_handling) {
+                                            struct rx_mgmt *rx = &data->rx_mgmt;
+                                            size_t hex_len = 2 * rx->frame_len + 1;
+                                            char *hex = os_malloc(hex_len);
+                                            if (hex) {
+                                                wpa_snprintf_hex(hex, hex_len,
+                                                        rx->frame, rx->frame_len);
+                                                wpa_msg(wpa_s, MSG_INFO, "MGMT-RX freq=%d datarate=%u ssi_signal=%d %s",
+                                                        rx->freq, rx->datarate, rx->ssi_signal,
+                                                        hex);
+                                                os_free(hex);
+                                            }
+                                            break;
+                                        }
+#endif /* CONFIG_TESTING_OPTIONS */
+
+                                        mgmt = (const struct ieee80211_mgmt *)
+                                            data->rx_mgmt.frame;
+                                        fc = le_to_host16(mgmt->frame_control);
+                                        stype = WLAN_FC_GET_STYPE(fc);
+
+#ifdef CONFIG_AP
+                                        if (wpa_s->ap_iface == NULL) {
+#endif /* CONFIG_AP */
+#ifdef CONFIG_P2P
+                                            if (stype == WLAN_FC_STYPE_PROBE_REQ &&
+                                                    data->rx_mgmt.frame_len > 24) {
+                                                const u8 *src = mgmt->sa;
+                                                const u8 *ie = mgmt->u.probe_req.variable;
+                                                size_t ie_len = data->rx_mgmt.frame_len -
+                                                    (mgmt->u.probe_req.variable -
+                                                     data->rx_mgmt.frame);
+                                                wpas_p2p_probe_req_rx(
+                                                        wpa_s, src, mgmt->da,
+                                                        mgmt->bssid, ie, ie_len,
+                                                        data->rx_mgmt.ssi_signal);
+                                                break;
+                                            }
+#endif /* CONFIG_P2P */
+#ifdef CONFIG_IBSS_RSN
+                                            if (stype == WLAN_FC_STYPE_AUTH &&
+                                                    data->rx_mgmt.frame_len >= 30) {
+                                                wpa_supplicant_event_ibss_auth(wpa_s, data);
+                                                break;
+                                            }
+#endif /* CONFIG_IBSS_RSN */
+
+                                            if (stype == WLAN_FC_STYPE_ACTION) {
+                                                wpas_event_rx_mgmt_action(
+                                                        wpa_s, data->rx_mgmt.frame,
+                                                        data->rx_mgmt.frame_len,
+                                                        data->rx_mgmt.freq);
+                                                break;
+                                            }
+
+                                            wpa_dbg(wpa_s, MSG_DEBUG, "AP: ignore received "
+                                                    "management frame in non-AP mode");
+                                            break;
+#ifdef CONFIG_AP
+                                        }
+
+                                        if (stype == WLAN_FC_STYPE_PROBE_REQ &&
+                                                data->rx_mgmt.frame_len > 24) {
+                                            const u8 *ie = mgmt->u.probe_req.variable;
+                                            size_t ie_len = data->rx_mgmt.frame_len -
+                                                (mgmt->u.probe_req.variable -
+                                                 data->rx_mgmt.frame);
+
+                                            wpas_notify_preq(wpa_s, mgmt->sa, mgmt->da,
+                                                    mgmt->bssid, ie, ie_len,
+                                                    data->rx_mgmt.ssi_signal);
+                                        }
+
+                                        ap_mgmt_rx(wpa_s, &data->rx_mgmt);
+#endif /* CONFIG_AP */
+                                        break;
+                                    }
+                case EVENT_RX_PROBE_REQ:
+                                    if (data->rx_probe_req.sa == NULL ||
+                                            data->rx_probe_req.ie == NULL)
+                                        break;
+#ifdef CONFIG_AP
+                                    if (wpa_s->ap_iface) {
+                                        hostapd_probe_req_rx(wpa_s->ap_iface->bss[0],
+                                                data->rx_probe_req.sa,
+                                                data->rx_probe_req.da,
+                                                data->rx_probe_req.bssid,
+                                                data->rx_probe_req.ie,
+                                                data->rx_probe_req.ie_len,
+                                                data->rx_probe_req.ssi_signal);
+                                        break;
+                                    }
+#endif /* CONFIG_AP */
+                                    wpas_p2p_probe_req_rx(wpa_s, data->rx_probe_req.sa,
+                                            data->rx_probe_req.da,
+                                            data->rx_probe_req.bssid,
+                                            data->rx_probe_req.ie,
+                                            data->rx_probe_req.ie_len,
+                                            data->rx_probe_req.ssi_signal);
+                                    break;
+                case EVENT_REMAIN_ON_CHANNEL:
+#ifdef CONFIG_OFFCHANNEL
+                                    offchannel_remain_on_channel_cb(
+                                            wpa_s, data->remain_on_channel.freq,
+                                            data->remain_on_channel.duration);
+#endif /* CONFIG_OFFCHANNEL */
+                                    wpas_p2p_remain_on_channel_cb(
+                                            wpa_s, data->remain_on_channel.freq,
+                                            data->remain_on_channel.duration);
+                                    break;
+                case EVENT_CANCEL_REMAIN_ON_CHANNEL:
+#ifdef CONFIG_OFFCHANNEL
+                                    offchannel_cancel_remain_on_channel_cb(
+                                            wpa_s, data->remain_on_channel.freq);
+#endif /* CONFIG_OFFCHANNEL */
+                                    wpas_p2p_cancel_remain_on_channel_cb(
+                                            wpa_s, data->remain_on_channel.freq);
+                                    break;
+                case EVENT_EAPOL_RX:
+                                    wpa_supplicant_rx_eapol(wpa_s, data->eapol_rx.src,
+                                            data->eapol_rx.data,
+                                            data->eapol_rx.data_len);
+                                    break;
+                case EVENT_SIGNAL_CHANGE:
+                                    wpa_msg(wpa_s, MSG_INFO, WPA_EVENT_SIGNAL_CHANGE
+                                            "above=%d signal=%d noise=%d txrate=%d",
+                                            data->signal_change.above_threshold,
+                                            data->signal_change.current_signal,
+                                            data->signal_change.current_noise,
+                                            data->signal_change.current_txrate);
+                                    bgscan_notify_signal_change(
+                                            wpa_s, data->signal_change.above_threshold,
+                                            data->signal_change.current_signal,
+                                            data->signal_change.current_noise,
+                                            data->signal_change.current_txrate);
+                                    break;
+                case EVENT_INTERFACE_ENABLED:
+                                    wpa_dbg(wpa_s, MSG_DEBUG, "Interface was enabled");
+                                    if (wpa_s->wpa_state == WPA_INTERFACE_DISABLED) {
+                                        wpa_supplicant_update_mac_addr(wpa_s);
+                                        if (wpa_s->p2p_mgmt) {
+                                            wpa_supplicant_set_state(wpa_s,
+                                                    WPA_DISCONNECTED);
+                                            break;
+                                        }
+
+#ifdef CONFIG_AP
+                                        if (!wpa_s->ap_iface) {
+                                            wpa_supplicant_set_state(wpa_s,
+                                                    WPA_DISCONNECTED);
+                                            wpa_supplicant_req_scan(wpa_s, 0, 0);
+                                        } else
+                                            wpa_supplicant_set_state(wpa_s,
+                                                    WPA_COMPLETED);
+#else /* CONFIG_AP */
+                                        wpa_supplicant_set_state(wpa_s, WPA_DISCONNECTED);
+                                        wpa_supplicant_req_scan(wpa_s, 0, 0);
+#endif /* CONFIG_AP */
+                                    }
+                                    break;
+                case EVENT_INTERFACE_DISABLED:
+                                    wpa_dbg(wpa_s, MSG_DEBUG, "Interface was disabled");
+#ifdef CONFIG_P2P
+                                    if (wpa_s->p2p_group_interface == P2P_GROUP_INTERFACE_GO ||
+                                            (wpa_s->current_ssid && wpa_s->current_ssid->p2p_group &&
+                                             wpa_s->current_ssid->mode == WPAS_MODE_P2P_GO)) {
+                                        /*
+                                         * The interface was externally disabled. Remove
+                                         * it assuming an external entity will start a
+                                         * new session if needed.
+                                         */
+                                        wpas_p2p_disconnect(wpa_s);
+                                        break;
+                                    }
+                                    if (wpa_s->p2p_scan_work && wpa_s->global->p2p &&
+                                            p2p_in_progress(wpa_s->global->p2p) > 1) {
+                                        /* This radio work will be cancelled, so clear P2P
+                                         * state as well.
+                                         */
+                                        p2p_stop_find(wpa_s->global->p2p);
+                                    }
+#endif /* CONFIG_P2P */
+
+                                    if (wpa_s->wpa_state >= WPA_AUTHENTICATING) {
+                                        /*
+                                         * Indicate disconnection to keep ctrl_iface events
+                                         * consistent.
+                                         */
+                                        wpa_supplicant_event_disassoc(
+                                                wpa_s, WLAN_REASON_DEAUTH_LEAVING, 1);
+                                    }
+                                    wpa_supplicant_mark_disassoc(wpa_s);
+                                    radio_remove_works(wpa_s, NULL, 0);
+
+                                    wpa_supplicant_set_state(wpa_s, WPA_INTERFACE_DISABLED);
+                                    break;
+                case EVENT_CHANNEL_LIST_CHANGED:
+                                    wpa_supplicant_update_channel_list(
+                                            wpa_s, &data->channel_list_changed);
+                                    break;
+                case EVENT_INTERFACE_UNAVAILABLE:
+                                    wpas_p2p_interface_unavailable(wpa_s);
+                                    break;
+                case EVENT_BEST_CHANNEL:
+                                    wpa_dbg(wpa_s, MSG_DEBUG, "Best channel event received "
+                                            "(%d %d %d)",
+                                            data->best_chan.freq_24, data->best_chan.freq_5,
+                                            data->best_chan.freq_overall);
+                                    wpa_s->best_24_freq = data->best_chan.freq_24;
+                                    wpa_s->best_5_freq = data->best_chan.freq_5;
+                                    wpa_s->best_overall_freq = data->best_chan.freq_overall;
+                                    wpas_p2p_update_best_channels(wpa_s, data->best_chan.freq_24,
+                                            data->best_chan.freq_5,
+                                            data->best_chan.freq_overall);
+                                    break;
+                case EVENT_UNPROT_DEAUTH:
+                                    wpa_supplicant_event_unprot_deauth(wpa_s,
+                                            &data->unprot_deauth);
+                                    break;
+                case EVENT_UNPROT_DISASSOC:
+                                    wpa_supplicant_event_unprot_disassoc(wpa_s,
+                                            &data->unprot_disassoc);
+                                    break;
+                case EVENT_STATION_LOW_ACK:
+#ifdef CONFIG_AP
+                                    if (wpa_s->ap_iface && data)
+                                        hostapd_event_sta_low_ack(wpa_s->ap_iface->bss[0],
+                                                data->low_ack.addr);
+#endif /* CONFIG_AP */
+#ifdef CONFIG_TDLS
+                                    if (data)
+                                        wpa_tdls_disable_unreachable_link(wpa_s->wpa,
+                                                data->low_ack.addr);
+#endif /* CONFIG_TDLS */
+                                    break;
+                case EVENT_IBSS_PEER_LOST:
+#ifdef CONFIG_IBSS_RSN
+                                    ibss_rsn_stop(wpa_s->ibss_rsn, data->ibss_peer_lost.peer);
+#endif /* CONFIG_IBSS_RSN */
+                                    break;
+                case EVENT_DRIVER_GTK_REKEY:
+                                    if (os_memcmp(data->driver_gtk_rekey.bssid,
+                                                wpa_s->bssid, ETH_ALEN))
+                                        break;
+                                    if (!wpa_s->wpa)
+                                        break;
+                                    wpa_sm_update_replay_ctr(wpa_s->wpa,
+                                            data->driver_gtk_rekey.replay_ctr);
+                                    break;
+                case EVENT_SCHED_SCAN_STOPPED:
+                                    wpa_s->pno = 0;
+                                    wpa_s->sched_scanning = 0;
+                                    wpa_supplicant_notify_scanning(wpa_s, 0);
+
+                                    if (wpa_s->wpa_state == WPA_INTERFACE_DISABLED)
+                                        break;
+
+                                    /*
+                                     * Start a new sched scan to continue searching for more SSIDs
+                                     * either if timed out or PNO schedule scan is pending.
+                                     */
+                                    if (wpa_s->sched_scan_timed_out) {
+                                        wpa_supplicant_req_sched_scan(wpa_s);
+                                    } else if (wpa_s->pno_sched_pending) {
+                                        wpa_s->pno_sched_pending = 0;
+                                        wpas_start_pno(wpa_s);
+                                    }
+
+                                    break;
+                case EVENT_WPS_BUTTON_PUSHED:
+#ifdef CONFIG_WPS
+                                    wpas_wps_start_pbc(wpa_s, NULL, 0);
+#endif /* CONFIG_WPS */
+                                    break;
+                case EVENT_AVOID_FREQUENCIES:
+                                    wpa_supplicant_notify_avoid_freq(wpa_s, data);
+                                    break;
+                case EVENT_CONNECT_FAILED_REASON:
+#ifdef CONFIG_AP
+                                    if (!wpa_s->ap_iface || !data)
+                                        break;
+                                    hostapd_event_connect_failed_reason(
+                                            wpa_s->ap_iface->bss[0],
+                                            data->connect_failed_reason.addr,
+                                            data->connect_failed_reason.code);
+#endif /* CONFIG_AP */
+                                    break;
+                default:
+                                    wpa_msg(wpa_s, MSG_INFO, "Unknown event %d", event);
+                                    break;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------>
+Wpas_glue.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        int wpa_supplicant_init_wpa(struct wpa_supplicant *wpa_s)
+        {
+#ifndef CONFIG_NO_WPA
+            struct wpa_sm_ctx *ctx;
+            ctx = os_zalloc(sizeof(*ctx));
+            if (ctx == NULL) {
+                wpa_printf(MSG_ERROR, "Failed to allocate WPA context.");
+                return -1;
+            }
+
+            ctx->ctx = wpa_s;
+            ctx->msg_ctx = wpa_s;
+            ctx->set_state = _wpa_supplicant_set_state;
+            ctx->get_state = _wpa_supplicant_get_state;
+            ctx->deauthenticate = _wpa_supplicant_deauthenticate;
+            ctx->set_key = wpa_supplicant_set_key;
+            ctx->get_network_ctx = wpa_supplicant_get_network_ctx;
+            ctx->get_bssid = wpa_supplicant_get_bssid;
+            ctx->ether_send = _wpa_ether_send;
+            ctx->get_beacon_ie = wpa_supplicant_get_beacon_ie;
+            ctx->alloc_eapol = _wpa_alloc_eapol;
+            ctx->cancel_auth_timeout = _wpa_supplicant_cancel_auth_timeout;
+            ctx->add_pmkid = wpa_supplicant_add_pmkid;
+            ctx->remove_pmkid = wpa_supplicant_remove_pmkid;
+#ifndef CONFIG_NO_CONFIG_BLOBS
+            ctx->set_config_blob = wpa_supplicant_set_config_blob;
+            ctx->get_config_blob = wpa_supplicant_get_config_blob;
+#endif /* CONFIG_NO_CONFIG_BLOBS */
+            ctx->mlme_setprotection = wpa_supplicant_mlme_setprotection;
+#ifdef CONFIG_IEEE80211R
+            ctx->update_ft_ies = wpa_supplicant_update_ft_ies;
+            ctx->send_ft_action = wpa_supplicant_send_ft_action;
+            ctx->mark_authenticated = wpa_supplicant_mark_authenticated;
+#endif /* CONFIG_IEEE80211R */
+#ifdef CONFIG_TDLS
+            ctx->tdls_get_capa = wpa_supplicant_tdls_get_capa;
+            ctx->send_tdls_mgmt = wpa_supplicant_send_tdls_mgmt;
+            ctx->tdls_oper = wpa_supplicant_tdls_oper;
+            ctx->tdls_peer_addset = wpa_supplicant_tdls_peer_addset;
+#endif /* CONFIG_TDLS */
+            ctx->set_rekey_offload = wpa_supplicant_set_rekey_offload;
+
+            wpa_s->wpa = wpa_sm_init(ctx);
+            if (wpa_s->wpa == NULL) {
+                wpa_printf(MSG_ERROR, "Failed to initialize WPA state "
+                        "machine");
+                return -1;
+            }
+#endif /* CONFIG_NO_WPA */
+
+            return 0;
+        }
+    }
+------------------------------------------------------------------------------------------------->
+Wpa_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        int wpa_supplicant_driver_init(struct wpa_supplicant *wpa_s)
+        {
+            if (wpa_supplicant_update_mac_addr(wpa_s) < 0)
+                return -1;
+
+            wpa_dbg(wpa_s, MSG_DEBUG, "Own MAC address: " MACSTR,
+                    MAC2STR(wpa_s->own_addr));
+            os_memcpy(wpa_s->perm_addr, wpa_s->own_addr, ETH_ALEN);
+            wpa_sm_set_own_addr(wpa_s->wpa, wpa_s->own_addr);
+
+            wpa_clear_keys(wpa_s, NULL);
+
+            /* Make sure that TKIP countermeasures are not left enabled (could
+             * happen if wpa_supplicant is killed during countermeasures. */
+            wpa_drv_set_countermeasures(wpa_s, 0);
+
+            wpa_dbg(wpa_s, MSG_DEBUG, "RSN: flushing PMKID list in the driver");
+            wpa_drv_flush_pmkid(wpa_s);
+
+            wpa_s->prev_scan_ssid = WILDCARD_SSID_SCAN;
+            wpa_s->prev_scan_wildcard = 0;
+
+            if (wpa_supplicant_enabled_networks(wpa_s)) {
+                if (wpa_s->wpa_state == WPA_INTERFACE_DISABLED) {
+                    wpa_supplicant_set_state(wpa_s, WPA_DISCONNECTED);
+                    interface_count = 0;
+                }
+                if (!wpa_s->p2p_mgmt &&
+                        wpa_supplicant_delayed_sched_scan(wpa_s,
+                            interface_count % 3,
+                            100000))
+                    wpa_supplicant_req_scan(wpa_s, interface_count % 3,
+                            100000);
+                interface_count++;
+            } else
+                wpa_supplicant_set_state(wpa_s, WPA_INACTIVE);
+        }
+        ->  {
+                int wpa_supplicant_update_mac_addr(struct wpa_supplicant *wpa_s)
+                {
+                    if (wpa_s->driver->send_eapol) {
+                        const u8 *addr = wpa_drv_get_mac_addr(wpa_s);
+                        if (addr)
+                            os_memcpy(wpa_s->own_addr, addr, ETH_ALEN);
+                    } else if ((!wpa_s->p2p_mgmt ||
+                                !(wpa_s->drv_flags &
+                                    WPA_DRIVER_FLAGS_DEDICATED_P2P_DEVICE)) &&
+                            !(wpa_s->drv_flags &
+                                WPA_DRIVER_FLAGS_P2P_DEDICATED_INTERFACE)) {
+                        l2_packet_deinit(wpa_s->l2);
+                        wpa_s->l2 = l2_packet_init(wpa_s->ifname,
+                                wpa_drv_get_mac_addr(wpa_s),
+                                ETH_P_EAPOL,
+                                wpa_supplicant_rx_eapol, wpa_s, 0);
+                        if (wpa_s->l2 == NULL)
+                            return -1;
+                    } else {
+                        const u8 *addr = wpa_drv_get_mac_addr(wpa_s);
+                        if (addr)
+                            os_memcpy(wpa_s->own_addr, addr, ETH_ALEN);
+                    }
+
+                    if (wpa_s->l2 && l2_packet_get_own_addr(wpa_s->l2, wpa_s->own_addr)) {
+                        wpa_msg(wpa_s, MSG_ERROR, "Failed to get own L2 address");
+                        return -1;
+                    }
+
+                    wpa_sm_set_own_addr(wpa_s->wpa, wpa_s->own_addr);
+
+                    return 0;
+                }
+            }
+    }
+------------------------------------------------------------------------------------------------->
+Ctrl_iface_unix.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        struct ctrl_iface_priv * wpa_supplicant_ctrl_iface_init(struct wpa_supplicant *wpa_s)
+        {
+            struct ctrl_iface_priv *priv;
+
+            priv = os_zalloc(sizeof(*priv));
+            if (priv == NULL)
+                return NULL;
+            dl_list_init(&priv->ctrl_dst);
+            priv->wpa_s = wpa_s;
+            priv->sock = -1;
+
+            if (wpa_s->conf->ctrl_interface == NULL)
+                return priv;
+
+            if (wpas_ctrl_iface_open_sock(wpa_s, priv) < 0) {
+                os_free(priv);
+                return NULL;
+            }
+
+            return priv;
+        } 
+        ->  {
+                static int wpas_ctrl_iface_open_sock(struct wpa_supplicant *wpa_s,
+                        struct ctrl_iface_priv *priv)
+                {
+                #ifdef ANDROID
+                    os_snprintf(addr.sun_path, sizeof(addr.sun_path), "wpa_%s",
+                            wpa_s->conf->ctrl_interface);
+                    priv->sock = android_get_control_socket(addr.sun_path);
+                    if (priv->sock >= 0)
+                        goto havesock;
+                #endif /* ANDROID */
+                
+                #ifdef ANDROID
+                havesock:
+                #endif /* ANDROID */
+
+                    /*
+                     * Make socket non-blocking so that we don't hang forever if
+                     * target dies unexpectedly.
+                     */
+                    flags = fcntl(priv->sock, F_GETFL);
+                    if (flags >= 0) {
+                        flags |= O_NONBLOCK;
+                        if (fcntl(priv->sock, F_SETFL, flags) < 0) {
+                            wpa_printf(MSG_INFO, "fcntl(ctrl, O_NONBLOCK): %s",
+                                    strerror(errno));
+                            /* Not fatal, continue on.*/
+                        }
+                    }
+
+                    eloop_register_read_sock(priv->sock, wpa_supplicant_ctrl_iface_receive,
+                            wpa_s, priv);
+                    wpa_msg_register_cb(wpa_supplicant_ctrl_iface_msg_cb);
+
+                    os_free(buf);
+                    return 0;
+                }
+            }
+            ->  {
+                    static void wpa_supplicant_ctrl_iface_receive(int sock, void *eloop_ctx,
+					      void *sock_ctx)
+                    {
+                        res = recvfrom(sock, buf, sizeof(buf) - 1, 0,
+                                (struct sockaddr *) &from, &fromlen);
+
+                        buf[res] = '\0';
+
+                        if (os_strcmp(buf, "ATTACH") == 0) {
+                            if (wpa_supplicant_ctrl_iface_attach(&priv->ctrl_dst, &from,
+                                        fromlen))
+                                reply_len = 1;
+                            else {
+                                new_attached = 1;
+                                reply_len = 2;
+                            }
+                        } else if (os_strcmp(buf, "DETACH") == 0) {
+                            if (wpa_supplicant_ctrl_iface_detach(&priv->ctrl_dst, &from,
+                                        fromlen))
+                                reply_len = 1;
+                            else
+                                reply_len = 2;
+                        } else if (os_strncmp(buf, "LEVEL ", 6) == 0) {
+                            if (wpa_supplicant_ctrl_iface_level(priv, &from, fromlen,
+                                        buf + 6))
+                                reply_len = 1;
+                            else
+                                reply_len = 2;
+                        } else {
+                            reply_buf = wpa_supplicant_ctrl_iface_process(wpa_s, buf,
+                                    &reply_len);
+                            reply = reply_buf;
+                        }
+
+                        if (!reply && reply_len == 1) {
+                            reply = "FAIL\n";
+                            reply_len = 5;
+                        } else if (!reply && reply_len == 2) {
+                            reply = "OK\n";
+                            reply_len = 3;
+                        }
+
+                        if (reply) {
+                            if (sendto(sock, reply, reply_len, 0, (struct sockaddr *) &from,
+                                        fromlen) < 0) {
+                                int _errno = errno;
+                                wpa_dbg(wpa_s, MSG_DEBUG,
+                                        "ctrl_iface sendto failed: %d - %s",
+                                        _errno, strerror(_errno));
+                                if (_errno == ENOBUFS || _errno == EAGAIN) {
+                                    /*
+                                     * The socket send buffer could be full. This
+                                     * may happen if client programs are not
+                                     * receiving their pending messages. Close and
+                                     * reopen the socket as a workaround to avoid
+                                     * getting stuck being unable to send any new
+                                     * responses.
+                                     */
+                                    sock = wpas_ctrl_iface_reinit(wpa_s, priv);
+                                    if (sock < 0) {
+                                        wpa_dbg(wpa_s, MSG_DEBUG, "Failed to reinitialize ctrl_iface socket");
+                                    }
+                                }
+                                if (new_attached) {
+                                    wpa_dbg(wpa_s, MSG_DEBUG, "Failed to send response to ATTACH - detaching");
+                                    new_attached = 0;
+                                    wpa_supplicant_ctrl_iface_detach(
+                                            &priv->ctrl_dst, &from, fromlen);
+                                }
+                            }
+                        }
+                    }
+                }
+		}
+	}
+	os_free(reply_buf);
+
+	if (new_attached)
+		eapol_sm_notify_ctrl_attached(wpa_s->eapol);
+                    }
+                }
+    }
+------------------------------------------------------------------------------------------------->
+p2p_supplicant.c(/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
+->  {
+        int wpas_p2p_add_p2pdev_interface(struct wpa_supplicant *wpa_s,
+                const char *conf_p2p_dev)
+        {
+            struct wpa_interface iface;
+            struct wpa_supplicant *p2pdev_wpa_s;
+            char ifname[100];
+            char force_name[100];
+            int ret;
+
+            os_snprintf(ifname, sizeof(ifname), P2P_MGMT_DEVICE_PREFIX "%s",        // p2p-dev-wlan0
+                    wpa_s->ifname);
+            force_name[0] = '\0';
+            wpa_s->pending_interface_type = WPA_IF_P2P_DEVICE;
+            ret = wpa_drv_if_add(wpa_s, WPA_IF_P2P_DEVICE, ifname, NULL, NULL,
+                    force_name, wpa_s->pending_interface_addr, NULL);
+            if (ret < 0) {
+                wpa_printf(MSG_DEBUG, "P2P: Failed to create P2P Device interface");
+                return ret;
+            }
+            os_strlcpy(wpa_s->pending_interface_name, ifname,
+                    sizeof(wpa_s->pending_interface_name));
+
+            os_memset(&iface, 0, sizeof(iface));
+            iface.p2p_mgmt = 1;
+            iface.ifname = wpa_s->pending_interface_name;
+            iface.driver = wpa_s->driver->name;
+            iface.driver_param = wpa_s->conf->driver_param;
+
+            /*
+             * If a P2P Device configuration file was given, use it as the interface
+             * configuration file (instead of using parent's configuration file.
+             */
+            /* 如果支持P2P且启动p2p_supplicant服务，那么这里会用-m参数指定的/data/misc/wifi/p2p_supplicant.conf
+             * 替代-c参数指定的/data/misc/wifi/wpa_supplicant.conf
+             * 即p2p使用的是p2p_supplicant.conf作为配置文件！！！
+             */
+            if (conf_p2p_dev) {
+                iface.confname = conf_p2p_dev;                                      
+                iface.ctrl_interface = NULL;
+            } else {
+                //iface.confname = wpa_s->confname;
+                iface.confname = "/data/misc/wifi/p2p_supplicant.conf";
+                iface.ctrl_interface = wpa_s->conf->ctrl_interface;
+            }
+            iface.conf_p2p_dev = NULL;
+
+            p2pdev_wpa_s = wpa_supplicant_add_iface(wpa_s->global, &iface);
+            if (!p2pdev_wpa_s) {
+                wpa_printf(MSG_DEBUG, "P2P: Failed to add P2P Device interface");
+                return -1;
+            }
+            p2pdev_wpa_s->parent = wpa_s;
+
+            wpa_s->pending_interface_name[0] = '\0';
+            return 0;
+        }
+    }
+--------------------------------------------------------------------------------------------->
+Wpa_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        int wpa_supplicant_run(struct wpa_global *global)
+        {
+            struct wpa_supplicant *wpa_s;
+
+            if (global->params.daemonize &&
+                    wpa_supplicant_daemon(global->params.pid_file))
+                return -1;
+
+            if (global->params.wait_for_monitor) {
+                for (wpa_s = global->ifaces; wpa_s; wpa_s = wpa_s->next)
+                    if (wpa_s->ctrl_iface)
+                        wpa_supplicant_ctrl_iface_wait(
+                                wpa_s->ctrl_iface);
+            }
+
+            eloop_register_signal_terminate(wpa_supplicant_terminate, global);
+            eloop_register_signal_reconfig(wpa_supplicant_reconfig, global);
+
+            eloop_run();
+
+            return 0;
+        }
+    }
+---------------------------------------------------------------------------------------------------->
+Driver_wext.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        const struct wpa_driver_ops wpa_driver_wext_ops = {
+            .name = "wext",
+            .desc = "Linux wireless extensions (generic)",
+            .get_bssid = wpa_driver_wext_get_bssid,
+            .get_ssid = wpa_driver_wext_get_ssid,
+            .set_key = wpa_driver_wext_set_key,
+            .set_countermeasures = wpa_driver_wext_set_countermeasures,
+            .scan2 = wpa_driver_wext_scan,
+            .get_scan_results2 = wpa_driver_wext_get_scan_results,
+            .deauthenticate = wpa_driver_wext_deauthenticate,
+            .associate = wpa_driver_wext_associate,
+            .init = wpa_driver_wext_init,
+            .deinit = wpa_driver_wext_deinit,
+            .add_pmkid = wpa_driver_wext_add_pmkid,
+            .remove_pmkid = wpa_driver_wext_remove_pmkid,
+            .flush_pmkid = wpa_driver_wext_flush_pmkid,
+            .get_capa = wpa_driver_wext_get_capa,
+            .set_operstate = wpa_driver_wext_set_operstate,
+            .get_radio_name = wext_get_radio_name,
+            .signal_poll = wpa_driver_wext_signal_poll,
+        };
+
+        int wpa_driver_wext_scan(void *priv, struct wpa_driver_scan_params *params)
+        {
+            if (ioctl(drv->ioctl_sock, SIOCSIWSCAN, &iwr) < 0) {
+                perror("ioctl[SIOCSIWSCAN]");
+                ret = -1;
+            }
+
+            /* Not all drivers generate "scan completed" wireless event, so try to
+             * read results after a timeout. */
+            timeout = 10;
+            if (drv->scan_complete_events) {
+                /*
+                 * The driver seems to deliver SIOCGIWSCAN events to notify
+                 * when scan is complete, so use longer timeout to avoid race
+                 * conditions with scanning and following association request.
+                 */
+                timeout = 30;
+            }
+            wpa_printf(MSG_DEBUG, "Scan requested (ret=%d) - scan timeout %d "
+                    "seconds", ret, timeout);
+            eloop_cancel_timeout(wpa_driver_wext_scan_timeout, drv, drv->ctx);
+            eloop_register_timeout(timeout, 0, wpa_driver_wext_scan_timeout, drv,
+                    drv->ctx);
+        }
+    }
+

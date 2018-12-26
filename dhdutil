@@ -1,0 +1,4 @@
+
+dhdutil -i wlan0 dconpoll 100
+dhdutil -i wlan0 msglevel error event
+wl -i wlan0 msglevel error assoc scan

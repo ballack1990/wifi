@@ -1,0 +1,9 @@
+
+如果启动hostapd的时候出现以下问题：
+03-27 19:24:28.460 E/hostapd ( 8040): Configuration file: /data/misc/wifi/hostapd.conf
+03-27 19:24:28.460 I/hostapd ( 8040): rfkill: Cannot open RFKILL control device
+03-27 19:24:28.530 E/hostapd ( 8040): nl80211: Could not configure driver mode
+03-27 19:24:28.530 E/hostapd ( 8040): nl80211 driver initialization failed.
+03-27 19:24:28.530 E/hostapd ( 8040): hostapd_free_hapd_data: Interface wlan0 wasn't started
+
+请检查后台是否有wpa_supplicant进程在运行，有的话杀掉即可。

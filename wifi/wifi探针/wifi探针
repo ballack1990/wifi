@@ -1,0 +1,9 @@
+
+如下两条命令设置monitor的信道，和打开monitor mode   
+dhd_priv channel 6
+dhd_priv monitor 1
+再用附件raw.c 可以读取抓到的包
+
+读到的数据如统一路径下的图片
+
+这样是正确的，0001(278) - 表示抓到的第一个包，包长度278个，后面是包的内容

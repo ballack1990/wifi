@@ -1,0 +1,18 @@
+11b:
+wl down
+wl nmode 0
+wl gmode 0
+wl up
+ 
+11g:
+wl down
+wl nmode 0
+wl gmode 2
+wl up
+ 
+11n:
+wl down
+wl nmode 1
+wl gmode 1
+wl nreqd 1
+wl up

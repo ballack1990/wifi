@@ -1,0 +1,169 @@
+
+D/AudioHardwareTiny(  161): close device
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+D/WifiService(  453): setWifiEnabled: true pid=1104, uid=1000
+E/WifiService(  453): Invoking mWifiStateMachine.setWifiEnabled
+E/WifiStateMachine(  453): setting operational mode to 1
+[10715.972520] Current WiFi chip is AP6210.
+D/RkWifiCtrl(  453): check_wifi_preload: Wifi driver is preload when bootup.
+D/RkWifiCtrl(  157): check_wifi_chip_type_string: AP6210
+D/SoftapController(  157): Softap fwReload - Ok
+D/CommandListener(  157): Setting iface cfg
+D/CommandListener(  157): Trying to bring down wlan0
+D/CommandListener(  157): Clearing all IP addresses on wlan0
+E/WifiMonitor(  453): killSupplicant p[10716.012511] dhd_open: Enter de88e000
+[10716.012540] 
+[10716.012540] Dongle Host Driver, version 1.201.59.4 (r506368)
+[10716.012540] Compiled in drivers/net/wireless/bcmdhd on Aug 26 2015 at 17:46:01
+[10716.012561] wl_android_wifi_on in 1
+[10716.012569] wl_android_wifi_on in 2: g_wifi_on=0
+[10716.012578] wifi_platform_set_power = 1
+[10716.012586] ======== PULL WL_REG_ON HIGH! ========
+[10716.012595] [WLAN_RFKILL]: rockchip_wifi_power: 1
+[10716.012604] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+[10716.012613] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+2ptrue init.svc.wpa_supplicant=unknown init.svc.p2p_supplicant=unknown
+D/RkWifiCtrl(  453): Kernel version is 3.10.
+D/RkWifiCtrl(  453): Kernel version is 3.10.
+D/WifiHW  (  453): wifi_start_supplicant: p2p_supplicant
+W/AudioTrack(  453): AUDIO_OUTPUT_FLAG_FAST denied by client
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/AudioHardwareTiny(  161): start_output_stream
+D/AudioHardwareTiny(  161): Audio HAL start_output_stream  out->device = 0x80400
+I/wpa_supplicant( 1982): Successfully initi[10716.119875] [WLAN_RFKILL]: wifi turn on power. 156
+alized wpa_supplicant: for broadcom wifi
+E/WifiStateMachine(  453): setWifiState: enabling
+E/WifiStateMachine(  453): Supplicant start successful
+D/WifiMonitor(  453): startMonitoring(wlan0) with mConnected = false
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+[10716.326497] sdio_reset_comm():
+[10716.329513] mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 200000Hz, actual 200000HZ div = 125)
+[10716.329538] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 400000Hz for init[mmc2]
+[10716.348107] mmc2: queuing unknown CIS tuple 0x80 (2 bytes)
+[10716.351062] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+[10716.354014] mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+[10716.359308] mmc2: queuing unknown CIS tuple 0x80 (7 bytes)
+[10716.463324] mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+[10716.463381] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc2]
+[10716.463959] 
+[10716.463959] 
+[10716.463959] dhd_bus_devreset: == WLAN ON ==
+[10716.464144] F1 signature read @0x18000000=0x16224335
+[10716.468182] F1 signature OK, socitype:0x1 chip:0x4339 rev:0x1 pkg:0x2
+[10716.468798] DHD: dongle ram size is set to 786432(orig 786432) at 0x180000
+[10716.469049] dhdsdio_probe_init: set use_rxchain 1 from config.txt
+[10716.469149] dhd_conf_read_config: Ignore config file /system/etc/firmware/config.txt
+[10716.469175] dhd_conf_set_fw_name_by_chip: firmware_path=/system/etc/firmware/fw_bcm4339a0_ag.bin,nv_path=/system/etc/firmware/nvram_AP6335.txt
+[10716.469204] Final fw_path=/system/etc/firmware/fw_bcm4339a0_ag.bin
+[10716.469218] Final nv_path=/system/etc/firmware/nvram_AP6335.txt
+[10716.469232] Final conf_path=/system/etc/firmware/config.txt
+[10716.543742] NVRAM version: AP6335_NVRAM_V1.7_04102014
+[10716.544408] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+D/PowerManagerService(  453): LockScreenOff10
+[10716.716925] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+[10716.717089] bcmsdh_oob_intr_register: Enter
+[10716.717097] bcmsdh_oob_intr_register: HW_OOB enabled
+[10716.717110] bcmsdh_oob_intr_register OOB irq=196 flags=4
+[10716.717134] bcmsdh_oob_intr_register: enable_irq_wake
+[10716.717867] dhd_conf_set_band: Set band 0
+[10716.718029] wifi_platform_get_mac_addr
+[10716.718039] ======== bcm_wlan_get_mac_address ========
+[10716.718048] [WLAN_RFKILL]: rockchip_wifi_mac_addr: enter.
+[10716.718059] [WLAN_RFKILL]: falsh wifi_custom_mac_addr=[00:00:00:00:00:00]
+[10716.718066] [WLAN_RFKILL]: This mac address is not valid, ignored...
+[10716.727480] Firmware up: op_mode=0x0005, MAC=94:a1:a2:f7:55:c6
+[10716.727490] dhd_conf_set_country: Set country CN, revision 38
+[10716.772734] Country code: CN (CN/38)
+[10716.772942] dhd_conf_set_roam: Set roam_off 1
+[10716.774714] dhd_conf_set_txbf: set txbf 1
+[10716.782086] Firmware version = wl0: Apr  3 2014 12:12:42 version 6.37.32.28.2_ip (r424058)
+[10716.782099]   Driver: 1.201.59.4 (r506368)
+[10716.782099]   Firmware: wl0: Apr  3 2014 12:12:42 version 6.37.32.28.2_ip (r424058) 
+[10716.782306] dhd_txglom_enable: enable 1
+[10716.782315] dhd_conf_set_disable_proptx: set disable_proptx 0
+[10716.783329] dhd_wlfc_hostreorder_init(): successful bdcv2 tlv signaling, 64
+[10716.786126] wl_android_wifi_on: Success
+[10716.840732] dhd_open: Exit ret=0
+D/wpa_supplicant( 1797): RTM_NEWLINK: ifi_index=4 ifname=wlan0 operstate=5 linkmode=0 ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+D/wpa_supplicant( 1797): nl80211: Interface up
+D/wpa_supplicant( 1797): wlan0: Event INTERFACE_ENABLED (28) received
+D/wpa_supplicant( 1797): wlan0: Interface was enabled
+D/Tethering(  453): sendTetherStateChangedBroadcast 1, 0, 0
+D/wpa_supplicant( 1797): wlan0: State: INTERFACE_DISABLED -> DISCONNECTED
+D/wpa_supplicant( 1797): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+D/wpa_supplicant( 1797): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+D/wpa_supplicant( 1797): wlan0: Setting scan request: 0.000000 sec
+D/wpa_supplicant( 1797): wlan0: No enabled networks - do not scan
+D/wpa_supplicant( 1797): wlan0: State: DISCONNECTED -> INACTIVE
+E/wpa_supplicant( 1982): Could not read interface p2p-dev-wlan0 [10717.063103] WLC_E_IF: NO_IF set, event Ignored
+flags: No such device
+E/WifiStateMachine(  453): setSuspendOptimizations: 2 true
+E/WifiStateMachine(  453): mSuspendOptNeedsDisabled 4
+E/WifiStateMachine(  453): Supplicant connection established
+E/WifiState[10717.090877] Current WiFi chip is AP6210.
+Machine(  453): setWifiState: enabled
+D/WifiConfigStore(  453): Loading config and enabling all networks 
+E/WifiConfigStore(  453): --- Begin wpa_supplicant.conf Contents ---
+E/WifiConfigStore(  453): disable_scan_offload=1
+E/WifiConfigStore(  453): driver_param=use_p2p_group_interface=1p2p_device=1
+E/WifiConfigStore(  453): update_config=1
+E/WifiConfigStore(  453): device_name=firefly-rk3288
+E/WifiConfigStore(  453): manufacturer=rockchip
+E/WifiConfigStore(  453): model_name=firefly-rk3288
+E/WifiConfigStore(  453): model_number=firefly-rk3288
+E/WifiConfigStore(  453): serial_number=40AI8IY4AN
+E/WifiConfigStore(  453): device_type=10-0050F204-5
+E/WifiConfigStore(  453): config_methods=physical_display virtual_push_button
+E/WifiConfigStore(  453): p2p_no_go_freq=5170-5740
+E/WifiConfigStore(  453): pmf=1
+E/WifiConfigStore(  453): external_sim=1
+E/WifiConfigStore(  453): wowlan_triggers=any
+E/WifiConfigStore(  453): p2p_search_delay=0
+E/WifiConfigStore(  453): --- End wpa_supplicant.conf Contents ---
+D/WifiNative-HAL(  453): Setting external_sim to 1
+D/WifiStateMachine(  453): Setting OUI to DA-A1-19
+I/WifiNative-HAL(  453): startHal
+D/wifi    (  453): setting scan oui 0xb75719a0
+D/WifiHAL (  453): Sending mac address OUI
+E/WifiHAL (  453): failed to set scanning mac OUI; result = -95
+E/wpa_supplicant( 1982): check_wifi_chip_type_string: AP6210
+E/WifiStateMachine(  453): setDetailed state, old =DISCONNECTED and new state=DISCONNECTED hidden=false
+E/native  (  453): do suspend false
+D/WifiScanningService(  453): SCAN_AVAILABLE : 3
+D/RttService(  453): SCAN_AVAILABLE : 3
+E/WifiStateMachine(  453): startDelayedScan send -> 161 milli 10000
+D/WifiScanningService(  453): DefaultState got{ when=0 what=160006 target=com.android.internal.util.StateMachine$SmHandler }
+I/WifiNative-HAL(  453): startHal
+D/wifi    (  453): getting scan capabilities on interface[0] = 0xb75719a0
+D/WifiHAL (  453): Creating message to get scan capablities; iface = 4
+D/wifi    (  453): failed to get capabilities : -95
+E/WifiScanningService(  453): could not get scan capabilities
+D/RttService(  453): DefaultState got{ when=-1ms what=160512 target=com.android.internal.util.StateMachine$SmHandler }
+D/Index   ( 1104): Deleting data for locale 'en_US' took 3 millis
+E/WifiStateMachine(  453): set frequency band 0
+I/wpa_supplicant( 1982): wlan0: CTRL-EVENT-REGDOM-CHANGE init=USER type=UNKNOWN
+W/CommandListener(  157): Failed to retrieve HW addr for p2p0 (No such device)
+D/CommandListener(  157): Setting iface cfg
+E/WifiStateMachine(  453): SUPPLICANT_STATE_CHANGE_EVENT state=DISCONNECTED -> state= DISCONNECTED debouncing=false
+E/WifiStateMachine(  453): setDetailed state, old =DISCONNECTED and new state=DISCONNECTED hidden=false
+D/wpa_supplicant( 1797): nl80211: Event message available
+D/wpa_supplicant( 1797): nl80211: Drv Event 33 (NL80211_CMD_TRIGGER_SCAN) received for wlan0
+D/wpa_supplicant( 1797): wlan0: nl80211: Scan trigger
+D/wpa_supplicant( 1797): wlan0: Event SCAN_STARTED (49) received
+D/wpa_supplicant( 1797): wlan0: External program started a scan
+E/WifiP2pService(  453): Unable to change interface settings: java.lang.IllegalStateException: command '113 interface setcfg p2p0 0.0.0.0 0 up' faile'
+D/WifiMonitor(  453): startMonitoring(p2p0) with mConnected = true
+E/WifiStateMachine(  453): SUPPLICANT_STATE_CHANGE_EVENT state=SCANNING -> state= SCANNING debouncing=false
+E/WifiStateMachine(  453): setDetailed state, old =DISCONNECTED and new state=SCANNING hidden=false
+E/WifiStateMachine(  453): setDetailed state send new extra info0x
+D/WifiNative-HAL(  453): p2pGetDeviceAddress
+D/WifiNative-HAL(  453): p2pGetDeviceAddress returning 96:a1:a2:f7:55:c6
+E/WifiStateMachine(  453): Turn on scanning after p2p disconnected
+E/wpa_supplicant( 1982): Writing configuration file '/data/misc/wifi/p2p_supplicant.conf.tmp'
+D/Index   ( 1104): Indexing locale 'en_US' took 31 millis
+E/wpa_supplicant( 1982): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+E/WifiStateMachine(  453): WifiStateMachine Disconnected CMD_START_SCAN source -2 160, 161 -> obsolete
+D/PowerManagerService(  453): LockScreenOff10

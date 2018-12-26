@@ -1,0 +1,436 @@
+--------- beginning of system
+D/PowerManagerService(  453): LockScreenOff10
+--------- beginning of main
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+W/AudioTrack(  453): AUDIO_OUTPUT_FLAG_FAST denied by client
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/AudioHardwareTiny(  166): start_output_stream
+D/AudioHardwareTiny(  166): Audio HAL start_output_stream  out->device = 0x80400
+D/WirelessSettings( 1033): initSmsApplicationSetting:
+D/OpenGLRenderer( 1033): endAllStagingAnimators on 0xb840adb8 (RippleDrawable) with handle 0xb8354068
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+W/AudioTrack(  453): AUDIO_OUTPUT_FLAG_FAST denied by client
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  453): LockScreenOff10
+D/UserManager( 1033): ---getMaxSupportedUsers,we has UMS,force disabled M-user---
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/DashboardSummary( 1033): rebuildUI took: 272 ms
+D/OpenGLRenderer( 1033): endAllStagingAnimators on 0xb8248cf8 (RippleDrawable) with handle 0xb84a3780
+D/PowerManagerService(  453): LockScreenOff10
+I/art     ( 1033): Explicit concurrent mark sweep GC freed 5842(452KB) AllocSpace objects, 0(0B) LOS objects, 39% free, 4MB/7MB, paused 463us total 32.438ms
+I/art     ( 1033): Explicit concurrent mark sweep GC freed 66(2704B) AllocSpace objects, 0(0B) LOS objects, 39% free, 4MB/7MB, paused 326us total 19.762ms
+I/art     ( 1033): Explicit concurrent mark sweep GC freed 3(96B) AllocSpace objects, 0(0B) LOS objects, 39% free, 4MB/7MB, paused 378us total 18.277ms
+E/StrictMode( 1033): class com.android.settings.SubSettings; instances=2; limit=1
+E/StrictMode( 1033): android.os.StrictMode$InstanceCountViolation: class com.android.settings.SubSettings; instances=2; limit=1
+E/StrictMode( 1033): 	at android.os.StrictMode.setClassInstanceLimit(StrictMode.java:1)
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+W/AudioTrack(  453): AUDIO_OUTPUT_FLAG_FAST denied by client
+I/ActivityManager(  453): START u0 {act=android.intent.action.MAIN cmp=com.android.settings/.SubSettings (has extras)} from uid 1000 on display 0
+V/WindowManager(  453): addAppToken: AppWindowToken{264296e8 token=Token{32ec280b ActivityRecord{6588bda u0 com.android.settings/.SubSettings t24}}} to stack=1 task=24 at 1
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (325, 170).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (328, 170).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (333, 170).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (337, 170).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (341, 170).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (344, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (348, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (353, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (358, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (366, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (378, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (392, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (411, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (432, 169).
+D/SubSettings( 1033): Launching fragment com.android.settings.wifi.WifiSettings
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (457, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (482, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (512, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (536, 169).
+D/PowerManagerService(  453): LockScreenOff10
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (559, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (576, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (591, 169).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (600, 167).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (605, 166).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (608, 166).
+V/WindowManager(  453): Adding window Window{26dc2a56 u0 com.android.settings/com.android.settings.SubSettings} at 3 of 8 (after Window{17193242 u0 com.android.settings/com.android.settings.Settings})
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (609, 166).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (611, 166).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (612, 166).
+D/Index   ( 1033): Deleting data for locale 'en_US' took 9 millis
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (614, 166).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (617, 167).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (620, 168).
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (624, 169).
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (630, 171).
+D/Index   ( 1033): Indexing locale 'en_US' took 44 millis
+I/InputDispatcher(  453): Dropping event because there is no touchable window at (639, 172).
+D/Index   ( 1033): Deleting data for locale 'en_US' took 3 millis
+D/Index   ( 1033): Indexing locale 'en_US' took 31 millis
+I/ActivityManager(  453): Displayed com.android.settings/.SubSettings: +374ms
+D/PowerManagerService(  453): LockScreenOff10
+D/PowerManagerService(  453): LockScreenOff10
+D/AudioHardwareTiny(  166): close device
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  453): screen time out
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+D/PowerManagerService(  453): LockScreenOff10
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+D/PowerManagerService(  453): LockScreenOff10
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+D/PowerManagerService(  453): LockScreenOff10
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+D/WifiService(  453): setWifiEnabled: true pid=1033, uid=1000
+E/WifiService(  453): Invoking mWifiStateMachine.setWifiEnabled
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/WifiStateMachine(  453): setting operational mode to 1
+E/Lights  (  453): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+D/RkWifiCtrl(  453): check_wifi_preload: Wifi driver is preload when bootup.
+W/AudioTrack(  453): AUDIO_OUTPUT_FLAG_FAST denied by client
+D/RkWifiCtrl(  160): check_wifi_chip_type_string: AP6210
+D/SoftapController(  160): Softap fwReload - Ok
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/CommandListener(  160): Setting iface cfg
+D/CommandListener(  160): Trying to bring down wlan0
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/AudioHardwareTiny(  166): start_output_stream
+D/AudioHardwareTiny(  166): Audio HAL start_output_stream  out->device = 0x80400
+D/Tethering(  453): InitialState.processMessage what=4
+D/CommandListener(  160): Clearing all IP addresses on wlan0
+D/Tethering(  453): sendTetherStateChangedBroadcast 0, 0, 0
+E/WifiMonitor(  453): killSupplicant p2ptrue init.svc.wpa_supplicant=unknown init.svc.p2p_supplicant=unknown
+D/RkWifiCtrl(  453): check_wifi_chip_type_string: AP6210
+D/RkWifiCtrl(  453): Kernel version is 3.10.
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+D/RkWifiCtrl(  453): Kernel version is 3.10.
+D/WifiHW  (  453): wifi_start_supplicant: p2p_supplicant
+E/WifiStateMachine(  453): setWifiState: enabling
+E/WifiStateMachine(  453): Supplicant start successful
+D/WifiMonitor(  453): startMonitoring(wlan0) with mConnected = false
+D/WifiHW  (  453): open connection to supplicant on "@android:wpa_wlan0"
+I/wpa_supplicant( 1527): Successfully initialized wpa_supplicant: for broadcom wifi
+D/Tethering(  453): sendTetherStateChangedBroadcast 1, 0, 0
+E/wpa_supplicant( 1527): Could not read interface p2p-dev-wlan0 flags: No such device
+E/WifiStateMachine(  453): setSuspendOptimizations: 2 true
+E/WifiStateMachine(  453): mSuspendOptNeedsDisabled 0
+E/WifiStateMachine(  453): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  453): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES
+E/WifiStateMachine(  453): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  453): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES
+E/WifiStateMachine(  453): Supplicant connection established
+E/WifiStateMachine(  453): setWifiState: enabled
+D/WifiConfigStore(  453): Loading config and enabling all networks 
+E/WifiConfigStore(  453): Error parsing configuration: java.io.FileNotFoundException: /data/misc/wifi/ipconfig.txt: open failed: ENOENT (No such file or directory)
+D/Index   ( 1033): Deleting data for locale 'en_US' took 4 millis
+D/WifiNative-HAL(  453): Setting external_sim to 1
+D/WifiStateMachine(  453): Setting OUI to DA-A1-19
+I/WifiNative-HAL(  453): startHal
+E/wifi    (  453): getStaticLongField sWifiHalHandle 0xaaa27cbc
+I/WifiHAL (  453): Initializing wifi
+I/WifiHAL (  453): Creating socket
+I/WifiHAL (  453): Initialized Wifi HAL Successfully; vendor cmd = 103
+D/wifi    (  453): Did set static halHandle = 0xb825fe40
+D/wifi    (  453): halHandle = 0xb825fe40, mVM = 0xb7de7410, mCls = 0x100a02
+E/wifi    (  453): getStaticLongField sWifiHalHandle 0xaaa27a7c
+D/wifi    (  453): array field set
+I/WifiNative-HAL(  453): interface[0] = wlan0
+D/wifi    (  453): setting scan oui 0xb80ff7c0
+D/WifiHAL (  453): Sending mac address OUI
+E/WifiHAL (  453): failed to set scanning mac OUI; result = -95
+I/WifiNative-HAL(  453): Waiting for HAL events mWifiHalHandle=-1205469632
+D/wifi    (  453): waitForHalEvents called, vm = 0xb7de7410, obj = 0x100a02, env = 0xb81050a0
+E/wifi    (  453): getStaticLongField sWifiHalHandle 0xa248e58c
+E/wpa_supplicant( 1527): check_wifi_chip_type_string: AP6210
+E/WifiStateMachine(  453): setDetailed state, old =IDLE and new state=DISCONNECTED hidden=false
+E/WifiStateMachine(  453): cancelDelayedScan -> 1
+D/WifiStateMachine(  453): backgroundScan enabled=false startBackgroundScanIfNeeded:false
+E/WifiStateMachine(  453): handleScreenStateChanged Exit: true
+E/WifiStateMachine(  453): startDelayedScan send -> 2 milli 10000
+D/WifiScanningService(  453): SCAN_AVAILABLE : 3
+D/RttService(  453): SCAN_AVAILABLE : 3
+D/WifiScanningService(  453): DefaultState got{ when=0 what=160006 target=com.android.internal.util.StateMachine$SmHandler }
+I/WifiNative-HAL(  453): startHal
+D/RttService(  453): DefaultState got{ when=0 what=160512 target=com.android.internal.util.StateMachine$SmHandler }
+D/wifi    (  453): getting scan capabilities on interface[0] = 0xb80ff7c0
+D/WifiHAL (  453): Creating message to get scan capablities; iface = 4
+D/wifi    (  453): failed to get capabilities : -95
+E/WifiScanningService(  453): could not get scan capabilities
+W/CommandListener(  160): Failed to retrieve HW addr for p2p0 (No such device)
+D/CommandListener(  160): Setting iface cfg
+E/WifiP2pService(  453): Unable to change interface settings: java.lang.IllegalStateException: command '183 interface setcfg p2p0 0.0.0.0 0 up' failed with '400 183 Failed to set address (No such device)'
+D/WifiMonitor(  453): startMonitoring(p2p0) with mConnected = true
+D/WifiNative-HAL(  453): p2pGetDeviceAddress
+D/WifiNative-HAL(  453): p2pGetDeviceAddress returning 96:a1:a2:f7:55:c6
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/p2p_supplicant.conf.tmp'
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+D/Index   ( 1033): Indexing locale 'en_US' took 166 millis
+E/WifiStateMachine(  453): set frequency band 0
+I/wpa_supplicant( 1527): wlan0: CTRL-EVENT-REGDOM-CHANGE init=USER type=UNKNOWN
+E/WifiStateMachine(  453): SUPPLICANT_STATE_CHANGE_EVENT state=SCANNING -> state= SCANNING debouncing=false
+E/WifiStateMachine(  453): setDetailed state, old =DISCONNECTED and new state=SCANNING hidden=false
+E/WifiStateMachine(  453): setSuspendOptimizationsNative: 4 false -want true stack:setSuspendOptimizationsNative - access$12900 - processMessage - processMsg
+E/native  (  453): do suspend false
+E/WifiStateMachine(  453): startDelayedScan send -> 3 milli 10000
+D/AudioHardwareTiny(  166): close device
+W/AppOps  (  453): Bad call: specified package media under uid 1000 but it is really 1013
+E/WifiStateMachine(  453): [1,293,900,204,435 ms] noteScanEnd no scan source onTime=0
+E/WifiStateMachine(  453): wifi setScanResults statecom.android.server.wifi.WifiStateMachine$DisconnectedState@3ffccebb sup_state=SCANNING debouncing=false mConnectionRequests=1 selection=<none>
+E/WifiStateMachine(  453): WifiStateMachine shouldSwitchNetwork  txSuccessRate=13.50 rxSuccessRate=5.50 delta 1000 -> 994
+E/WifiConfigStore(  453):  rewrite network history for "AMPAK_WIFI_5.8G"WPA_PSK
+E/WifiConfigStore(  453):  rewrite network history for "AMPAK_WIFI_2.4G"WPA_PSK
+E/WifiConfigStore(  453): writeKnownNetworkHistory write linked 1
+E/WifiConfigStore(  453): writeKnownNetworkHistory write linked 1
+E/WifiStateMachine(  453): CMD_AUTO_CONNECT sup state ScanState my state DisconnectedState nid=1 roam=3
+E/WifiConfigStore(  453): saveWifiConfigBSSID Setting BSSID for "AMPAK_WIFI_5.8G"WPA_PSK to any
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+E/WifiStateMachine(  453): CMD_AUTO_CONNECT will save config -> "AMPAK_WIFI_5.8G" nid=1
+E/WifiConfigStore(  453): will read network variables netId=1
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+E/WifiStateMachine(  453): CMD_AUTO_CONNECT did save config ->  nid=1
+E/WifiConfigStore(  453): will read network variables netId=1
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+I/wpa_supplicant( 1527): wlan0: Trying to associate with 88:25:93:24:eb:1f (SSID='AMPAK_WIFI_5.8G' freq=5745 MHz)
+I/wpa_supplicant( 1527): wlan0: Associated with 88:25:93:24:eb:1f
+E/WifiStateMachine(  453): SUPPLICANT_STATE_CHANGE_EVENT state=ASSOCIATING -> state= CONNECTING debouncing=false
+E/WifiStateMachine(  453): setDetailed state, old =SCANNING and new state=CONNECTING hidden=false
+E/WifiStateMachine(  453): setDetailed state send new extra info0x
+I/wpa_supplicant( 1527): wlan0: WPA: Key negotiation completed with 88:25:93:24:eb:1f [PTK=CCMP GTK=CCMP]
+I/wpa_supplicant( 1527): wlan0: CTRL-EVENT-CONNECTED - Connection to 88:25:93:24:eb:1f completed [id=1 id_str=]
+E/WifiStateMachine(  453): SUPPLICANT_STATE_CHANGE_EVENT state=ASSOCIATED -> state= CONNECTING debouncing=false
+E/WifiStateMachine(  453): setDetailed state, old =CONNECTING and new state=CONNECTING hidden=false
+E/WifiStateMachine(  453): setDetailed state send new extra info"AMPAK_WIFI_5.8G"
+E/WifiStateMachine(  453): SUPPLICANT_STATE_CHANGE_EVENT state=FOUR_WAY_HANDSHAKE -> state= AUTHENTICATING debouncing=false
+E/WifiStateMachine(  453): setDetailed state, old =CONNECTING and new state=AUTHENTICATING hidden=false
+E/WifiStateMachine(  453): SUPPLICANT_STATE_CHANGE_EVENT state=GROUP_HANDSHAKE -> state= AUTHENTICATING debouncing=false
+E/WifiStateMachine(  453): setDetailed state, old =AUTHENTICATING and new state=AUTHENTICATING hidden=false
+E/WifiStateMachine(  453): Network connection established
+E/WifiStateMachine(  453): setDetailed state, old =AUTHENTICATING and new state=CONNECTING hidden=false
+D/ConnectivityService(  453): registerNetworkAgent NetworkAgentInfo{ ni{[type: WIFI[], state: CONNECTING/CONNECTING, reason: (unspecified), extra: "AMPAK_WIFI_5.8G", roaming: false, failover: false, isAvailable: true, isConnectedToProvisioningNetwork: false]}  network{null}  lp{{InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576}}  nc{[ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps]}  Score{20}  everValidated{false}  lastValidated{false}  created{false}  explicitlySelected{false} }
+E/WifiStateMachine(  453): L2ConnectedState 88:25:93:24:eb:1f config "AMPAK_WIFI_5.8G"WPA_PSK config.bssid null
+E/WifiStateMachine(  453): L2ConnectedState "AMPAK_WIFI_5.8G" nid=1
+E/WifiConfigStore(  453): saveWifiConfigBSSID Setting BSSID for "AMPAK_WIFI_5.8G"WPA_PSK to any
+D/ConnectivityService(  453): NetworkAgentInfo [WIFI () - 100] EVENT_NETWORK_INFO_CHANGED, going from null to CONNECTING
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+E/WifiStateMachine(  453): enter ObtainingIpState netId=1 "AMPAK_WIFI_5.8G"WPA_PSK  roam=3 static=false watchdog= 0
+E/WifiStateMachine(  453): setDetailed state, old =CONNECTING and new state=OBTAINING_IPADDR hidden=false
+E/WifiStateMachine(  453): ObtainingIpAddress 88:25:93:24:eb:1f config "AMPAK_WIFI_5.8G"WPA_PSK config.bssid any
+E/WifiStateMachine(  453): ObtainingIpAddress "AMPAK_WIFI_5.8G" nid=1
+E/WifiConfigStore(  453): saveWifiConfigBSSID Setting BSSID for "AMPAK_WIFI_5.8G"WPA_PSK to any
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+D/CommandListener(  160): Setting iface cfg
+E/WifiStateMachine(  453): Start Dhcp Watchdog 1
+E/WifiStateMachine(  453): calculateWifiScore() report new score 60
+D/ConnectivityService(  453): updateNetworkScore for NetworkAgentInfo [WIFI () - 100] to 60
+E/WifiStateMachine(  453): Link configuration changed for netId: 1 old: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  453): updateLinkProperties nid: 1 state: OBTAINING_IPADDR reason: CMD_UPDATE_LINKPROPERTIES
+E/WifiStateMachine(  453): Link configuration changed for netId: 1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  453): updateLinkProperties nid: 1 state: OBTAINING_IPADDR reason: CMD_UPDATE_LINKPROPERTIES
+E/WifiStateMachine(  453): setSuspendOptimizationsNative: 1 false -want true stack:setSuspendOptimizationsNative - handlePreDhcpSetup - processMessage - processMsg
+E/native  (  453): do suspend false
+E/wpa_supplicant( 1527): wpa_driver_nl80211_driver_cmd: failed to issue private command: WLS_BATCHING GET
+E/WifiStateMachine(  453): Unexpected BatchedScanResults :null
+E/wpa_supplicant( 1527): wpa_driver_nl80211_driver_cmd: failed to issue private command: WLS_BATCHING STOP
+I/dhcpcd  ( 1562): version 5.5.6 starting
+E/dhcpcd  ( 1562): get_duid: Read-only file system
+I/dhcpcd  ( 1562): wlan0: broadcasting for a lease
+I/dhcpcd  ( 1562): wlan0: offered 192.168.1.162 from 192.168.1.1
+E/WifiStateMachine(  453): Link configuration changed for netId: 1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  453): updateLinkProperties nid: 1 state: OBTAINING_IPADDR reason: CMD_UPDATE_LINKPROPERTIES
+I/dhcpcd  ( 1562): wlan0: acknowledged 192.168.1.162 from 192.168.1.1
+I/dhcpcd  ( 1562): wlan0: leased 192.168.1.162 for 7200 seconds
+E/WifiStateMachine(  453): Link configuration changed for netId: 1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,192.168.1.162/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  453): updateLinkProperties nid: 1 state: OBTAINING_IPADDR reason: CMD_UPDATE_LINKPROPERTIES v4
+E/WifiStateMachine(  453): setSuspendOptimizationsNative: 1 true -want true stack:setSuspendOptimizationsNative - handlePostDhcpSetup - processMessage - processMsg
+E/WifiStateMachine(  453): WifiStateMachine DHCP successful
+E/WifiStateMachine(  453): Link configuration changed for netId: 1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,192.168.1.162/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,192.168.1.162/24,]  Routes: [fe80::/64 -> :: wlan0,192.168.1.0/24 -> 0.0.0.0 wlan0,0.0.0.0/0 -> 192.168.1.1 wlan0,] DnsAddresses: [192.168.1.1,] Domains:  MTU: 0}
+E/WifiStateMachine(  453): updateLinkProperties nid: 1 state: OBTAINING_IPADDR reason: DHCP_SUCCESS v4 v4r v4dns isprov
+E/WifiStateMachine(  453): setDetailed state, old =OBTAINING_IPADDR and new state=CAPTIVE_PORTAL_CHECK hidden=false
+E/WifiStateMachine(  453): setDetailed state, old =CAPTIVE_PORTAL_CHECK and new state=CONNECTED hidden=false
+D/ConnectivityService(  453): NetworkAgentInfo [WIFI () - 100] EVENT_NETWORK_INFO_CHANGED, going from CONNECTING to CONNECTED
+D/ConnectivityService(  453): Adding iface wlan0 to network 100
+E/WifiStateMachine(  453): Did not find remoteAddress {192.168.1.1} in /proc/net/arp
+E/WifiStateMachine(  453): ConnectedState Enter  mScreenOn=true scanperiod=20000
+E/WifiStateMachine(  453): startDelayedScan send -> 4 milli 20000
+E/ConnectivityService(  453): Unexpected mtu value: 0, wlan0
+D/ConnectivityService(  453): Adding Route [fe80::/64 -> :: wlan0] to network 100
+E/wpa_supplicant( 1527): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+D/ConnectivityService(  453): Adding Route [192.168.1.0/24 -> 0.0.0.0 wlan0] to network 100
+D/ConnectivityService(  453): Adding Route [0.0.0.0/0 -> 192.168.1.1 wlan0] to network 100
+E/WifiStateMachine(  453): Wifi Connected, start to check if need to enable wifi intelligent sleep.
+D/ConnectivityService(  453): Setting Dns servers for network 100 to [/192.168.1.1]
+E/WifiStateMachine(  453): WifiStateMachine CMD_START_SCAN source 1000 txSuccessRate=1.94 rxSuccessRate=0.81 targetRoamBSSID=88:25:93:24:eb:1f RSSI=-44
+D/ConnectivityService(  453): notifyType IP_CHANGED for NetworkAgentInfo [WIFI () - 100]
+D/ConnectivityService(  453): notifyType PRECHECK for NetworkAgentInfo [WIFI () - 100]
+D/ConnectivityService(  453): rematching NetworkAgentInfo [WIFI () - 100]
+D/ConnectivityService(  453):    accepting network in place of null
+D/NetworkMonitor/NetworkAgentInfo [WIFI () - 100](  453): DefaultState{ when=0 what=532481 target=com.android.internal.util.StateMachine$SmHandler }
+D/NetworkMonitor/NetworkAgentInfo [WIFI () - 100](  453): Connected
+D/NetworkMonitor/NetworkAgentInfo [WIFI () - 100](  453): EvaluatingState{ when=0 what=532486 arg1=1 target=com.android.internal.util.StateMachine$SmHandler }
+D/NetworkMonitor/NetworkAgentInfo [WIFI () - 100](  453): Validated
+D/ConnectivityService(  453): Switching to new default network: NetworkAgentInfo{ ni{[type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: "AMPAK_WIFI_5.8G", roaming: false, failover: false, isAvailable: true, isConnectedToProvisioningNetwork: false]}  network{100}  lp{{InterfaceName: wlan0 LinkAddresses: [fe80::96a1:a2ff:fef7:55c6/64,192.168.1.162/24,]  Routes: [fe80::/64 -> :: wlan0,192.168.1.0/24 -> 0.0.0.0 wlan0,0.0.0.0/0 -> 192.168.1.1 wlan0,] DnsAddresses: [192.168.1.1,] Domains:  MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576}}  nc{[ Transports: WIFI Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN LinkUpBandwidth>=1048576Kbps LinkDnBandwidth>=1048576Kbps]}  Score{20}  everValidated{false}  lastValidated{false}  created{true}  explicitlySelected{false} }
+E/WifiStateMachine(  453): [1,293,900,206,853 ms] noteScanstart no scan source uid 1000
+D/ConnectivityService(  453): Setting tx/rx TCP buffers to 524288,1048576,2097152,262144,524288,1048576
+D/ConnectivityService(  453): notifyType AVAILABLE for NetworkAgentInfo [WIFI () - 100]
+D/CSLegacyTypeTracker(  453): Sending connected broadcast for type 1 NetworkAgentInfo [WIFI () - 100] isDefaultNetwork=true
+D/ConnectivityManager.CallbackHandler(  571): CM callback handler got msg 524290
+D/ConnectivityService(  453): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE_IMMEDIATE
+D/ConnectivityService(  453): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE
+D/ConnectivityService(  453): setProvNotificationVisibleIntent: E visible=false networkType=0 extraInfo=null
+D/ConnectivityService(  453): Validated NetworkAgentInfo [WIFI () - 100]
+D/ConnectivityService(  453): rematching NetworkAgentInfo [WIFI () - 100]
+D/Tethering(  453): MasterInitialState.processMessage what=3
+D/ConnectivityService(  453): Network NetworkAgentInfo [WIFI () - 100] was already satisfying request 1. No change.
+D/ConnectivityService(  453): notifyType AVAILABLE for NetworkAgentInfo [WIFI () - 100]
+D/ConnectivityManager.CallbackHandler(  571): CM callback handler got msg 524290
+D/ConnectivityService(  453): sendStickyBroadcast: action=android.net.conn.INET_CONDITION_ACTION
+D/WifiNetworkAgent(  453): NetworkAgent: WifiNetworkAgent -> Wifi networkStatus valid, score= 60
+D/PhoneInterfaceManager(  817): [PhoneIntfMgr] getDataEnabled: subId=0 phoneId=0
+D/PhoneInterfaceManager(  817): [PhoneIntfMgr] getDataEnabled: subId=0 retVal=true
+D/TelephonyManager(  453): getDataEnabled: retVal=true
+E/GpsLocationProvider(  453): No APN found to select.
+D/RKUpdateReceiver(  691): action = android.net.conn.CONNECTIVITY_CHANGE
+W/ContextImpl(  691): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1704 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 android.rockchip.update.service.RKUpdateReceiver.onReceive:101 android.app.ActivityThread.handleReceiver:2609 
+D/RKUpdateService(  691): onStartCommand.......
+D/RKUpdateService(  691): command = 2 delaytime = 5000
+I/ActivityManager(  453): Start proc 1598:com.android.rockchip/1000 for broadcast com.android.rockchip/.NetWorkReceiver
+D/SystemDeviceService( 1128): [New address] 192.168.1.162
+D/SystemDeviceService( 1128): [Old address] 192.168.43.1
+D/d       ( 1128): Say byebye on 192.168.1.162
+I/ActivityManager(  453): Killing 1168:com.android.managedprovisioning/u0a6 (adj 15): empty for 5557s
+D/d       ( 1128): Say byebye on 192.168.1.162
+D/d       ( 1128): Say byebye on 192.168.1.162
+D/d       ( 1128): Say byebye on 192.168.1.162
+D/SystemDeviceService( 1128): [mNetworkChangeAction] restart mediaRender when network changed. 
+E/WifiStateMachine(  453): [1,293,900,209,244 ms] noteScanEnd WorkSource{1000} onTime=0
+E/WifiStateMachine(  453): wifi setScanResults statecom.android.server.wifi.WifiStateMachine$ConnectedState@3fb1f0ec sup_state=COMPLETED debouncing=false mConnectionRequests=1 selection=<none>
+D/b       ( 1128): Device icon request received for icon 1
+D/PowerManagerService(  453): screen time out
+D/b       ( 1128): Device icon request received for icon 0
+D/b       ( 1128): Device icon request received for icon 1
+D/b       ( 1128): Device icon request received for icon 2
+D/b       ( 1128): Device icon request received for icon 3
+E/WifiStateMachine(  453): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=94.18 rxSuccessRate=68.93 targetRoamBSSID=88:25:93:24:eb:1f RSSI=-44
+E/WifiStateMachine(  453): WifiStateMachine L2Connected CMD_START_SCAN source -2 2, 4 -> obsolete
+E/WifiStateMachine(  453): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=94.18 rxSuccessRate=68.93 targetRoamBSSID=88:25:93:24:eb:1f RSSI=-44
+E/WifiStateMachine(  453): WifiStateMachine L2Connected CMD_START_SCAN source -2 3, 4 -> obsolete

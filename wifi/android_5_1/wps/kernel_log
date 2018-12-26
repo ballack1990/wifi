@@ -1,0 +1,196 @@
+
+[  219.173404] dhd_module_init: in Dongle Host Driver, version 1.363.59.144.10 (r)
+[  219.173480] ======== dhd_wlan_init_plat_data ========
+[  219.173499] dhd_wlan_init_gpio: GPIO(WL_REG_ON) = -1
+[  219.173513] dhd_wlan_init_gpio: GPIO(WL_HOST_WAKE) = -1
+[  219.173530] [WLAN_RFKILL]: rockchip_wifi_get_oob_irq: Enter
+[  219.173579] dhd_wlan_init_gpio: host_oob_irq: 196
+[  219.173595] dhd_wlan_init_gpio: host_oob_irq_flags=0x4
+[  219.173609] dhd_wifi_platform_load: Enter
+[  219.173642] Power-up adapter 'DHD generic adapter'
+[  219.174232] wifi_platform_set_power = 1
+[  219.174251] ======== PULL WL_REG_ON(-1) HIGH! ========
+[  219.174267] [WLAN_RFKILL]: rockchip_wifi_power: 1
+[  219.174282] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+[  219.174297] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+[  219.277846] [WLAN_RFKILL]: wifi turn on power. 156
+[  219.583106] wifi_platform_bus_enumerate device present 1
+[  219.583230] ======== Card detection to detect SDIO card! ========
+[  219.583310] mmc1:mmc host rescan start!
+[  219.799597] mmc_host mmc1: Bus speed (slot 0) = 12000000Hz (slot req 400000Hz, actual 400000HZ div = 15)
+[  219.799766] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 800000Hz for init[mmc1]
+[  219.836175] mmc_host mmc1: Bus speed (slot 0) = 12000000Hz (slot req 50000000Hz, actual 12000000HZ div = 0)
+[  219.836278] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc1]
+[  219.836505] rk_sdmmc: BOOT Bus speed=12000000Hz,Bus width=4bits.[mmc1]
+[  219.846562] mmc1: queuing unknown CIS tuple 0x91 (3 bytes)
+[  219.846763] mmc1: new high speed SDIO card at address 0001
+[  219.866937] bcmsdh_register: register client driver
+[  219.867111] bcmsdh_sdmmc: bcmsdh_sdmmc_probe Enter
+[  219.867285] bcmsdh_sdmmc: bcmsdh_sdmmc_probe Enter
+[  219.867304] bus num (host idx)=1, slot num (rca)=1
+[  219.867319] found adapter info 'DHD generic adapter'
+[  219.867405] sdioh_attach: set sd_f2_blocksize 256
+[  219.867884] dhdsdio_probe : no mutex held. set lock
+[  219.868061] F1 signature read @0x18000000=0x15294345
+[  219.872513] F1 signature OK, socitype:0x1 chip:0x4345 rev:0x9 pkg:0x2
+[  219.873389] DHD: dongle ram size is set to 819200(orig 819200) at 0x198000
+[  219.873497] dhd_conf_set_chiprev: chip=0x4345, chiprev=9
+[  219.874576] wl_create_event_handler(): thread:wl_event_handler:651 started
+[  219.874589] tsk Enter, tsk = 0xdb5614c8
+[  219.874979] wl_escan_attach: Enter
+[  219.875029] wl_escan_init: Enter
+[  219.875156] wl_create_event_handler(): thread:wl_escan_handler:652 started
+[  219.875167] tsk Enter, tsk = 0xdb590164
+[  219.875307] dhd_attach(): thread:dhd_watchdog_thread:653 started
+[  219.875418] dhd_attach(): thread:dhd_dpc:654 started
+[  219.875523] dhd_attach(): thread:dhd_rxf:655 started
+[  219.875545] dhd_deferred_work_init: work queue initialized 
+[  219.892463] Dongle Host Driver, version 1.363.59.144.10 (r)
+[  219.894245] Register interface [wlan0]  MAC: 00:90:4c:11:22:33
+[  219.894245] 
+[  219.894304] wl_event_handler: was terminated
+[  219.894353] wl_destroy_event_handler(): thread:wl_event_handler:651 terminated OK
+[  219.894374] dhd_wl_ioctl: returning as busstate=0
+[  219.894453] bcmsdh_oob_intr_unregister: Enter
+[  219.894472] bcmsdh_oob_intr_unregister: irq is not registered
+[  219.894495] dhd_txglom_enable: enable 0
+[  219.894511] dhd_conf_set_txglom_params: swtxglom=0, txglom_ext=0, txglom_bucket_size=0
+[  219.894529] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0, bus_txglom=-1
+[  219.894547] dhd_conf_set_txglom_params: tx_in_rx=1, txinrx_thres=-1, dhd_txminmax=1
+[  219.894562] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=1
+[  219.894578] sdioh_set_mode: set txglom_mode to multi-desc
+[  219.894593] dhd_bus_devreset:  WLAN OFF DONE
+[  219.894686] wifi_platform_set_power = 0
+[  219.894705] ======== PULL WL_REG_ON(-1) LOW! ========
+[  219.894721] [WLAN_RFKILL]: rockchip_wifi_power: 0
+[  219.996127] [WLAN_RFKILL]: wifi shut off power.
+[  219.996145] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 0
+[  219.996154] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+[  219.996166] dhdsdio_probe : the lock is released.
+[  219.996285] dhd_module_init: Exit err=0
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # f ifconfig wlan0 up
+[  227.896442] dhd_open: Enter dd002800
+[  227.896493] 
+[  227.896493] Dongle Host Driver, version 1.363.59.144.10 (r)
+[  227.896518] wl_android_wifi_on in 1
+[  227.896534] wl_android_wifi_on in 2: g_wifi_on=0
+[  227.896550] wifi_platform_set_power = 1
+[  227.896565] ======== PULL WL_REG_ON(-1) HIGH! ========
+[  227.896580] [WLAN_RFKILL]: rockchip_wifi_power: 1
+[  227.896595] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+[  227.896610] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+[  227.996248] [WLAN_RFKILL]: wifi turn on power. 156
+[  228.301309] sdio_reset_comm():
+[  228.304640] mmc_host mmc1: Bus speed (slot 0) = 12000000Hz (slot req 300000Hz, actual 300000HZ div = 20)
+[  228.304799] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 600000Hz for init[mmc1]
+[  228.320252] mmc_host mmc1: Bus speed (slot 0) = 12000000Hz (slot req 50000000Hz, actual 12000000HZ div = 0)
+[  228.320368] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc1]
+[  228.321091] sdioh_start: set sd_f2_blocksize 256
+[  228.323001] 
+[  228.323001] 
+[  228.323001] dhd_bus_devreset: == WLAN ON ==
+[  228.323773] F1 signature read @0x18000000=0x15294345
+[  228.336216] F1 signature OK, socitype:0x1 chip:0x4345 rev:0x9 pkg:0x2
+[  228.338171] DHD: dongle ram size is set to 819200(orig 819200) at 0x198000
+[  228.339141] dhd_conf_read_config: Ignore config file /data/6256/config.txt
+[  228.339226] Final fw_path=/data/6256/fw_bcm43456c5_ag.bin
+[  228.339264] Final nv_path=/data/6256/nvram_ap6256.txt
+[  228.339302] Final clm_path=/data/6256/clm_bcmdhd.blob
+[  228.339339] Final conf_path=/data/6256/config.txt
+[  228.339378] dhd_set_bus_params: set use_rxchain 0
+[  228.339418] dhd_set_bus_params: set txglomsize 36
+[  228.340930] dhd_os_open_image: /data/6256/fw_bcm43456c5_ag.bin (508401 bytes) open success
+[  228.529304] dhd_os_open_image: /data/6256/nvram_ap6256.txt (2198 bytes) open success
+[  228.529868] NVRAM version: AP6256_NVRAM_V1.1_08252017
+[  228.531285] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+[  228.601588] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+[  228.601949] bcmsdh_oob_intr_register: Enter
+[  228.601968] bcmsdh_oob_intr_register: HW_OOB enabled
+[  228.601984] bcmsdh_oob_intr_register OOB irq=196 flags=0x4
+[  228.602120] bcmsdh_oob_intr_register: enable_irq_wake
+[  228.604122] Disable tdls_auto_op failed. -1
+[  228.604143] dhd_conf_set_intiovar: set WLC_SET_BAND 142 0
+[  228.604532] dhd_preinit_ioctls: Set tcpack_sup_mode 0
+[  228.605166] dhd_apply_default_clm: Ignore clm file /data/6256/clm_bcmdhd.blob
+[  228.607712] Firmware up: op_mode=0x0005, MAC=00:90:4c:c5:12:38
+[  228.607758] dhd_conf_set_country: set country CN, revision 38
+[  228.629941] Country code: CN (CN/38)
+[  228.630520] dhd_conf_set_intiovar: set roam_off 1
+[  228.646375] Firmware version = wl0: May 28 2018 17:58:40 version 7.45.96.24 (7ffe8b7@shgit) (r) FWID 01-a4cf1705 es7.c5.n4.a3
+[  228.646399]   Driver: 1.363.59.144.10 (r)
+[  228.646399]   Firmware: wl0: May 28 2018 17:58:40 version 7.45.96.24 (7ffe8b7@shgit) (r) FWID 01-a4cf1705 es7.c5.n4.a3 
+[  228.647053]   clm = 9.2.9
+[  228.647493] dhd_txglom_enable: enable 1
+[  228.647505] dhd_conf_set_txglom_params: swtxglom=0, txglom_ext=0, txglom_bucket_size=0
+[  228.647516] dhd_conf_set_txglom_params: txglomsize=36, deferred_tx_len=36, bus_txglom=-1
+[  228.647528] dhd_conf_set_txglom_params: tx_in_rx=1, txinrx_thres=-1, dhd_txminmax=1
+[  228.647539] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=1
+[  228.647549] sdioh_set_mode: set txglom_mode to multi-desc
+[  228.647562] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+[  228.651778] dhd_wlfc_hostreorder_init(): successful bdcv2 tlv signaling, 64
+[  228.652049] dhd_conf_set_intiovar: set ampdu_hostreorder 1
+[  228.653002] dhd_pno_init: Support Android Location Service
+[  228.653015] wl_android_wifi_on: Success
+[  228.653855] wl_create_event_handler(): thread:wl_event_handler:658 started
+[  228.653876] tsk Enter, tsk = 0xdb5614c8
+[  228.699197] dhd_open: Exit ret=0
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # start wpa_supplicant
+shell@firefly-rk3288:/ # logcay   t -s -qw    -w     ""w"p"a"_"s"u"p"p"l"i"c"a"n"t"--s "wpa_supplicant"v-s "wpa_supplicant" -s "wpa_supplicant"t-s "wpa_supplicant"o-s "wpa_supplicant"m-s "wpa_supplicant"e-s "wpa_supplicant"-s "wpa_supplicant" -s "wpa_supplicant" -s "wpa_supplicant" i-s "wpa_supplicant"m-s "wpa_supplicant"e-s "wpa_supplicant" -s "wpa_supplicant"-s "wpa_supplicant" > /data/log   wpa_suppliogcat -v time -s "wpa_supplicant" > /data/wpa_suppli                          <cant_log
+^C
+130|shell@firefly-rk3288:/ # v time -s "wpa_supplicant" > /data/wpa_supplicant_log                         <1 &
+[1] 1630
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # wp
+wpa_cli             wpa_supplicant-bak  wpa_supplicant_rtl  
+wpa_supplicant      wpa_supplicant_esp  
+shell@firefly-rk3288:/ # wpa_                                                  clishell@firefly-rk3288:/ # wpa_cli                                                ia fname=wlan0 wps_pbc
+Using interface 'wlan0'
+OK
+shell@firefly-rk3288:/ # [  294.881119] Connecting with 60:a4:4c:68:6f:98 ssid "ASUS_66U_2.4G", len (13) channel=6
+[  294.881119] 
+[  294.940122] wl_iw_event: Link UP with BSSID=60:a4:00:00:6f:98
+[  294.940176] wl_bss_connect_done succeeded with 60:a4:4c:68:6f:98
+[  294.972366] wl_bss_connect_done succeeded with 60:a4:4c:68:6f:98
+[  297.277231] CFG80211-ERROR) wl_cfg80211_disconnect : Reason 3
+[  297.279600] wl_iw_event: Link Down with BSSID=60:a4:00:00:6f:98
+[  297.279634] CFG80211-ERROR) wl_is_linkdown : Link down Reason : WLC_E_LINK
+[  297.279681] link down if wlan0 may call cfg80211_disconnected. event : 16, reason=2 from 60:a4:4c:68:6f:98
+[  297.331278] cfg80211: Calling CRDA to update world regulatory domain
+[  297.355464] Connecting with 60:a4:4c:68:6f:98 ssid "ASUS_66U_2.4G", len (13) channel=6
+[  297.355464] 
+[  297.440999] wl_iw_event: Link UP with BSSID=60:a4:00:00:6f:98
+[  297.441047] wl_bss_connect_done succeeded with 60:a4:4c:68:6f:98
+[  297.491345] wl_bss_connect_done succeeded with 60:a4:4c:68:6f:98
+
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # cat /mia   datshell@firefly-rk3288:/ # cat /data/                                            mishell@firefly-rk3288:/ # cat /data/misc/                                       wishell@firefly-rk3288:/ # cat /data/misc/wifi/                                  wp
+wpa_supplicant.conf wpa_supplicant/     
+at /data/misc/wifi/wpa_supplicant                                             <.cat /data/misc/wifi/wpa_supplicant.conf                                        < 
+disable_scan_offload=1
+update_config=1
+p2p_disabled=1
+wowlan_triggers=any
+
+network={
+	ssid="ASUS_66U_2.4G"
+	psk="12345678"
+	proto=RSN
+	key_mgmt=WPA-PSK
+	pairwise=CCMP
+	auth_alg=OPEN
+}
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 
+shell@firefly-rk3288:/ # 

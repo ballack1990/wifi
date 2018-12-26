@@ -1,0 +1,23 @@
+安装 adb 工具：
+sudo apt-get install android-tools-adb
+
+加入设备标识：
+mkdir -p ~/.android
+vi ~/.android/adb_usb.ini
+
+# 添加以下一行
+0x2207
+
+加入 udev 规则：
+sudo vi /etc/udev/rules.d/51-android.rules
+
+# 添加以下一行：
+SUBSYSTEM=="usb", ATTR{idVendor}=="2207", MODE="0666"
+
+重新插拔 USB 线，或运行以下命令，让 udev 规则生效：
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+重新启动 adb 服务器
+sudo adb kill-server
+adb start-server

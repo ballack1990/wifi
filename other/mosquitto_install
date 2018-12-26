@@ -1,0 +1,46 @@
+1, 引入mosquitto仓库并更新
+sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
+sudo apg-get update
+
+2, 执行一下命令安装mosquitto包
+sudo apt-get install mosquitto
+
+3, 安装mosquitto开发包
+sudo apt-get install libmosquitto-dev
+
+4，安装mosquitto客户端
+sudo apt-get install mosquitto-clients
+
+5, 查询mosquitto是否正确运行
+sudo service mosquitto status
+结果： mosquitto start/running, process 9276
+
+6, 本机测试
+打开一个终端，执行以下命令订阅主题“mqtt”
+mosquitto_sub -h localhost -t "mqtt" -v
+
+打开另外一个终端，发布消息到主题“mqtt”
+mosquitto_pub -h localhost -t "mqtt" -m "Hello MQTT"
+
+现在你会看到消息被显示在第一个终端上了:
+mqtt Hello MQTT
+
+7. 网络测试（test.mosquitto.org）
+从test.mosquitto.org订阅所有主题，任何人发布的任何消息你都可以收到，你会看到大量有趣消息滚动在你的屏幕上。
+你也可以发布一些有趣的消息，所有订阅的人也同样会收到。
+
+$mosquitto_sub -h test.mosquitto.org -t "#" -v
+
+当然，你也可以只订阅特定主题，用来接收你自己的消息
+
+$mosquitto_sub -h test.mosquitto.org -t "msg_only_from_me" -v
+
+在另外一个终端上发布消息到特定主题，消息"My cat is Luna"应该会显示在上一个终端上
+
+$mosquitto_pub -h test.mosquitto.org -t "msg_only_from_me" -m "My cat is Luna"
+
+test.mosquitto.org 支持加密和不加密MQTT消息模式，也支持用TCP或者Websocket作为承载，可以通过wireshark抓包来观察不同的包格式.
+
+mosquitto man page:
+https://mosquitto.org/documentation/
+

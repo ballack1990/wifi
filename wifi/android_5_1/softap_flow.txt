@@ -1,0 +1,43 @@
+
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public void startAccessPoint(
+                WifiConfiguration wifiConfig, String wlanIface) {
+            mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+            try {
+                wifiFirmwareReload(wlanIface, "AP");
+                if (wifiConfig == null) {
+                    mConnector.execute("softap", "set", wlanIface);
+                } else {
+                    mConnector.execute("softap", "set", wlanIface, wifiConfig.SSID,
+                            "broadcast", "6", getSecurityType(wifiConfig),
+                            new SensitiveArg(wifiConfig.preSharedKey));
+                }
+                mConnector.execute("softap", "startap");
+            } catch (NativeDaemonConnectorException e) {
+                throw e.rethrowAsParcelableException();
+            }
+        }
+    }
+
+----------------------------------------------------------------------------------------
+SoftapController.cpp (z:\home\ballack\prj\rk3288\system\netd\server)
+->  {
+        int SoftapController::setSoftap(int argc, char *argv[]) {
+            ...
+
+            if (argc >= 5) {
+                channel = atoi(argv[5]);
+                if (channel <= 0)
+                    channel = AP_CHANNEL_DEFAULT;
+            }
+
+            asprintf(&wbuf, "interface=%s\ndriver=nl80211\nctrl_interface="
+                    "/data/misc/wifi/hostapd\nssid=%s\nchannel=%d\nieee80211n=1\n"
+                    "hw_mode=g\nignore_broadcast_ssid=%d\nwowlan_triggers=any\n",
+                    argv[2], argv[3], channel, hidden);
+
+            ...
+
+        }
+    }

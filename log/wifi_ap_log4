@@ -1,0 +1,176 @@
+--------- beginning of main
+D/RKUpdateService(  769): request remote server error...
+D/RKUpdateService(  769): request remote server error...
+--------- beginning of system
+D/PowerManagerService(  450): screen time out
+E/WifiStateMachine(  450): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=1.10 rxSuccessRate=0.21 targetRoamBSSID=88:25:93:24:eb:1e RSSI=-29
+E/WifiStateMachine(  450): startDelayedScan send -> 18 milli 20000
+E/WifiStateMachine(  450): WifiStateMachine CMD_START_SCAN with age=1293883703789 interval=20000 maxinterval=300000
+E/WifiStateMachine(  450): WifiStateMachine CMD_START_SCAN try full band scan age=1293883703789 interval=20000 maxinterval=300000
+E/WifiStateMachine(  450): WifiStateMachine CMD_START_SCAN full=true
+E/WifiStateMachine(  450): WifiStateMachine CMD_START_SCAN bump interval =30000
+E/WifiStateMachine(  450): [1,293,883,703,794 ms] noteScanstart no scan source uid -2
+E/WifiStateMachine(  450): [1,293,883,706,115 ms] noteScanEnd no scan source onTime=0
+E/WifiStateMachine(  450): wifi setScanResults statecom.android.server.wifi.WifiStateMachine$ConnectedState@18687357 sup_state=COMPLETED debouncing=false mConnectionRequests=0 selection="AMPAK_WIFI_2.4G"WPA_PSK
+E/WifiConfigStore(  450):  rewrite network history for "AMPAK_WIFI_5.8G"WPA_PSK
+E/WifiConfigStore(  450):  rewrite network history for "AMPAK_WIFI_2.4G"WPA_PSK
+E/WifiConfigStore(  450): writeKnownNetworkHistory write linked 1
+E/WifiConfigStore(  450): writeKnownNetworkHistory write linked 1
+D/PowerManagerService(  450): LockScreenOff10
+D/PowerManagerService(  450): LockScreenOff10
+D/PowerManagerService(  450): LockScreenOff10
+D/PowerManagerService(  450): LockScreenOff10
+D/WifiService(  450): setWifiEnabled: false pid=1086, uid=1000
+E/WifiService(  450): Invoking mWifiStateMachine.setWifiEnabled
+W/AudioTrack(  450): AUDIO_OUTPUT_FLAG_FAST denied by client
+W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+D/AudioHardwareTiny(  161): start_output_stream
+D/AudioHardwareTiny(  161): Audio HAL start_output_stream  out->device = 0x80400
+E/WifiStateMachine(  450): WifiStateMachine: Leaving Connected state
+E/WifiStateMachine(  450): handleNetworkDisconnect: Stopping DHCP and clearing IP stack:handleNetworkDisconnect - access$7700 - exit - invokeExitMethods
+E/WifiStateMachine(  450): handleNetworkDisconnect 88:25:93:24:eb:1e config "AMPAK_WIFI_2.4G"WPA_PSK config.bssid any
+E/WifiStateMachine(  450): handleNetworkDisconnect "AMPAK_WIFI_2.4G" nid=0
+E/WifiConfigStore(  450): saveWifiConfigBSSID Setting BSSID for "AMPAK_WIFI_2.4G"WPA_PSK to any
+E/wpa_supplicant( 1503): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+E/WifiStateMachine(  450): setSuspendOptimizationsNative: 1 true -want true stack:setSuspendOptimizationsNative - handlePostDhcpSetup - stopDhcp - handleNetworkDisconnect
+D/CommandListener(  157): Clearing all IP addresses on wlan0
+E/WifiStateMachine(  450): setDetailed state, old =CONNECTED and new state=DISCONNECTED hidden=false
+E/WifiStateMachine(  450): setDetailed state send new extra info<unknown ssid>
+D/ConnectivityService(  450): NetworkAgentInfo [WIFI () - 100] EVENT_NETWORK_INFO_CHANGED, going from CONNECTED to DISCONNECTED
+D/ConnectivityService(  450): NetworkAgentInfo [WIFI () - 100] got DISCONNECTED, was satisfying 2
+E/WifiConfigStore(  450): saveWifiConfigBSSID Setting BSSID for "AMPAK_WIFI_2.4G"WPA_PSK to any
+E/wpa_supplicant( 1503): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+E/wpa_supplicant( 1503): wpa_driver_nl80211_driver_cmd: failed to issue private command: WLS_BATCHING GET
+E/WifiStateMachine(  450): Unexpected BatchedScanResults :null
+E/wpa_supplicant( 1503): wpa_driver_nl80211_driver_cmd: failed to issue private command: WLS_BATCHING STOP
+E/WifiStateMachine(  450): [1,293,883,713,520 ms] noteScanEnd no scan source onTime=0
+D/WifiScanningService(  450): SCAN_AVAILABLE : 1
+D/RttService(  450): SCAN_AVAILABLE : 1
+D/WifiScanningService(  450): DefaultState got{ when=0 what=160007 target=com.android.internal.util.StateMachine$SmHandler }
+D/RttService(  450): EnabledState got{ when=-1ms what=160513 target=com.android.internal.util.StateMachine$SmHandler }
+D/PowerManagerService(  450): LockScreenOff10
+D/ConnectivityService(  450): notifyType LOST for NetworkAgentInfo [WIFI () - 100]
+D/CSLegacyTypeTracker(  450): Sending disconnected broadcast for type 1 NetworkAgentInfo [WIFI () - 100] isDefaultNetwork=true
+D/ConnectivityManager.CallbackHandler(  570): CM callback handler got msg 524292
+D/NetworkMonitor/NetworkAgentInfo [WIFI () - 100](  450): ValidatedState{ when=0 what=532487 target=com.android.internal.util.StateMachine$SmHandler }
+D/ConnectivityService(  450): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE_IMMEDIATE
+D/NetworkMonitor/NetworkAgentInfo [WIFI () - 100](  450): DefaultState{ when=-1ms what=532487 target=com.android.internal.util.StateMachine$SmHandler }
+D/NetworkMonitor/NetworkAgentInfo [WIFI () - 100](  450): Disconnected - quitting
+D/ConnectivityService(  450): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE
+D/ConnectivityService(  450): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE_IMMEDIATE
+D/Tethering(  450): MasterInitialState.processMessage what=3
+D/ConnectivityService(  450): sendStickyBroadcast: action=android.net.conn.CONNECTIVITY_CHANGE
+D/ConnectivityService(  450): Checking for replacement network to handle request NetworkRequest [ id=1, legacyType=-1, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+D/PhoneInterfaceManager(  843): [PhoneIntfMgr] getDataEnabled: subId=0 phoneId=0
+E/ConnectivityService(  450): EVENT_NETWORK_INFO_CHANGED from unknown NetworkAgent
+E/WifiStateMachine(  450): Link configuration changed for netId: -1 old: {LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0} new: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  450): updateLinkProperties nid: -1 state: DISCONNECTED reason: CMD_UPDATE_LINKPROPERTIES
+D/PhoneInterfaceManager(  843): [PhoneIntfMgr] getDataEnabled: subId=0 retVal=true
+D/TelephonyManager(  450): getDataEnabled: retVal=true
+D/Tethering(  450): MasterInitialState.processMessage what=3
+D/SystemDeviceService( 1172): [mMediaNetworkBroadCast] receive Connectivity Broadcast, conecte state: DISCONNECTED
+W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+D/RKUpdateReceiver(  769): action = android.net.conn.CONNECTIVITY_CHANGE
+E/GpsLocationProvider(  450): No APN found to select.
+E/WifiStateMachine(  450): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  450): updateLinkProperties nid: -1 state: DISCONNECTED reason: CMD_UPDATE_LINKPROPERTIES
+D/WifiNetworkAgent(  450): NetworkAgent: NetworkAgent channel lost
+D/SystemDeviceService( 1172): [mMediaNetworkBroadCast] receive Connectivity Broadcast, conecte state: DISCONNECTED
+D/RKUpdateReceiver(  769): action = android.net.conn.CONNECTIVITY_CHANGE
+E/WifiStateMachine(  450): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  450): updateLinkProperties nid: -1 state: DISCONNECTED reason: CMD_UPDATE_LINKPROPERTIES
+D/PhoneInterfaceManager(  843): [PhoneIntfMgr] getDataEnabled: subId=0 phoneId=0
+D/PhoneInterfaceManager(  843): [PhoneIntfMgr] getDataEnabled: subId=0 retVal=true
+D/TelephonyManager(  450): getDataEnabled: retVal=true
+E/GpsLocationProvider(  450): No APN found to select.
+E/WifiStateMachine(  450): handleNetworkDisconnect: Stopping DHCP and clearing IP stack:handleNetworkDisconnect - access$7700 - enter - invokeEnterMethods
+E/WifiStateMachine(  450): setSuspendOptimizationsNative: 1 true -want true stack:setSuspendOptimizationsNative - handlePostDhcpSetup - stopDhcp - handleNetworkDisconnect
+D/CommandListener(  157): Clearing all IP addresses on wlan0
+E/WifiStateMachine(  450): setDetailed state, old =DISCONNECTED and new state=DISCONNECTED hidden=false
+E/WifiStateMachine(  450): SupplicantStoppingState: stopSupplicant  init.svc.wpa_supplicant=unknown init.svc.p2p_supplicant=unknown
+E/WifiStateMachine(  450): setWifiState: disabling
+I/wpa_supplicant( 1503): p2p-dev-wlan0: CTRL-EVENT-TERMINATING 
+I/wpa_supplicant( 1503): wlan0: CTRL-EVENT-DISCONNECTED bssid=88:25:93:24:eb:1e reason=3 locally_generated=1
+D/PowerManagerService(  450): LockScreenOff10
+I/wpa_supplicant( 1503): wlan0: CTRL-EVENT-TERMINATING 
+D/Tethering(  450): InitialState.processMessage what=4
+D/Tethering(  450): sendTetherStateChangedBroadcast 0, 0, 0
+E/WifiStateMachine(  450): Supplicant connection lost
+E/WifiMonitor(  450): killSupplicant p2ptrue init.svc.wpa_supplicant=unknown init.svc.p2p_supplicant=unknown
+D/RkWifiCtrl(  450): Kernel version is 3.10.
+D/BluetoothAdapter( 1086): 79692379: getState() :  mService = null. Returning STATE_OFF
+E/WifiStateMachine(  450): setWifiState: disabling
+D/RkWifiCtrl(  450): check_wifi_preload: Wifi driver is preload when bootup.
+E/WifiStateMachine(  450): setWifiState: disabled
+D/RkWifiCtrl(  450): check_wifi_preload: Wifi driver is preload when bootup.
+E/WifiStateMachine(  450): setWifiApState: enabling
+D/RkWifiCtrl(  157): check_wifi_chip_type_string: AP6210
+D/SoftapController(  157): Softap fwReload - Ok
+D/RkWifiCtrl(  157): check_wifi_chip_type_string: AP6210
+D/SoftapController(  157): int SoftapController::startSoftap(): /system/bin/hostapd
+D/SoftapController(  157): SoftAP started successfully
+E/hostapd ( 1648): Configuration file: /data/misc/wifi/hostapd.conf
+I/hostapd ( 1648): type=1400 audit(0.0:15): avc: denied { read } for name="rfkill" dev="tmpfs" ino=1288 scontext=u:r:hostapd:s0 tcontext=u:object_r:radio_device:s0 tclass=chr_file permissive=1
+I/hostapd ( 1648): type=1400 audit(0.0:16): avc: denied { open } for path="/dev/rfkill" dev="tmpfs" ino=1288 scontext=u:r:hostapd:s0 tcontext=u:object_r:radio_device:s0 tclass=chr_file permissive=1
+E/WifiStateMachine(  450): Soft AP start successful
+E/WifiStateMachine(  450): ---- mSoftApWakeLock.acquire ----
+E/WifiStateMachine(  450): setWifiApState: enabled
+E/hostapd ( 1648): Using interface wlan0 with hwaddr 02:1a:11:fe:ae:42 and ssid "firefly"
+D/Tethering(  450): sendTetherStateChangedBroadcast 1, 0, 0
+D/BluetoothAdapter( 1086): 79692379: getState() :  mService = null. Returning STATE_OFF
+I/hostapd ( 1648): wlan0: interface state UNINITIALIZED->ENABLED
+I/hostapd ( 1648): wlan0: AP-ENABLED 
+D/CommandListener(  157): Setting iface cfg
+D/CommandListener(  157): Trying to bring up wlan0
+D/Tethering(  450): Tethering wlan0
+D/Tethering(  450): InitialState.processMessage what=2
+D/Tethering(  450): sendTetherStateChangedBroadcast 0, 0, 0
+D/BluetoothAdapter( 1086): 79692379: getState() :  mService = null. Returning STATE_OFF
+D/TetherController(  157): tetherInterface(wlan0)
+E/WifiStateMachine(  450): Link configuration changed for netId: -1 old: {LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0} new: {InterfaceName: wlan0 LinkAddresses: [192.168.43.1/24,]  Routes: [] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  450): updateLinkProperties nid: -1 state: DISCONNECTED reason: CMD_UPDATE_LINKPROPERTIES v4
+D/Tethering(  450): Tethered wlan0
+D/Tethering(  450): sendTetherStateChangedBroadcast 0, 1, 0
+D/Tethering(  450): MasterInitialState.processMessage what=1
+D/TetherController(  157): Setting IP forward enable = 1
+D/BluetoothAdapter( 1086): 79692379: getState() :  mService = null. Returning STATE_OFF
+D/TetherController(  157): Starting tethering services
+D/TetherController(  157): Sending update msg to dnsmasq [update_ifaces:wlan0]
+D/TetherController(  157): Tethering services running
+D/Tethering(  450): startListeningForSimChanges
+D/Tethering(  450): simchange mGenerationNumber=5, current generationNumber=5
+D/Tethering(  450): got Sim changed to state NOT_READY, mSimAbsentSeen=false
+I/dnsmasq ( 1651): started, version 2.51 cachesize 150
+I/dnsmasq ( 1651): compile time options: no-IPv6 GNU-getopt no-DBus no-I18N DHCP no-scripts no-TFTP
+W/dnsmasq ( 1651): warning: no upstream servers configured
+I/dnsmasq ( 1651): DHCP, IP range 192.168.49.2 -- 192.168.49.254, lease time 1h
+I/dnsmasq ( 1651): DHCP, IP range 192.168.48.2 -- 192.168.48.254, lease time 1h
+I/dnsmasq ( 1651): DHCP, IP range 192.168.47.2 -- 192.168.47.254, lease time 1h
+I/dnsmasq ( 1651): DHCP, IP range 192.168.46.2 -- 192.168.46.254, lease time 1h
+I/dnsmasq ( 1651): DHCP, IP range 192.168.45.2 -- 192.168.45.254, lease time 1h
+I/dnsmasq ( 1651): DHCP, IP range 192.168.44.2 -- 192.168.44.254, lease time 1h
+I/dnsmasq ( 1651): DHCP, IP range 192.168.43.2 -- 192.168.43.254, lease time 1h
+I/dnsmasq ( 1651): DHCP, IP range 192.168.42.2 -- 192.168.42.254, lease time 1h
+I/dnsmasq ( 1651): read /etc/hosts - 1 addresses
+D/Tethering(  450): chooseUpstreamType(true), preferredApn =5, got type=-1
+D/ConnectivityService(  450): requestNetwork for NetworkRequest [ id=5, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+D/ConnectivityService(  450): sending new NetworkRequest to factories
+D/ConnectivityManager(  450): sending expire msg with seqNum 0 and delay 60000
+D/PPPOE   (  450): got request NetworkRequest [ id=5, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/Ethernet(  450): got request NetworkRequest [ id=5, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/WIFI_UT (  450): got request NetworkRequest [ id=5, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/WIFI    (  450): got request NetworkRequest [ id=5, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/ConnectivityManager(  450): starting startUsingNetworkFeature for request NetworkRequest [ id=5, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+D/Tethering(  450): notifying tethered with iface =null
+D/Tethering(  450): TetheredState.processMessage what=12
+D/AudioHardwareTiny(  161): close device
+W/AppOps  (  450): Bad call: specified package media under uid 1000 but it is really 1013
+D/SystemDeviceService( 1172): [New address] 192.168.43.1
+D/SystemDeviceService( 1172): [Old address] 192.168.1.162
+D/d       ( 1172): Say byebye on 192.168.43.1
+D/d       ( 1172): Say byebye on 192.168.43.1
+D/d       ( 1172): Say byebye on 192.168.43.1
+D/d       ( 1172): Say byebye on 192.168.43.1
+D/SystemDeviceService( 1172): [mNetworkChangeAction] restart mediaRender when network changed. 
+D/PowerManagerService(  450): screen time out

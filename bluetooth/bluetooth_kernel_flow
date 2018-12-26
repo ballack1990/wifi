@@ -1,0 +1,666 @@
+Af_bluetooth.c (net\bluetooth)
+->  {
+        #define VERSION "2.16"
+
+        static struct net_proto_family bt_sock_family_ops = {
+            .owner	= THIS_MODULE,
+            .family	= PF_BLUETOOTH,
+            .create	= bt_sock_create,
+        };
+
+        static int __init bt_init(void) {
+            BT_INFO("Core ver %s", VERSION);        // 打印Bluetooth: Core ver 2.16
+
+            bt_sysfs_init();                        // class create -> bluetooth
+
+            sock_register(&bt_sock_family_ops);     // 打印NET: Registered protocol family 31
+
+            BT_INFO("HCI device and connection manager initialized");
+
+            hci_sock_init();
+
+            l2cap_init();                           // 打印L2CAP socket layer initialized
+        
+            sco_init();                             // 打印SCO socket layer initialized
+        }
+
+        // procfs  create -> bluetooth hci
+        static const struct file_operations bt_fops = {
+            .open = bt_seq_open,
+            .read = seq_read,
+            .llseek = seq_lseek,
+            .release = seq_release_private
+        };
+
+        int bt_procfs_init(struct net *net, const char *name,
+                struct bt_sock_list* sk_list,
+                int (* seq_show)(struct seq_file *, void *))
+        {
+            sk_list->custom_seq_show = seq_show;
+
+            if (!proc_create_data(name, 0, net->proc_net, &bt_fops, sk_list))
+                return -ENOMEM;
+            return 0;
+        }
+
+        subsys_initcall(bt_init);
+        module_exit(bt_exit);
+    }
+------------------------------------------------------------------------------->
+Hci_sysfs.c (net\bluetooth)
+->  {
+        int __init bt_sysfs_init(void)
+        {
+            bt_debugfs = debugfs_create_dir("bluetooth", NULL);         // 创建此目录/sys/kernel/debug/bluetooth/
+
+            bt_class = class_create(THIS_MODULE, "bluetooth");          // 创建此目录/sys/class/bluetooth
+
+            return PTR_RET(bt_class);
+        }
+    }
+------------------------------------------------------------------------------->
+Hci_sock.c (net\bluetooth)
+->  {
+        static struct proto hci_sk_proto = {
+            .name		= "HCI",
+            .owner		= THIS_MODULE,
+            .obj_size	= sizeof(struct hci_pinfo)
+        };
+
+        static const struct net_proto_family hci_sock_family_ops = {
+            .family	= PF_BLUETOOTH,
+            .owner	= THIS_MODULE,
+            .create	= hci_sock_create,
+        };
+
+        int __init hci_sock_init(void)
+        {
+            int err;
+
+            err = proto_register(&hci_sk_proto, 0);
+            if (err < 0)
+                return err;
+
+            err = bt_sock_register(BTPROTO_HCI, &hci_sock_family_ops);
+            if (err < 0) {
+                BT_ERR("HCI socket registration failed");
+                goto error;
+            }
+
+            err = bt_procfs_init(&init_net, "hci", &hci_sk_list, NULL);         // 看上面定义！！！
+            if (err < 0) {
+                BT_ERR("Failed to create HCI proc file");
+                bt_sock_unregister(BTPROTO_HCI);
+                goto error;
+            }
+
+            BT_INFO("HCI socket layer initialized");
+
+            return 0;
+
+error:
+            proto_unregister(&hci_sk_proto);
+            return err;
+        }
+    }
+----------------------------------------------------------------------------->
+L2cap_sock.c (net\bluetooth)
+->  {
+        static const struct file_operations l2cap_debugfs_fops = {
+            .open		= l2cap_debugfs_open,
+            .read		= seq_read,
+            .llseek		= seq_lseek,
+            .release	= single_release,
+        };
+
+        static struct dentry *l2cap_debugfs;
+
+        int __init l2cap_init(void)
+        {
+            int err;
+
+            err = l2cap_init_sockets();
+            if (err < 0)
+                return err;
+
+            if (bt_debugfs) {
+                l2cap_debugfs = debugfs_create_file("l2cap", 0444, bt_debugfs,          // 在/sys/kernel/debug/bluetooth/目录下添加l2cap文件
+                        NULL, &l2cap_debugfs_fops);
+                if (!l2cap_debugfs)
+                    BT_ERR("Failed to create L2CAP debug file");
+            }
+
+            return 0;
+        }       
+    }
+----------------------------------------------------------------------------->  
+Sco.c (net\bluetooth)
+->  {
+        static const struct net_proto_family sco_sock_family_ops = {
+            .family	= PF_BLUETOOTH,
+            .owner	= THIS_MODULE,
+            .create	= sco_sock_create,
+        };
+
+        int __init sco_init(void)
+        {
+            int err;
+
+            err = proto_register(&sco_proto, 0);
+            if (err < 0)
+                return err;
+
+            err = bt_sock_register(BTPROTO_SCO, &sco_sock_family_ops);
+            if (err < 0) {
+                BT_ERR("SCO socket registration failed");
+                goto error;
+            }
+
+            err = bt_procfs_init(&init_net, "sco", &sco_sk_list, NULL);
+            if (err < 0) {
+                BT_ERR("Failed to create SCO proc file");
+                bt_sock_unregister(BTPROTO_SCO);
+                goto error;
+            }
+
+            if (bt_debugfs) {
+                sco_debugfs = debugfs_create_file("sco", 0444, bt_debugfs,          // 在/sys/kernel/debug/bluetooth/目录下添加sco文件
+                        NULL, &sco_debugfs_fops);
+                if (!sco_debugfs)
+                    BT_ERR("Failed to create SCO debug file");
+            }
+
+            BT_INFO("SCO socket layer initialized");
+
+            return 0;
+
+error:
+            proto_unregister(&sco_proto);
+            return err;
+        }       
+    }
+---------------------------------------------------------------------------->
+Hci_ldisc.c (drivers\bluetooth)
+->  {
+        #define VERSION "2.2"
+
+        static int __init hci_uart_init(void)
+        {
+            static struct tty_ldisc_ops hci_uart_ldisc;
+            int err;
+
+            BT_INFO("HCI UART driver ver %s", VERSION);             // 打印Bluetooth: HCI UART driver ver 2.2
+
+            /* Register the tty discipline */
+
+            memset(&hci_uart_ldisc, 0, sizeof (hci_uart_ldisc));
+            hci_uart_ldisc.magic		= TTY_LDISC_MAGIC;
+            hci_uart_ldisc.name		= "n_hci";
+            hci_uart_ldisc.open		= hci_uart_tty_open;
+            hci_uart_ldisc.close		= hci_uart_tty_close;
+            hci_uart_ldisc.read		= hci_uart_tty_read;
+            hci_uart_ldisc.write		= hci_uart_tty_write;
+            hci_uart_ldisc.ioctl		= hci_uart_tty_ioctl;
+            hci_uart_ldisc.poll		= hci_uart_tty_poll;
+            hci_uart_ldisc.receive_buf	= hci_uart_tty_receive;
+            hci_uart_ldisc.write_wakeup	= hci_uart_tty_wakeup;
+            hci_uart_ldisc.owner		= THIS_MODULE;
+
+            if ((err = tty_register_ldisc(N_HCI, &hci_uart_ldisc))) {
+                BT_ERR("HCI line discipline registration failed. (%d)", err);
+                return err;
+            }
+
+        #ifdef CONFIG_BT_HCIUART_H4
+            h4_init();                                  // 打印Bluetooth: HCI H4 protocol initialized
+        #endif
+        #ifdef CONFIG_BT_HCIUART_BCSP
+            bcsp_init();
+        #endif
+        #ifdef CONFIG_BT_HCIUART_LL
+            ll_init();                                  // 打印Bluetooth: HCILL protocol initialized
+        #endif
+        #ifdef CONFIG_BT_HCIUART_ATH3K
+            ath_init();
+        #endif
+        #ifdef CONFIG_BT_HCIUART_3WIRE
+            h5_init();
+        #endif
+
+            return 0;
+        }
+
+        module_init(hci_uart_init);
+        module_exit(hci_uart_exit);
+    }
+---------------------------------------------------------------------------------------------->
+Hci_h4.c (drivers\bluetooth)
+->  {
+        static struct hci_uart_proto h4p = {
+            .id		= HCI_UART_H4,
+            .open		= h4_open,
+            .close		= h4_close,
+            .recv		= h4_recv,
+            .enqueue	= h4_enqueue,
+            .dequeue	= h4_dequeue,
+            .flush		= h4_flush,
+        };
+
+        int __init h4_init(void)
+        {
+            int err = hci_uart_register_proto(&h4p);
+
+            if (!err)
+                BT_INFO("HCI H4 protocol initialized");
+            else
+                BT_ERR("HCI H4 protocol registration failed");
+
+            return err;
+        }
+    }
+----------------------------------------------------------------------------->
+Core.c (net\bluetooth\rfcomm)
+->  {
+        static struct hci_cb rfcomm_cb = {
+            .name		= "RFCOMM",
+            .security_cfm	= rfcomm_security_cfm
+        };
+
+        static const struct file_operations rfcomm_dlc_debugfs_fops = {
+            .open		= rfcomm_dlc_debugfs_open,
+            .read		= seq_read,
+            .llseek		= seq_lseek,
+            .release	= single_release,
+        };
+
+        static struct dentry *rfcomm_dlc_debugfs;
+
+        /* ---- Initialization ---- */
+        static int __init rfcomm_init(void)
+        {
+            int err;
+
+            hci_register_cb(&rfcomm_cb);                                    // 注册hci callback函数
+
+            rfcomm_thread = kthread_run(rfcomm_run, NULL, "krfcommd");      // 开启线程监听 bind和是否有数据进来
+            if (IS_ERR(rfcomm_thread)) {
+                err = PTR_ERR(rfcomm_thread);
+                goto unregister;
+            }
+
+            if (bt_debugfs) {
+                rfcomm_dlc_debugfs = debugfs_create_file("rfcomm_dlc", 0444,
+                        bt_debugfs, NULL, &rfcomm_dlc_debugfs_fops);
+                if (!rfcomm_dlc_debugfs)
+                    BT_ERR("Failed to create RFCOMM debug file");
+            }
+
+            err = rfcomm_init_ttys();                                       // 初始化tty串口, 打印Bluetooth: RFCOMM TTY layer initialized
+            if (err < 0)
+                goto stop;
+
+            err = rfcomm_init_sockets();                                    // 打印Bluetooth: RFCOMM socket layer initialized
+            if (err < 0)
+                goto cleanup;
+
+            BT_INFO("RFCOMM ver %s", VERSION);                              // 打印Bluetooth: RFCOMM ver 1.11
+
+            return 0;
+
+cleanup:
+            rfcomm_cleanup_ttys();
+
+stop:
+            kthread_stop(rfcomm_thread);
+
+unregister:
+            hci_unregister_cb(&rfcomm_cb);
+
+            return err;
+        }
+
+        module_init(rfcomm_init);
+        module_exit(rfcomm_exit);
+    }
+----------------------------------------------------------------------------->
+Tty.c (net\bluetooth\rfcomm)
+->  {
+        int __init rfcomm_init_ttys(void)
+        {
+            int error;
+
+            rfcomm_tty_driver = alloc_tty_driver(RFCOMM_TTY_PORTS);
+            if (!rfcomm_tty_driver)
+                return -ENOMEM;
+
+            rfcomm_tty_driver->driver_name	= "rfcomm";
+            rfcomm_tty_driver->name		= "rfcomm";
+            rfcomm_tty_driver->major	= RFCOMM_TTY_MAJOR;
+            rfcomm_tty_driver->minor_start	= RFCOMM_TTY_MINOR;
+            rfcomm_tty_driver->type		= TTY_DRIVER_TYPE_SERIAL;
+            rfcomm_tty_driver->subtype	= SERIAL_TYPE_NORMAL;
+            rfcomm_tty_driver->flags	= TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
+            rfcomm_tty_driver->init_termios	= tty_std_termios;
+            rfcomm_tty_driver->init_termios.c_cflag	= B9600 | CS8 | CREAD | HUPCL | CLOCAL;
+            rfcomm_tty_driver->init_termios.c_lflag &= ~ICANON;
+            tty_set_operations(rfcomm_tty_driver, &rfcomm_ops);
+
+            error = tty_register_driver(rfcomm_tty_driver);
+            if (error) {
+                BT_ERR("Can't register RFCOMM TTY driver");
+                put_tty_driver(rfcomm_tty_driver);
+                return error;
+            }
+
+            BT_INFO("RFCOMM TTY layer initialized");
+
+            return 0;
+        }
+    }
+-------------------------------------------------------------------------------->
+Core.c (net\bluetooth\bnep)
+->  {
+        #define VERSION "1.3"
+
+        static int __init bnep_init(void)
+        {
+            char flt[50] = "";
+
+        #ifdef CONFIG_BT_BNEP_PROTO_FILTER
+            strcat(flt, "protocol ");
+        #endif
+
+        #ifdef CONFIG_BT_BNEP_MC_FILTER
+            strcat(flt, "multicast");
+        #endif
+
+            BT_INFO("BNEP (Ethernet Emulation) ver %s", VERSION);               // 打印Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+            if (flt[0])
+                BT_INFO("BNEP filters: %s", flt);                               // 打印Bluetooth: BNEP filters: protocol multicast
+
+            bnep_sock_init();                                                   // 打印Bluetooth: BNEP socket layer initialized
+            return 0;
+        }
+
+        module_init(bnep_init);
+        module_exit(bnep_exit);
+    }
+------------------------------------------------------------------------------------->
+Core.c (net\bluetooth\hidp)
+->  {
+        #define VERSION "1.2"
+
+        static int __init hidp_init(void)
+        {
+            BT_INFO("HIDP (Human Interface Emulation) ver %s", VERSION);        // 打印Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+
+            return hidp_init_sockets();                                         // 打印Bluetooth: HIDP socket layer initialized
+        }
+
+        module_init(hidp_init);
+        module_exit(hidp_exit);
+    }
+------------------------------------------------------------------------------------->
+firefly-rk3288.dts (kernel/arch/arm/boot/dts/)
+->  {
+        wireless-bluetooth {
+            compatible = "bluetooth-platdata";
+
+            //wifi-bt-power-toggle;
+
+            uart_rts_gpios = <&gpio4 GPIO_C3 GPIO_ACTIVE_LOW>;
+            pinctrl-names = "default","rts_gpio";
+            pinctrl-0 = <&uart0_rts>;
+            pinctrl-1 = <&uart0_rts_gpio>;
+
+            BT,power_gpio = <&gpio4 GPIO_D3 GPIO_ACTIVE_HIGH>;
+            BT,reset_gpio = <&gpio4 GPIO_D5 GPIO_ACTIVE_HIGH>;
+            BT,wake_gpio = <&gpio4 GPIO_D2 GPIO_ACTIVE_HIGH>;
+            BT,wake_host_irq = <&gpio4 GPIO_D7 GPIO_ACTIVE_LOW>;
+
+            status = "okay";
+        };
+
+        // 有如下log: 
+        /*
+           <7>[    2.425651] of_get_named_gpio_flags exited with status 147
+           <6>[    2.425657] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: uart_rts_gpios = 147.
+           <7>[    2.425668] of_get_named_gpio_flags exited with status 155
+           <6>[    2.425673] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,power_gpio = 155.
+           <7>[    2.425680] of_get_named_gpio_flags exited with status 157
+           <6>[    2.425685] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,reset_gpio = 157.
+           <7>[    2.425693] of_get_named_gpio_flags exited with status 154
+           <6>[    2.425698] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,wake_gpio = 154.
+           <7>[    2.425706] of_get_named_gpio_flags exited with status 159
+           <6>[    2.425711] [BT_RFKILL]: bluetooth_platdata_parse_dt: get property: BT,wake_host_irq = 159.
+           <6>[    2.425762] [BT_RFKILL]: Request irq for bt wakeup host
+           <6>[    2.425850] [BT_RFKILL]: ** disable irq
+           <6>[    2.425919] [BT_RFKILL]: ap6335 device registered.
+        */
+    }
+------------------------------------------------------------------------------------->
+Rfkill-bt.c (net\rfkill)
+->  {
+    #ifdef CONFIG_OF
+        static struct of_device_id bt_platdata_of_match[] = {
+            { .compatible = "bluetooth-platdata" },
+            { }
+        };
+        MODULE_DEVICE_TABLE(of, bt_platdata_of_match);
+    #endif //CONFIG_OF
+
+        static struct platform_driver rfkill_rk_driver = {
+            .probe = rfkill_rk_probe,
+            .remove = rfkill_rk_remove,
+            .driver = {
+                .name = "rfkill_bt",
+                .owner = THIS_MODULE,
+                .pm = &rfkill_rk_pm_ops,
+                .of_match_table = of_match_ptr(bt_platdata_of_match),
+            },
+        };        
+
+        static int __init rfkill_rk_init(void)
+        {
+            LOG("Enter %s\n", __func__);                                        // 打印[BT_RFKILL]: Enter rfkill_rk_init
+            return platform_driver_register(&rfkill_rk_driver);
+        }
+
+
+
+        static int rfkill_rk_probe(struct platform_device *pdev)
+        {
+            struct rfkill_rk_data *rfkill;
+            struct rfkill_rk_platform_data *pdata = pdev->dev.platform_data;
+            int ret = 0;
+            struct proc_dir_entry *ent;
+
+            DBG("Enter %s\n", __func__);
+
+            if (!pdata) {
+        #ifdef CONFIG_OF
+                pdata = devm_kzalloc(&pdev->dev, sizeof(struct rfkill_rk_platform_data), GFP_KERNEL);
+                if (!pdata)
+                    return -ENOMEM;
+
+                ret = bluetooth_platdata_parse_dt(&pdev->dev, pdata);
+                if (ret < 0) {
+        #endif
+                    LOG("%s: No platform data specified\n", __func__);
+                    return ret;
+        #ifdef CONFIG_OF
+                }
+        #endif
+            }
+
+            pdata->name = (char*)bt_name;                               // 由于在bt_name中定义了CONFIG_AP6335，所以pdata->name="ap6335"
+            pdata->type = RFKILL_TYPE_BLUETOOTH;
+
+            rfkill = devm_kzalloc(&pdev->dev, sizeof(*rfkill), GFP_KERNEL);
+            if (!rfkill) {
+                kfree(pdata);
+                return -ENOMEM;
+            }
+
+            rfkill->pdata = pdata;
+            rfkill->pdev = pdev;
+            g_rfkill = rfkill;
+
+            bluetooth_dir = proc_mkdir("bluetooth", NULL);
+            if (bluetooth_dir == NULL) {
+                LOG("Unable to create /proc/bluetooth directory");
+                return -ENOMEM;
+            }
+
+            sleep_dir = proc_mkdir("sleep", bluetooth_dir);
+            if (sleep_dir == NULL) {
+                LOG("Unable to create /proc/%s directory", PROC_DIR);
+                return -ENOMEM;
+            }
+
+            /* read/write proc entries */
+            ent = proc_create("lpm", 0, sleep_dir, &bluesleep_lpm);
+            if (ent == NULL) {
+                LOG("Unable to create /proc/%s/lpm entry", PROC_DIR);
+                ret = -ENOMEM;
+                goto fail_alloc;
+            }
+
+            /* read/write proc entries */
+            ent = proc_create("btwrite", 0, sleep_dir, &bluesleep_btwrite);
+            if (ent == NULL) {
+                LOG("Unable to create /proc/%s/btwrite entry", PROC_DIR);
+                ret = -ENOMEM;
+                goto fail_alloc;
+            }
+
+            DBG("init gpio\n");
+
+            ret = rfkill_rk_setup_gpio(pdev, &pdata->poweron_gpio, pdata->name, "poweron");
+            if (ret) goto fail_gpio;
+
+            ret = rfkill_rk_setup_gpio(pdev, &pdata->reset_gpio, pdata->name, "reset");
+            if (ret) goto fail_gpio;
+
+            ret = rfkill_rk_setup_gpio(pdev, &pdata->wake_gpio, pdata->name, "wake");
+            if (ret) goto fail_gpio;
+
+            ret = rfkill_rk_setup_gpio(pdev, &pdata->rts_gpio, rfkill->pdata->name, "rts"); 
+            if (ret) goto fail_gpio;
+
+            wake_lock_init(&(rfkill->bt_irq_wl), WAKE_LOCK_SUSPEND, "rfkill_rk_irq_wl");
+
+            ret = rfkill_rk_setup_wake_irq(rfkill);                         // 调用request_irq, 打印[BT_RFKILL]: Request irq for bt wakeup host
+                                                                            // 调用disable_irq(irq->irq); 打印[BT_RFKILL]: ** disable irq
+                                                                            // 接着调用ret = enable_irq_wake(irq->irq);
+            if (ret) goto fail_gpio;
+
+            DBG("setup rfkill\n");
+            rfkill->rfkill_dev = rfkill_alloc(pdata->name, &pdev->dev, pdata->type,
+                    &rfkill_rk_ops, rfkill);
+            if (!rfkill->rfkill_dev)
+                goto fail_alloc;
+
+            rfkill_set_states(rfkill->rfkill_dev, BT_BLOCKED, false);               // 注册rfkill节点
+            ret = rfkill_register(rfkill->rfkill_dev);
+            if (ret < 0)
+                goto fail_rfkill;
+
+            INIT_DELAYED_WORK(&rfkill->bt_sleep_delay_work, rfkill_rk_delay_sleep_bt);
+
+            //rfkill_rk_set_power(rfkill, BT_BLOCKED);
+            // bt turn off power
+            if (gpio_is_valid(pdata->poweron_gpio.io))
+            {
+                gpio_direction_output(pdata->poweron_gpio.io, !pdata->poweron_gpio.enable);
+            }
+            if (gpio_is_valid(pdata->reset_gpio.io))
+            {
+                gpio_direction_output(pdata->reset_gpio.io, !pdata->reset_gpio.enable);
+            }
+
+            platform_set_drvdata(pdev, rfkill);
+
+            LOG("%s device registered.\n", pdata->name);                            // 打印[BT_RFKILL]: ap6335 device registered.
+
+            return 0;
+
+        fail_rfkill:
+            rfkill_destroy(rfkill->rfkill_dev);
+        fail_alloc:
+            g_rfkill = NULL;
+
+            remove_proc_entry("btwrite", sleep_dir);
+            remove_proc_entry("lpm", sleep_dir);
+        fail_gpio:
+
+            return ret;
+        }
+
+        module_init(rfkill_rk_init);
+        module_exit(rfkill_rk_exit);
+    }
+-------------------------------------------------------------------------------------------------->
+Rk_es8323.c (sound\soc\rockchip)
+->  {
+        static int rk29_hw_params(struct snd_pcm_substream *substream,
+                struct snd_pcm_hw_params *params) {
+            struct snd_soc_pcm_runtime *rtd = substream->private_data;
+            struct snd_soc_dai *codec_dai = rtd->codec_dai;
+            struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+            unsigned int dai_fmt = rtd->dai_link->dai_fmt;
+            int ret;
+            unsigned int pll_out = 0;
+            int div_bclk,div_mclk;
+
+            DBG("Enter::%s----%d\n",__FUNCTION__,__LINE__);                 // 打印Enter::rk29_hw_params----52
+
+            /* set codec DAI configuration */
+            ret = snd_soc_dai_set_fmt(codec_dai, dai_fmt);
+            if (ret < 0) {
+                printk("%s():failed to set the format for codec side\n", __FUNCTION__);
+                return ret;
+            }
+
+            /* set cpu DAI configuration */
+            ret = snd_soc_dai_set_fmt(cpu_dai, dai_fmt);
+            if (ret < 0) {
+                printk("%s():failed to set the format for cpu side\n", __FUNCTION__);
+                return ret;
+            }
+
+            switch(params_rate(params)) {
+                case 8000:
+                case 16000:
+                case 24000:
+                case 32000:
+                case 48000:
+                    pll_out = 12288000;
+                    break;
+                case 11025:
+                case 22050:
+                case 44100:
+                    pll_out = 11289600;
+                    break;
+                default:
+                    DBG("Enter:%s, %d, Error rate=%d\n",__FUNCTION__,__LINE__,params_rate(params));
+                    return -EINVAL;
+                    break;
+            }
+            DBG("Enter:%s, %d, rate=%d\n",__FUNCTION__,__LINE__,params_rate(params));       // 打印Enter:rk29_hw_params, 86, rate=44100
+
+            snd_soc_dai_set_sysclk(codec_dai, 0, pll_out, SND_SOC_CLOCK_IN);
+            div_bclk = 63;
+            div_mclk = pll_out/(params_rate(params)*64) - 1;
+
+            snd_soc_dai_set_sysclk(cpu_dai, 0, pll_out, 0);
+            snd_soc_dai_set_clkdiv(cpu_dai, ROCKCHIP_DIV_BCLK,div_bclk);
+            snd_soc_dai_set_clkdiv(cpu_dai, ROCKCHIP_DIV_MCLK, div_mclk);
+
+            DBG("Enter:%s, %d, LRCK=%d\n",__FUNCTION__,__LINE__,(pll_out/4)/params_rate(params));   // 打印Enter:rk29_hw_params, 104, LRCK=64
+            return 0;
+        }
+    }
+
+
+

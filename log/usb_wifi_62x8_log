@@ -1,0 +1,151 @@
+root@firefly-rk3288:/ # <4>[  117.813377] dwc_otg_handle_wakeup_detected_intr lxstate = 2
+<6>[  118.083722] usb 3-1.4: new high-speed USB device number 3 using usb20_host
+<6>[  118.184849] usb 3-1.4: New USB device found, idVendor=0a5c, idProduct=bd27
+<6>[  118.185041] usb 3-1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+<6>[  118.185197] usb 3-1.4: Product: Remote Download Wireless Adapter
+<6>[  118.185291] usb 3-1.4: Manufacturer: Broadcom
+<6>[  118.185391] usb 3-1.4: SerialNumber: 000000000001
+
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # bcmdl -n /data/62x8/nvram_ap62x8.nvm /data/62x8/fw_bcm4358u_ag.bin -C 10                   <
+version: 0.4
+argv=-n
+nvfn=/data/62x8/nvram_ap62x8.nvm
+argv=/data/62x8/fw_bcm4358u_ag.bin
+fwfn=/data/62x8/fw_bcm4358u_ag.bin
+argv=-C
+cnt=10
+<4>[  143.188121] dwc_otg_hcd_resume, usb device mode
+Vendor 0x1a40 ID 0x101
+Vendor 0x1d6b ID 0x2
+Vendor 0xa5c ID 0xbd27
+claiming interface 0
+Found device: vend=0xa5c prod=0xbd27
+ID : Chip 0xaa31 Rev 0x2 RamSize 786432 RemapBase 0x00180800 BoardType 0 BoardRev 0
+Final fw_path=/data/62x8/fw_bcm4358u_ag.bin
+Final nv_path=/data/62x8/nvram_ap62x8.nvm
+<4>[  143.293726] dwc_otg_hcd_suspend, usb device mode
+<4>[  143.294067] dwc_otg_hcd_resume, usb device mode
+<4>[  143.294348] dwc_otg_hcd_suspend, usb device mode
+NVRAM version: AP62X8_NVRAM_V1.0_20170308
+File Length: 594587
+start
+rdl.state 0x4
+elapsed download time 0.103497
+Vendor 0x1a40 ID 0x101
+Vendor 0x1d6b ID 0x2
+Vendor 0xa5c ID 0xbd27
+Vendor 0x1d6b ID 0x2
+Vendor 0x1d6b ID 0x2
+No devices found
+Error: usbdev_find ... cnt=0
+<4>[  143.482948] dwc_otg_hcd_resume, usb device mode
+<4>[  143.483057] dwc_otg_hcd_suspend, usb device mode
+<6>[  143.592356] usb 3-1.4: USB disconnect, device number 3
+<6>[  143.835137] usb 3-1.4: new high-speed USB device number 4 using usb20_host
+<6>[  143.936604] usb 3-1.4: New USB device found, idVendor=0a5c, idProduct=0bdc
+<6>[  143.936806] usb 3-1.4: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+<6>[  143.936950] usb 3-1.4: Product: BCMUSB 802.11 Wireless Adapter
+<6>[  143.937036] usb 3-1.4: Manufacturer: Broadcom
+<6>[  143.937138] usb 3-1.4: SerialNumber: 1102
+Vendor 0x1a40 ID 0x101
+Vendor 0x1d6b ID 0x2
+Vendor 0x1d6b ID 0x2
+Vendor 0x1d6b ID 0x2
+No devices found
+Error: usbdev_find ... cnt=1
+<4>[  143.982332] dwc_otg_hcd_resume, usb device mode
+<4>[  143.982429] dwc_otg_hcd_suspend, usb device mode
+<4>[  143.982482] dwc_otg_hcd_resume, usb device mode
+<4>[  143.982544] dwc_otg_hcd_suspend, usb device mode
+Vendor 0x1a40 ID 0x101
+Vendor 0x1d6b ID 0x2
+Vendor 0xa5c ID 0xbdc
+=== Device found ===
+root@firefly-rk3288:/ # <4>[  144.229221] dwc_otg_hcd_resume, usb device mode
+<4>[  144.229785] dwc_otg_hcd_suspend, usb device mode
+<4>[  144.230091] dwc_otg_hcd_resume, usb device mode
+<4>[  144.230388] dwc_otg_hcd_suspend, usb device mode
+
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # insmod /system/li                                      
+lib/  libs/ 
+root@firefly-rk3288:/ # insmod /system/libs/modules/                           
+bcmdhd.ko                 bcmdhd.ko-1.363.59.144.10 bcmdhd_usb.ko-1.xxx      
+bcmdhd.ko-1.201.59.15     bcmdhd_usb.ko             rk_wifi_config.ko        
+root@firefly-rk3288:/ # insmod /system/libs/modules/bcm                        
+bcmdhd.ko                 bcmdhd.ko-1.363.59.144.10 bcmdhd_usb.ko-1.xxx      
+bcmdhd.ko-1.201.59.15     bcmdhd_usb.ko             
+nsmod /system/libs/modules/bcmdhd_us                                          <
+bcmdhd_usb.ko       bcmdhd_usb.ko-1.xxx 
+nsmod /system/libs/modules/bcmdhd_usb.ko                                      <
+<4>[  163.329275] dhd_module_init in
+<4>[  163.329507] dhd_wifi_platform_load: Enter
+<4>[  163.329538] wl_android_init: Enter
+<4>[  163.329779] dbus_usbos_probe: Enter
+<4>[  163.329809] high speed device detected
+<4>[  163.329839] dhd_dbus_probe_cb: Enter
+<4>[  163.329862] dhd_dbus_probe_cb : no mutex held. set lock
+<4>[  163.331674] wl_create_event_handler(): thread:wl_event_handler:589 started
+<4>[  163.331697] tsk Enter, tsk = 0xdb5c148c
+<4>[  163.332404] wl_escan_attach: Enter
+<4>[  163.332521] wl_escan_init: Enter
+<4>[  163.332760] wl_create_event_handler(): thread:wl_escan_handler:58a started
+<4>[  163.332779] tsk Enter, tsk = 0xdb610164
+<4>[  163.332842] dhd_deferred_work_init: work queue initialized 
+<4>[  163.332874] Dongle Host Driver, version 1.201.9.4 (r)
+<4>[  163.332874] Compiled in drivers/net/wireless/bcmdhd on Feb  7 2018 at 13:10:18
+<4>[  163.336528] Register interface [wlan0]  MAC: 00:90:4c:11:22:33
+<4>[  163.336528] 
+<4>[  163.534922] dbus_usb_resetcfg: download done 200 ms postboot chip 0xa123/rev 0x1
+root@firefly-rk3288:/ # <4>[  163.554155] DBUS: vid=0xa5c pid=0xbdc devid=0x4322 bustype=0x0 mtu=512 rev=0
+<4>[  163.554348] firmware path not found
+<4>[  163.554445] fw path is null
+<4>[  163.554529] dhd_dbus_probe_cb : the lock is released.
+<4>[  163.554593] dhd_dbus_probe_cb: Exit
+<4>[  163.554676] dbus_usbos_probe: Exit ret=0
+<6>[  163.556563] usbcore: registered new interface driver dbus_usbdev
+<4>[  163.556692] dhd_module_init: Exit err=0
+
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # echo /data/62x8/fw                                     
+fw_58u_easysetup_neez_airkiss.bin       fw_bcm4358u_ag.bin               
+o /data/62x8/fw_bcm4358u_ag.bin > /sys/module/kernel/                         <
+parameters/  uevent       
+o /data/62x8/fw_bcm4358u_ag.bin > /sys/module/kernel/                         <
+parameters/  uevent       
+o /data/62x8/fw_bcm4358u_ag.bin > /sys/module/bcmdhd/                         <
+coresize     holders/     initstate    parameters/  sections/    uevent     
+drivers/     initsize     notes/       refcnt       taint        
+o /data/62x8/fw_bcm4358u_ag.bin > /sys/module/bcmdhd/                         <
+coresize     holders/     initstate    parameters/  sections/    uevent     
+drivers/     initsize     notes/       refcnt       taint        
+root@firefly-rk3288:/ # echo /data/62x8/fw_bcm4358u_ag.bin > /sys/module/bcmdh>
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # ifconfig wlan0 up
+<4>[  214.988246] dhd_open: Enter dd6f8800
+<4>[  214.988365] dhd_update_fw_nv_path: fw_path=/data/62x8/fw_bcm4358u_ag.bin
+<4>[  214.988386] dhd_conf_set_conf_path_by_fw_path: config_path=/data/62x8/config.txt
+<4>[  214.988402] dhd_conf_read_config: config path (null)
+<4>[  214.988421] dhd_dbus_state_change: DBUS current state=2
+<4>[  214.989188] dhd_conf_set_chiprev: chip=0xaa31, chiprev=2
+<4>[  214.989209] dhd_conf_read_config: config path (null)
+<4>[  214.989234] dhd_conf_set_intiovar: set WLC_SET_BAND 142 0
+<4>[  214.992974] Firmware up: op_mode=0x0005, MAC=10:d0:7a:00:04:4e
+<4>[  214.993004] dhd_conf_set_country: set country CN, revision 38
+<4>[  215.008265] Country code: CN (CN/38)
+<4>[  215.008970] dhd_conf_set_intiovar: set roam_off 1
+<4>[  215.017588] dhd_arp_offload_enable: failed to enabe ARP offload to 1, retcode = -23
+<4>[  215.018874] dhd_arp_offload_set: failed to set ARP offload mode to 0x9, retcode = -23
+<4>[  215.024137] Firmware version = wl0: Jan 24 2018 16:44:17 version 7.58.100.5 (r) FWID 01-83da57e2 es7.c5.n4.a3
+<4>[  215.024170]   Driver: 1.201.9.4 (r)
+<4>[  215.024170]   Firmware: wl0: Jan 24 2018 16:44:17 version 7.58.100.5 (r) FWID 01-83da57e2 es7.c5.n4.a3 
+<4>[  215.024204] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+<4>[  215.026541] dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+<4>[  215.027211] dhd_wlfc_init: query wlfc_mode succeed, fw_caps=0x1c
+<4>[  215.028028] dhd_wlfc_init(): wlfc_mode=0x18, ret=0
+<4>[  215.028536] dhd_conf_set_intiovar: set ampdu_hostreorder 1
+root@firefly-rk3288:/ # <4>[  215.067863] dhd_open: Exit ret=0

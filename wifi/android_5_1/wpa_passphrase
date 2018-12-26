@@ -1,0 +1,25 @@
+
+export LD_LIBRARY_PATH=/system/system/lib:/mnt/lib:$LD_LIBRARY_PATH
+mount -t tmpfs none /tmp -o size=3m
+mkdir /tmp/wpa_supplicant
+insmod /lib/modules/wifi/ssb.ko
+insmod /lib/modules/wifi/cfg80211.ko
+insmod /lib/modules/wifi/mac80211.ko
+insmod /lib/modules/wifi/bcmdhd.ko firmware_path=/lib/modules/wifi/fw_bcm43455c0_ag.bin nvram_path=/lib/modules/wifi/nvram_ap6255.txt
+ifconfig wlan0 up
+ifconfig wlan0 up
+
+echo "ctrl_interface=/tmp/wpa_supplicant" > /system/param/wpa_supplicant.conf
+/system/system/bin/wpa_passphrase vstarcam_lyol33 12348765 |tee -a /system/param/wpa_supplicant.conf
+
+mkdir /tmp/wpa_supplicant
+export LD_LIBRARY_PATH=/system/system/lib:$LD_LIBRARY_PATH
+wpa_supplicant -iwlan0 -Dnl80211 -p /tmp/wpa_supplicant -c/system/param/wpa_supplicant.conf &
+
+wpa_cli -p /tmp/wpa_supplicant status
+
+/system/system/bin/wpa_cli -p /tmp/wpa_supplicant scan
+/system/system/bin/wpa_cli -p /tmp/wpa_supplicant scan_result
+
+
+wl join vstarcam_lyol33

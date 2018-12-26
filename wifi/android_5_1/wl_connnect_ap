@@ -1,0 +1,101 @@
+WPA+TKIP psk:
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 2
+wl wpa_auth 4
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa-tkip
+wl status
+
+实例：
+date
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 2
+wl wpa_auth 4
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa-tkip
+sleep 5
+date
+wl status
+--------------------------------------------
+WPA+AES psk:
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 4
+wl wpa_auth 4
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa-aes
+wl status
+
+实例：
+date
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 4
+wl wpa_auth 4
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa-aes
+sleep 8
+date
+wl status
+---------------------------------------------
+WPA2_TRIP psk:
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 2
+wl wpa_auth 0x80
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa2-tkip
+wl status
+
+实例：
+date
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 2
+wl wpa_auth 0x80
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa2-tkip
+sleep 5 
+date
+wl status
+--------------------------------------------
+WPA2_AES psk:
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 4
+wl wpa_auth 0x80
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa2-aes
+wl status
+
+实例：
+date
+wl down
+wl sup_wpa 1
+wl infra 1
+wl wsec 4
+wl wpa_auth 0x80
+wl set_pmk 1234567890
+wl up
+wl ssid broadcom-wpa2-aes
+sleep 8 
+date
+wl status
+
+

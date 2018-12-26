@@ -1,0 +1,317 @@
+--------- beginning of system
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+--------- beginning of main
+W/AudioTrack(  451): AUDIO_OUTPUT_FLAG_FAST denied by client
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  451): LockScreenOff10
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+D/AudioHardwareTiny(  170): start_output_stream
+D/AudioHardwareTiny(  170): Audio HAL start_output_stream  out->device = 0x80400
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+W/AudioTrack(  451): AUDIO_OUTPUT_FLAG_FAST denied by client
+I/ActivityManager(  451): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.android.settings/.Settings (has extras)} from uid 10031 on display 0
+V/WindowManager(  451): addAppToken: AppWindowToken{37915708 token=Token{287b54ab ActivityRecord{156c06fa u0 com.android.settings/.Settings t8}}} to stack=1 task=8 at 0
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+D/TypefaceImpl(  451): makeFontCollection adding /system/fonts/Roboto-Regular.ttf
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (888, 358).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (888, 357).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (888, 354).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (888, 352).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (885, 346).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (882, 340).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (875, 332).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (866, 322).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (852, 311).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (840, 302).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (828, 293).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (817, 286).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (808, 279).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (804, 276).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (798, 270).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (793, 267).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (790, 264).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (786, 261).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (781, 258).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (776, 255).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (770, 253).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (763, 249).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (756, 248).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (749, 246).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (742, 244).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (741, 244).
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+I/IndexDatabaseHelper( 1041): Using schema version: 115
+I/IndexDatabaseHelper( 1041): Index is fine
+D/Index   ( 1041): Locale 'en_US' is already indexed
+V/WindowManager(  451): Adding window Window{11ac6613 u0 com.android.settings/com.android.settings.Settings} at 2 of 7 (after Window{2b1dd9ae u0 com.android.launcher3/com.android.launcher3.Launcher})
+E/Minikin (  451): addFont failed to create font /system/fonts/NanumGothic.ttf
+E/Minikin (  451): addFont failed to create font /system/fonts/DroidSansFallback.ttf
+E/NFC     ( 1041): could not retrieve NFC service
+D/UserManager( 1041): ---getMaxSupportedUsers,we has UMS,force disabled M-user---
+D/OpenGLRenderer(  451): Use EGL_SWAP_BEHAVIOR_PRESERVED: true
+D/Atlas   (  451): Validating map...
+W/Atlas   (  451): Pointer 0x0, not in getPreloadedDrawables?
+W/Atlas   (  451): Pointer 0x0, not in getPreloadedDrawables?
+V/WindowManager(  451): not Base app: Adding window Window{2367417c u0 Starting com.android.settings} at 3 of 8
+E/EmojiFactory_jni(  451): Failed to load libemoji.so: dlopen failed: library "libemoji.so" not found
+I/OpenGLRenderer(  451): Initialized EGL, version 1.4
+D/OpenGLRenderer(  451): Enabling debug mode 0
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (740, 243).
+D/PowerManagerService(  451): LockScreenOff10
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (740, 240).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (740, 236).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (740, 232).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (742, 228).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (743, 222).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (744, 219).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (745, 216).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (745, 214).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (744, 212).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (739, 211).
+D/DashboardSummary( 1041): rebuildUI took: 265 ms
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (737, 211).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (736, 211).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (738, 210).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (737, 207).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (736, 205).
+I/ActivityManager(  451): Displayed com.android.settings/.Settings: +808ms
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+W/AudioTrack(  451): AUDIO_OUTPUT_FLAG_FAST denied by client
+I/ActivityManager(  451): START u0 {act=android.intent.action.MAIN cmp=com.android.settings/.SubSettings (has extras)} from uid 1000 on display 0
+V/WindowManager(  451): addAppToken: AppWindowToken{3be86fb9 token=Token{386b8d80 ActivityRecord{3b4afa03 u0 com.android.settings/.SubSettings t8}}} to stack=1 task=8 at 1
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (766, 253).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (772, 253).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (777, 253).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (783, 253).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (787, 253).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (790, 251).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (794, 249).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (798, 247).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (800, 246).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (803, 245).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (805, 244).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (807, 243).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (809, 242).
+D/SubSettings( 1041): Launching fragment com.android.settings.WirelessSettings
+D/WirelessSettings( 1041): onCreate: mManageMobilePlanMessage=null
+D/WirelessSettings( 1041): initSmsApplicationSetting:
+D/WirelessSettings( 1041): initSmsApplicationSetting:
+V/WindowManager(  451): Adding window Window{3ff7d72d u0 com.android.settings/com.android.settings.SubSettings} at 3 of 8 (after Window{11ac6613 u0 com.android.settings/com.android.settings.Settings})
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+D/PowerManagerService(  451): LockScreenOff10
+I/ActivityManager(  451): Displayed com.android.settings/.SubSettings: +732ms
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/TaskPersister(  451): removeObsoleteFile: deleting file=6_task.xml
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/WirelessSettings( 1041): onPreferenceTreeClick: preference=Tethering & portable hotspot
+W/AudioTrack(  451): AUDIO_OUTPUT_FLAG_FAST denied by client
+I/ActivityManager(  451): START u0 {act=android.intent.action.MAIN cmp=com.android.settings/.SubSettings (has extras)} from uid 1000 on display 0
+V/WindowManager(  451): addAppToken: AppWindowToken{1559bee5 token=Token{24992ddc ActivityRecord{35fbb24f u0 com.android.settings/.SubSettings t8}}} to stack=1 task=8 at 2
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (517, 182).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (523, 183).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (532, 185).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (547, 187).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (562, 189).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (582, 192).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (604, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (627, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (651, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (674, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (696, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (713, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (727, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (737, 194).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (741, 196).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (743, 196).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (744, 197).
+D/SubSettings( 1041): Launching fragment com.android.settings.TetherSettings
+D/BluetoothManagerService(  451): Message: 20
+D/BluetoothManagerService(  451): Added callback: android.bluetooth.IBluetoothManagerCallback$Stub$Proxy@296b246b:true
+D/BluetoothManagerService(  451): Message: 30
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (746, 198).
+I/InputDispatcher(  451): Dropping event because there is no touchable window at (747, 199).
+D/WifiService(  451): New client listening to asynchronous messages
+D/BluetoothAdapter( 1041): 310262284: getState() :  mService = null. Returning STATE_OFF
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+V/WindowManager(  451): Adding window Window{15f4700d u0 com.android.settings/com.android.settings.SubSettings} at 4 of 9 (after Window{3ff7d72d u0 com.android.settings/com.android.settings.SubSettings})
+D/BluetoothAdapter( 1041): 310262284: getState() :  mService = null. Returning STATE_OFF
+I/ActivityManager(  451): Displayed com.android.settings/.SubSettings: +440ms
+D/PowerManagerService(  451): LockScreenOff10
+D/AudioHardwareTiny(  170): close device
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+E/dhcpcd  (  541): timed out
+D/NetUtils(  451): dhcp_do_request failed : eth0 (new)
+E/EthernetNetworkFactory(  451): DHCP request error:Timed out waiting for DHCP to finish
+E/blb     (  571): mmEthernetVisible: false
+E/blb     (  571): mmEthernetVisible: false
+E/blb     (  571): mmEthernetVisible: false
+E/NetworkController(  571): onReceive ETHERNET_STATE_CHANGED_ACTION 
+D/LyricManager( 1023): hide lrc
+D/LyricManager( 1023): not attached to window manager
+I/MediaFocusControl(  451):  AudioFocus  abandonAudioFocus() from android.media.AudioManager@95d0b44com.android.music.MediaPlaybackService$4@10a4b42d
+I/ActivityManager(  451): Start proc 1293:com.android.musicfx/u0a7 for broadcast com.android.musicfx/.ControlPanelReceiver
+V/MusicFXControlPanelReceiver( 1293): onReceive
+V/MusicFXControlPanelReceiver( 1293): Action: android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION
+V/MusicFXControlPanelReceiver( 1293): Package name: com.android.music
+V/MusicFXControlPanelReceiver( 1293): Audio session: 8
+V/MusicFXControlPanelEffect( 1293): closeSession(android.app.ReceiverRestrictedContext@4ed8e80, com.android.music, 8)
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+D/PowerManagerService(  451): LockScreenOff10
+W/AudioTrack(  451): AUDIO_OUTPUT_FLAG_FAST denied by client
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+D/AudioHardwareTiny(  170): start_output_stream
+D/RkWifiCtrl(  451): check_wifi_preload: Wifi driver is preload when bootup.
+D/AudioHardwareTiny(  170): Audio HAL start_output_stream  out->device = 0x80400
+E/WifiStateMachine(  451): setWifiApState: enabling
+D/RkWifiCtrl(  166): check_wifi_chip_type_string: AP6210
+D/RkWifiCtrl(  166): check_wifi_chip_type_string: AP6210
+D/SoftapController(  166): Softap fwReload - Ok
+I/netd    (  445): type=1400 audit(0.0:11): avc: denied { fsetid } for capability=4 scontext=u:r:netd:s0 tcontext=u:r:netd:s0 tclass=capability permissive=1
+D/RkWifiCtrl(  166): check_wifi_chip_type_string: AP6210
+D/SoftapController(  166): int SoftapController::startSoftap(): /system/bin/hostapd
+D/SoftapController(  166): SoftAP started successfully
+E/hostapd ( 1314): Configuration file: /data/misc/wifi/hostapd.conf
+I/hostapd ( 1314): type=1400 audit(0.0:12): avc: denied { read } for name="rfkill" dev="tmpfs" ino=1267 scontext=u:r:hostapd:s0 tcontext=u:object_r:radio_device:s0 tclass=chr_file permissive=1
+I/hostapd ( 1314): type=1400 audit(0.0:13): avc: denied { open } for path="/dev/rfkill" dev="tmpfs" ino=1267 scontext=u:r:hostapd:s0 tcontext=u:object_r:radio_device:s0 tclass=chr_file permissive=1
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+E/WifiStateMachine(  451): Soft AP start successful
+E/WifiStateMachine(  451): ---- mSoftApWakeLock.acquire ----
+E/WifiStateMachine(  451): setWifiApState: enabled
+D/Tethering(  451): sendTetherStateChangedBroadcast 1, 0, 0
+D/BluetoothAdapter( 1041): 310262284: getState() :  mService = null. Returning STATE_OFF
+E/hostapd ( 1314): Using interface wlan0 with hwaddr 02:1a:11:f3:cb:7c and ssid "firefly"
+E/WifiStateMachine(  451): Link configuration changed for netId: -1 old: {LinkAddresses: []  Routes: [] DnsAddresses: [] Domains: null MTU: 0} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:cb7c/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  451): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES
+E/WifiStateMachine(  451): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:cb7c/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:cb7c/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  451): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES
+I/hostapd ( 1314): wlan0: interface state UNINITIALIZED->ENABLED
+I/hostapd ( 1314): wlan0: AP-ENABLED 
+D/CommandListener(  166): Setting iface cfg
+D/CommandListener(  166): Trying to bring up wlan0
+D/Tethering(  451): Tethering wlan0
+D/Tethering(  451): InitialState.processMessage what=2
+D/Tethering(  451): sendTetherStateChangedBroadcast 0, 0, 0
+D/BluetoothAdapter( 1041): 310262284: getState() :  mService = null. Returning STATE_OFF
+D/TetherController(  166): tetherInterface(wlan0)
+E/WifiStateMachine(  451): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:cb7c/64,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:cb7c/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  451): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES v4
+D/Tethering(  451): Tethered wlan0
+D/Tethering(  451): sendTetherStateChangedBroadcast 0, 1, 0
+D/Tethering(  451): MasterInitialState.processMessage what=1
+D/BluetoothAdapter( 1041): 310262284: getState() :  mService = null. Returning STATE_OFF
+D/TetherController(  166): Setting IP forward enable = 1
+D/TetherController(  166): Starting tethering services
+D/TetherController(  166): Sending update msg to dnsmasq [update_ifaces:wlan0]
+D/TetherController(  166): Tethering services running
+D/Tethering(  451): startListeningForSimChanges
+D/Tethering(  451): simchange mGenerationNumber=1, current generationNumber=1
+D/Tethering(  451): got Sim changed to state NOT_READY, mSimAbsentSeen=false
+D/Tethering(  451): chooseUpstreamType(true), preferredApn =5, got type=-1
+I/dnsmasq ( 1318): started, version 2.51 cachesize 150
+I/dnsmasq ( 1318): compile time options: no-IPv6 GNU-getopt no-DBus no-I18N DHCP no-scripts no-TFTP
+W/dnsmasq ( 1318): warning: no upstream servers configured
+I/dnsmasq ( 1318): DHCP, IP range 192.168.49.2 -- 192.168.49.254, lease time 1h
+I/dnsmasq ( 1318): DHCP, IP range 192.168.48.2 -- 192.168.48.254, lease time 1h
+I/dnsmasq ( 1318): DHCP, IP range 192.168.47.2 -- 192.168.47.254, lease time 1h
+I/dnsmasq ( 1318): DHCP, IP range 192.168.46.2 -- 192.168.46.254, lease time 1h
+I/dnsmasq ( 1318): DHCP, IP range 192.168.45.2 -- 192.168.45.254, lease time 1h
+I/dnsmasq ( 1318): DHCP, IP range 192.168.44.2 -- 192.168.44.254, lease time 1h
+I/dnsmasq ( 1318): DHCP, IP range 192.168.43.2 -- 192.168.43.254, lease time 1h
+I/dnsmasq ( 1318): DHCP, IP range 192.168.42.2 -- 192.168.42.254, lease time 1h
+I/dnsmasq ( 1318): read /etc/hosts - 1 addresses
+D/ConnectivityService(  451): requestNetwork for NetworkRequest [ id=3, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+D/ConnectivityService(  451): sending new NetworkRequest to factories
+D/ConnectivityManager(  451): sending expire msg with seqNum 0 and delay 60000
+D/PPPOE   (  451): got request NetworkRequest [ id=3, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/WIFI_UT (  451): got request NetworkRequest [ id=3, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/Ethernet(  451): got request NetworkRequest [ id=3, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/WIFI    (  451): got request NetworkRequest [ id=3, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ] with score 0
+D/ConnectivityManager(  451): starting startUsingNetworkFeature for request NetworkRequest [ id=3, legacyType=5, [ Transports: CELLULAR Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN] ]
+D/Tethering(  451): notifying tethered with iface =null
+D/Tethering(  451): TetheredState.processMessage what=12
+E/WifiStateMachine(  451): Link configuration changed for netId: -1 old: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:cb7c/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0 TcpBufferSizes: 524288,1048576,2097152,262144,524288,1048576} new: {InterfaceName: wlan0 LinkAddresses: [fe80::1a:11ff:fef3:cb7c/64,192.168.43.1/24,]  Routes: [fe80::/64 -> :: wlan0,] DnsAddresses: [] Domains: null MTU: 0}
+E/WifiStateMachine(  451): updateLinkProperties nid: -1 state: IDLE reason: CMD_UPDATE_LINKPROPERTIES v4
+D/WifiService(  451): New client listening to asynchronous messages
+D/AudioHardwareTiny(  170): close device
+W/AppOps  (  451): Bad call: specified package media under uid 1000 but it is really 1013
+D/SystemDeviceService( 1126): [isHostInterfaceChanged] bindAddresses/addrs is null. 
+D/d       ( 1126): Say byebye on 192.168.43.1
+D/d       ( 1126): Say byebye on 192.168.43.1
+D/g       ( 1126): Parsing Profiles definition
+D/g       ( 1126): Parsing profile definition for profile 1
+D/SystemDeviceService( 1126): [handleAutoRun] auto start mediarender. 
+D/PowerManagerService(  451): screen time out
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness
+E/Lights  (  451): write_int failed to open /sys/class/backlight/rk28_bl/brightness

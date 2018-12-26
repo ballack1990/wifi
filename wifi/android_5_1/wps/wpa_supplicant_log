@@ -1,0 +1,1029 @@
+--------- beginning of system
+--------- beginning of main
+01-01 12:14:07.922 I/wpa_supplicant(  600): Successfully initialized wpa_supplicant: for broadcom wifi
+01-01 12:14:07.927 E/wpa_supplicant(  600): Could not read interface wlan0 flags: No such device
+01-01 12:14:07.927 I/wpa_supplicant(  600): nl80211: Driver does not support authentication/association or connect commands
+01-01 12:14:07.927 E/wpa_supplicant(  600): Could not read interface wlan0 flags: No such device
+01-01 12:14:07.927 E/wpa_supplicant(  600): wlan0: Failed to initialize driver interface
+01-01 12:14:27.155 I/wpa_supplicant( 1376): Successfully initialized wpa_supplicant: for broadcom wifi
+01-01 12:14:27.157 E/wpa_supplicant( 1376): Could not read interface wlan0 flags: No such device
+01-01 12:14:27.158 I/wpa_supplicant( 1376): nl80211: Driver does not support authentication/association or connect commands
+01-01 12:14:27.158 E/wpa_supplicant( 1376): Could not read interface wlan0 flags: No such device
+01-01 12:14:27.158 E/wpa_supplicant( 1376): wlan0: Failed to initialize driver interface
+01-01 12:17:53.839 D/wpa_supplicant( 1627): wpa_supplicant v2.3-5.1.1
+01-01 12:17:53.839 D/wpa_supplicant( 1627): random: Added entropy from /data/misc/wifi/entropy.bin (own_pool_ready=2)
+01-01 12:17:53.839 D/wpa_supplicant( 1627): random: Trying to read entropy from /dev/random
+01-01 12:17:53.841 D/wpa_supplicant( 1627): random: Updated entropy file /data/misc/wifi/entropy.bin (own_pool_ready=2)
+01-01 12:17:53.841 D/wpa_supplicant( 1627): Global control interface '@android:wpa_wlan0'
+01-01 12:17:53.841 D/wpa_supplicant( 1627): Using Android control socket 'wpa_wlan0'
+01-01 12:17:53.841 I/wpa_supplicant( 1627): Successfully initialized wpa_supplicant: for broadcom wifi
+01-01 12:17:53.841 D/wpa_supplicant( 1627): Initializing interface 'wlan0' conf '/data/misc/wifi/wpa_supplicant.conf' driver 'nl80211' ctrl_interface 'N/A' bridge 'N/A'
+01-01 12:17:53.841 D/wpa_supplicant( 1627): Configuration file '/data/misc/wifi/wpa_supplicant.conf' -> '/data/misc/wifi/wpa_supplicant.conf'
+01-01 12:17:53.841 D/wpa_supplicant( 1627): Reading configuration file '/data/misc/wifi/wpa_supplicant.conf'
+01-01 12:17:53.841 D/wpa_supplicant( 1627): disable_scan_offload=1
+01-01 12:17:53.841 D/wpa_supplicant( 1627): update_config=1
+01-01 12:17:53.841 D/wpa_supplicant( 1627): p2p_disabled=1
+01-01 12:17:53.841 D/wpa_supplicant( 1627): wowlan_triggers='any'
+01-01 12:17:53.841 D/wpa_supplicant( 1627): Reading configuration file '/system/etc/wifi/wpa_supplicant_overlay.conf'
+01-01 12:17:53.842 D/wpa_supplicant( 1627): disable_scan_offload=1
+01-01 12:17:53.842 D/wpa_supplicant( 1627): wowlan_triggers='any'
+01-01 12:17:53.842 D/wpa_supplicant( 1627): p2p_disabled=1
+01-01 12:17:53.842 D/wpa_supplicant( 1627): no_ctrl_interface -> ctrl_interface=NULL
+01-01 12:17:53.843 D/wpa_supplicant( 1627): rfkill: initial event: idx=0 type=2 op=0 soft=1 hard=0
+01-01 12:17:53.843 D/wpa_supplicant( 1627): rfkill: initial event: idx=1 type=1 op=0 soft=0 hard=0
+01-01 12:17:53.843 D/wpa_supplicant( 1627): rfkill: initial event: idx=2 type=1 op=0 soft=0 hard=0
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: TDLS supported
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Supported cipher 00-0f-ac:1
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Supported cipher 00-0f-ac:5
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Supported cipher 00-0f-ac:2
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Supported cipher 00-0f-ac:4
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Supported cipher 00-0f-ac:6
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Using driver-based off-channel TX
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Use separate P2P group interface (driver advertised support)
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Enable multi-channel concurrent (driver advertised support)
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Disable use_monitor with device_ap_sme since no monitor mode support detected
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: interface wlan0 in phy phy0
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Set mode ifindex 4 iftype 2 (STATION)
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Subscribe to mgmt frames with non-AP handle 0xb7109020
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0104
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040a
+01-01 12:17:53.843 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040b
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040c
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040d
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090a
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090b
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090c
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090d
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0409506f9a09
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=7f506f9a09
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0801
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040e
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=06
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a07
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a11
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a1a
+01-01 12:17:53.844 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=1 (userspace-control), operstate=5 (IF_OPER_DORMANT)
+01-01 12:17:53.844 D/wpa_supplicant( 1627): nl80211: driver param='(null)'
+01-01 12:17:53.844 D/wpa_supplicant( 1627): Add interface wlan0 to a new radio phy0
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: Regulatory information - country=00
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: 2402-2472 @ 40 MHz 20 mBm
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: 2457-2482 @ 40 MHz 20 mBm (no IR)
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: 2474-2494 @ 20 MHz 20 mBm (no OFDM) (no IR)
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: 5170-5250 @ 80 MHz 20 mBm (no IR)
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: 5735-5835 @ 80 MHz 20 mBm (no IR)
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: 57240-63720 @ 2160 MHz 0 mBm
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: Added 802.11b mode based on 802.11g information
+01-01 12:17:53.845 D/wpa_supplicant( 1627): nl80211: Do not indicate P2P_DEVICE support (p2p_device=1 driver param not specified)
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wlan0: Own MAC address: 00:90:4c:c5:12:38
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=0 addr=0x0 key_idx=0 set_tx=0 seq_len=0 key_len=0
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=0 addr=0x0 key_idx=1 set_tx=0 seq_len=0 key_len=0
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=0 addr=0x0 key_idx=2 set_tx=0 seq_len=0 key_len=0
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=0 addr=0x0 key_idx=3 set_tx=0 seq_len=0 key_len=0
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=0 addr=0x0 key_idx=4 set_tx=0 seq_len=0 key_len=0
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=0 addr=0x0 key_idx=5 set_tx=0 seq_len=0 key_len=0
+01-01 12:17:54.011 D/wpa_supplicant( 1627): wlan0: RSN: flushing PMKID list in the driver
+01-01 12:17:54.011 D/wpa_supplicant( 1627): nl80211: Flush PMKIDs
+01-01 12:17:54.012 D/wpa_supplicant( 1627): wlan0: State: DISCONNECTED -> INACTIVE
+01-01 12:17:54.091 D/wpa_supplicant( 1627): TDLS: TDLS operation supported by driver
+01-01 12:17:54.091 D/wpa_supplicant( 1627): TDLS: Driver uses internal link setup
+01-01 12:17:54.091 D/wpa_supplicant( 1627): wlan0: WPS: UUID based on MAC address: b9947712-b03c-5e6e-9d7b-94e8cbba5e6c
+01-01 12:17:54.097 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state DISCONNECTED
+01-01 12:17:54.097 D/wpa_supplicant( 1627): EAPOL: Supplicant port status: Unauthorized
+01-01 12:17:54.097 D/wpa_supplicant( 1627): nl80211: Skip set_supp_port(unauthorized) while not associated
+01-01 12:17:54.097 D/wpa_supplicant( 1627): EAPOL: KEY_RX entering state NO_KEY_RECEIVE
+01-01 12:17:54.097 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state INITIALIZE
+01-01 12:17:54.097 D/wpa_supplicant( 1627): EAP: EAP entering state DISABLED
+01-01 12:17:54.097 D/wpa_supplicant( 1627): nl80211: Setting wowlan
+01-01 12:17:54.097 D/wpa_supplicant( 1627): wlan0: Added interface wlan0
+01-01 12:17:54.097 D/wpa_supplicant( 1627): wlan0: State: INACTIVE -> DISCONNECTED
+01-01 12:17:54.097 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+01-01 12:17:54.097 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+01-01 12:17:54.097 D/wpa_supplicant( 1627): random: Got 20/20 bytes from /dev/random
+01-01 12:17:54.099 D/wpa_supplicant( 1627): random: Updated entropy file /data/misc/wifi/entropy.bin (own_pool_ready=2)
+01-01 12:17:54.099 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 operstate=5 linkmode=0 ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:17:55.098 D/wpa_supplicant( 1627): EAPOL: disable timer tick
+01-01 12:18:47.357 D/wpa_supplicant( 1627): wlan0: Control interface command 'WPS_PBC'
+01-01 12:18:47.357 D/wpa_supplicant( 1627): wlan0: Setting scan request: 0.000000 sec
+01-01 12:18:47.358 D/wpa_supplicant( 1627): wlan0: State: DISCONNECTED -> SCANNING
+01-01 12:18:47.358 D/wpa_supplicant( 1627): wlan0: Starting AP scan for wildcard SSID
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS: Building WPS IE for Probe Request
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Request Type
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Config Methods (2148)
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * UUID-E
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Primary Device Type
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * RF Bands (3)
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Association State
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Configuration Error (0)
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Device Password ID (4)
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Manufacturer
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Model Name
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Model Number
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Device Name
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:47.358 D/wpa_supplicant( 1627): WPS:  * Request to Enroll (1)
+01-01 12:18:47.358 D/wpa_supplicant( 1627): wlan0: Add radio work 'scan'@0xb7118930
+01-01 12:18:47.358 D/wpa_supplicant( 1627): wlan0: First radio work item in the queue - schedule start immediately
+01-01 12:18:47.358 D/wpa_supplicant( 1627): wlan0: Starting radio work 'scan'@0xb7118930 after 0.000044 second wait
+01-01 12:18:47.358 D/wpa_supplicant( 1627): wlan0: nl80211: scan request
+01-01 12:18:47.379 D/wpa_supplicant( 1627): Scan requested (ret=0) - scan timeout 10 seconds
+01-01 12:18:47.379 D/wpa_supplicant( 1627): nl80211: Drv Event 33 (NL80211_CMD_TRIGGER_SCAN) received for wlan0
+01-01 12:18:47.379 D/wpa_supplicant( 1627): wlan0: nl80211: Scan trigger
+01-01 12:18:47.379 D/wpa_supplicant( 1627): wlan0: Event SCAN_STARTED (49) received
+01-01 12:18:47.379 D/wpa_supplicant( 1627): wlan0: Own scan request started a scan in 0.000279 seconds
+01-01 12:18:49.713 D/wpa_supplicant( 1627): nl80211: Drv Event 34 (NL80211_CMD_NEW_SCAN_RESULTS) received for wlan0
+01-01 12:18:49.713 D/wpa_supplicant( 1627): wlan0: nl80211: New scan results available
+01-01 12:18:49.713 D/wpa_supplicant( 1627): nl80211: Scan probed for SSID ''
+01-01 12:18:49.713 D/wpa_supplicant( 1627): nl80211: Scan included frequencies: 2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462 2467 2472 5180 5200 5220 5240 5260 5280 5300 5320 5745 5765 5785 5805 5825
+01-01 12:18:49.713 D/wpa_supplicant( 1627): wlan0: Event SCAN_RESULTS (3) received
+01-01 12:18:49.714 D/wpa_supplicant( 1627): wlan0: Scan completed in 2.334465 seconds
+01-01 12:18:49.714 D/wpa_supplicant( 1627): nl80211: Received scan results (5 BSSes)
+01-01 12:18:49.714 D/wpa_supplicant( 1627): wlan0: WPS: Order scan results with WPS provisioning rules
+01-01 12:18:49.715 D/wpa_supplicant( 1627): wlan0: BSS: Start scan result update 1
+01-01 12:18:49.715 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 0 BSSID 60:a4:4c:68:6f:9c SSID 'ASUS_66U_5G'
+01-01 12:18:49.715 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 1 BSSID 40:f4:20:94:2d:1a SSID 'ChinaNet-ychQ'
+01-01 12:18:49.715 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 2 BSSID 88:25:93:24:eb:1f SSID 'AMPAK_WIFI_5.8G'
+01-01 12:18:49.715 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 3 BSSID 8c:a6:df:5c:42:90 SSID 'FE-OFFICE-5G'
+01-01 12:18:49.716 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 4 BSSID 0c:4b:54:14:5d:c1 SSID 'tly'
+01-01 12:18:49.716 D/wpa_supplicant( 1627): BSS: last_scan_res_used=5/32
+01-01 12:18:49.716 D/wpa_supplicant( 1627): wlan0: New scan results available (own=1 ext=0)
+01-01 12:18:49.716 D/wpa_supplicant( 1627): WPS: AP 60:a4:4c:68:6f:9c type 0 added
+01-01 12:18:49.716 D/wpa_supplicant( 1627): WPS: AP 40:f4:20:94:2d:1a type 0 added
+01-01 12:18:49.716 D/wpa_supplicant( 1627): WPS: AP[0] 60:a4:4c:68:6f:9c type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:49.716 D/wpa_supplicant( 1627): WPS: AP[1] 40:f4:20:94:2d:1a type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:49.716 D/wpa_supplicant( 1627): wlan0: Radio work 'scan'@0xb7118930 done in 2.358395 seconds
+01-01 12:18:49.717 D/wpa_supplicant( 1627): wlan0: Selecting BSS from priority group 0
+01-01 12:18:49.717 D/wpa_supplicant( 1627): wlan0: 0: 60:a4:4c:68:6f:9c ssid='ASUS_66U_5G' wpa_ie_len=0 rsn_ie_len=20 caps=0x11 level=-42 wps
+01-01 12:18:49.717 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:49.717 D/wpa_supplicant( 1627): wlan0: 1: 40:f4:20:94:2d:1a ssid='ChinaNet-ychQ' wpa_ie_len=26 rsn_ie_len=24 caps=0x411 level=-64 wps
+01-01 12:18:49.717 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:49.717 D/wpa_supplicant( 1627): wlan0: 2: 88:25:93:24:eb:1f ssid='AMPAK_WIFI_5.8G' wpa_ie_len=22 rsn_ie_len=20 caps=0x511 level=-48
+01-01 12:18:49.717 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:49.718 D/wpa_supplicant( 1627): wlan0: 3: 8c:a6:df:5c:42:90 ssid='FE-OFFICE-5G' wpa_ie_len=22 rsn_ie_len=20 caps=0x511 level=-65
+01-01 12:18:49.718 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:49.718 D/wpa_supplicant( 1627): wlan0: 4: 0c:4b:54:14:5d:c1 ssid='tly' wpa_ie_len=22 rsn_ie_len=20 caps=0x1011 level=-74
+01-01 12:18:49.718 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:49.718 D/wpa_supplicant( 1627): wlan0: No suitable network found
+01-01 12:18:49.718 D/wpa_supplicant( 1627): wlan0: Use shorter wait during WPS processing
+01-01 12:18:49.718 D/wpa_supplicant( 1627): wlan0: Setting scan request: 0.500000 sec
+01-01 12:18:49.719 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:50.219 D/wpa_supplicant( 1627): wlan0: Starting AP scan for wildcard SSID
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS: Building WPS IE for Probe Request
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Request Type
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Config Methods (2148)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * UUID-E
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Primary Device Type
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * RF Bands (3)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Association State
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Configuration Error (0)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Device Password ID (4)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Manufacturer
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Model Name
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Model Number
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Device Name
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): WPS:  * Request to Enroll (1)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): wlan0: Determining shared radio frequencies (max len 2)
+01-01 12:18:50.219 D/wpa_supplicant( 1627): wlan0: Shared frequencies (len=0): completed iteration
+01-01 12:18:50.219 D/wpa_supplicant( 1627): wlan0: Add radio work 'scan'@0xb7118980
+01-01 12:18:50.219 D/wpa_supplicant( 1627): wlan0: First radio work item in the queue - schedule start immediately
+01-01 12:18:50.219 D/wpa_supplicant( 1627): wlan0: Starting radio work 'scan'@0xb7118980 after 0.000036 second wait
+01-01 12:18:50.219 D/wpa_supplicant( 1627): wlan0: nl80211: scan request
+01-01 12:18:50.239 D/wpa_supplicant( 1627): Scan requested (ret=0) - scan timeout 30 seconds
+01-01 12:18:50.239 D/wpa_supplicant( 1627): nl80211: Drv Event 33 (NL80211_CMD_TRIGGER_SCAN) received for wlan0
+01-01 12:18:50.239 D/wpa_supplicant( 1627): wlan0: nl80211: Scan trigger
+01-01 12:18:50.239 D/wpa_supplicant( 1627): wlan0: Event SCAN_STARTED (49) received
+01-01 12:18:50.239 D/wpa_supplicant( 1627): wlan0: Own scan request started a scan in 0.000087 seconds
+01-01 12:18:52.566 D/wpa_supplicant( 1627): nl80211: Drv Event 34 (NL80211_CMD_NEW_SCAN_RESULTS) received for wlan0
+01-01 12:18:52.566 D/wpa_supplicant( 1627): wlan0: nl80211: New scan results available
+01-01 12:18:52.566 D/wpa_supplicant( 1627): nl80211: Scan probed for SSID ''
+01-01 12:18:52.566 D/wpa_supplicant( 1627): nl80211: Scan included frequencies: 2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462 2467 2472 5180 5200 5220 5240 5260 5280 5300 5320 5745 5765 5785 5805 5825
+01-01 12:18:52.566 D/wpa_supplicant( 1627): wlan0: Event SCAN_RESULTS (3) received
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: Scan completed in 2.327595 seconds
+01-01 12:18:52.567 D/wpa_supplicant( 1627): nl80211: Received scan results (20 BSSes)
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: WPS: Order scan results with WPS provisioning rules
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Start scan result update 2
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 5 BSSID 60:a4:4c:68:6f:98 SSID 'ASUS_66U_2.4G'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 6 BSSID 2c:ab:25:f8:a4:ac SSID 'ChinaNet-404q'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 7 BSSID d8:15:0d:6d:29:1e SSID '1008'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 8 BSSID bc:1c:81:7a:35:7c SSID 'ezviz_B4A38292E021'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 9 BSSID 20:dc:e6:9a:5e:06 SSID 'DCIVISION'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 10 BSSID 88:25:93:24:eb:1e SSID 'AMPAK_WIFI_2.4G'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 11 BSSID a4:56:02:a3:73:55 SSID 'sunny'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 12 BSSID b0:95:8e:00:2e:90 SSID 'OD_Tec'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 13 BSSID 8c:a6:df:5c:42:8e SSID 'FE-OFFICE'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 14 BSSID 88:25:93:a8:a7:f7 SSID 'WXwuyou'
+01-01 12:18:52.567 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 15 BSSID 0c:4b:54:14:5d:bf SSID 'tly'
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 16 BSSID 0e:69:6c:0b:10:52 SSID 'XM-Guest'
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 17 BSSID d4:68:ba:03:08:a5 SSID 'CC Universe Wifi'
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 18 BSSID d4:68:ba:0b:08:a5 SSID ''
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 19 BSSID d4:68:ba:13:08:a5 SSID 'CC Universe Guest'
+01-01 12:18:52.568 D/wpa_supplicant( 1627): BSS: last_scan_res_used=20/32
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: New scan results available (own=1 ext=0)
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP 60:a4:4c:68:6f:98 type 0 added
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP 2c:ab:25:f8:a4:ac type 0 added
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP d8:15:0d:6d:29:1e type 0 added
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP bc:1c:81:7a:35:7c type 0 added
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP 20:dc:e6:9a:5e:06 type 0 added
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP[0] 60:a4:4c:68:6f:9c type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP[1] 40:f4:20:94:2d:1a type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP[2] 60:a4:4c:68:6f:98 type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP[3] 2c:ab:25:f8:a4:ac type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP[4] d8:15:0d:6d:29:1e type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP[5] bc:1c:81:7a:35:7c type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): WPS: AP[6] 20:dc:e6:9a:5e:06 type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: Radio work 'scan'@0xb7118980 done in 2.348780 seconds
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: Selecting BSS from priority group 0
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 0: 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-34 wps
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 1: 60:a4:4c:68:6f:9c ssid='ASUS_66U_5G' wpa_ie_len=0 rsn_ie_len=20 caps=0x11 level=-40 wps
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 2: 2c:ab:25:f8:a4:ac ssid='ChinaNet-404q' wpa_ie_len=22 rsn_ie_len=20 caps=0x411 level=-50 wps
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 3: d8:15:0d:6d:29:1e ssid='1008' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-54 wps
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 4: 40:f4:20:94:2d:1a ssid='ChinaNet-ychQ' wpa_ie_len=26 rsn_ie_len=24 caps=0x411 level=-64 wps
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 5: bc:1c:81:7a:35:7c ssid='ezviz_B4A38292E021' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-72 wps
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 6: 20:dc:e6:9a:5e:06 ssid='DCIVISION' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-80 wps
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0: 7: 88:25:93:24:eb:1e ssid='AMPAK_WIFI_2.4G' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-32
+01-01 12:18:52.568 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0: 8: a4:56:02:a3:73:55 ssid='sunny' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-38
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0: 9: b0:95:8e:00:2e:90 ssid='OD_Tec' wpa_ie_len=26 rsn_ie_len=24 caps=0x431 level=-44
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0: 10: 88:25:93:24:eb:1f ssid='AMPAK_WIFI_5.8G' wpa_ie_len=22 rsn_ie_len=20 caps=0x511 level=-47
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0: 11: 8c:a6:df:5c:42:8e ssid='FE-OFFICE' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-54
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0: 12: 88:25:93:a8:a7:f7 ssid='WXwuyou' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-57
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.569 D/wpa_supplicant( 1627): wlan0: 13: 0c:4b:54:14:5d:bf ssid='tly' wpa_ie_len=22 rsn_ie_len=20 caps=0x1411 level=-59
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0: 14: 8c:a6:df:5c:42:90 ssid='FE-OFFICE-5G' wpa_ie_len=22 rsn_ie_len=20 caps=0x511 level=-64
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0: 15: 0c:4b:54:14:5d:c1 ssid='tly' wpa_ie_len=22 rsn_ie_len=20 caps=0x1011 level=-75
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0: 16: 0e:69:6c:0b:10:52 ssid='XM-Guest' wpa_ie_len=0 rsn_ie_len=0 caps=0x21 level=-76
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0: 17: d4:68:ba:03:08:a5 ssid='CC Universe Wifi' wpa_ie_len=22 rsn_ie_len=20 caps=0x1531 level=-77
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0: 18: d4:68:ba:0b:08:a5 ssid='' wpa_ie_len=22 rsn_ie_len=20 caps=0x1531 level=-79
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0:    skip - SSID not known
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0: 19: d4:68:ba:13:08:a5 ssid='CC Universe Guest' wpa_ie_len=0 rsn_ie_len=0 caps=0x1521 level=-79
+01-01 12:18:52.570 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:52.571 D/wpa_supplicant( 1627): wlan0: No suitable network found
+01-01 12:18:52.571 D/wpa_supplicant( 1627): wlan0: Use shorter wait during WPS processing
+01-01 12:18:52.571 D/wpa_supplicant( 1627): wlan0: Setting scan request: 0.500000 sec
+01-01 12:18:52.571 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:53.071 D/wpa_supplicant( 1627): wlan0: Starting AP scan for wildcard SSID
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS: Building WPS IE for Probe Request
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Request Type
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Config Methods (2148)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * UUID-E
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Primary Device Type
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * RF Bands (3)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Association State
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Configuration Error (0)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Device Password ID (4)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Manufacturer
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Model Name
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Model Number
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Device Name
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): WPS:  * Request to Enroll (1)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): wlan0: Determining shared radio frequencies (max len 2)
+01-01 12:18:53.071 D/wpa_supplicant( 1627): wlan0: Shared frequencies (len=0): completed iteration
+01-01 12:18:53.071 D/wpa_supplicant( 1627): wlan0: Add radio work 'scan'@0xb7118b68
+01-01 12:18:53.071 D/wpa_supplicant( 1627): wlan0: First radio work item in the queue - schedule start immediately
+01-01 12:18:53.071 D/wpa_supplicant( 1627): wlan0: Starting radio work 'scan'@0xb7118b68 after 0.000034 second wait
+01-01 12:18:53.071 D/wpa_supplicant( 1627): wlan0: nl80211: scan request
+01-01 12:18:53.073 D/wpa_supplicant( 1627): Scan requested (ret=0) - scan timeout 30 seconds
+01-01 12:18:53.073 D/wpa_supplicant( 1627): nl80211: Drv Event 33 (NL80211_CMD_TRIGGER_SCAN) received for wlan0
+01-01 12:18:53.073 D/wpa_supplicant( 1627): wlan0: nl80211: Scan trigger
+01-01 12:18:53.073 D/wpa_supplicant( 1627): wlan0: Event SCAN_STARTED (49) received
+01-01 12:18:53.073 D/wpa_supplicant( 1627): wlan0: Own scan request started a scan in 0.000088 seconds
+01-01 12:18:55.406 D/wpa_supplicant( 1627): nl80211: Drv Event 34 (NL80211_CMD_NEW_SCAN_RESULTS) received for wlan0
+01-01 12:18:55.406 D/wpa_supplicant( 1627): wlan0: nl80211: New scan results available
+01-01 12:18:55.407 D/wpa_supplicant( 1627): nl80211: Scan probed for SSID ''
+01-01 12:18:55.407 D/wpa_supplicant( 1627): nl80211: Scan included frequencies: 2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462 2467 2472 5180 5200 5220 5240 5260 5280 5300 5320 5745 5765 5785 5805 5825
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: Event SCAN_RESULTS (3) received
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: Scan completed in 2.333683 seconds
+01-01 12:18:55.407 D/wpa_supplicant( 1627): nl80211: Received scan results (25 BSSes)
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: WPS: Order scan results with WPS provisioning rules
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: BSS: Start scan result update 3
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 20 BSSID d4:68:ba:13:08:95 SSID 'CC Universe Guest'
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 21 BSSID 00:13:32:10:4e:83 SSID 'HE2.0Alpha-Portal'
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 22 BSSID 8a:25:93:55:05:0d SSID 'FE-MEETINGROOM'
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 23 BSSID 34:25:5d:e3:61:4b SSID 'SZFE'
+01-01 12:18:55.407 D/wpa_supplicant( 1627): wlan0: BSS: Add new id 24 BSSID cc:81:da:64:94:b0 SSID '\xe7\xa5\x9e\xe7\x81\xb5703'
+01-01 12:18:55.407 D/wpa_supplicant( 1627): BSS: last_scan_res_used=25/32
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: New scan results available (own=1 ext=0)
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP 60:a4:4c:68:6f:98 changed type 0 -> 1
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP[0] 60:a4:4c:68:6f:9c type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP[1] 40:f4:20:94:2d:1a type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP[2] 60:a4:4c:68:6f:98 type=1 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP[3] 2c:ab:25:f8:a4:ac type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP[4] d8:15:0d:6d:29:1e type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP[5] bc:1c:81:7a:35:7c type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: AP[6] 20:dc:e6:9a:5e:06 type=0 tries=0 last_attempt=-1 sec ago blacklist=0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: Radio work 'scan'@0xb7118b68 done in 2.336346 seconds
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: Selecting BSS from priority group 0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: 0: 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-34 wps
+01-01 12:18:55.408 D/wpa_supplicant( 1627):    selected based on WPS IE (Active PBC)
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0:    selected BSS 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G'
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: Check whether PBC session overlap is present in scan results; selected BSSID 60:a4:4c:68:6f:98
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPS: UUID of the selected BSS - hexdump(len=16): 89 c2 92 3c 7f 06 25 b7 a0 4b 75 99 89 0e b9 15
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: Considering connect request: reassociate: 1  selected: 60:a4:4c:68:6f:98  bssid: 00:00:00:00:00:00  pending: 00:00:00:00:00:00  wpa_state: SCANNING  ssid=0xb7119448  current_ssid=0x0
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: Request association with 60:a4:4c:68:6f:98
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=15): 00 0d 41 53 55 53 5f 36 36 55 5f 32 2e 34 47
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=3): 03 01 06
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=3): 2a 01 00
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=3): 2f 01 00
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: RSN IE in EAPOL-Key - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=24): 3d 16 06 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=16): 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00
+01-01 12:18:55.408 D/wpa_supplicant( 1627): WPA: WMM Parameter Element - hexdump(len=24): 00 50 f2 02 01 01 84 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00
+01-01 12:18:55.408 D/wpa_supplicant( 1627): TDLS: TDLS is allowed in the target BSS
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: Add radio work 'connect'@0xb711b450
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: First radio work item in the queue - schedule start immediately
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: Starting radio work 'connect'@0xb711b450 after 0.000057 second wait
+01-01 12:18:55.408 I/wpa_supplicant( 1627): wlan0: Trying to associate with 60:a4:4c:68:6f:98 (SSID='ASUS_66U_2.4G' freq=2437 MHz)
+01-01 12:18:55.408 D/wpa_supplicant( 1627): FT: Stored MDIE and FTIE from (Re)Association Response - hexdump(len=0):
+01-01 12:18:55.408 D/wpa_supplicant( 1627): wlan0: Cancelling scan request
+01-01 12:18:55.409 D/wpa_supplicant( 1627): wlan0: WPA: clearing own WPA/RSN IE
+01-01 12:18:55.409 D/wpa_supplicant( 1627): wlan0: Automatic auth_alg selection: 0x1
+01-01 12:18:55.409 D/wpa_supplicant( 1627): WPS: Building WPS IE for (Re)Association Request
+01-01 12:18:55.409 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:55.409 D/wpa_supplicant( 1627): WPS:  * Request Type
+01-01 12:18:55.409 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:55.409 D/wpa_supplicant( 1627): wlan0: WPA: clearing AP WPA IE
+01-01 12:18:55.409 D/wpa_supplicant( 1627): wlan0: WPA: clearing AP RSN IE
+01-01 12:18:55.409 D/wpa_supplicant( 1627): wlan0: WPA: clearing own WPA/RSN IE
+01-01 12:18:55.409 D/wpa_supplicant( 1627): wlan0: State: SCANNING -> ASSOCIATING
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+01-01 12:18:55.409 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+01-01 12:18:55.409 D/wpa_supplicant( 1627): Limit connection to BSSID 60:a4:4c:68:6f:98 freq=2437 MHz based on scan results (bssid_set=0)
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Set mode ifindex 4 iftype 2 (STATION)
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Unsubscribe mgmt frames handle 0x3f9818a9 (mode change)
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Subscribe to mgmt frames with non-AP handle 0xb7109020
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0104
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040a
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040b
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040c
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040d
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090a
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090b
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090c
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090d
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0409506f9a09
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=7f506f9a09
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0801
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040e
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=06
+01-01 12:18:55.409 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a07
+01-01 12:18:55.410 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a11
+01-01 12:18:55.410 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a1a
+01-01 12:18:55.410 D/wpa_supplicant( 1627): nl80211: Connect (ifindex=4)
+01-01 12:18:55.410 D/wpa_supplicant( 1627):   * bssid=60:a4:4c:68:6f:98
+01-01 12:18:55.410 D/wpa_supplicant( 1627):   * bssid_hint=60:a4:4c:68:6f:98
+01-01 12:18:55.410 D/wpa_supplicant( 1627):   * freq=2437
+01-01 12:18:55.410 D/wpa_supplicant( 1627):   * freq_hint=2437
+01-01 12:18:55.410 D/wpa_supplicant( 1627):   * SSID - hexdump(len=13): 41 53 55 53 5f 36 36 55 5f 32 2e 34 47
+01-01 12:18:55.410 D/wpa_supplicant( 1627):   * IEs - hexdump(len=32): 7f 04 00 00 0a 02 dd 18 00 50 f2 04 10 4a 00 01 10 10 3a 00 01 01 10 49 00 06 00 37 2a 00 01 20
+01-01 12:18:55.410 D/wpa_supplicant( 1627):   * Auth Type 0
+01-01 12:18:55.414 D/wpa_supplicant( 1627): nl80211: Connect request send successfully
+01-01 12:18:55.414 D/wpa_supplicant( 1627): wlan0: Setting authentication timeout: 10 sec 0 usec
+01-01 12:18:55.414 D/wpa_supplicant( 1627): EAPOL: External notification - EAP success=0
+01-01 12:18:55.414 D/wpa_supplicant( 1627): EAPOL: External notification - EAP fail=0
+01-01 12:18:55.414 D/wpa_supplicant( 1627): EAPOL: External notification - portControl=Auto
+01-01 12:18:55.414 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.467 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.473 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.474 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.478 D/wpa_supplicant( 1627): nl80211: Drv Event 46 (NL80211_CMD_CONNECT) received for wlan0
+01-01 12:18:55.478 D/wpa_supplicant( 1627): nl80211: Connect event (status=0 ignore_next_local_disconnect=0)
+01-01 12:18:55.479 D/wpa_supplicant( 1627): nl80211: Associated on 2437 MHz
+01-01 12:18:55.479 D/wpa_supplicant( 1627): nl80211: Associated with 60:a4:4c:68:6f:98
+01-01 12:18:55.479 D/wpa_supplicant( 1627): nl80211: Operating frequency for the associated BSS from scan results: 2437 MHz
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: Event ASSOC (0) received
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: Association info event
+01-01 12:18:55.479 D/wpa_supplicant( 1627): req_ies - hexdump(len=145): 00 0d 41 53 55 53 5f 36 36 55 5f 32 2e 34 47 01 08 82 84 8b 96 24 30 48 6c 32 04 0c 12 18 60 21 ...
+01-01 12:18:55.479 D/wpa_supplicant( 1627): resp_ies - hexdump(len=150): 01 08 82 84 8b 96 24 30 48 6c 32 04 0c 12 18 60 2d 1a bd 19 1b ff 00 00 00 00 00 00 00 00 00 00 ...
+01-01 12:18:55.479 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=24): 3d 16 06 08 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+01-01 12:18:55.479 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=16): 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00
+01-01 12:18:55.479 D/wpa_supplicant( 1627): WPA: WMM Parameter Element - hexdump(len=24): 00 50 f2 02 01 01 84 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: freq=2437 MHz
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: WPA: clearing own WPA/RSN IE
+01-01 12:18:55.479 D/wpa_supplicant( 1627): FT: Stored MDIE and FTIE from (Re)Association Response - hexdump(len=0):
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: State: ASSOCIATING -> ASSOCIATED
+01-01 12:18:55.479 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+01-01 12:18:55.479 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: Associated to a new BSS: BSSID=60:a4:4c:68:6f:98
+01-01 12:18:55.479 I/wpa_supplicant( 1627): wlan0: Associated with 60:a4:4c:68:6f:98
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: WPA: Association event - clear replay counter
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: WPA: Clear old PTK
+01-01 12:18:55.479 D/wpa_supplicant( 1627): TDLS: Remove peers on association
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAPOL: External notification - portEnabled=0
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAPOL: External notification - portValid=0
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAPOL: External notification - portEnabled=1
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state CONNECTING
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAPOL: Using shorter startWhen for WPS
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAPOL: enable timer tick
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state IDLE
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAP: EAP entering state INITIALIZE
+01-01 12:18:55.479 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: Setting authentication timeout: 10 sec 0 usec
+01-01 12:18:55.479 D/wpa_supplicant( 1627): wlan0: Cancelling scan request
+01-01 12:18:55.479 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.479 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.479 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.506 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:55.506 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:56.480 D/wpa_supplicant( 1627): EAPOL: startWhen --> 0
+01-01 12:18:56.480 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state CONNECTING
+01-01 12:18:56.480 D/wpa_supplicant( 1627): EAPOL: txStart
+01-01 12:18:56.480 D/wpa_supplicant( 1627): TX EAPOL: dst=60:a4:4c:68:6f:98
+01-01 12:18:56.498 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:56.498 D/wpa_supplicant( 1627): wlan0: Setting authentication timeout: 70 sec 0 usec
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: Received EAP-Packet frame
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state RESTART
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: EAP entering state INITIALIZE
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state AUTHENTICATING
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state REQUEST
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: getSuppRsp
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: EAP entering state RECEIVED
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: Received EAP-Request id=0 method=1 vendor=0 vendorMethod=0
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: EAP entering state IDENTITY
+01-01 12:18:56.498 I/wpa_supplicant( 1627): wlan0: CTRL-EVENT-EAP-STARTED EAP authentication started
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: Status notification: started (param=)
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: EAP-Request Identity data - hexdump(len=0):
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: using real identity - hexdump(len=29): 57 46 41 2d 53 69 6d 70 6c 65 43 6f 6e 66 69 67 2d 45 6e 72 6f 6c 6c 65 65 2d 31 2d 30
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: EAP entering state SEND_RESPONSE
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RESPONSE
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: txSuppRsp
+01-01 12:18:56.498 D/wpa_supplicant( 1627): TX EAPOL: dst=60:a4:4c:68:6f:98
+01-01 12:18:56.498 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RECEIVE
+01-01 12:18:57.016 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAPOL: Received EAP-Packet frame
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state REQUEST
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAPOL: getSuppRsp
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP: EAP entering state RECEIVED
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP: Received EAP-Request id=1 method=254 vendor=14122 vendorMethod=1
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP: EAP entering state GET_METHOD
+01-01 12:18:57.016 I/wpa_supplicant( 1627): wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=14122 method=1
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP: Status notification: accept proposed method (param=WSC)
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP: Initialize selected EAP method: vendor 14122 method 1 (WSC)
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP-WSC: Fragment size limit 1398
+01-01 12:18:57.016 I/wpa_supplicant( 1627): wlan0: CTRL-EVENT-EAP-METHOD EAP vendor 14122 method 1 (WSC) selected
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP: EAP entering state METHOD
+01-01 12:18:57.016 D/wpa_supplicant( 1627): EAP-WSC: Received packet: Op-Code 1 Flags 0x0 Message Length 0
+01-01 12:18:57.017 D/wpa_supplicant( 1627): EAP-WSC: Received start
+01-01 12:18:57.017 D/wpa_supplicant( 1627): EAP-WSC: WAIT_START -> MESG
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS: Enrollee Nonce - hexdump(len=16): 16 62 99 70 e0 c8 cd e8 bf 68 13 25 65 29 83 6c
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS: Building Message M1
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS:  * Message Type (4)
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS:  * UUID-E
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS:  * MAC Address (00:90:4c:c5:12:38)
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS:  * Enrollee Nonce
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS:  * Public Key
+01-01 12:18:57.018 D/wpa_supplicant( 1627): WPS: Generate new DH keys
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS: DH Private Key - hexdump(len=192): [REMOVED]
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS: DH own Public Key - hexdump(len=192): 69 df ac 64 d2 c8 8c 59 16 07 49 d9 25 dc 92 47 e2 20 16 2d 48 6b 7d 1f 72 70 8b 29 9d d5 e6 9a ...
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Authentication Type Flags
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Encryption Type Flags
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Connection Type Flags
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Config Methods (2148)
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Wi-Fi Protected Setup State (1)
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Manufacturer
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Model Name
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Model Number
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Serial Number
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Primary Device Type
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Device Name
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * RF Bands (1)
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Association State
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Device Password ID (4)
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Configuration Error (0)
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * OS Version
+01-01 12:18:57.045 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAP-WSC: Generating Response
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAP-WSC: Sending out 362 bytes (message sent completely)
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAP: method process -> ignore=FALSE methodState=MAY_CONT decision=FAIL eapRespData=0xb7119ec8
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAP: EAP entering state SEND_RESPONSE
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:57.045 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RESPONSE
+01-01 12:18:57.046 D/wpa_supplicant( 1627): EAPOL: txSuppRsp
+01-01 12:18:57.046 D/wpa_supplicant( 1627): TX EAPOL: dst=60:a4:4c:68:6f:98
+01-01 12:18:57.046 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RECEIVE
+01-01 12:18:57.679 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:57.679 D/wpa_supplicant( 1627): EAPOL: Received EAP-Packet frame
+01-01 12:18:57.679 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state REQUEST
+01-01 12:18:57.679 D/wpa_supplicant( 1627): EAPOL: getSuppRsp
+01-01 12:18:57.679 D/wpa_supplicant( 1627): EAP: EAP entering state RECEIVED
+01-01 12:18:57.679 D/wpa_supplicant( 1627): EAP: Received EAP-Request id=2 method=254 vendor=14122 vendorMethod=1
+01-01 12:18:57.679 D/wpa_supplicant( 1627): EAP: EAP entering state METHOD
+01-01 12:18:57.679 D/wpa_supplicant( 1627): EAP-WSC: Received packet: Op-Code 4 Flags 0x0 Message Length 0
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: Processing received message (len=451 op_code=4)
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: Received WSC_MSG
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: Received M2
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: Registrar Nonce - hexdump(len=16): da 95 d1 2b 74 f5 26 77 06 26 12 f8 32 7e 43 16
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: UUID-R - hexdump(len=16): 89 c2 92 3c 7f 06 25 b7 a0 4b 75 99 89 0e b9 15
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: Device Password ID 4
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: DH Private Key - hexdump(len=192): [REMOVED]
+01-01 12:18:57.679 D/wpa_supplicant( 1627): WPS: DH peer Public Key - hexdump(len=192): 6a 6f 2a a6 3d 72 c3 08 0b 6a 67 33 91 e3 79 df 0f 8a e3 f6 73 23 ca 53 91 89 e7 6b 84 c0 d3 9e ...
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: DH shared key - hexdump(len=192): [REMOVED]
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: DHKey - hexdump(len=32): [REMOVED]
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: KDK - hexdump(len=32): [REMOVED]
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: AuthKey - hexdump(len=32): [REMOVED]
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: KeyWrapKey - hexdump(len=16): [REMOVED]
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: EMSK - hexdump(len=32): [REMOVED]
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: Manufacturer - hexdump(len=21): 41 53 55 53 54 65 4b 20 43 6f 6d 70 75 74 65 72 20 49 6e 63 2e
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: Model Name - hexdump(len=28): 57 69 2d 46 69 20 50 72 6f 74 65 63 74 65 64 20 53 65 74 75 70 20 52 6f 75 74 65 72
+01-01 12:18:57.701 D/wpa_supplicant( 1627): WPS: Model Number - hexdump(len=8): 52 54 2d 41 43 36 36 55
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS: Serial Number - hexdump(len=12): 43 41 49 41 41 32 30 30 30 30 30 31
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS: Primary Device Type: 6-0050F204-1
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS: Device Name - hexdump(len=8): 52 54 2d 41 43 36 36 55
+01-01 12:18:57.702 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS: Building Message M3
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS: Device Password - hexdump(len=8): [REMOVED]
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS: PSK1 - hexdump(len=16): [REMOVED]
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS: PSK2 - hexdump(len=16): [REMOVED]
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS:  * Message Type (7)
+01-01 12:18:57.702 D/wpa_supplicant( 1627): WPS:  * Registrar Nonce
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS: E-S1 - hexdump(len=16): 68 61 85 aa 3a 06 c4 88 89 52 f7 33 2c 68 41 fc
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS: E-S2 - hexdump(len=16): a1 c7 2f 36 ff 84 15 bd b2 4e f5 56 eb a2 e5 ac
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS:  * E-Hash1
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS: E-Hash1 - hexdump(len=32): 0e 71 94 18 93 b5 c4 f4 a8 5e 7e 94 70 00 ec 77 0f e4 52 d9 1b 61 89 d0 a5 f2 3b 76 3c 85 02 91
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS:  * E-Hash2
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS: E-Hash2 - hexdump(len=32): 0b 9e b7 06 c4 c1 a7 a3 74 72 a5 7b a8 ad b6 eb 6b 2d 49 80 76 b5 45 37 47 12 68 fd cb d0 ab e7
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:57.703 D/wpa_supplicant( 1627): WPS:  * Authenticator
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAP-WSC: Generating Response
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAP-WSC: Sending out 124 bytes (message sent completely)
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAP: method process -> ignore=FALSE methodState=MAY_CONT decision=FAIL eapRespData=0xb7119d30
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAP: EAP entering state SEND_RESPONSE
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RESPONSE
+01-01 12:18:57.703 D/wpa_supplicant( 1627): EAPOL: txSuppRsp
+01-01 12:18:57.703 D/wpa_supplicant( 1627): TX EAPOL: dst=60:a4:4c:68:6f:98
+01-01 12:18:57.704 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RECEIVE
+01-01 12:18:57.710 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAPOL: Received EAP-Packet frame
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state REQUEST
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAPOL: getSuppRsp
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAP: EAP entering state RECEIVED
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAP: Received EAP-Request id=3 method=254 vendor=14122 vendorMethod=1
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAP: EAP entering state METHOD
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAP-WSC: Received packet: Op-Code 4 Flags 0x0 Message Length 0
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: Processing received message (len=192 op_code=4)
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: Received WSC_MSG
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: Received M4
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: R-Hash1 - hexdump(len=32): e1 5e 32 15 d0 04 65 91 a0 01 a9 5f df e5 10 09 fa d0 2c ce 00 9d 5b df 34 45 b2 c3 33 71 43 42
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: R-Hash2 - hexdump(len=32): 21 d1 a1 a0 a3 57 e3 90 27 b6 55 3a 8f 5c 3a 64 bd 08 b6 b8 3a cc 79 26 28 6d 51 1d be 00 04 e6
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: Processing decrypted Encrypted Settings attribute
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: R-SNonce1 - hexdump(len=16): [REMOVED]
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: Registrar proved knowledge of the first half of the device password
+01-01 12:18:57.710 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS: Building Message M5
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS:  * Message Type (9)
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS:  * Registrar Nonce
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS:  * E-SNonce1
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS:  * Key Wrap Authenticator
+01-01 12:18:57.710 D/wpa_supplicant( 1627): WPS:  * Encrypted Settings
+01-01 12:18:57.712 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:57.712 D/wpa_supplicant( 1627): WPS:  * Authenticator
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAP-WSC: Generating Response
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAP-WSC: Sending out 120 bytes (message sent completely)
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAP: method process -> ignore=FALSE methodState=MAY_CONT decision=FAIL eapRespData=0xb711a600
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAP: EAP entering state SEND_RESPONSE
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RESPONSE
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAPOL: txSuppRsp
+01-01 12:18:57.712 D/wpa_supplicant( 1627): TX EAPOL: dst=60:a4:4c:68:6f:98
+01-01 12:18:57.712 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RECEIVE
+01-01 12:18:57.719 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAPOL: Received EAP-Packet frame
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state REQUEST
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAPOL: getSuppRsp
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAP: EAP entering state RECEIVED
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAP: Received EAP-Request id=4 method=254 vendor=14122 vendorMethod=1
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAP: EAP entering state METHOD
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAP-WSC: Received packet: Op-Code 4 Flags 0x0 Message Length 0
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS: Processing received message (len=120 op_code=4)
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS: Received WSC_MSG
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS: Received M6
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS: Processing decrypted Encrypted Settings attribute
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS: R-SNonce2 - hexdump(len=16): [REMOVED]
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS: Registrar proved knowledge of the second half of the device password
+01-01 12:18:57.719 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS: Building Message M7
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS:  * Message Type (11)
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS:  * Registrar Nonce
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS:  * E-SNonce2
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS:  * Key Wrap Authenticator
+01-01 12:18:57.719 D/wpa_supplicant( 1627): WPS:  * Encrypted Settings
+01-01 12:18:57.721 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:57.721 D/wpa_supplicant( 1627): WPS:  * Authenticator
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAP-WSC: Generating Response
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAP-WSC: Sending out 120 bytes (message sent completely)
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAP: method process -> ignore=FALSE methodState=MAY_CONT decision=FAIL eapRespData=0xb711a600
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAP: EAP entering state SEND_RESPONSE
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RESPONSE
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAPOL: txSuppRsp
+01-01 12:18:57.721 D/wpa_supplicant( 1627): TX EAPOL: dst=60:a4:4c:68:6f:98
+01-01 12:18:57.721 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RECEIVE
+01-01 12:18:57.740 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:57.740 D/wpa_supplicant( 1627): EAPOL: Received EAP-Packet frame
+01-01 12:18:57.740 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state REQUEST
+01-01 12:18:57.740 D/wpa_supplicant( 1627): EAPOL: getSuppRsp
+01-01 12:18:57.740 D/wpa_supplicant( 1627): EAP: EAP entering state RECEIVED
+01-01 12:18:57.740 D/wpa_supplicant( 1627): EAP: Received EAP-Request id=5 method=254 vendor=14122 vendorMethod=1
+01-01 12:18:57.740 D/wpa_supplicant( 1627): EAP: EAP entering state METHOD
+01-01 12:18:57.740 D/wpa_supplicant( 1627): EAP-WSC: Received packet: Op-Code 4 Flags 0x0 Message Length 0
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Processing received message (len=152 op_code=4)
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Received WSC_MSG
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Received M8
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Processing decrypted Encrypted Settings attribute
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Received Credential
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Process Credential
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Network Index: 1
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: SSID - hexdump(len=13): 41 53 55 53 5f 36 36 55 5f 32 2e 34 47
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Authentication Type: 0x20
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Encryption Type: 0x8
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Network Key - hexdump(len=8): [REMOVED]
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: MAC Address 00:90:4c:c5:12:38
+01-01 12:18:57.740 I/wpa_supplicant( 1627): wlan0: WPS-CRED-RECEIVED 
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Received Credential attribute - hexdump(len=60): [REMOVED]
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: SSID - hexdump(len=13): 41 53 55 53 5f 36 36 55 5f 32 2e 34 47
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Authentication Type 0x20
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Encryption Type 0x8
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Network Key Index 0
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Network Key - hexdump(len=8): [REMOVED]
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: MAC Address 00:90:4c:c5:12:38
+01-01 12:18:57.740 D/wpa_supplicant( 1627): WPS: Replace WPS network block based on the received credential
+01-01 12:18:57.770 D/wpa_supplicant( 1627): nl80211: Do not indicate P2P_DEVICE support (p2p_device=1 driver param not specified)
+01-01 12:18:57.770 D/wpa_supplicant( 1627): WPS: The AP was not found from BSS table - use credential as-is
+01-01 12:18:57.770 E/wpa_supplicant( 1627): Writing configuration file '/data/misc/wifi/wpa_supplicant.conf.tmp'
+01-01 12:18:57.773 D/wpa_supplicant( 1627): Configuration file '/data/misc/wifi/wpa_supplicant.conf' written successfully
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.773 D/wpa_supplicant( 1627): WPS: Building Message WSC_Done
+01-01 12:18:57.773 D/wpa_supplicant( 1627): WPS:  * Version (hardcoded 0x10)
+01-01 12:18:57.773 D/wpa_supplicant( 1627): WPS:  * Message Type (15)
+01-01 12:18:57.773 D/wpa_supplicant( 1627): WPS:  * Enrollee Nonce
+01-01 12:18:57.773 D/wpa_supplicant( 1627): WPS:  * Registrar Nonce
+01-01 12:18:57.773 D/wpa_supplicant( 1627): WPS:  * Version2 (0x20)
+01-01 12:18:57.773 I/wpa_supplicant( 1627): wlan0: WPS-SUCCESS 
+01-01 12:18:57.773 D/wpa_supplicant( 1627): P2P: Ignore WPS success event - P2P provisioning not in progress
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP-WSC: MESG -> MESG
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP-WSC: Generating Response
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP-WSC: Sending out 60 bytes (message sent completely)
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP-WSC: MESG -> FAIL
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP: method process -> ignore=FALSE methodState=DONE decision=FAIL eapRespData=0xb71197e0
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP: EAP entering state SEND_RESPONSE
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAP: EAP entering state IDLE
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RESPONSE
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAPOL: txSuppRsp
+01-01 12:18:57.773 D/wpa_supplicant( 1627): TX EAPOL: dst=60:a4:4c:68:6f:98
+01-01 12:18:57.773 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RECEIVE
+01-01 12:18:57.847 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAPOL: Received EAP-Packet frame
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state REQUEST
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAPOL: getSuppRsp
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAP: EAP entering state RECEIVED
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAP: Received EAP-Failure
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAP: Status notification: completion (param=failure)
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAP: Workaround for unexpected identifier field in EAP Success: reqId=6 lastId=5 (these are supposed to be same)
+01-01 12:18:57.847 D/wpa_supplicant( 1627): EAP: EAP entering state FAILURE
+01-01 12:18:57.848 I/wpa_supplicant( 1627): wlan0: CTRL-EVENT-EAP-FAILURE EAP authentication failed
+01-01 12:18:57.848 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state HELD
+01-01 12:18:57.848 D/wpa_supplicant( 1627): EAPOL: Supplicant port status: Unauthorized
+01-01 12:18:57.848 D/wpa_supplicant( 1627): nl80211: Set supplicant port unauthorized for 60:a4:4c:68:6f:98
+01-01 12:18:57.848 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state RECEIVE
+01-01 12:18:57.848 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state FAIL
+01-01 12:18:57.848 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state IDLE
+01-01 12:18:57.848 D/wpa_supplicant( 1627): EAPOL authentication completed - result=FAILURE
+01-01 12:18:57.848 D/wpa_supplicant( 1627): WPS: Network configuration replaced - try to associate with the received credential (freq=2437)
+01-01 12:18:57.848 D/wpa_supplicant( 1627): wlan0: Request to deauthenticate - bssid=60:a4:4c:68:6f:98 pending_bssid=00:00:00:00:00:00 reason=3 state=ASSOCIATED
+01-01 12:18:57.848 D/wpa_supplicant( 1627): TDLS: Tear down peers
+01-01 12:18:57.848 D/wpa_supplicant( 1627): wpa_driver_nl80211_disconnect(reason_code=3)
+01-01 12:18:57.904 D/wpa_supplicant( 1627): wlan0: Event DEAUTH (12) received
+01-01 12:18:57.904 D/wpa_supplicant( 1627): wlan0: Deauthentication notification
+01-01 12:18:57.904 D/wpa_supplicant( 1627): wlan0:  * reason 3 (locally generated)
+01-01 12:18:57.904 D/wpa_supplicant( 1627): Deauthentication frame IE(s) - hexdump(len=0): [NULL]
+01-01 12:18:57.904 I/wpa_supplicant( 1627): wlan0: CTRL-EVENT-DISCONNECTED bssid=60:a4:4c:68:6f:98 reason=3 locally_generated=1
+01-01 12:18:57.904 D/wpa_supplicant( 1627): wlan0: Auto connect enabled: try to reconnect (wps=1/0 wpa_state=6)
+01-01 12:18:57.904 D/wpa_supplicant( 1627): wlan0: Setting scan request: 0.100000 sec
+01-01 12:18:57.904 D/wpa_supplicant( 1627): wlan0: Radio work 'connect'@0xb711b450 done in 2.495896 seconds
+01-01 12:18:57.904 D/wpa_supplicant( 1627): Added BSSID 60:a4:4c:68:6f:98 into blacklist
+01-01 12:18:57.904 D/wpa_supplicant( 1627): wlan0: Blacklist count 1 --> request scan in 100 ms
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0: Ignore new scan request for 0.100000 sec since an earlier request is scheduled to trigger sooner
+01-01 12:18:57.905 D/wpa_supplicant( 1627): TDLS: Remove peers on disassociation
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0: Disconnect event - remove keys
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0: State: ASSOCIATED -> DISCONNECTED
+01-01 12:18:57.905 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+01-01 12:18:57.905 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAPOL: External notification - portEnabled=0
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state DISCONNECTED
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAPOL: Supplicant port status: Unauthorized
+01-01 12:18:57.905 D/wpa_supplicant( 1627): nl80211: Skip set_supp_port(unauthorized) while not associated
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state INITIALIZE
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAP: EAP entering state DISABLED
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAPOL: External notification - portValid=0
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0: State: DISCONNECTED -> DISCONNECTED
+01-01 12:18:57.905 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+01-01 12:18:57.905 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAPOL: External notification - portEnabled=0
+01-01 12:18:57.905 D/wpa_supplicant( 1627): EAPOL: External notification - portValid=0
+01-01 12:18:57.905 D/wpa_supplicant( 1627): WPS: Checking whether fast association without a new scan can be used
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0: Selecting BSS from priority group 0
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0: 0: 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-34 wps
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0:    skip - blacklisted (count=1 limit=0)
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0: 1: 60:a4:4c:68:6f:9c ssid='ASUS_66U_5G' wpa_ie_len=0 rsn_ie_len=20 caps=0x11 level=-39 wps
+01-01 12:18:57.905 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 2: d8:15:0d:6d:29:1e ssid='1008' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-46 wps
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 3: 2c:ab:25:f8:a4:ac ssid='ChinaNet-404q' wpa_ie_len=22 rsn_ie_len=20 caps=0x411 level=-51 wps
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 4: 40:f4:20:94:2d:1a ssid='ChinaNet-ychQ' wpa_ie_len=26 rsn_ie_len=24 caps=0x411 level=-60 wps
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 5: bc:1c:81:7a:35:7c ssid='ezviz_B4A38292E021' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-72 wps
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 6: 20:dc:e6:9a:5e:06 ssid='DCIVISION' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-80 wps
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 7: 88:25:93:24:eb:1e ssid='AMPAK_WIFI_2.4G' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-31
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 8: a4:56:02:a3:73:55 ssid='sunny' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-36
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 9: b0:95:8e:00:2e:90 ssid='OD_Tec' wpa_ie_len=26 rsn_ie_len=24 caps=0x431 level=-45
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0: 10: 88:25:93:24:eb:1f ssid='AMPAK_WIFI_5.8G' wpa_ie_len=22 rsn_ie_len=20 caps=0x511 level=-45
+01-01 12:18:57.906 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 11: 8c:a6:df:5c:42:8e ssid='FE-OFFICE' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-51
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 12: 88:25:93:a8:a7:f7 ssid='WXwuyou' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-55
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 13: 0c:4b:54:14:5d:bf ssid='tly' wpa_ie_len=22 rsn_ie_len=20 caps=0x1411 level=-58
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 14: 8c:a6:df:5c:42:90 ssid='FE-OFFICE-5G' wpa_ie_len=22 rsn_ie_len=20 caps=0x511 level=-63
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 15: d4:68:ba:13:08:95 ssid='CC Universe Guest' wpa_ie_len=0 rsn_ie_len=0 caps=0x1521 level=-73
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 16: 0c:4b:54:14:5d:c1 ssid='tly' wpa_ie_len=22 rsn_ie_len=20 caps=0x1011 level=-74
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 17: 0e:69:6c:0b:10:52 ssid='XM-Guest' wpa_ie_len=0 rsn_ie_len=0 caps=0x21 level=-76
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 18: d4:68:ba:03:08:a5 ssid='CC Universe Wifi' wpa_ie_len=22 rsn_ie_len=20 caps=0x1531 level=-77
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0: 19: 00:13:32:10:4e:83 ssid='HE2.0Alpha-Portal' wpa_ie_len=0 rsn_ie_len=0 caps=0x1421 level=-77
+01-01 12:18:57.907 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: 20: 8a:25:93:55:05:0d ssid='FE-MEETINGROOM' wpa_ie_len=0 rsn_ie_len=20 caps=0x431 level=-77
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: 21: d4:68:ba:13:08:a5 ssid='CC Universe Guest' wpa_ie_len=0 rsn_ie_len=0 caps=0x1521 level=-78
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: 22: d4:68:ba:0b:08:a5 ssid='' wpa_ie_len=22 rsn_ie_len=20 caps=0x1531 level=-79
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0:    skip - SSID not known
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: 23: 34:25:5d:e3:61:4b ssid='SZFE' wpa_ie_len=26 rsn_ie_len=24 caps=0x431 level=-81
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: 24: cc:81:da:64:94:b0 ssid='\xe7\xa5\x9e\xe7\x81\xb5703' wpa_ie_len=26 rsn_ie_len=24 caps=0xc11 level=-87
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0:    skip - SSID mismatch
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: No APs found - clear blacklist and try again
+01-01 12:18:57.908 D/wpa_supplicant( 1627): Removed BSSID 60:a4:4c:68:6f:98 from blacklist (clear)
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: Selecting BSS from priority group 0
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0: 0: 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-34 wps
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0:    selected based on RSN IE
+01-01 12:18:57.908 D/wpa_supplicant( 1627): wlan0:    selected BSS 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G'
+01-01 12:18:57.908 D/wpa_supplicant( 1627): WPS: Continue association from timeout
+01-01 12:18:57.908 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:57.909 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:57.909 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:57.909 D/wpa_supplicant( 1627): nl80211: Drv Event 48 (NL80211_CMD_DISCONNECT) received for wlan0
+01-01 12:18:57.909 D/wpa_supplicant( 1627): nl80211: Ignore disconnect event triggered during reassociation
+01-01 12:18:57.918 D/wpa_supplicant( 1627): WPS: Continuing association after eapol_cb
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0: Selecting BSS from priority group 0
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0: 0: 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-34 wps
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0:    selected based on RSN IE
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0:    selected BSS 60:a4:4c:68:6f:98 ssid='ASUS_66U_2.4G'
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0: Considering connect request: reassociate: 1  selected: 60:a4:4c:68:6f:98  bssid: 00:00:00:00:00:00  pending: 00:00:00:00:00:00  wpa_state: DISCONNECTED  ssid=0xb7119448  current_ssid=0x0
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0: Request association with 60:a4:4c:68:6f:98
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0: Re-association to the same ESS
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=15): 00 0d 41 53 55 53 5f 36 36 55 5f 32 2e 34 47
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=3): 03 01 06
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=3): 2a 01 00
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=3): 2f 01 00
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: RSN IE in EAPOL-Key - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=24): 3d 16 06 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=16): 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00
+01-01 12:18:57.919 D/wpa_supplicant( 1627): WPA: WMM Parameter Element - hexdump(len=24): 00 50 f2 02 01 01 84 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00
+01-01 12:18:57.919 D/wpa_supplicant( 1627): TDLS: TDLS is allowed in the target BSS
+01-01 12:18:57.919 D/wpa_supplicant( 1627): wlan0: Add radio work 'connect'@0xb7118950
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: First radio work item in the queue - schedule start immediately
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: Starting radio work 'connect'@0xb7118950 after 0.000082 second wait
+01-01 12:18:57.920 I/wpa_supplicant( 1627): wlan0: Trying to associate with 60:a4:4c:68:6f:98 (SSID='ASUS_66U_2.4G' freq=2437 MHz)
+01-01 12:18:57.920 D/wpa_supplicant( 1627): FT: Stored MDIE and FTIE from (Re)Association Response - hexdump(len=0):
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: Cancelling scan request
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: clearing own WPA/RSN IE
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: Automatic auth_alg selection: 0x1
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: Overriding auth_alg selection: 0x1
+01-01 12:18:57.920 D/wpa_supplicant( 1627): RSN: PMKSA cache search - network_ctx=0xb7119448 try_opportunistic=0
+01-01 12:18:57.920 D/wpa_supplicant( 1627): RSN: Search for BSSID 60:a4:4c:68:6f:98
+01-01 12:18:57.920 D/wpa_supplicant( 1627): RSN: No PMKSA cache entry found
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: RSN: using IEEE 802.11i/D9.0
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: Selected cipher suites: group 16 pairwise 16 key_mgmt 2 proto 2
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: Selected mgmt group cipher 32
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: clearing AP WPA IE
+01-01 12:18:57.920 D/wpa_supplicant( 1627): WPA: set AP RSN IE - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: using GTK CCMP
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: using PTK CCMP
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: using KEY_MGMT WPA-PSK
+01-01 12:18:57.920 D/wpa_supplicant( 1627): wlan0: WPA: not using MGMT group cipher
+01-01 12:18:57.920 D/wpa_supplicant( 1627): WPA: Set own WPA IE default - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00
+01-01 12:18:57.921 D/wpa_supplicant( 1627): wlan0: State: DISCONNECTED -> ASSOCIATING
+01-01 12:18:57.921 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+01-01 12:18:57.921 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+01-01 12:18:57.921 D/wpa_supplicant( 1627): Limit connection to BSSID 60:a4:4c:68:6f:98 freq=2437 MHz based on scan results (bssid_set=0)
+01-01 12:18:57.921 D/wpa_supplicant( 1627): nl80211: Set mode ifindex 4 iftype 2 (STATION)
+01-01 12:18:57.921 D/wpa_supplicant( 1627): nl80211: Unsubscribe mgmt frames handle 0x3f9818a9 (mode change)
+01-01 12:18:57.921 D/wpa_supplicant( 1627): nl80211: Subscribe to mgmt frames with non-AP handle 0xb7109020
+01-01 12:18:57.921 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0104
+01-01 12:18:57.921 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040a
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040b
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040c
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040d
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090a
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090b
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090c
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=090d
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0409506f9a09
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=7f506f9a09
+01-01 12:18:57.922 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0801
+01-01 12:18:57.923 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=040e
+01-01 12:18:57.923 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=06
+01-01 12:18:57.923 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a07
+01-01 12:18:57.923 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a11
+01-01 12:18:57.923 D/wpa_supplicant( 1627): nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0xb7109020 match=0a1a
+01-01 12:18:57.923 D/wpa_supplicant( 1627): nl80211: Connect (ifindex=4)
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * bssid=60:a4:4c:68:6f:98
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * bssid_hint=60:a4:4c:68:6f:98
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * freq=2437
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * freq_hint=2437
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * SSID - hexdump(len=13): 41 53 55 53 5f 36 36 55 5f 32 2e 34 47
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * IEs - hexdump(len=28): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00 7f 04 00 00 0a 02
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * WPA Versions 0x2
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * pairwise=0xfac04
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * group=0xfac04
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * akm=0xfac02
+01-01 12:18:57.923 D/wpa_supplicant( 1627):   * Auth Type 0
+01-01 12:18:57.928 D/wpa_supplicant( 1627): nl80211: Connect request send successfully
+01-01 12:18:57.928 D/wpa_supplicant( 1627): wlan0: Setting authentication timeout: 10 sec 0 usec
+01-01 12:18:57.928 D/wpa_supplicant( 1627): EAPOL: External notification - EAP success=0
+01-01 12:18:57.928 D/wpa_supplicant( 1627): EAPOL: External notification - EAP fail=0
+01-01 12:18:57.928 D/wpa_supplicant( 1627): EAPOL: External notification - portControl=Auto
+01-01 12:18:58.011 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:58.015 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:58.016 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:58.021 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:58.021 D/wpa_supplicant( 1627): wlan0: Not associated - Delay processing of received EAPOL frame (state=ASSOCIATING bssid=00:00:00:00:00:00)
+01-01 12:18:58.021 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:58.021 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:58.022 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+01-01 12:18:58.022 D/wpa_supplicant( 1627): nl80211: Drv Event 46 (NL80211_CMD_CONNECT) received for wlan0
+01-01 12:18:58.022 D/wpa_supplicant( 1627): nl80211: Connect event (status=0 ignore_next_local_disconnect=0)
+01-01 12:18:58.022 D/wpa_supplicant( 1627): nl80211: Associated on 2437 MHz
+01-01 12:18:58.022 D/wpa_supplicant( 1627): nl80211: Associated with 60:a4:4c:68:6f:98
+01-01 12:18:58.022 D/wpa_supplicant( 1627): nl80211: Operating frequency for the associated BSS from scan results: 2437 MHz
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: Event ASSOC (0) received
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: Association info event
+01-01 12:18:58.022 D/wpa_supplicant( 1627): req_ies - hexdump(len=141): 00 0d 41 53 55 53 5f 36 36 55 5f 32 2e 34 47 01 08 82 84 8b 96 24 30 48 6c 32 04 0c 12 18 60 21 ...
+01-01 12:18:58.022 D/wpa_supplicant( 1627): resp_ies - hexdump(len=150): 01 08 82 84 8b 96 24 30 48 6c 32 04 0c 12 18 60 2d 1a bd 19 1b ff 00 00 00 00 00 00 00 00 00 00 ...
+01-01 12:18:58.022 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=24): 3d 16 06 08 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+01-01 12:18:58.022 D/wpa_supplicant( 1627): WPA: Unrecognized EAPOL-Key Key Data IE - hexdump(len=16): 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00
+01-01 12:18:58.022 D/wpa_supplicant( 1627): WPA: WMM Parameter Element - hexdump(len=24): 00 50 f2 02 01 01 84 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: freq=2437 MHz
+01-01 12:18:58.022 D/wpa_supplicant( 1627): WPA: set own WPA/RSN IE - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00
+01-01 12:18:58.022 D/wpa_supplicant( 1627): FT: Stored MDIE and FTIE from (Re)Association Response - hexdump(len=0):
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: State: ASSOCIATING -> ASSOCIATED
+01-01 12:18:58.022 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->0 (DORMANT)
+01-01 12:18:58.022 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: Associated to a new BSS: BSSID=60:a4:4c:68:6f:98
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: WPA: clearing AP WPA IE
+01-01 12:18:58.022 D/wpa_supplicant( 1627): WPA: set AP RSN IE - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00
+01-01 12:18:58.022 I/wpa_supplicant( 1627): wlan0: Associated with 60:a4:4c:68:6f:98
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: WPA: Association event - clear replay counter
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: WPA: Clear old PTK
+01-01 12:18:58.022 D/wpa_supplicant( 1627): TDLS: Remove peers on association
+01-01 12:18:58.022 D/wpa_supplicant( 1627): EAPOL: External notification - portEnabled=0
+01-01 12:18:58.022 D/wpa_supplicant( 1627): EAPOL: External notification - portValid=0
+01-01 12:18:58.022 D/wpa_supplicant( 1627): EAPOL: External notification - EAP success=0
+01-01 12:18:58.022 D/wpa_supplicant( 1627): EAPOL: External notification - portEnabled=1
+01-01 12:18:58.022 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state CONNECTING
+01-01 12:18:58.022 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state IDLE
+01-01 12:18:58.022 D/wpa_supplicant( 1627): wlan0: Setting authentication timeout: 10 sec 0 usec
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: Cancelling scan request
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: Process pending EAPOL frame that was received just before association notification
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: Setting authentication timeout: 10 sec 0 usec
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: IEEE 802.1X RX: version=2 type=3 length=117
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0:   EAPOL-Key type=2
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0:   key_info 0x8a (ver=2 keyidx=0 rsvd=0 Pairwise Ack)
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0:   key_length=16 key_data_length=22
+01-01 12:18:58.023 D/wpa_supplicant( 1627):   replay_counter - hexdump(len=8): 00 00 00 00 00 00 00 00
+01-01 12:18:58.023 D/wpa_supplicant( 1627):   key_nonce - hexdump(len=32): 8b 44 ac f6 2a 2a 82 09 a7 ec 6e ab c3 0e 57 12 5a ef cc 9a 09 52 91 14 4a 57 92 39 d5 b6 0b 2a
+01-01 12:18:58.023 D/wpa_supplicant( 1627):   key_iv - hexdump(len=16): 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+01-01 12:18:58.023 D/wpa_supplicant( 1627):   key_rsc - hexdump(len=8): 00 00 00 00 00 00 00 00
+01-01 12:18:58.023 D/wpa_supplicant( 1627):   key_id (reserved) - hexdump(len=8): 00 00 00 00 00 00 00 00
+01-01 12:18:58.023 D/wpa_supplicant( 1627):   key_mic - hexdump(len=16): 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: State: ASSOCIATED -> 4WAY_HANDSHAKE
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: WPA: RX message 1 of 4-Way Handshake from 60:a4:4c:68:6f:98 (ver=2)
+01-01 12:18:58.023 D/wpa_supplicant( 1627): RSN: msg 1/4 key data - hexdump(len=22): dd 14 00 0f ac 04 63 bb e4 e0 9b 2a 53 58 33 c3 16 d3 4f 01 ff 36
+01-01 12:18:58.023 D/wpa_supplicant( 1627): WPA: PMKID in EAPOL-Key - hexdump(len=22): dd 14 00 0f ac 04 63 bb e4 e0 9b 2a 53 58 33 c3 16 d3 4f 01 ff 36
+01-01 12:18:58.023 D/wpa_supplicant( 1627): RSN: PMKID from Authenticator - hexdump(len=16): 63 bb e4 e0 9b 2a 53 58 33 c3 16 d3 4f 01 ff 36
+01-01 12:18:58.023 D/wpa_supplicant( 1627): wlan0: RSN: no matching PMKID found
+01-01 12:18:58.024 D/wpa_supplicant( 1627): WPA: Renewed SNonce - hexdump(len=32): 1e bc 74 6d f7 b4 53 e8 fb 67 3a 35 80 15 c0 7a 22 ee 0c eb b2 40 53 19 bf a5 5d bc 56 df 9b 61
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: PTK derivation - A1=00:90:4c:c5:12:38 A2=60:a4:4c:68:6f:98
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: Nonce1 - hexdump(len=32): 1e bc 74 6d f7 b4 53 e8 fb 67 3a 35 80 15 c0 7a 22 ee 0c eb b2 40 53 19 bf a5 5d bc 56 df 9b 61
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: Nonce2 - hexdump(len=32): 8b 44 ac f6 2a 2a 82 09 a7 ec 6e ab c3 0e 57 12 5a ef cc 9a 09 52 91 14 4a 57 92 39 d5 b6 0b 2a
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: PMK - hexdump(len=32): [REMOVED]
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: PTK - hexdump(len=48): [REMOVED]
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: WPA IE for msg 2/4 - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: Replay Counter - hexdump(len=8): 00 00 00 00 00 00 00 00
+01-01 12:18:58.025 D/wpa_supplicant( 1627): wlan0: WPA: Sending EAPOL-Key 2/4
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: KCK - hexdump(len=16): [REMOVED]
+01-01 12:18:58.025 D/wpa_supplicant( 1627): WPA: Derived Key MIC - hexdump(len=16): 34 f4 56 db 36 c0 ea 36 f1 59 b9 27 3b 52 bc 69
+01-01 12:18:58.039 D/wpa_supplicant( 1627): wlan0: RX EAPOL from 60:a4:4c:68:6f:98
+01-01 12:18:58.039 D/wpa_supplicant( 1627): wlan0: IEEE 802.1X RX: version=2 type=3 length=151
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wlan0:   EAPOL-Key type=2
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wlan0:   key_info 0x13ca (ver=2 keyidx=0 rsvd=0 Pairwise Install Ack MIC Secure Encr)
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wlan0:   key_length=16 key_data_length=56
+01-01 12:18:58.040 D/wpa_supplicant( 1627):   replay_counter - hexdump(len=8): 00 00 00 00 00 00 00 01
+01-01 12:18:58.040 D/wpa_supplicant( 1627):   key_nonce - hexdump(len=32): 8b 44 ac f6 2a 2a 82 09 a7 ec 6e ab c3 0e 57 12 5a ef cc 9a 09 52 91 14 4a 57 92 39 d5 b6 0b 2a
+01-01 12:18:58.040 D/wpa_supplicant( 1627):   key_iv - hexdump(len=16): 5a ef cc 9a 09 52 91 14 4a 57 92 39 d5 b6 0b 2c
+01-01 12:18:58.040 D/wpa_supplicant( 1627):   key_rsc - hexdump(len=8): 00 00 00 00 00 00 00 00
+01-01 12:18:58.040 D/wpa_supplicant( 1627):   key_id (reserved) - hexdump(len=8): 00 00 00 00 00 00 00 00
+01-01 12:18:58.040 D/wpa_supplicant( 1627):   key_mic - hexdump(len=16): 69 a7 9f f8 9b 10 2a 36 bf 44 43 c9 21 8c a8 54
+01-01 12:18:58.040 D/wpa_supplicant( 1627): RSN: encrypted key data - hexdump(len=56): 59 3c d5 83 0a 97 44 95 97 a7 86 62 9c 84 a6 cc 7f 43 7a 8d 7d a9 9e c7 b3 96 b6 c2 6c 30 3d 4f ...
+01-01 12:18:58.040 D/wpa_supplicant( 1627): WPA: decrypted EAPOL-Key key data - hexdump(len=48): [REMOVED]
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wlan0: State: 4WAY_HANDSHAKE -> 4WAY_HANDSHAKE
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wlan0: WPA: RX message 3 of 4-Way Handshake from 60:a4:4c:68:6f:98 (ver=2)
+01-01 12:18:58.040 D/wpa_supplicant( 1627): WPA: IE KeyData - hexdump(len=48): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00 dd 16 00 0f ac 01 01 00 2e a3 ...
+01-01 12:18:58.040 D/wpa_supplicant( 1627): WPA: RSN IE in EAPOL-Key - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00
+01-01 12:18:58.040 D/wpa_supplicant( 1627): WPA: GTK in EAPOL-Key - hexdump(len=24): [REMOVED]
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wlan0: WPA: Sending EAPOL-Key 4/4
+01-01 12:18:58.040 D/wpa_supplicant( 1627): WPA: KCK - hexdump(len=16): [REMOVED]
+01-01 12:18:58.040 D/wpa_supplicant( 1627): WPA: Derived Key MIC - hexdump(len=16): 96 1d 60 f9 97 55 54 de 94 a9 d7 1e a2 c4 7b 95
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wlan0: WPA: Installing PTK to the driver
+01-01 12:18:58.040 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=3 addr=0xb7109648 key_idx=0 set_tx=1 seq_len=6 key_len=16
+01-01 12:18:58.040 D/wpa_supplicant( 1627): nl80211: KEY_DATA - hexdump(len=16): [REMOVED]
+01-01 12:18:58.040 D/wpa_supplicant( 1627): nl80211: KEY_SEQ - hexdump(len=6): 00 00 00 00 00 00
+01-01 12:18:58.040 D/wpa_supplicant( 1627):    addr=60:a4:4c:68:6f:98
+01-01 12:18:58.043 D/wpa_supplicant( 1627): EAPOL: External notification - portValid=1
+01-01 12:18:58.043 D/wpa_supplicant( 1627): wlan0: State: 4WAY_HANDSHAKE -> GROUP_HANDSHAKE
+01-01 12:18:58.043 D/wpa_supplicant( 1627): RSN: received GTK in pairwise handshake - hexdump(len=18): [REMOVED]
+01-01 12:18:58.043 D/wpa_supplicant( 1627): WPA: Group Key - hexdump(len=16): [REMOVED]
+01-01 12:18:58.043 D/wpa_supplicant( 1627): wlan0: WPA: Installing GTK to the driver (keyidx=1 tx=0 len=16)
+01-01 12:18:58.044 D/wpa_supplicant( 1627): WPA: RSC - hexdump(len=6): 00 00 00 00 00 00
+01-01 12:18:58.044 D/wpa_supplicant( 1627): wpa_driver_nl80211_set_key: ifindex=4 (wlan0) alg=3 addr=0xb6faa108 key_idx=1 set_tx=0 seq_len=6 key_len=16
+01-01 12:18:58.044 D/wpa_supplicant( 1627): nl80211: KEY_DATA - hexdump(len=16): [REMOVED]
+01-01 12:18:58.044 D/wpa_supplicant( 1627): nl80211: KEY_SEQ - hexdump(len=6): 00 00 00 00 00 00
+01-01 12:18:58.044 D/wpa_supplicant( 1627):    broadcast key
+01-01 12:18:58.046 I/wpa_supplicant( 1627): wlan0: WPA: Key negotiation completed with 60:a4:4c:68:6f:98 [PTK=CCMP GTK=CCMP]
+01-01 12:18:58.046 D/wpa_supplicant( 1627): wlan0: Cancelling authentication timeout
+01-01 12:18:58.046 D/wpa_supplicant( 1627): wlan0: State: GROUP_HANDSHAKE -> COMPLETED
+01-01 12:18:58.046 D/wpa_supplicant( 1627): wlan0: Radio work 'connect'@0xb7118950 done in 0.126307 seconds
+01-01 12:18:58.046 I/wpa_supplicant( 1627): wlan0: CTRL-EVENT-CONNECTED - Connection to 60:a4:4c:68:6f:98 completed [id=0 id_str=]
+01-01 12:18:58.046 D/wpa_supplicant( 1627): nl80211: Set wlan0 operstate 0->1 (UP)
+01-01 12:18:58.046 D/wpa_supplicant( 1627): netlink: Operstate: ifindex=4 linkmode=-1 (no change), operstate=6 (IF_OPER_UP)
+01-01 12:18:58.046 D/wpa_supplicant( 1627): EAPOL: External notification - portValid=1
+01-01 12:18:58.046 D/wpa_supplicant( 1627): EAPOL: External notification - EAP success=1
+01-01 12:18:58.046 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state AUTHENTICATING
+01-01 12:18:58.046 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state SUCCESS
+01-01 12:18:58.046 D/wpa_supplicant( 1627): EAP: EAP entering state DISABLED
+01-01 12:18:58.046 D/wpa_supplicant( 1627): EAPOL: SUPP_PAE entering state AUTHENTICATED
+01-01 12:18:58.046 D/wpa_supplicant( 1627): EAPOL: Supplicant port status: Authorized
+01-01 12:18:58.046 D/wpa_supplicant( 1627): nl80211: Set supplicant port authorized for 60:a4:4c:68:6f:98
+01-01 12:18:58.047 D/wpa_supplicant( 1627): EAPOL: SUPP_BE entering state IDLE
+01-01 12:18:58.047 D/wpa_supplicant( 1627): EAPOL authentication completed - result=SUCCESS
+01-01 12:18:58.047 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 operstate=6 linkmode=1 ifi_family=0 ifi_flags=0x11043 ([UP][RUNNING][LOWER_UP])
+01-01 12:18:58.066 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11043 ([UP][RUNNING][LOWER_UP])
+01-01 12:18:58.066 D/wpa_supplicant( 1627): RTM_NEWLINK: ifi_index=4 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11043 ([UP][RUNNING][LOWER_UP])
+01-01 12:18:59.482 D/wpa_supplicant( 1627): EAPOL: startWhen --> 0
+01-01 12:18:59.482 D/wpa_supplicant( 1627): EAPOL: disable timer tick

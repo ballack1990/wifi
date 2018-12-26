@@ -1,0 +1,12 @@
+ifconfig wlan0 down
+iwconfig wlan0 mode monitor
+iwconfig wlan0 channel 6
+ifconfig wlan0 up
+
+
+关闭包加密
+wl ldpc_cap 0
+
+
+关闭AC：
+wl vhtmode 0

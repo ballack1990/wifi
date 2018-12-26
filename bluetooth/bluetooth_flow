@@ -1,0 +1,1589 @@
+BluetoothSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+->  {
+        public void onActivityCreated(Bundle savedInstanceState) {
+            final SettingsActivity activity = (SettingsActivity) getActivity();
+            mSwitchBar = activity.getSwitchBar();
+
+            mBluetoothEnabler = new BluetoothEnabler(activity, mSwitchBar);             // 创建BluetoothEnabler对象
+            mBluetoothEnabler.setupSwitchBar();
+        }
+    }
+---------------------------------------------------------------------------------------------------------------->
+BluetoothEnabler.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+->  {
+        public BluetoothEnabler(Context context, SwitchBar switchBar) {
+            mContext = context;
+            mSwitchBar = switchBar;
+            mSwitch = switchBar.getSwitch();
+            mValidListener = false;
+
+            LocalBluetoothManager manager = LocalBluetoothManager.getInstance(context);     // 获取LocalBluetoothManager对象
+            if (manager == null) {
+                // Bluetooth is not supported
+                mLocalAdapter = null;
+                mSwitch.setEnabled(false);
+            } else {
+                mLocalAdapter = manager.getBluetoothAdapter();                              // 获取LocalBluetoothAdapter对象
+            }
+            mIntentFilter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        }
+
+        public void onSwitchChanged(Switch switchView, boolean isChecked) {
+            if (mLocalAdapter != null) {
+                mLocalAdapter.setBluetoothEnabled(isChecked);                               // 打开/关闭 蓝牙
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------------>
+LocalBluetoothManager.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+->  {
+        public static synchronized LocalBluetoothManager getInstance(Context context) {
+            if (sInstance == null) {
+                LocalBluetoothAdapter adapter = LocalBluetoothAdapter.getInstance();        // 获取LocalBluetoothAdapter对象
+                if (adapter == null) {
+                    return null;
+                }
+                // This will be around as long as this process is
+                Context appContext = context.getApplicationContext();
+                sInstance = new LocalBluetoothManager(adapter, appContext);                 // 第一次调用，创建LocalBluetoothManager对象
+            }
+
+            return sInstance;
+        }
+
+        private LocalBluetoothManager(LocalBluetoothAdapter adapter, Context context) {
+            mContext = context;
+            mLocalAdapter = adapter;                                                        // 构造的时候传入Adapter
+
+            mCachedDeviceManager = new CachedBluetoothDeviceManager(context);
+            mEventManager = new BluetoothEventManager(mLocalAdapter,
+                    mCachedDeviceManager, context);
+            mProfileManager = new LocalBluetoothProfileManager(context,
+                    mLocalAdapter, mCachedDeviceManager, mEventManager);
+        }
+
+        public LocalBluetoothAdapter getBluetoothAdapter() {                                // 返回LocalBluetoothManager getInstance创建的Adapter
+            return mLocalAdapter;
+        }
+    }
+------------------------------------------------------------------------------------------------------------------->
+LocalBluetoothAdapter.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+->  {
+        static synchronized LocalBluetoothAdapter getInstance() {
+            if (sInstance == null) {
+                BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();        // 第一次调用，创建BluetoothAdapter对象
+                if (adapter != null) {
+                    sInstance = new LocalBluetoothAdapter(adapter);
+                }
+            }
+
+            return sInstance;
+        }
+
+        private LocalBluetoothAdapter(BluetoothAdapter adapter) {
+            mAdapter = adapter;                                                         // 保存BluetoothAdapter对象
+        }
+    }
+---------------------------------------------------------------------------------------------------------------------->
+BluetoothAdapter.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\bluetooth)
+->  {
+        public static synchronized BluetoothAdapter getDefaultAdapter() {
+            if (sAdapter == null) {
+                IBinder b = ServiceManager.getService(BLUETOOTH_MANAGER_SERVICE);       // 获取bluetooth_manager服务
+                if (b != null) {
+                    IBluetoothManager managerService = IBluetoothManager.Stub.asInterface(b);   // 获取BluetoothManager对象
+                    sAdapter = new BluetoothAdapter(managerService);                    // 第一次调用，创建BluetoothAdapter对象
+                } else {
+                    Log.e(TAG, "Bluetooth binder is null");
+                }
+            }
+            return sAdapter;
+        }
+
+        BluetoothAdapter(IBluetoothManager managerService) {
+            if (managerService == null) {
+                throw new IllegalArgumentException("bluetooth manager service is null");
+            }
+            try {
+                mService = managerService.registerAdapter(mManagerCallback);            // 向服务注册Adapter
+            } catch (RemoteException e) {Log.e(TAG, "", e);}
+            mManagerService = managerService;
+            mLeScanClients = new HashMap<LeScanCallback, ScanCallback>();
+        }
+    }
+------------------------------------------------------------------------------------------------------------------------->
+LocalBluetoothAdapter.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+->  {
+        public void setBluetoothEnabled(boolean enabled) {
+            boolean success = enabled
+                ? mAdapter.enable()
+                : mAdapter.disable();
+
+            if (success) {
+                setBluetoothStateInt(enabled
+                        ? BluetoothAdapter.STATE_TURNING_ON
+                        : BluetoothAdapter.STATE_TURNING_OFF);
+            } else {
+                if (Utils.V) {
+                    Log.v(TAG, "setBluetoothEnabled call, manager didn't return " +
+                            "success for enabled: " + enabled);
+                }
+
+                syncBluetoothState();
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------------------->
+BluetoothAdapter.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\bluetooth)
+->  {
+        public boolean enable() {
+            if (isEnabled() == true){
+                if (DBG) Log.d(TAG, "enable(): BT is already enabled..!");
+                return true;
+            }
+            try {
+                return mManagerService.enable();                                // 调用底层服务打开蓝牙
+            } catch (RemoteException e) {Log.e(TAG, "", e);}
+            return false;
+        }
+    }
+------------------------------------------------------------------------------------------------------------------------>
+现在来展开一下mManagerService,可以看到上面的定义是:
+IBluetoothManager managerService = IBluetoothManager.Stub.asInterface(b);
+
+private final IBluetoothManager mManagerService;
+mManagerService = managerService;
+
+------------------------------------------------------------------------------------------------------------------------>
+IBluetoothManager.aidl(z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\bluetooth)
+->  {
+        interface IBluetoothManager
+        {
+            IBluetooth registerAdapter(in IBluetoothManagerCallback callback);
+            void unregisterAdapter(in IBluetoothManagerCallback callback);
+            void registerStateChangeCallback(in IBluetoothStateChangeCallback callback);
+            void unregisterStateChangeCallback(in IBluetoothStateChangeCallback callback);
+            boolean isEnabled();
+            boolean enable();
+            boolean enableNoAutoConnect();
+            boolean disable(boolean persist);
+            IBluetoothGatt getBluetoothGatt();
+
+            boolean bindBluetoothProfileService(int profile, IBluetoothProfileServiceConnection proxy);
+            void unbindBluetoothProfileService(int profile, IBluetoothProfileServiceConnection proxy);
+
+            String getAddress();
+            String getName();
+        }
+    }
+------------------------------------------------------------------------------------------------------------------------>
+BluetoothManagerService服务是哪里启动的：
+SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)
+->  {
+        private void run() {
+            startOtherServices();
+        }
+    
+        private void startOtherServices() {
+            Slog.i(TAG, "Bluetooth Manager Service");
+            bluetooth = new BluetoothManagerService(context);
+            ServiceManager.addService(BluetoothAdapter.BLUETOOTH_MANAGER_SERVICE, bluetooth);
+        }
+    }
+------------------------------------------------------------------------------------------------------------------------>
+回到上面提到的：  
+mManagerService.enable(); 
+
+BluetoothManagerService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        class BluetoothManagerService extends IBluetoothManager.Stub {
+            BluetoothManagerService(Context context) {
+                mHandler = new BluetoothHandler(IoThread.get().getLooper());
+            }
+        }
+
+        public boolean enable() {
+            persistBluetoothSetting(BLUETOOTH_ON_BLUETOOTH);
+            sendEnableMsg(false);
+        }
+
+        private void sendEnableMsg(boolean quietMode) {
+            mHandler.sendMessage(mHandler.obtainMessage(MESSAGE_ENABLE,
+                        quietMode ? 1 : 0, 0));
+        }
+
+        private class BluetoothHandler extends Handler {
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case MESSAGE_ENABLE:
+                        if (DBG) {
+                            Log.d(TAG, "MESSAGE_ENABLE: mBluetooth = " + mBluetooth);
+                        }
+                        mHandler.removeMessages(MESSAGE_RESTART_BLUETOOTH_SERVICE);
+                        mEnable = true;
+                        handleEnable(msg.arg1 == 1);
+                        break;
+
+                    case MESSAGE_REGISTER_ADAPTER:
+                        {
+                            IBluetoothManagerCallback callback = (IBluetoothManagerCallback) msg.obj;
+                            boolean added = mCallbacks.register(callback);
+                            Log.d(TAG,"Added callback: " +  (callback == null? "null": callback)  +":" +added );
+                        }
+                        break;
+                }
+            }
+        }
+
+        private IBluetooth mBluetooth;
+
+        private void handleEnable(boolean quietMode) {
+            if (!mQuietEnable) {
+                if(!mBluetooth.enable()) {
+                    Log.e(TAG,"IBluetooth.enable() returned false");
+                }
+            }
+            else {
+                if(!mBluetooth.enableNoAutoConnect()) {
+                    Log.e(TAG,"IBluetooth.enableNoAutoConnect() returned false");
+                }
+            }
+        }
+    }
+----------------------------------------------------------------------------------------------------------------------->
+AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
+->  {
+        public class AdapterService extends Service {
+            public void onCreate() {
+                mBinder = new AdapterServiceBinder(this);
+                mAdapterProperties = new AdapterProperties(this);
+                mAdapterStateMachine =  AdapterState.make(this, mAdapterProperties);
+                mJniCallbacks =  new JniCallbacks(mAdapterStateMachine, mAdapterProperties);
+                initNative();
+                mNativeAvailable=true;
+                mCallbacks = new RemoteCallbackList<IBluetoothCallback>();
+                //Load the name and address
+                getAdapterPropertyNative(AbstractionLayer.BT_PROPERTY_BDADDR);
+                getAdapterPropertyNative(AbstractionLayer.BT_PROPERTY_BDNAME);
+                mAlarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                mPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+
+                registerReceiver(mAlarmBroadcastReceiver, new IntentFilter(ACTION_ALARM_WAKEUP));
+            }
+        }
+
+        private static class AdapterServiceBinder extends IBluetooth.Stub {                         // AdapterServiceBinder实现了IBluetooth接口
+            public boolean enable() {
+                if ((Binder.getCallingUid() != Process.SYSTEM_UID) &&
+                        (!Utils.checkCaller())) {
+                    Log.w(TAG, "enable() - Not allowed for non-active user and non system user");
+                    return false;
+                }
+
+                AdapterService service = getService();
+                if (service == null) return false;
+                return service.enable();
+            }
+        }
+    }
+    ->  {
+             public synchronized boolean enable(boolean quietMode) {
+                 enforceCallingOrSelfPermission(BLUETOOTH_ADMIN_PERM,
+                         "Need BLUETOOTH ADMIN permission");
+                 debugLog("enable() - Enable called with quiet mode status =  " + mQuietmode);
+                 mQuietmode  = quietMode;
+                 Message m = mAdapterStateMachine.obtainMessage(AdapterState.USER_TURN_ON);
+                 mAdapterStateMachine.sendMessage(m);
+                 return true;
+             }
+        }
+----------------------------------------------------------------------------------------------------------------------->
+AdapterState.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth_bplus\src\com\android\bluetooth\btservice)
+->  {
+        final class AdapterState extends StateMachine {
+            public static AdapterState make(AdapterService service, AdapterProperties adapterProperties) {
+                AdapterState as = new AdapterState(service, adapterProperties);
+                as.start();
+                return as;
+            }
+
+            private AdapterState(AdapterService service, AdapterProperties adapterProperties) {
+                addState(mOnState);
+                addState(mOffState);
+                addState(mPendingCommandState);
+                mAdapterService = service;
+                mAdapterProperties = adapterProperties;
+                setInitialState(mOffState);
+            }
+        }
+    }
+    ->  {
+            private class OffState extends State {
+                public boolean processMessage(Message msg) {
+                    AdapterService adapterService = mAdapterService;
+
+                    switch(msg.what) {
+                        case USER_TURN_ON:
+                            notifyAdapterStateChange(BluetoothAdapter.STATE_TURNING_ON);    // 更新property状态，调用onBluetoothStateChange
+                            mPendingCommandState.setTurningOn(true);
+                            transitionTo(mPendingCommandState);                             // 切换到PendingCommandState模式
+                            sendMessageDelayed(START_TIMEOUT, START_TIMEOUT_DELAY);
+                            adapterService.processStart();
+                            break;
+                    }
+                }
+            }
+        }
+----------------------------------------------------------------------------------------------------------------->
+AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
+->  {
+        void processStart() {
+            debugLog("processStart()");
+            Class[] supportedProfileServices = Config.getSupportedProfiles();
+            //Initialize data objects
+            for (int i=0; i < supportedProfileServices.length;i++) {
+                mProfileServicesState.put(supportedProfileServices[i].getName(),BluetoothAdapter.STATE_OFF);
+            }
+            mRemoteDevices = new RemoteDevices(this);
+            mAdapterProperties.init(mRemoteDevices);
+
+            if (DBG) {debugLog("processStart(): Make Bond State Machine");}
+            mBondStateMachine = BondStateMachine.make(this, mAdapterProperties, mRemoteDevices);
+
+            mJniCallbacks.init(mBondStateMachine,mRemoteDevices);
+
+            //FIXME: Set static instance here???
+            setAdapterService(this);
+
+            //Start profile services
+            if (!mProfilesStarted && supportedProfileServices.length >0) {
+                //Startup all profile services
+                setProfileServiceState(supportedProfileServices,BluetoothAdapter.STATE_ON);
+            }else {
+                if (DBG) {debugLog("processStart(): Profile Services alreay started");}
+                mAdapterStateMachine.sendMessage(mAdapterStateMachine.obtainMessage(AdapterState.STARTED));
+            }
+        }
+    }
+    ->  {
+        ---------------------------------------------------------------------------------------------------------
+            Config.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
+            ->  {
+                    private static final int[]  PROFILE_SERVICES_FLAG = {
+                        R.bool.profile_supported_hs_hfp,
+                        R.bool.profile_supported_a2dp,
+                        R.bool.profile_supported_a2dp_sink,
+                        R.bool.profile_supported_hid,
+                        R.bool.profile_supported_hdp,
+                        R.bool.profile_supported_pan,
+                        R.bool.profile_supported_gatt,
+                        R.bool.profile_supported_map,
+                        R.bool.profile_supported_hfpclient,
+                        R.bool.profile_supported_avrcp_controller,
+                    };
+
+                    private static Class[] SUPPORTED_PROFILES = new Class[0];
+
+                    static void init(Context ctx) {
+                        if (ctx == null) {
+                            return;
+                        }
+                        Resources resources = ctx.getResources();
+                        if (resources == null) {
+                            return;
+                        }
+                        ArrayList<Class> profiles = new ArrayList<Class>(PROFILE_SERVICES.length);
+                        for (int i=0; i < PROFILE_SERVICES_FLAG.length; i++) {
+                            boolean supported = resources.getBoolean(PROFILE_SERVICES_FLAG[i]);
+                            if (supported) {
+                                Log.d(TAG, "Adding " + PROFILE_SERVICES[i].getSimpleName());
+                                profiles.add(PROFILE_SERVICES[i]);
+                            }
+                        }
+                        int totalProfiles = profiles.size();
+                        SUPPORTED_PROFILES = new Class[totalProfiles];
+                        profiles.toArray(SUPPORTED_PROFILES);
+                    }
+
+                    static Class[]  getSupportedProfiles() {
+                        return SUPPORTED_PROFILES;
+                    }
+                }
+                ->  {
+                    ----------------------------------------------------------------------------------------------
+                         config.xml (prj/rk3288/packages/apps/Bluetooth/res/values)
+                         -> {
+                                <resources>
+                                     <bool name="profile_supported_a2dp">true</bool>
+                                     <bool name="profile_supported_a2dp_sink">false</bool>
+                                     <bool name="profile_supported_hdp">true</bool>
+                                     <bool name="profile_supported_hs_hfp">true</bool>
+                                     <bool name="profile_supported_hfpclient">false</bool>
+                                     <bool name="profile_supported_hid">true</bool>
+                                     <bool name="profile_supported_opp">true</bool>
+                                     <bool name="profile_supported_pan">true</bool>
+                                     <bool name="profile_supported_pbap">true</bool>
+                                     <bool name="profile_supported_gatt">true</bool>
+                                     <bool name="pbap_include_photos_in_vcard">false</bool>
+                                     <bool name="pbap_use_profile_for_owner_vcard">true</bool>
+                                     <bool name="profile_supported_map">true</bool>
+                                     <bool name="profile_supported_avrcp_controller">false</bool>
+                                </resources>
+                            }
+                    }
+        }
+---------------------------------------------------------------------------------------------------------------->
+AdapterState.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth_bplus\src\com\android\bluetooth\btservice)
+->  {
+        private class PendingCommandState extends State {
+            switch (msg.what) {
+                case STARTED:   
+                    //Enable
+                    boolean ret = adapterService.enableNative();
+                    if (!ret) {
+                        Log.e(TAG, "Error while turning Bluetooth On");
+                        notifyAdapterStateChange(BluetoothAdapter.STATE_OFF);
+                        transitionTo(mOffState);
+                    } else {
+                        sendMessageDelayed(ENABLE_TIMEOUT, ENABLE_TIMEOUT_DELAY);
+                    }
+                    break;
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------------------->
+com_android_bluetooth_btservice_AdapterService.cpp (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\jni)
+->  {
+        static JNINativeMethod sMethods[] = {
+            {"classInitNative", "()V", (void *) classInitNative},
+            {"initNative", "()Z", (void *) initNative},
+            {"enableNative", "()Z",  (void*) enableNative},
+        };
+    }
+---------------------------------------------------------------------------------------------------------------->
+com_android_bluetooth_btservice_AdapterService.cpp (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\jni)
+->  {
+        static void classInitNative(JNIEnv* env, jclass clazz) {
+            char value[PROPERTY_VALUE_MAX];
+            property_get("bluetooth.mock_stack", value, "");
+
+            const char *id = (strcmp(value, "1")? BT_STACK_MODULE_ID : BT_STACK_TEST_MODULE_ID);
+
+            char type[64];
+            check_wifi_chip_type_string(type);
+            if (!strncmp(type, "RTL", 3)) {
+                ALOGD("%s, load %s.default.so", __func__, BT_STACK_RTK_MODULE_ID);
+                err = hw_get_module(BT_STACK_RTK_MODULE_ID, (hw_module_t const**)&module);
+            } else {
+                ALOGD("%s, load %s.default.so", __func__, id);                              // bluetooth.default.so
+                err = hw_get_module(id, (hw_module_t const**)&module);
+            }
+
+            if (err == 0) {
+                hw_device_t* abstraction;
+                err = module->methods->open(module, id, &abstraction);
+                if (err == 0) {
+                    bluetooth_module_t* btStack = (bluetooth_module_t *)abstraction;
+                    sBluetoothInterface = btStack->get_bluetooth_interface();               // 获取蓝牙HAL控制接口
+                } else {
+                    ALOGE("Error while opening Bluetooth library");
+                }
+            } else {
+                ALOGE("No Bluetooth Library found");
+            }
+        }
+
+        static bt_callbacks_t sBluetoothCallbacks = {
+            sizeof(sBluetoothCallbacks),
+            adapter_state_change_callback,
+            adapter_properties_callback,
+            remote_device_properties_callback,
+            device_found_callback,
+            discovery_state_changed_callback,
+            pin_request_callback,
+            ssp_request_callback,
+            bond_state_changed_callback,
+            acl_state_changed_callback,
+            callback_thread_event,
+            dut_mode_recv_callback,
+
+            le_test_mode_recv_callback,
+            energy_info_recv_callback
+        };
+
+        static bool initNative(JNIEnv* env, jobject obj) {
+            ALOGV("%s:",__FUNCTION__);
+
+            sJniAdapterServiceObj = env->NewGlobalRef(obj);
+            sJniCallbacksObj = env->NewGlobalRef(env->GetObjectField(obj, sJniCallbacksField));
+
+            if (sBluetoothInterface) {
+                int ret = sBluetoothInterface->init(&sBluetoothCallbacks);                  // 初始化蓝牙HAL控制接口, 调用init接口
+                if (ret != BT_STATUS_SUCCESS) {
+                    ALOGE("Error while setting the callbacks: %d\n", ret);
+                    sBluetoothInterface = NULL;
+                    return JNI_FALSE;
+                }
+                ret = sBluetoothInterface->set_os_callouts(&sBluetoothOsCallouts);
+                if (ret != BT_STATUS_SUCCESS) {
+                    ALOGE("Error while setting Bluetooth callouts: %d\n", ret);
+                    sBluetoothInterface->cleanup();
+                    sBluetoothInterface = NULL;
+                    return JNI_FALSE;
+                }
+
+                if ( (sBluetoothSocketInterface = (btsock_interface_t *)
+                            sBluetoothInterface->get_profile_interface(BT_PROFILE_SOCKETS_ID)) == NULL) {
+                    ALOGE("Error getting socket interface");
+                }
+
+                if ( (sBluetoothMceInterface = (btmce_interface_t *)
+                            sBluetoothInterface->get_profile_interface(BT_PROFILE_MAP_CLIENT_ID)) == NULL) {
+                    ALOGE("Error getting mapclient interface");
+                } else {
+                    if ( (sBluetoothMceInterface->init(&sBluetoothMceCallbacks)) != BT_STATUS_SUCCESS) {
+                        ALOGE("Failed to initialize Bluetooth MCE");
+                        sBluetoothMceInterface = NULL;
+                    }
+                }
+
+                return JNI_TRUE;
+            }
+            return JNI_FALSE;
+        }
+
+        static jboolean enableNative(JNIEnv* env, jobject obj) {
+            int ret = sBluetoothInterface->enable();
+            result = (ret == BT_STATUS_SUCCESS) ? JNI_TRUE : JNI_FALSE;                 // 使能蓝牙HAL控制接口，调用enable函数
+            return result;
+        }   
+    }
+---------------------------------------------------------------------------------------------------->
+Bluetooth.h (z:\home\ballack\prj\rk3288\hardware\libhardware\include\hardware)
+->  {
+        #define BT_HARDWARE_MODULE_ID "bluetooth"
+        #define BT_STACK_MODULE_ID "bluetooth"
+        #define BT_STACK_TEST_MODULE_ID "bluetooth_test"
+        #define BT_STACK_RTK_MODULE_ID "bluetooth_rtk"
+    }
+---------------------------------------------------------------------------------------------------->
+Bluetooth.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
+->  {
+        static const bt_interface_t bluetoothInterface = {
+            sizeof(bluetoothInterface),
+            init,
+            enable,
+            disable,
+            enable_radio,
+            disable_radio,
+            cleanup,
+            get_adapter_properties,
+            get_adapter_property,
+            set_adapter_property,
+            get_remote_device_properties,
+            get_remote_device_property,
+            set_remote_device_property,
+            get_remote_service_record,
+            get_remote_services,
+            start_discovery,
+            cancel_discovery,
+            create_bond,
+            remove_bond,
+            cancel_bond,
+            get_connection_state,
+            pin_reply,
+            ssp_reply,
+            get_profile_interface,
+            dut_mode_configure,
+            dut_mode_send,
+        #if BLE_INCLUDED == TRUE
+            le_test_mode,
+        #else
+            NULL,
+        #endif
+            config_hci_snoop_log,
+            set_os_callouts,
+            read_energy_info,
+            get_fm_interface
+        };
+
+        static int init(bt_callbacks_t* callbacks )
+        {
+            ALOGI("init");
+
+            /* sanity check */
+            if (interface_ready() == TRUE)
+                return BT_STATUS_DONE;
+
+            /* store reference to user callbacks */
+            bt_hal_cbacks = callbacks;
+
+            /* add checks for individual callbacks ? */
+
+            bt_utils_init();
+
+            /* init btif */
+            btif_init_bluetooth();                          // 初始化btif
+
+            return BT_STATUS_SUCCESS;
+        }
+
+        static int enable( void )
+        {
+            ALOGI("enable");
+
+            /* sanity check */
+            if (interface_ready() == FALSE)
+                return BT_STATUS_NOT_READY;
+
+            return btif_enable_bluetooth();
+        }
+
+        const bt_interface_t* bluetooth__get_bluetooth_interface ()
+        {
+            /* fixme -- add property to disable bt interface ? */
+
+            return &bluetoothInterface;
+        }
+
+        static int open_bluetooth_stack (const struct hw_module_t* module, char const* name,
+                struct hw_device_t** abstraction)
+        {
+            UNUSED(name);
+
+            bluetooth_device_t *stack = malloc(sizeof(bluetooth_device_t) );
+            memset(stack, 0, sizeof(bluetooth_device_t) );
+            stack->common.tag = HARDWARE_DEVICE_TAG;
+            stack->common.version = 0;
+            stack->common.module = (struct hw_module_t*)module;
+            stack->common.close = close_bluetooth_stack;
+            stack->get_bluetooth_interface = bluetooth__get_bluetooth_interface;
+            *abstraction = (struct hw_device_t*)stack;
+            return 0;
+        }
+
+
+        static struct hw_module_methods_t bt_stack_module_methods = {
+            .open = open_bluetooth_stack,
+        };
+
+        struct hw_module_t HAL_MODULE_INFO_SYM = {
+            .tag = HARDWARE_MODULE_TAG,
+            .version_major = 1,
+            .version_minor = 0,
+            .id = BT_HARDWARE_MODULE_ID,
+            .name = "Bluetooth Stack",
+            .author = "The Android Open Source Project",
+            .methods = &bt_stack_module_methods
+        };
+    }
+------------------------------------------------------------------------------------------------------->
+Btif_core.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
+->  {
+        bt_status_t btif_init_bluetooth()
+        {
+            UINT8 status;
+            btif_config_init();
+            bte_main_boot_entry();                                          // bte主引导进入
+
+            /* As part of the init, fetch the local BD ADDR */
+            memset(&btif_local_bd_addr, 0, sizeof(bt_bdaddr_t));
+            btif_fetch_local_bdaddr(&btif_local_bd_addr);
+
+            /* start btif task */
+            // BTIF task handler managing all messages being passed Bluetooth HAL and BTA.  // btif_task处理所有蓝牙HAL和BTA的消息
+            status = GKI_create_task(btif_task, BTIF_TASK, BTIF_TASK_STR,
+                    (UINT16 *) ((UINT8 *)btif_task_stack + BTIF_TASK_STACK_SIZE),
+                    sizeof(btif_task_stack));
+
+            if (status != GKI_SUCCESS)
+                return BT_STATUS_FAIL;
+
+            return BT_STATUS_SUCCESS;
+        }
+
+        bt_status_t btif_enable_bluetooth(void)
+        {
+            BTIF_TRACE_DEBUG("BTIF ENABLE BLUETOOTH");
+
+            if (btif_core_state != BTIF_CORE_STATE_DISABLED)
+            {
+                ALOGD("not disabled\n");
+                return BT_STATUS_DONE;
+            }
+
+            btif_core_state = BTIF_CORE_STATE_ENABLING;
+
+            /* Create the GKI tasks and run them */
+            bte_main_enable();
+
+            return BT_STATUS_SUCCESS;
+        }
+    }
+-------------------------------------------------------------------------------------------------------->
+Bte_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\main)
+->  {
+        /******************************************************************************
+         **
+         ** Function         bte_main_boot_entry
+         **
+         ** Description      BTE MAIN API - Entry point for BTE chip/stack initialization
+         **
+         ** Returns          None
+         **
+         ******************************************************************************/
+        void bte_main_boot_entry(void)
+        {
+            /* initialize OS */
+            GKI_init();
+
+            bte_main_in_hw_init();
+
+            bte_load_conf(BTE_STACK_CONF_FILE);                             // 默认是"/etc/bluetooth/bt_stack.conf"
+        #if (defined(BLE_INCLUDED) && (BLE_INCLUDED == TRUE))               // 默认是"/etc/bluetooth/ble_stack.conf"
+            bte_load_ble_conf(BTE_BLE_STACK_CONF_FILE);
+        #endif
+
+        #if (BTTRC_INCLUDED == TRUE)
+            /* Initialize trace feature */
+            BTTRC_TraceInit(MAX_TRACE_RAM_SIZE, &BTE_TraceLogBuf[0], BTTRC_METHOD_RAM);
+        #endif
+
+            pthread_mutex_init(&cleanup_lock, NULL);
+
+        }
+
+        /******************************************************************************
+         **
+         ** Function         bte_main_in_hw_init
+         **
+         ** Description      Internal helper function for chip hardware init
+         **
+         ** Returns          None
+         **
+         ******************************************************************************/
+        static void bte_main_in_hw_init(void)
+        {
+            if ( (bt_hc_if = (bt_hc_interface_t *) bt_hc_get_interface()) \                 // 获取hci控制接口
+                    == NULL)
+            {
+                APPL_TRACE_ERROR("!!! Failed to get BtHostControllerInterface !!!");
+            }
+
+            memset(&preload_retry_cb, 0, sizeof(bt_preload_retry_cb_t));
+        }
+
+        void bte_main_enable()
+        {
+            APPL_TRACE_DEBUG("%s", __FUNCTION__);
+
+            /* Initialize BTE control block */
+            BTE_Init();                                                         // 初始化BTE控制块
+
+            lpm_enabled = FALSE;
+
+            GKI_create_task((TASKPTR)btu_task, BTU_TASK, BTE_BTU_TASK_STR,
+                    (UINT16 *) ((UINT8 *)bte_btu_stack + BTE_BTU_STACK_SIZE),
+                    sizeof(bte_btu_stack));
+
+            bte_hci_enable();                                                   // BTE hci使能
+
+            GKI_run();
+        }
+    }
+    ->  {
+            static void bte_hci_enable(void)
+            {
+                APPL_TRACE_DEBUG("%s", __FUNCTION__);
+
+                preload_start_wait_timer();
+
+                if (bt_hc_if)
+                {
+                    int result = bt_hc_if->init(&hc_callbacks, btif_local_bd_addr.address);
+                    APPL_TRACE_EVENT("libbt-hci init returns %d", result);
+
+                    assert(result == BT_HC_STATUS_SUCCESS);
+
+                    if (hci_logging_enabled == TRUE || hci_logging_config == TRUE)
+                        bt_hc_if->logging(BT_HC_LOGGING_ON, hci_logfile, hci_save_log);
+
+                #if (defined (BT_CLEAN_TURN_ON_DISABLED) && BT_CLEAN_TURN_ON_DISABLED == TRUE)
+                    APPL_TRACE_DEBUG("%s  Not Turninig Off the BT before Turninig ON", __FUNCTION__);
+
+                    /* Do not power off the chip before powering on  if BT_CLEAN_TURN_ON_DISABLED flag
+                       is defined and set to TRUE to avoid below mentioned issue.
+
+                       Wingray kernel driver maintains a combined  counter to keep track of
+                       BT-Wifi state. Invoking  set_power(BT_HC_CHIP_PWR_OFF) when the BT is already
+                       in OFF state causes this counter to be incorrectly decremented and results in undesired
+                       behavior of the chip.
+
+                       This is only a workaround and when the issue is fixed in the kernel this work around
+                       should be removed. */
+                #else
+                    /* toggle chip power to ensure we will reset chip in case
+                       a previous stack shutdown wasn't completed gracefully */
+                    bt_hc_if->set_power(BT_HC_CHIP_PWR_OFF);
+                #endif
+                    bt_hc_if->set_power(BT_HC_CHIP_PWR_ON);
+
+                    bt_hc_if->preload(NULL);
+                }
+            }
+        }
+-------------------------------------------------------------------------------------------------------->
+Btu_task.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\stack\btu)
+->  {
+        BTU_API UINT32 btu_task (UINT32 param) {
+            btu_init_core();
+
+            /* Initialize any optional stack components */
+            BTE_InitStack();
+
+        #if (defined(BTU_BTA_INCLUDED) && BTU_BTA_INCLUDED == TRUE)
+            bta_sys_init();
+        #endif
+
+            /* Wait for, and process, events */
+            for (;;) {
+                // ...
+            }
+        }
+    }
+    ->  {
+            Btu_init.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\stack\btu)
+            ->  {
+                    void btu_init_core(void)
+                    {
+                        /* Initialize the mandatory core stack components */
+                        btm_init();
+
+                        l2c_init();
+
+                        sdp_init();
+
+                    #if BLE_INCLUDED == TRUE
+                        gatt_init();
+                    #if (defined(SMP_INCLUDED) && SMP_INCLUDED == TRUE)
+                        SMP_Init();
+                    #endif
+                        btm_ble_init();
+                    #endif
+                    }
+                }
+        }
+---------------------------------------------------------------------------------------------------------->
+Bt_hci_bdroid.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
+->  {
+        static const bt_hc_interface_t bluetoothHCLibInterface = {
+            sizeof(bt_hc_interface_t),
+            init,
+            set_power,
+            lpm,
+            preload,
+            postload,
+            transmit_buf,
+            logging,
+            cleanup,
+            tx_hc_cmd,
+        };
+
+        /*******************************************************************************
+         **
+         ** Function        bt_hc_get_interface
+         **
+         ** Description     Caller calls this function to get API instance
+         **
+         ** Returns         API table
+         **
+         *******************************************************************************/
+        const bt_hc_interface_t *bt_hc_get_interface(void)
+        {
+            return &bluetoothHCLibInterface;
+        }
+
+        static int init(const bt_hc_callbacks_t* p_cb, unsigned char *local_bdaddr)
+        {
+            vendor_open(local_bdaddr);
+
+            p_hci_if = &hci_h4_func_table;
+            p_hci_if->init();
+`
+            // Set prio here and let hci worker thread inherit prio
+            // remove once new thread api (thread_set_priority() ?)
+            // can switch prio
+            raise_priority_a2dp(TASK_HIGH_HCI_WORKER);
+        }
+
+        /** Chip power control */
+        static void set_power(bt_hc_chip_power_state_t state)
+        {
+            int pwr_state;
+
+            BTHCDBG("set_power %d", state);
+
+            /* Calling vendor-specific part */
+            pwr_state = (state == BT_HC_CHIP_PWR_ON) ? BT_VND_PWR_ON : BT_VND_PWR_OFF;
+
+            vendor_send_command(BT_VND_OP_POWER_CTRL, &pwr_state);
+        }
+
+        /** Called prior to stack initialization */
+        static void preload(UNUSED_ATTR TRANSAC transac) {
+            thread_post(hc_cb.worker_thread, event_preload, NULL);
+        }
+        ->  {
+                static void event_preload(UNUSED_ATTR void *context) {
+                    userial_open(USERIAL_PORT_1);
+                    vendor_send_command(BT_VND_OP_FW_CFG, NULL);
+                }
+            }
+    }
+------------------------------------------------------------------------------------------------------->
+Vendor.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
+->  {
+        static const char *VENDOR_LIBRARY_NAME = "libbt-vendor.so";
+        static const char *VENDOR_LIBRARY_SYMBOL_NAME = "BLUETOOTH_VENDOR_LIB_INTERFACE";
+
+        static const bt_vendor_callbacks_t vendor_callbacks = {
+            sizeof(vendor_callbacks),
+            firmware_config_cb,
+            sco_config_cb,
+            low_power_mode_cb,
+            sco_audiostate_cb,
+            buffer_alloc,
+            buffer_free,
+            transmit_cb,
+            epilog_cb
+        };
+
+        bool vendor_open(const uint8_t *local_bdaddr) {
+            strcpy(vendor_so, VENDOR_LIBRARY_NAME);
+            ALOGD("%s load %s", __func__, vendor_so);
+
+            lib_handle = dlopen(vendor_so, RTLD_NOW);
+
+            vendor_interface = (bt_vendor_interface_t *)dlsym(lib_handle, VENDOR_LIBRARY_SYMBOL_NAME);
+            if (!vendor_interface) {
+                ALOGE("%s unable to find symbol %s in %s: %s", __func__, VENDOR_LIBRARY_SYMBOL_NAME, vendor_so, dlerror());
+                goto error;
+            }
+
+            int status = vendor_interface->init(&vendor_callbacks, (unsigned char *)local_bdaddr);
+            if (status) {
+                ALOGE("%s unable to initialize vendor library: %d", __func__, status);
+                goto error;
+            }
+
+            return true;
+        }       
+
+        int vendor_send_command(bt_vendor_opcode_t opcode, void *param) {
+            return vendor_interface->op(opcode, param);
+        }
+    }
+---------------------------------------------------------------------------------------------------------->
+Bt_vendor_brcm.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
+->  {
+        // Entry point of DLib
+        const bt_vendor_interface_t BLUETOOTH_VENDOR_LIB_INTERFACE = {
+            sizeof(bt_vendor_interface_t),
+            init,
+            op,
+            cleanup
+        };
+        
+        static int init(const bt_vendor_callbacks_t* p_cb, unsigned char *local_bdaddr)
+        {
+        #if (VENDOR_LIB_RUNTIME_TUNING_ENABLED == TRUE)
+            ALOGW("*****************************************************************");
+            ALOGW("*****************************************************************");
+            ALOGW("** Warning - BT Vendor Lib is loaded in debug tuning mode!");
+            ALOGW("**");
+            ALOGW("** If this is not intentional, rebuild libbt-vendor.so ");
+            ALOGW("** with VENDOR_LIB_RUNTIME_TUNING_ENABLED=FALSE and ");
+            ALOGW("** check if any run-time tuning parameters needed to be");
+            ALOGW("** carried to the build-time configuration accordingly.");
+            ALOGW("*****************************************************************");
+            ALOGW("*****************************************************************");
+        #endif
+
+            userial_vendor_init();
+            upio_init();
+
+            vnd_load_conf(VENDOR_LIB_CONF_FILE);                        // 默认是"/etc/bluetooth/bt_vendor.conf", 解析并执行相应函数
+
+            /* store reference to user callbacks */
+            bt_vendor_cbacks = (bt_vendor_callbacks_t *) p_cb;          // 保存回调
+
+            /* This is handed over from the stack */
+            memcpy(vnd_local_bd_addr, local_bdaddr, 6);
+
+            return 0;
+        }
+
+        static int op(bt_vendor_opcode_t opcode, void *param)
+        {
+            int retval = 0;
+
+            BTVNDDBG("op for %d", opcode);
+
+            switch(opcode)
+            {
+                case BT_VND_OP_POWER_CTRL:
+                    {
+                        int *state = (int *) param;
+                        if (*state == BT_VND_PWR_OFF)
+                            upio_set_bluetooth_power(UPIO_BT_POWER_OFF);
+                        else if (*state == BT_VND_PWR_ON)
+                        {
+                            upio_set_bluetooth_power(UPIO_BT_POWER_ON);
+                            BTVNDDBG("Delay for a while after BT power on");
+                            usleep(200000);
+
+                        }
+                    }
+                    break;
+
+                // Must call fwcfg_cb to notify the stack of the completion of vendor specific initialization once it has been done.
+                case BT_VND_OP_FW_CFG:
+                    {
+                        hw_config_start();
+                    }
+                    break;
+
+                case BT_VND_OP_USERIAL_OPEN:
+                    {
+                        int (*fd_array)[] = (int (*)[]) param;
+                        int fd, idx;
+                        fd = userial_vendor_open((tUSERIAL_CFG *) &userial_init_cfg);
+                        if (fd != -1)
+                        {
+                            for (idx=0; idx < CH_MAX; idx++)
+                                (*fd_array)[idx] = fd;
+
+                            retval = 1;
+                        }
+                        /* retval contains numbers of open fd of HCI channels */
+                    }
+                    break;
+            }
+
+            static const tUSERIAL_CFG userial_init_cfg =
+            {
+                (USERIAL_DATABITS_8 | USERIAL_PARITY_NONE | USERIAL_STOPBITS_1),
+                USERIAL_BAUD_115200
+            };
+
+            int userial_vendor_open(tUSERIAL_CFG *p_cfg)
+            {
+                uint32_t baud;
+                uint8_t data_bits;
+                uint16_t parity;
+                uint8_t stop_bits;
+
+                vnd_userial.fd = -1;
+
+                if (!userial_to_tcio_baud(p_cfg->baud, &baud))
+                {
+                    return -1;
+                }
+
+                if(p_cfg->fmt & USERIAL_DATABITS_8)
+                    data_bits = CS8;
+                else if(p_cfg->fmt & USERIAL_DATABITS_7)
+                    data_bits = CS7;
+                else if(p_cfg->fmt & USERIAL_DATABITS_6)
+                    data_bits = CS6;
+                else if(p_cfg->fmt & USERIAL_DATABITS_5)
+                    data_bits = CS5;
+                else
+                {
+                    ALOGE("userial vendor open: unsupported data bits");
+                    return -1;
+                }
+
+                if(p_cfg->fmt & USERIAL_PARITY_NONE)
+                    parity = 0;
+                else if(p_cfg->fmt & USERIAL_PARITY_EVEN)
+                    parity = PARENB;
+                else if(p_cfg->fmt & USERIAL_PARITY_ODD)
+                    parity = (PARENB | PARODD);
+                else
+                {
+                    ALOGE("userial vendor open: unsupported parity bit mode");
+                    return -1;
+                }
+
+                if(p_cfg->fmt & USERIAL_STOPBITS_1)
+                    stop_bits = 0;
+                else if(p_cfg->fmt & USERIAL_STOPBITS_2)
+                    stop_bits = CSTOPB;
+                else
+                {
+                    ALOGE("userial vendor open: unsupported stop bits");
+                    return -1;
+                }
+
+                ALOGI("userial vendor open: opening %s", vnd_userial.port_name);
+
+                if ((vnd_userial.fd = open(vnd_userial.port_name, O_RDWR)) == -1)
+                {
+                    ALOGE("userial vendor open: unable to open %s", vnd_userial.port_name);
+                    return -1;
+                }
+
+                tcflush(vnd_userial.fd, TCIOFLUSH);
+
+                tcgetattr(vnd_userial.fd, &vnd_userial.termios);
+                cfmakeraw(&vnd_userial.termios);
+                vnd_userial.termios.c_cflag |= (CRTSCTS | stop_bits);
+                tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+                tcflush(vnd_userial.fd, TCIOFLUSH);
+
+                tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+                tcflush(vnd_userial.fd, TCIOFLUSH);
+                tcflush(vnd_userial.fd, TCIOFLUSH);
+
+                /* set input/output baudrate */
+                cfsetospeed(&vnd_userial.termios, baud);
+                cfsetispeed(&vnd_userial.termios, baud);
+                tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+
+            #if (BT_WAKE_VIA_USERIAL_IOCTL==TRUE)
+                userial_ioctl_init_bt_wake(vnd_userial.fd);
+            #endif
+
+                ALOGI("device fd = %d open", vnd_userial.fd);
+
+                return vnd_userial.fd;
+            }
+        }
+    }
+-------------------------------------------------------------------------------------------------->
+Userial_vendor.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
+->  {
+        void userial_vendor_init(void)
+        {
+            vnd_userial.fd = -1;
+            snprintf(vnd_userial.port_name, VND_PORT_NAME_MAXLEN, "%s", \
+                    BLUETOOTH_UART_DEVICE_PORT);                            // 默认是"/dev/ttyO1", 这个会在外面定义
+        }
+
+        int userial_set_port(char *p_conf_name, char *p_conf_value, int param)
+        {
+            strcpy(vnd_userial.port_name, p_conf_value);
+
+            return 0;
+        }
+
+        int hw_set_patch_file_path(char *p_conf_name, char *p_conf_value, int param)
+        {
+
+            strcpy(fw_patchfile_path, p_conf_value);
+
+            return 0;
+        }
+    }
+----------------------------------------------------------------------------------------------------->
+Conf.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
+->  {
+        static const conf_entry_t conf_table[] = {
+            {"UartPort", userial_set_port, 0},
+            {"FwPatchFilePath", hw_set_patch_file_path, 0},
+            {"FwPatchFileName", hw_set_patch_file_name, 0},
+        #if (VENDOR_LIB_RUNTIME_TUNING_ENABLED == TRUE)
+            {"FwPatchSettlementDelay", hw_set_patch_settlement_delay, 0},
+        #endif
+            {"AP6476_PCM2_Setup", get_pcm2_settings, 0 },
+            {(const char *) NULL, NULL, 0}
+        };
+
+        void vnd_load_conf(const char *p_path)
+        {
+            if ((p_file = fopen(p_path, "r")) != NULL)
+            {
+                p_entry = (conf_entry_t *)conf_table;
+
+                while (p_entry->conf_entry != NULL)
+                {
+                    // 从bt_vendor.conf中读取配置和conf_table中匹配的name, 并执行对应的函数
+                    if (strcmp(p_entry->conf_entry, (const char *)p_name) == 0)     
+                    {
+                        p_entry->p_action(p_name, p_value, p_entry->param);
+                        break;
+                    }
+
+                    p_entry++;
+                }
+            }
+        }
+
+        // bt_vendor.conf实例：
+        //    # UART device port where Bluetooth controller is attached
+        //        UartPort = /dev/ttyS0
+
+        //    # Firmware patch file location
+        //        FwPatchFilePath = /vendor/firmware/
+    }
+
+--------------------------------------------------------------------------------------------------------->
+Upio.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
+->  {
+        // 可以看到这个函数  其实就是做了echo 1 > /sys/class/rfkill/rfkill%d/state的动作
+        int upio_set_bluetooth_power(int on)
+        {
+            int sz;
+            int fd = -1;
+            int ret = -1;
+            char buffer = '0';
+
+            switch(on)
+            {
+                case UPIO_BT_POWER_OFF:
+                    buffer = '0';
+                    break;
+
+                case UPIO_BT_POWER_ON:
+                    buffer = '1';
+                    break;
+            }
+
+            if (is_emulator_context())
+            {
+                /* if new value is same as current, return -1 */
+                if (bt_emul_enable == on)
+                    return ret;
+
+                UPIODBG("set_bluetooth_power [emul] %d", on);
+
+                bt_emul_enable = on;
+                return 0;
+            }
+
+            /* check if we have rfkill interface */
+            if (is_rfkill_disabled())
+                return 0;
+
+            if (rfkill_id == -1)
+            {
+                if (init_rfkill())
+                    return ret;
+            }
+
+            // 找到/sys/class/rfkill/rfkill%d/type是bluebooth的， 然后打开"/sys/class/rfkill/rfkill%d/state"
+            fd = open(rfkill_state_path, O_WRONLY);                             
+
+            if (fd < 0)
+            {
+                ALOGE("set_bluetooth_power : open(%s) for write failed: %s (%d)",
+                        rfkill_state_path, strerror(errno), errno);
+                return ret;
+            }
+
+            sz = write(fd, &buffer, 1);
+
+            if (sz < 0) {
+                ALOGE("set_bluetooth_power : write(%s) failed: %s (%d)",
+                        rfkill_state_path, strerror(errno),errno);
+            }
+            else {
+                ret = 0;
+                ALOGD("Delay 500ms for bluetooth power up");
+                usleep(500*1000);
+            }
+
+            if (fd >= 0)
+                close(fd);
+
+            return ret;
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+Userial.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
+->  {
+        bool userial_open(userial_port_t port) {       
+            int fd_array[CH_MAX];
+            for (int i = 0; i < CH_MAX; i++)
+                fd_array[i] = -1;
+
+            int num_ports = vendor_send_command(BT_VND_OP_USERIAL_OPEN, &fd_array);
+
+            userial_cb.fd = fd_array[0];
+            userial_cb.port = port;
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------->
+Bluetooth.h (z:\home\ballack\prj\rk3288\hardware\libhardware\include\hardware)
+->  {
+        typedef struct {
+            /** set to sizeof(bt_callbacks_t) */
+            size_t size;
+            adapter_state_changed_callback adapter_state_changed_cb;
+            adapter_properties_callback adapter_properties_cb;
+            remote_device_properties_callback remote_device_properties_cb;
+            device_found_callback device_found_cb;
+            discovery_state_changed_callback discovery_state_changed_cb;
+            pin_request_callback pin_request_cb;
+            ssp_request_callback ssp_request_cb;
+            bond_state_changed_callback bond_state_changed_cb;
+            acl_state_changed_callback acl_state_changed_cb;
+            callback_thread_event thread_evt_cb;
+            dut_mode_recv_callback dut_mode_recv_cb;
+            le_test_mode_callback le_test_mode_cb;
+            energy_info_callback energy_info_cb;
+        } bt_callbacks_t;
+    }
+-------------------------------------------------------------------------------------------------------------------->
+Btif_core.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
+->  {
+        void btif_enable_bluetooth_evt(tBTA_STATUS status, BD_ADDR local_bd)
+        {
+            HAL_CBACK(bt_hal_cbacks, adapter_state_changed_cb, BT_STATE_ON);    // 即调用adapter_state_change_callback
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------->
+com_android_bluetooth_btservice_AdapterService.cpp (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\jni)
+->  {
+        static void classInitNative(JNIEnv* env, jclass clazz) {
+            jclass jniCallbackClass =
+                env->FindClass("com/android/bluetooth/btservice/JniCallbacks");
+            sJniCallbacksField = env->GetFieldID(clazz, "mJniCallbacks",
+                    "Lcom/android/bluetooth/btservice/JniCallbacks;");
+
+            method_stateChangeCallback = env->GetMethodID(jniCallbackClass, "stateChangeCallback", "(I)V");
+        }
+
+        static void adapter_state_change_callback(bt_state_t status) {
+            if (!checkCallbackThread()) {
+                ALOGE("Callback: '%s' is not called on the correct thread", __FUNCTION__);
+                return;
+            }
+            ALOGV("%s: Status is: %d", __FUNCTION__, status);
+
+            callbackEnv->CallVoidMethod(sJniCallbacksObj, method_stateChangeCallback, (jint)status);
+
+            checkAndClearExceptionFromCallback(callbackEnv, __FUNCTION__);
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------->
+JniCallbacks.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
+->  {
+        void stateChangeCallback(int status) {
+            mAdapterStateMachine.stateChangeCallback(status);
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------->
+AdapterState.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
+->  {
+        void stateChangeCallback(int status) {
+            if (status == AbstractionLayer.BT_STATE_OFF) {
+                sendMessage(DISABLED);
+            } else if (status == AbstractionLayer.BT_STATE_ON) {
+                // We should have got the property change for adapter and remote devices.
+                sendMessage(ENABLED_READY);
+            } else {
+                errorLog("Incorrect status in stateChangeCallback");
+            }
+        }
+    }
+
+private class PendingCommandState extends State {
+    public boolean processMessage(Message msg) {
+        switch (msg.what) {
+            case ENABLED_READY:
+                removeMessages(ENABLE_TIMEOUT);
+                adapterProperties.onBluetoothReady();
+                mPendingCommandState.setTurningOn(false);
+                transitionTo(mOnState);
+                notifyAdapterStateChange(BluetoothAdapter.STATE_ON);
+                break;
+            }
+        }
+    }
+}
+->  {
+        private class OnState extends State {
+            @Override
+                public void enter() {
+                    infoLog("Entering On State");
+                    AdapterService adapterService = mAdapterService;
+                    adapterService.autoConnect();
+                }
+
+            @Override
+                public boolean processMessage(Message msg) {
+                    AdapterProperties adapterProperties = mAdapterProperties;
+                    switch(msg.what) {
+                    
+                    }
+                }
+            }
+    }
+-------------------------------------------------------------------------------------------------------------------->
+AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth_bplus\src\com\android\bluetooth\btservice)
+->  {
+        // 打开蓝牙，如果之前有连接过蓝牙设备，则自动连接！
+        public void autoConnect(){
+            if (getState() != BluetoothAdapter.STATE_ON){
+                errorLog("BT is not ON. Exiting autoConnect");
+                return;
+            }
+            if (isQuietModeEnabled() == false) {
+                if (DBG) debugLog( "Initiate auto connection on BT on...");
+                autoConnectHeadset();
+                autoConnectA2dp();
+            }
+            else {
+                if (DBG) debugLog( "BT is in Quiet mode. Not initiating  auto connections");
+            }
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------->
+BluetoothSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+->  {
+        public void onBluetoothStateChanged(int bluetoothState) {
+            super.onBluetoothStateChanged(bluetoothState);
+            updateContent(bluetoothState);
+        }
+
+        private void updateContent(int bluetoothState) {
+            final PreferenceScreen preferenceScreen = getPreferenceScreen();
+            int messageId = 0;
+
+            switch (bluetoothState) {
+                case BluetoothAdapter.STATE_ON:
+                    if (!mInitialScanStarted) {
+                        startScanning();
+                    }
+            }
+        }
+
+        private void startScanning() {
+            mLocalAdapter.startScanning(true);
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------->
+LocalBluetoothAdapter.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+->  {
+        void startScanning(boolean force) {
+            // Only start if we're not already scanning
+            if (!mAdapter.isDiscovering()) {
+                if (!force) {
+                    // Don't scan more than frequently than SCAN_EXPIRATION_MS,
+                    // unless forced
+                    if (mLastScan + SCAN_EXPIRATION_MS > System.currentTimeMillis()) {
+                        return;
+                    }
+
+                    // If we are playing music, don't scan unless forced.
+                    A2dpProfile a2dp = mProfileManager.getA2dpProfile();
+                    if (a2dp != null && a2dp.isA2dpPlaying()) {
+                        return;
+                    }
+                }
+
+                if (mAdapter.startDiscovery()) {
+                    mLastScan = System.currentTimeMillis();
+                }
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+BluetoothAdapter.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\bluetooth)
+->  {
+        public boolean startDiscovery() {
+            return mService.startDiscovery();
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
+->  {
+        public boolean startDiscovery() {
+            AdapterService service = getService();
+            return service.startDiscovery();
+        }
+        ->  {
+                boolean startDiscovery() {
+                    enforceCallingOrSelfPermission(BLUETOOTH_ADMIN_PERM,
+                            "Need BLUETOOTH ADMIN permission");
+
+                    return startDiscoveryNative();
+                }
+            }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+com_android_bluetooth_btservice_AdapterService.cpp (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\jni)
+->  {
+        static JNINativeMethod sMethods[] = {
+            {"startDiscoveryNative", "()Z", (void*) startDiscoveryNative},
+        }
+
+        static jboolean startDiscoveryNative(JNIEnv* env, jobject obj) {
+            int ret = sBluetoothInterface->start_discovery();
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+Bluetooth.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
+->  {
+        static int start_discovery(void)
+        {
+            /* sanity check */
+            if (interface_ready() == FALSE)
+                return BT_STATUS_NOT_READY;
+
+            return btif_dm_start_discovery();
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+Btif_dm.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
+->  {
+        bt_status_t btif_dm_start_discovery(void)
+        {
+            /* find nearby devices */
+            BTA_DmSearch(&inq_params, services, bte_search_devices_evt);
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+Hardware.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
+->  {
+        void hw_config_start(void) {
+            p_buf->event = MSG_STACK_TO_HC_HCI_CMD;
+            p_buf->offset = 0;
+            p_buf->layer_specific = 0;
+            p_buf->len = HCI_CMD_PREAMBLE_SIZE;
+
+            p = (uint8_t *) (p_buf + 1);
+            UINT16_TO_STREAM(p, HCI_RESET);
+            *p = 0; /* parameter length */
+
+            hw_cfg_cb.state = HW_CFG_START;
+
+            bt_vendor_cbacks->xmit_cb(HCI_RESET, p_buf, hw_config_cback);
+        }
+    }
+----------------------------------------------------------------------------------------------------->
+vnd_rk30sdk.txt (/home/ballack/prj/rk3288/device/common/bluetooth/libbt/include)
+->  {
+        BLUETOOTH_UART_DEVICE_PORT = "/dev/ttyS0"
+        FW_PATCHFILE_LOCATION = "/vendor/firmware/"
+        UART_TARGET_BAUD_RATE = 1500000
+        LPM_IDLE_TIMEOUT_MULTIPLE = 5
+        BTVND_DBG = FALSE
+        BTHW_DBG = TRUE
+        VNDUSERIAL_DBG = FALSE
+        UPIO_DBG = FALSE
+        BT_WAKE_VIA_PROC = TRUE
+        SCO_PCM_ROUTING = 0
+        SCO_PCM_IF_CLOCK_RATE = 1
+        SCO_PCM_IF_FRAME_TYPE = 0
+        SCO_PCM_IF_SYNC_MODE = 1
+        SCO_PCM_IF_CLOCK_MODE = 1
+        PCM_DATA_FMT_SHIFT_MODE = 0
+        PCM_DATA_FMT_FILL_BITS = 0
+        PCM_DATA_FMT_FILL_METHOD = 0
+        PCM_DATA_FMT_FILL_NUM = 0
+        PCM_DATA_FMT_JUSTIFY_MODE = 0
+    }
+

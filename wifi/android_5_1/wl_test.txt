@@ -1,0 +1,20 @@
+WIFI--测试--03
+cd /ff && ./wl down && ./wl sup_wpa 1 && ./wl infra 1 && ./wl wsec 4 && ./wl wpa_auth 0x80 && ./wl set_pmk "112233lfw"  && ./wl up  && ./wl ssid "oct_lin"  && dhcpcd wlan0
+cd /ff && ./wl tcpka_conn_add  B0:D5:9D:47:A9:6D  172.27.40.67 120.55.106.28 1527  60001  60502  0x4d93f728  0  128  416959  388558  0  80 {\"clientType\":\"device\",\"msg\":{\"id\":\"device::B0F1EC07680F\",\"command\":\"iconnect\"}}  
+cd /ff && ./wl tcpka_conn_enable 1 1 60 2 2
+#cd /ff && ./wl wowl_pattern add 54 0xff00 0x0000983b16f8f39c && ./wl wowl 0x20016 && ./wl wowl_activate 1
+cd /ff && ./wl wowl_pattern add 54 0xff00 0x0000983b16f8f39c && ./wl wowl 0x00 && ./wl wowl_activate 1
+echo 0 >   /sys/class/gpio/gpio113/value 
+
+
+./wl hostsleep 1            #      启动的时候需要反向  ./wl hostsleep 0  
+./wl PM 1
+./wl bcn_li_dtim 5 
+
+./wl hostsleep 1   
+./wl PM 1
+./wl bcn_li_dtim 3 
+
+echo 113 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio113/direction
+echo 0 >   /sys/class/gpio/gpio113/value

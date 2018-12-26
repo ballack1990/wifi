@@ -1,0 +1,251 @@
+SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)
+->  startOtherServices
+    ->  networkManagement = NetworkManagementService.create(context);
+------------------------------------------------------------------------------------------------------------------->
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        private static final String NETD_SOCKET_NAME = "netd";
+
+        public static NetworkManagementService create(Context context) throws InterruptedException {
+            return create(context, NETD_SOCKET_NAME);
+        }
+    }
+    ->  {
+            static NetworkManagementService create(Context context, String socket) throws InterruptedException {
+                NetworkManagementService service = new NetworkManagementService(context, socket);
+                service.mThread.start();            // 下面会看到，这里启动的mThread线程是NativeDaemonConnector线程
+            }
+        }
+        ->  {
+                private NetworkManagementService(Context context, String socket) {
+                    mConnector = new NativeDaemonConnector(
+                            new NetdCallbackReceiver(), socket, 10, NETD_TAG, 160, wl,
+                            FgThread.get().getLooper());
+                    mThread = new Thread(mConnector, NETD_TAG);     // 创建NativeDaemonConnector线程
+                }
+            }
+
+NetworkManagementService服务主要是通过NativeDaemonConnector与底层的netd服务通信的！！！
+接下来看netd服务是怎么启动的：
+从init.rc中可以看到如下定义：
+service netd /system/bin/netd
+    class main
+    socket netd stream 0660 root system         // init.c中的main函数在解析init.rc的时候会创建这个socket
+    socket dnsproxyd stream 0660 root inet
+    socket mdns stream 0660 root system
+    socket fwmarkd stream 0660 root inet
+可见netd服务是开机就启动的！！
+来看main函数：
+Main.cpp (z:\home\ballack\prj\rk3288\system\netd\server)
+->  {
+        int main() {
+            CommandListener *cl;
+            cl = new CommandListener();
+            cl->startListener();                    // 下面会分析到，这个其实调用的是父类SocketListener的startListener函数
+        }
+    } 
+---------------------------------------------------------->
+CommandListener.cpp (z:\home\ballack\prj\rk3288\system\netd\server)	
+->  {
+        CommandListener::CommandListener() :
+                 FrameworkListener("netd", true) {                      // 这里指定了socket name : netd！！！
+            registerCmd(new SoftapCmd());                               // 这里会注册一个softap的Cmd类型
+            if (!sSoftapCtrl)
+                sSoftapCtrl = new SoftapController();                   // softap中使用的控制类
+
+            registerCmd(new TetherCmd());
+            if (!sTetherCtrl)
+                sTetherCtrl = new TetherController();
+        }
+    }
+--------------------------------------------------------------------->
+FrameworkListener.cpp (z:\home\ballack\prj\rk3288\system\core\libsysutils\src)
+->  {
+        FrameworkListener::FrameworkListener(const char *socketName) :
+                            SocketListener(socketName, true, false) {   // 这里继承了父类SocketListener
+            init(socketName, false);
+        }
+    }
+-------------------------------------------------------------------------------->
+SocketListener.cpp (z:\home\ballack\prj\rk3288\system\core\libsysutils\src)
+->  {
+        SocketListener::SocketListener(const char *socketName, bool listen, bool useCmdNum) {
+            init(socketName, -1, listen, useCmdNum);
+        }
+
+        int SocketListener::startListener(int backlog) {
+            mSock = android_get_control_socket(mSocketName);    // 获取mSocketName指定的socket对应的文件描述符
+            if (mListen && listen(mSock, backlog) < 0) {        // 监听socket, 注意！！这里netd这个socket的bind是在创建socket的时候做的！！
+            }
+
+            if (pthread_create(&mThread, NULL, SocketListener::threadStart, this)) {    // 创建一个线程调用accept等待客户端的连接
+                SLOGE("pthread_create (%s)", strerror(errno));
+                return -1;
+            }
+        }
+    }
+以上就是创建了一个充当监听netd socket的服务器！！！
+------------------------------------------------------------------------------------------------------------------>
+接下来看在CommandListener类中创建的SoftapCmd类：
+CommandListener.cpp (z:\home\ballack\prj\rk3288\system\netd\server)	
+->  {
+        CommandListener::SoftapCmd::SoftapCmd() :
+                 NetdCommand("softap") {
+            // 空函数
+        }
+    }
+可以看到softapCmd类是继承于NetdCommand的，而且传参是softap， 这个参数就是命令类型，后面通过mConnector调用函数时会用到！！！
+------------------------------------------------------------------------------------------------------------------------------->
+
+下面该看看Frameworks层中netd客户端的实现：
+
+回到NetworkManagementService类的构造函数：
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        mConnector = new NativeDaemonConnector(
+                new NetdCallbackReceiver(), socket, 10, NETD_TAG, 160, wl,          // 这里的socket即为netd
+                FgThread.get().getLooper());
+        mThread = new Thread(mConnector, NETD_TAG);                 // 这里会调用NativeDaemonConnector类的run方法，因为其继承了Runnable方法
+    }
+上面创建mConnector的时候，同时也执行了new NetdCallbackReceiver()，接着看NativeDaemonConnector和NetdCallbackReceiver类的关系：
+------------------------------------------------------------------------------------------------------------------------------->
+看看NativeDaemonConnector类的构造函数：
+NativeDaemonConnector.java (z:\home\hwlxhy\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        NativeDaemonConnector(INativeDaemonConnectorCallbacks callbacks, String socket,
+                int responseQueueSize, String logTag, int maxLogSize, PowerManager.WakeLock wl) {
+            this(callbacks, socket, responseQueueSize, logTag, maxLogSize, wl,
+                    FgThread.get().getLooper());
+        }
+    }
+    ->  {
+            NativeDaemonConnector(INativeDaemonConnectorCallbacks callbacks, String socket,
+                    int responseQueueSize, String logTag, int maxLogSize, PowerManager.WakeLock wl,
+                    Looper looper) {
+                mCallbacks = callbacks;                                 // 这里的mCallbacks就是NetdCallbackReceiver类的实例
+                mSocket = socket;                                       // 保存socket的名字，即netd， 下面会用到！！
+            }
+        }
+->  {
+        public void run() {                                             // 上面调用start启动NativeDaemonConnector线程的时候调用run方法
+            mCallbackHandler = new Handler(mLooper, this);              // 这里注册了一个和本类相关的Handler, 后续会用到！！
+            listenToSocket();
+        }
+        ->  {
+                private void listenToSocket() throws IOException {
+                    socket = new LocalSocket();                                             // 创建socket
+                    LocalSocketAddress address = determineSocketAddress();
+
+                    socket.connect(address);                                                // connect, 这样就可以接收和发送消息给netd
+
+                    if (event.isClassUnsolicited()) {
+                        mCallbackHandler.sendMessage(mCallbackHandler.obtainMessage(
+                                        event.getCode(), event.getRawEvent()));             // 这里就用到了上面说的Handler
+                    } else {
+                        mResponseQueue.add(event.getCmdNumber(), event);                    // 后面再分析！！
+                    }
+                }
+            }
+            ->  {
+                    private LocalSocketAddress determineSocketAddress() {
+                        return new LocalSocketAddress(mSocket, LocalSocketAddress.Namespace.RESERVED);  // 这里就用到了mSocket
+                    }
+                }
+    }
+->  {
+        public boolean handleMessage(Message msg) {                                         // 这里就处理上面的sendMessage消息！！
+            String event = (String) msg.obj;
+            
+            // 这里调用的就是NetdCallbackReceiver的onEvent函数， 下面会提到！！！
+            if (!mCallbacks.onEvent(msg.what, event, NativeDaemonEvent.unescapeArgs(event))) {  // 这里就是调用的NetdCallbackReceiver类的onEvent
+                log(String.format("Unhandled event '%s'", event));
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+Main.cpp (z:\home\ballack\prj\rk3288\system\netd\server)
+->  {
+        int main() {
+            nm = NetlinkManager::Instance();                // 这里实例化了一个NetlinkManager对象
+            nm->setBroadcaster((SocketListener *) cl);      // 将cl设置成nm（NetlinkManager）的消息发送者（mBroadcaster）
+            nm->start();                                    // 这里调用start函数启动
+        }
+    } 
+------------------------------------------------------------------------------>
+NetlinkManager.cpp (system\netd\server)	
+->  {
+        int NetlinkManager::start() {
+            调用setupSocket方法;
+        }
+    }
+    ->  {
+            NetlinkHandler *NetlinkManager::setupSocket(int *sock, int netlinkFamily,
+                    int groups, int format) {
+                NetlinkHandler *handler = new NetlinkHandler(this, *sock, format);      // 这里实例化NetlinkHandler对象
+                handler->start();                                                       // 这里调用start函数启动
+            }
+        }
+--------------------------------------------------------------------------------------->
+NetlinkHandler.cpp (system\netd\server)	
+->  {
+        NetlinkHandler::NetlinkHandler(NetlinkManager *nm, int listenerSocket, int format) :
+                NetlinkListener(listenerSocket, format) {                               // 这里继承了NetlinkListener类
+            mNm = nm;
+        }
+
+        int NetlinkHandler::start() {
+            return this->startListener();           // 下面会提到，这里实际上是调用父类SocketListener中的startListener方法
+        }
+
+        void NetlinkHandler::onEvent(NetlinkEvent *evt) {
+            
+        }
+    }
+------------------------------------------------------------------------------------------------>
+NetlinkListener.cpp (system\core\libsysutils\src)
+->  {
+        NetlinkListener::NetlinkListener(int socket) :
+                SocketListener(socket, false) {                     // 这里可以看到NetlinkListener也是继承于SocketListener类
+            mFormat = NETLINK_FORMAT_ASCII;
+        }
+    }
+------------------------------------------------------------------------------------>
+上面没展开的NetdCallbackReceiver类，这里继续讲：
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        private class NetdCallbackReceiver implements INativeDaemonConnectorCallbacks {
+            public boolean onEvent(int code, String raw, String[] cooked) {
+                switch (code) {
+                    case NetdResponseCode.InterfaceChange:
+                        /*
+                         * a network interface change occured
+                         * Format: "NNN Iface added <name>"
+                         *         "NNN Iface removed <name>"
+                         *         "NNN Iface changed <name> <up/down>"
+                         *         "NNN Iface linkstatus <name> <up/down>"
+                         */
+                        if (cooked.length < 4 || !cooked[1].equals("Iface")) {
+                            throw new IllegalStateException(errorMessage);
+                        }
+                        if (cooked[2].equals("added")) {                // 可以看到，这里监听了added，removed，changed，linkstate的事件
+                            notifyInterfaceAdded(cooked[3]);
+                            return true;
+                        } else if (cooked[2].equals("removed")) {
+                            notifyInterfaceRemoved(cooked[3]);
+                            return true;
+                        } else if (cooked[2].equals("changed") && cooked.length == 5) {
+                            notifyInterfaceStatusChanged(cooked[3], cooked[4].equals("up"));
+                            return true;
+                        } else if (cooked[2].equals("linkstate") && cooked.length == 5) {
+                            notifyInterfaceLinkStateChanged(cooked[3], cooked[4].equals("up"));
+                            return true;
+                        }
+                        throw new IllegalStateException(errorMessage);
+                        // break;
+                }
+            }
+        }
+    }
+
+
+

@@ -1,0 +1,8 @@
+interface=wlan0
+driver=nl80211
+ctrl_interface=/data/misc/wifi/hostapd
+ssid=AndroidAP
+channel=6
+ieee80211n=1
+hw_mode=g
+ignore_broadcast_ssid=0

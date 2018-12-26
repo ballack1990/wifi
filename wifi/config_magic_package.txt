@@ -1,0 +1,6 @@
+
+dhd_master_mode=1
+pkt_filter_del=100, 102, 103, 104, 105
+pkt_filter_add=131 0 0 12 0xFFFF 0x886C, 132 0 0 12 0xFFFF 0x888E
+magic_pkt_filter_add=141 0 1 12
+

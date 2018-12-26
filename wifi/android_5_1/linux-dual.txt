@@ -1,0 +1,160 @@
+wl down
+wl band b
+wl mpc 0
+wl nrate -r 11
+wl rateset 11b
+wl country ALL
+wl up
+wl channel 1
+wl scansuppress 1
+wl txpwr1 -1
+wl pkteng_start 00:11:22:33:44:55 tx 100 1000 0 
+wl phy_forcecal 1
+
+
+
+
+wl down 
+wl band b 
+wl mpc 0 
+wl nrate -r 54 
+wl rateset 54b 
+wl country ALL
+wl txchain 2
+wl rxchain 2 
+wl up 
+wl channel 1 
+wl scansuppress 1 
+wl txpwr1 -1 
+wl pkteng_start 00:11:22:33:44:55 tx 100 1000 0 
+wl phy_forcecal 1
+
+
+
+
+data/rftesttool
+./open_wifi.sh
+
+
+
+wl down 
+wl band b 
+wl mpc 0 
+wl nrate -m 7 
+wl rateset 54b 
+wl country ALL
+wl up 
+wl channel 1 
+wl scansuppress 1 
+wl txpwr1 -1
+wl phy_forcecal 1
+wl pkteng_start 00:11:22:33:44:55 tx 100 1000 0 
+
+
+
+
+
+
+
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl up
+wl 5g_rate -v 7 -s 1 -b 20
+wl chanspec 34/20
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl phy_txpwrctrl 1
+wl txpwr1 -1
+wl pkteng_start 00:90:4c:14:43:19 tx 100 1000 0
+
+
+
+RX
+
+
+
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl channel 4
+wl txchain 2
+wl rxchain 2
+wl bi 65535
+wl up
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_forcecal 1
+wl counters
+
+
+
+
+
+
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl scansuppress 1
+wl channel 4
+wl bi 65535
+wl up
+wl counters
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_txbw -1
+wl nrate -m 0
+wl txchain 2
+wl rxchain 2
+wl up
+wl nrate -r 54
+wl channel 34
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+
+
+SingleTone CMD（载波模式）
+wl down
+wl up
+wl band b
+wl out
+wl fqacurcy 1(1代表channel 1)
+
+
+

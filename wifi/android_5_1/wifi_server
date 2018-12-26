@@ -1,0 +1,47 @@
+SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)	
+->  {
+        private static final String WIFI_SERVICE_CLASS =
+            "com.android.server.wifi.WifiService";
+
+        mSystemServiceManager.startService(WIFI_SERVICE_CLASS);
+    }
+----------------------------------------------------------------->
+WifiService.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public WifiService(Context context) {
+            super(context);
+            mImpl = new WifiServiceImpl(context);
+        }
+    }
+--------------------------------------------------->
+WifiServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public WifiServiceImpl(Context context) {
+            mWifiStateMachine = new WifiStateMachine(mContext, mInterfaceName, mTrafficPoller);
+            mWifiController = new WifiController(mContext, this, wifiThread.getLooper()); 
+        }
+    }
+------------------------------------------------------------------------------------------------->
+WifiController.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        WifiController(Context context, WifiServiceImpl service, Looper looper) {
+            addState(mDefaultState);
+                addState(mApStaDisabledState, mDefaultState);
+                addState(mStaEnabledState, mDefaultState);
+                    addState(mDeviceActiveState, mStaEnabledState);
+                    addState(mDeviceInactiveState, mStaEnabledState);
+                        addState(mScanOnlyLockHeldState, mDeviceInactiveState);
+                        addState(mFullLockHeldState, mDeviceInactiveState);
+                        addState(mFullHighPerfLockHeldState, mDeviceInactiveState);
+                        addState(mNoLockHeldState, mDeviceInactiveState);
+                addState(mStaDisabledWithScanState, mDefaultState);
+                addState(mApEnabledState, mDefaultState);
+                addState(mEcmState, mDefaultState);
+
+            if (isScanningAlwaysAvailable) {
+                setInitialState(mStaDisabledWithScanState);
+            } else {
+                setInitialState(mApStaDisabledState);
+            }
+        }
+    }

@@ -1,0 +1,19 @@
+start bcm_supplicant/p2p_supplicant
+
+p2p_find
+ 
+go:
+p2p_connect  mac_addr  pbc  go_intent=15
+
+
+gc:
+p2p_connect  mac_addr  pbc  go_intent=0
+
+
+如果客户要做正常wifi对wifi直连应该按如下命令操作
+wpa_cli p2p_find
+wpa_cli p2p_peer 6a:df:dd:a8:79:e8
+wpa_cli p2p_connect 6a:df:dd:a8:79:e8 pbc
+
+如果客户要用AP6255启p2p GO给对方wifi连接应按如下命令操作
+wpa_cli p2p_group_add persistent
