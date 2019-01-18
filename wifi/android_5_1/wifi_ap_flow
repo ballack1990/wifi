@@ -462,10 +462,10 @@ class SoftApStartingState extends State {
                                 if (ifcg != null) {
                                     /* IP/netmask: 192.168.43.1/255.255.255.0 */
                                     ifcg.setLinkAddress(new LinkAddress(
-                                                NetworkUtils.numericToInetAddress("192.168.43.1"), 24));
-                                    ifcg.setInterfaceUp();
+                                                NetworkUtils.numericToInetAddress("192.168.43.1"), 24));  // 这里就是设置ip网段和子网掩码！！！
+                                    ifcg.setInterfaceUp();                              // up ????
 
-                                    mNwService.setInterfaceConfig(intf, ifcg);
+                                    mNwService.setInterfaceConfig(intf, ifcg);          // ?????
                                 }
                             } catch (Exception e) {
                                 loge("Error configuring interface " + intf + ", :" + e);
@@ -514,6 +514,10 @@ Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\co
         public int tether(String iface) {
             if (DBG) Log.d(TAG, "Tethering " + iface);
             TetherInterfaceSM sm = null;
+            synchronized (mPublicSync) {
+                sm = mIfaces.get(iface);
+            }
+
             sm.sendMessage(TetherInterfaceSM.CMD_TETHER_REQUESTED);
         }
     }
@@ -540,21 +544,70 @@ Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\co
                                         TetherInterfaceSM.this);
                                 transitionTo(mStartingState);
                                 break;
+                            case CMD_INTERFACE_DOWN:
+                                transitionTo(mUnavailableState);
+                                break;
+                            default:
+                                retValue = false;
+                                break;
                         }
                         return retValue;
                     }
             }
         }
-        ->  {
+--------------------------------------------------------------------------------------------------------------------
+TetherMasterSM如何启动的？
+
+SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)
+->  startOtherServices
+    ->  {
+            try {
+                Slog.i(TAG, "Connectivity Service");
+                connectivity = new ConnectivityService(
+                        context, networkManagement, networkStats, networkPolicy);
+                ServiceManager.addService(Context.CONNECTIVITY_SERVICE, connectivity);
+                networkStats.bindConnectivityManager(connectivity);
+                networkPolicy.bindConnectivityManager(connectivity);
+            } catch (Throwable e) {
+                reportWtf("starting Connectivity Service", e);
+            }
+        }
+--------------------------------------------------------------------------------------------------------------->
+ConnectivityService.java (z:\home\hwlxhy\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public class ConnectivityService extends IConnectivityManager.Stub
+                implements PendingIntent.OnFinished {
+            public ConnectivityService(Context context, INetworkManagementService netManager,
+                    INetworkStatsService statsService, INetworkPolicyManager policyManager) {
+                mTethering = new Tethering(mContext, mNetd, statsService, mHandler.getLooper());
+            }
+        }
+    }
+-------------------------------------------------------------------------------------------------->
+Tethering.java (z:\home\hwlxhy\prj\rk3288\frameworks\base\services\core\java\com\android\server\connectivity)
+->  {
+        public Tethering(Context context, INetworkManagementService nmService,
+                INetworkStatsService statsService, Looper looper) {
+            // make our own thread so we don't anr the system
+            mLooper = IoThread.get().getLooper();
+            mTetherMasterSM = new TetherMasterSM("TetherMaster", mLooper);
+            mTetherMasterSM.start();
+        }
+    }
+    ->  {
+            class TetherMasterSM extends StateMachine {
                 TetherMasterSM(String name, Looper looper) {
+                    mInitialState = new InitialState();
                     setInitialState(mInitialState);
                 }
 
+                // 在此处理上面的CMD_TETHER_MODE_REQUESTED消息！！！
                 class InitialState extends TetherMasterUtilState {
                     public boolean processMessage(Message message) {
                         switch (message.what) {
                             case CMD_TETHER_MODE_REQUESTED:
                                 TetherInterfaceSM who = (TetherInterfaceSM)message.obj;
+                                if (VDBG) Log.d(TAG, "Tether Mode requested by " + who);
                                 mNotifyList.add(who);
                                 transitionTo(mTetherModeAliveState);
                                 break;
@@ -680,6 +733,88 @@ TetherController.cpp (z:\home\ballack\prj\rk3288\system\netd\server)
             execv(args[0], args);                                           // 调用exec函数族替代子进程， 执行dnsmasq进程！！
         }
     }
+-------------------------------------------------------------------------------------------------------------------
+接着继续 transitionTo(mStartingState);的流程：
+
+Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server\connectivity)
+->  {
+        class StartingState extends State {
+            public void enter() {
+                setAvailable(false);
+                if (mUsb) {
+                    if (!Tethering.this.configureUsbIface(true)) {
+                        mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_UNREQUESTED,
+                                TetherInterfaceSM.this);
+                        setLastError(ConnectivityManager.TETHER_ERROR_IFACE_CFG_ERROR);
+
+                        transitionTo(mInitialState);
+                        return;
+                    }
+                }
+                sendTetherStateChangedBroadcast();
+
+                // Skipping StartingState
+                transitionTo(mTetheredState);           // 直接跳转到mTetheredState状态
+            }
+        }
+
+        class TetheredState extends State {
+            @Override
+                public void enter() {
+                    try {
+                        mNMService.tetherInterface(mIfaceName);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error Tethering: " + e.toString());
+                        setLastError(ConnectivityManager.TETHER_ERROR_TETHER_IFACE_ERROR);
+
+                        transitionTo(mInitialState);
+                        return;
+                    }
+                    if (DBG) Log.d(TAG, "Tethered " + mIfaceName);
+                    setAvailable(false);
+                    setTethered(true);
+                    sendTetherStateChangedBroadcast();
+                }
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------
+NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
+->  {
+        public void tetherInterface(String iface) {
+            mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+            try {
+                mConnector.execute("tether", "interface", "add", iface);                                    // 添加接口
+            } catch (NativeDaemonConnectorException e) {
+                throw e.rethrowAsParcelableException();
+            }
+            List<RouteInfo> routes = new ArrayList<RouteInfo>();
+            // The RouteInfo constructor truncates the LinkAddress to a network prefix, thus making it
+            // suitable to use as a route destination.
+            routes.add(new RouteInfo(getInterfaceConfig(iface).getLinkAddress(), null, iface));             // 添加路由表项
+            addInterfaceToLocalNetwork(iface, routes);                                                      // 将接口添加到本地网络
+        }
+        ->  {
+                public void addInterfaceToLocalNetwork(String iface, List<RouteInfo> routes) {
+                    modifyInterfaceInNetwork("add", "local", iface);
+
+                    for (RouteInfo route : routes) {
+                        if (!route.isDefaultRoute()) {
+                            modifyRoute("add", "local", route);
+                        }
+                    }
+                }
+            }
+            ->  {
+                    private void modifyInterfaceInNetwork(String action, String netId, String iface) {
+                        mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+                        try {
+                            mConnector.execute("network", "interface", action, netId, iface);
+                        } catch (NativeDaemonConnectorException e) {
+                            throw e.rethrowAsParcelableException();
+                        }
+                    }
+                }
+    }
 ------------------------------------------------------------------------------------------------------------------>
 看看这里的CMD_TETHER_STATE_CHANGE是如何能够接收到的：
 WifiStateMachine构造函数中注册了一个广播接收器：
@@ -699,35 +834,65 @@ public WifiStateMachine(Context context, String wlanInterface, WifiTrafficPoller
 ---------------------------------------------------------------------------------------------------------------------->
 NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
 ->  {
-        public boolean onEvent(int code, String raw, String[] cooked) {
-            String errorMessage = String.format("Invalid event from daemon (%s)", raw);
-            switch (code) {
-                case NetdResponseCode.InterfaceChange:
-                    /*
-                     * a network interface change occured
-                     * Format: "NNN Iface added <name>"
-                     *         "NNN Iface removed <name>"
-                     *         "NNN Iface changed <name> <up/down>"
-                     *         "NNN Iface linkstatus <name> <up/down>"
-                     */
-                    if (cooked.length < 4 || !cooked[1].equals("Iface")) {
+        private NetworkManagementService(Context context, String socket) {
+            PowerManager.WakeLock wl = null; //pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, NETD_TAG);
+
+            mConnector = new NativeDaemonConnector(
+                    new NetdCallbackReceiver(), socket, 10, NETD_TAG, 160, wl,
+                    FgThread.get().getLooper());
+        }
+
+        private class NetdCallbackReceiver implements INativeDaemonConnectorCallbacks {
+            public boolean onEvent(int code, String raw, String[] cooked) {
+                String errorMessage = String.format("Invalid event from daemon (%s)", raw);
+                switch (code) {
+                    case NetdResponseCode.InterfaceChange:
+                        /*
+                         * a network interface change occured
+                         * Format: "NNN Iface added <name>"
+                         *         "NNN Iface removed <name>"
+                         *         "NNN Iface changed <name> <up/down>"
+                         *         "NNN Iface linkstatus <name> <up/down>"
+                         */
+                        if (cooked.length < 4 || !cooked[1].equals("Iface")) {
+                            throw new IllegalStateException(errorMessage);
+                        }
+                        if (cooked[2].equals("added")) {
+                            notifyInterfaceAdded(cooked[3]);
+                            return true;
+                        } else if (cooked[2].equals("removed")) {
+                            notifyInterfaceRemoved(cooked[3]);
+                            return true;
+                        } else if (cooked[2].equals("changed") && cooked.length == 5) {
+                            notifyInterfaceStatusChanged(cooked[3], cooked[4].equals("up"));
+                            return true;
+                        } else if (cooked[2].equals("linkstate") && cooked.length == 5) {
+                            notifyInterfaceLinkStateChanged(cooked[3], cooked[4].equals("up"));
+                            return true;
+                        }
                         throw new IllegalStateException(errorMessage);
-                    }
-                    if (cooked[2].equals("added")) {
-                        notifyInterfaceAdded(cooked[3]);
-                        return true;
-                    } else if (cooked[2].equals("removed")) {
-                        notifyInterfaceRemoved(cooked[3]);
-                        return true;
-                    } else if (cooked[2].equals("changed") && cooked.length == 5) {
-                        notifyInterfaceStatusChanged(cooked[3], cooked[4].equals("up"));
-                        return true;
-                    } else if (cooked[2].equals("linkstate") && cooked.length == 5) {
-                        notifyInterfaceLinkStateChanged(cooked[3], cooked[4].equals("up"));
-                        return true;
-                    }
-                    throw new IllegalStateException(errorMessage);
-                    // break;
+                        // break;
+
+                    case NetdResponseCode.BandwidthControl:
+                        // ...
+                        break;
+
+                    case NetdResponseCode.InterfaceClassActivity:
+                        // ...
+                        break;
+
+                    case NetdResponseCode.InterfaceAddressChange:
+                        // ...
+                        break;
+
+                    case NetdResponseCode.InterfaceDnsServerInfo:
+                        // ...
+                        break;
+
+                    case NetdResponseCode.RouteChange:
+                        // ...
+                        break;
+                }
             }
         }
     }
@@ -791,74 +956,4 @@ Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\co
                 }
             }
         }
-        ->  {
-                class InitialState extends State {
-                    public void enter() {
-                        setAvailable(true);
-                        setTethered(false);
-                        sendTetherStateChangedBroadcast();
-                    }
-
-                    public boolean processMessage(Message message) {
-                        if (DBG) Log.d(TAG, "InitialState.processMessage what=" + message.what);
-                        boolean retValue = true;
-                        switch (message.what) {
-                            case CMD_TETHER_REQUESTED:
-                                setLastError(ConnectivityManager.TETHER_ERROR_NO_ERROR);
-                                mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_REQUESTED,
-                                        TetherInterfaceSM.this);
-                                transitionTo(mStartingState);
-                                break;
-                            case CMD_INTERFACE_DOWN:
-                                transitionTo(mUnavailableState);
-                                break;
-                            default:
-                                retValue = false;
-                                break;
-                        }
-                        return retValue;
-                    }
-                }
-
-
-
-
-
-NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
-->  {
-        mConnector = new NativeDaemonConnector(
-            new NetdCallbackReceiver(), socket, 10, NETD_TAG, 160, wl,
-            FgThread.get().getLooper());
-    }
-
-private class NetdCallbackReceiver implements INativeDaemonConnectorCallbacks {
-        public boolean onEvent(int code, String raw, String[] cooked) {
-            String errorMessage = String.format("Invalid event from daemon (%s)", raw);
-            switch (code) {
-            case NetdResponseCode.InterfaceChange:
-                    /*
-                     * a network interface change occured
-                     * Format: "NNN Iface added <name>"
-                     *         "NNN Iface removed <name>"
-                     *         "NNN Iface changed <name> <up/down>"
-                     *         "NNN Iface linkstatus <name> <up/down>"
-                     */
-                    if (cooked.length < 4 || !cooked[1].equals("Iface")) {
-                        throw new IllegalStateException(errorMessage);
-                    }
-                    if (cooked[2].equals("added")) {
-                        notifyInterfaceAdded(cooked[3]);
-                        return true;
-                    } else if (cooked[2].equals("removed")) {
-                        notifyInterfaceRemoved(cooked[3]);
-                        return true;
-                    } else if (cooked[2].equals("changed") && cooked.length == 5) {
-                        notifyInterfaceStatusChanged(cooked[3], cooked[4].equals("up"));
-                        return true;
-                    } else if (cooked[2].equals("linkstate") && cooked.length == 5) {
-                        notifyInterfaceLinkStateChanged(cooked[3], cooked[4].equals("up"));
-                        return true;
-                    }
-                    throw new IllegalStateException(errorMessage);
-                    // break;
-}
+------------------------------------------------------------------------------------------------------------------
