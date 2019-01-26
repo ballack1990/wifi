@@ -1,0 +1,45 @@
+dhd_linux.c
+->  {
+        dhd_pub_t * dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen
+#ifdef BCMDBUS
+                , void *data
+#endif
+                )
+        {
+            if (dhd->rxthread_enabled) {
+                bzero(&dhd->pub.skbbuf[0], sizeof(void *) * MAXSKBPEND);
+                /* Initialize RXF thread */
+                PROC_START(dhd_rxf_thread, dhd, &dhd->thr_rxf_ctl, 0, "dhd_rxf");
+                if (dhd->thr_rxf_ctl.thr_pid < 0) {
+                    goto fail;
+                }
+            }
+
+        }
+
+        static int dhd_rxf_thread(void *data)
+        {
+            while (1) {
+                if (down_interruptible(&tsk->sema) == 0) {
+                    skb = dhd_rxf_dequeue(pub);
+        
+                    while (skb) {
+                        void *skbnext = PKTNEXT(pub->osh, skb);
+                        PKTSETNEXT(pub->osh, skb, NULL);
+                        bcm_object_trace_opr(skb, BCM_OBJDBG_REMOVE,
+                                __FUNCTION__, __LINE__);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
+                        netif_rx_ni(skb);
+#else
+                        netif_rx(skb);
+                        local_irq_save(flags);
+                        RAISE_RX_SOFTIRQ();
+                        local_irq_restore(flags);
+
+#endif
+                        skb = skbnext;
+                    }
+                }
+            }
+        }
+    }

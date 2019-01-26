@@ -1,0 +1,227 @@
+以下是1.579的driver流程: 
+
+dhd_linux.c
+->  {
+        dhd_pub_t * dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
+        {
+            /* Set up the bottom half handler */
+            if (dhd_dpc_prio >= 0) {                                                // SDIO接口dhd_dpc_prio默认是1, PCIE接口的会定义为-1
+                /* Initialize DPC thread */
+                PROC_START(dhd_dpc_thread, dhd, &dhd->thr_dpc_ctl, 0, "dhd_dpc");   // 创建dhd_dpc_thread进程，命名为dhd_dpc
+                if (dhd->thr_dpc_ctl.thr_pid < 0) {                                 // 这里会将一个非负数赋值给thr_dpc_ctl.thr_pid, 下面会用到！！
+                    goto fail;
+                }
+            } else {                                                               
+                /*  use tasklet for dpc */
+                tasklet_init(&dhd->tasklet, dhd_dpc, (ulong)dhd);                   // 创建 tasklet for dhd_dpc
+                dhd->thr_dpc_ctl.thr_pid = -1;
+            }
+        }
+
+        static int dhd_dpc_thread(void *data)
+        {
+            tsk_ctl_t *tsk = (tsk_ctl_t *)data;                                     // tsk 其实就是 dhd->thr_dpc_ctl
+            dhd_info_t *dhd = (dhd_info_t *)tsk->parent;
+
+            /* This thread doesn't need any user-level access,
+             * so get rid of all our resources
+             */
+            if (dhd_dpc_prio > 0)
+            {
+                struct sched_param param;
+                param.sched_priority = (dhd_dpc_prio < MAX_RT_PRIO)?dhd_dpc_prio:(MAX_RT_PRIO-1);
+                setScheduler(current, SCHED_FIFO, &param);
+            }
+
+            while (1) {
+                if (!binary_sema_down(tsk)) {                                       // 这里调用down, 等待thr_dpc_ctl指定的信号量
+                    if (dhd->pub.busstate != DHD_BUS_DOWN) {
+                        while (dhd_bus_dpc(dhd->pub.bus)) {                         // 调用dhd_bus_dpc
+
+                        }
+                    }
+                }
+            }
+        }
+
+        static void dhd_dpc(ulong data)
+        {
+            dhd_info_t *dhd;
+
+            dhd = (dhd_info_t *)data;
+
+            /* this (tasklet) can be scheduled in dhd_sched_dpc[dhd_linux.c]
+             * down below , wake lock is set,
+             * the tasklet is initialized in dhd_attach()
+             */
+            /* Call bus dpc unless it indicated down (then clean stop) */
+            if (dhd->pub.busstate != DHD_BUS_DOWN) {
+#if defined(DHD_LB_STATS) && defined(PCIE_FULL_DONGLE)
+                DHD_LB_STATS_INCR(dhd->dhd_dpc_cnt);
+#endif /* DHD_LB_STATS && PCIE_FULL_DONGLE */
+                if (dhd_bus_dpc(dhd->pub.bus)) {                                // 调用dhd_bus_dpc
+                    tasklet_schedule(&dhd->tasklet);
+                }
+            } else {
+                dhd_bus_stop(dhd->pub.bus, TRUE);
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------
+dhd_sdio.c
+->  {
+        bool dhd_bus_dpc(struct dhd_bus *bus)
+        {
+            bool resched;
+
+            /* Call the DPC directly. */
+            DHD_TRACE(("Calling dhdsdio_dpc() from %s\n", __FUNCTION__));
+            resched = dhdsdio_dpc(bus);
+
+            return resched;
+        }
+
+        static bool dhdsdio_dpc(dhd_bus_t *bus)
+        {
+            /* On frame indication, read available frames */
+            if (PKT_AVAILABLE(bus, intstatus)) {
+
+                framecnt = dhdsdio_readframes(bus, rxlimit, &rxdone);               // 调用 dhdsdio_readframes 函数
+                if (rxdone || bus->rxskip)
+                    intstatus  &= ~FRAME_AVAIL_MASK(bus);
+                rxlimit -= MIN(framecnt, rxlimit);
+            }
+
+            if (!resched) {
+                /* Re-enable interrupts to detect new device events (mailbox, rx frame)
+                 * or clock availability.  (Allows tx loop to check ipend if desired.)
+                 * (Unless register access seems hosed, as we may not be able to ACK...)
+                 */
+                if (bus->dhd->conf->oob_enabled_later && bus->intr && bus->intdis && !bcmsdh_regfail(sdh)) {
+                    DHD_INTR(("%s: enable SDIO interrupts, rxdone %d framecnt %d\n",
+                                __FUNCTION__, rxdone, framecnt));
+                    bus->intdis = FALSE;
+            #if defined(OOB_INTR_ONLY)
+                    bcmsdh_oob_intr_set(bus->sdh, TRUE);
+            #endif /* defined(OOB_INTR_ONLY) */
+                    bcmsdh_intr_enable(sdh);
+                }
+                if (dhd_dpcpoll) {                                                  // 如果打开轮询机制dhd_dpcpoll ?????
+                    if (dhdsdio_readframes(bus, dhd_rxbound, &rxdone) != 0) {       // 调用 dhdsdio_readframes 函数
+                        resched = TRUE;
+            #ifdef DEBUG_DPC_THREAD_WATCHDOG
+                        is_resched_by_readframe = TRUE;
+            #endif /* DEBUG_DPC_THREAD_WATCHDOG */
+                    }
+                }
+            }
+        }
+
+这里有个疑问：
+上面只有定义了OOB的宏才有可能调用到dhdsdio_isr函数
+而Makefile中是如下定义的：
+->  {
+        ifeq ($(CONFIG_BCMDHD_OOB),y)
+            DHDCFLAGS += -DOOB_INTR_ONLY -DCUSTOMER_OOB -DHW_OOB
+        else
+            DHDCFLAGS += -DSDIO_ISR_THREAD                                  // 没定义oob的情况
+        endif
+    }
+dhdsdio_isr， 那么以下代码中关于SDIO_ISR_THREAD的判断是没意义的？ 
+-----------------------------------------------------------------------------------------------------------------
+        void dhdsdio_isr(void *arg) {
+            /* Disable additional interrupts (is this needed now)? */
+            if (bus->intr) {
+                DHD_INTR(("%s: disable SDIO interrupts\n", __FUNCTION__));
+            } else {
+                DHD_ERROR(("dhdsdio_isr() w/o interrupt configured!\n"));
+            }
+
+            bcmsdh_intr_disable(sdh);                                       // disable sdio中断
+            bus->intdis = TRUE;
+
+        #if defined(SDIO_ISR_THREAD)                                        // 没定义oob的时候？？？ 这里应该不太可能执行到？
+            DHD_TRACE(("Calling dhdsdio_dpc() from %s\n", __FUNCTION__));
+            DHD_OS_WAKE_LOCK(bus->dhd);
+            /* terence 20150209: dpc should be scheded again if dpc_sched is TRUE or dhd_bus_txdata can
+               not schedule anymore because dpc_sched is TRUE now.
+             */
+            if (dhdsdio_dpc(bus)) {                                         // 调用 dhdsdio_dpc 函数
+                bus->dpc_sched = TRUE;
+                dhd_sched_dpc(bus->dhd);
+            }
+            DHD_OS_WAKE_UNLOCK(bus->dhd);
+        #else                                                               // 定义了oob，走这里！！！
+            bus->dpc_sched = TRUE;
+            dhd_sched_dpc(bus->dhd);
+        #endif /* defined(SDIO_ISR_THREAD) */
+        }
+    }
+--------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        void dhd_sched_dpc(dhd_pub_t *dhdp)
+        {
+            dhd_info_t *dhd = (dhd_info_t *)dhdp->info;
+
+            if (dhd->thr_dpc_ctl.thr_pid >= 0) {                    // 如上面所说，SDIO接口的话，thr_pid为非负数， 走这里
+                DHD_OS_WAKE_LOCK(dhdp);
+                /* If the semaphore does not get up,
+                 * wake unlock should be done here
+                 */
+                if (!binary_sema_up(&dhd->thr_dpc_ctl)) {           // 这里调用up， 释放thr_dpc_ctl指定的信号量
+                    DHD_OS_WAKE_UNLOCK(dhdp);
+                }
+                return;
+            } else {
+                tasklet_schedule(&dhd->tasklet);
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------
+dhd_sdio.c
+->  {
+        static uint dhdsdio_readframes(dhd_bus_t *bus, uint maxframes, bool *finished)
+        {
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+            bus->readframes = TRUE;
+
+            if (!KSO_ENAB(bus)) {
+                DHD_ERROR(("%s: KSO off\n", __FUNCTION__));
+                bus->readframes = FALSE;
+                return 0;
+            }
+
+            for (rxseq = bus->rx_seq, rxleft = maxframes;
+                    !bus->rxskip && rxleft && bus->dhd->busstate != DHD_BUS_DOWN;
+                    rxseq++, rxleft--) {
+
+                /* Unlock during rx call */
+                dhd_os_sdunlock(bus->dhd);
+                dhd_rx_frame(bus->dhd, ifidx, pkt, pkt_count, chan);
+                dhd_os_sdlock(bus->dhd);
+            }
+        }
+    }
+-------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        void dhd_rx_frame(dhd_pub_t *dhdp, int ifidx, void *pktbuf, int numpkt, uint8 chan)
+        {
+            if (dhd->rxthread_enabled && skbhead)
+                dhd_sched_rxf(dhdp, skbhead);
+        }
+        ->  {
+                static void dhd_sched_rxf(dhd_pub_t *dhdp, void *skb)
+                {
+                    do {
+                        if (dhd_rxf_enqueue(dhdp, skb) == BCME_OK)
+                            break;
+                    } while (1);
+                    if (dhd->thr_rxf_ctl.thr_pid >= 0) {
+                        up(&dhd->thr_rxf_ctl.sema);                         // up  thr_rxf_ctl信号量, 详细见dhd_rxf_flow
+                    }
+                }
+            }
+    }
+

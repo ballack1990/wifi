@@ -7,3 +7,14 @@ dhd_priv monitor 1
 读到的数据如统一路径下的图片
 
 这样是正确的，0001(278) - 表示抓到的第一个包，包长度278个，后面是包的内容
+
+
+你好，
+ 想请问下，读取到包内容。具体表达的意义有没有解析的文档？
+
+收到的包是從802.11的MAC header開始，以下裡面的文章你可以參考一下。
+
+https://www.google.com/search?q=802.11+mac+header&tbm=isch&source=iu&ictx=1&fir=oVTMqMG3x31qNM%253A%252CRsC_JAUZ6k8XsM%252C_&usg=AI4_-kShlII3IYKY6DnUfH7FvENzBsJWug&sa=X&sqi=2&ved=2ahUKEwjHm-_l44DgAhVVErkGHUJ-CtQQ9QEwAHoECAEQBA#imgrc=o0oQ58jqJE1eCM:
+
+http://www.studioreti.it/slide/802-11-Frame_E_C.pdf
+

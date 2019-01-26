@@ -1,0 +1,1753 @@
+dhd_linux.c
+->  {
+        module_init(dhd_module_init);
+
+        static int __init dhd_module_init(void) {
+            printf("%s: in %s\n", __FUNCTION__, dhd_version);       // dhd_module_init: in
+
+            dhd_wifi_platform_register_drv();
+
+            printf("%s: Exit err=%d\n", __FUNCTION__, err);         // dhd_module_init: Exit err=0
+        }
+    }
+--------------------------------------------------------->
+dhd_linux_platdev.c
+->  {
+        int dhd_wifi_platform_register_drv(void) {
+            wifi_ctrlfunc_register_drv();
+        }
+        ->  {
+                static int wifi_ctrlfunc_register_drv(void) {
+                    adapter = kzalloc(sizeof(wifi_adapter_info_t), GFP_KERNEL);
+                    if (adapter == NULL) {
+                        DHD_ERROR(("%s:adapter alloc failed", __FUNCTION__));
+                        return -ENOMEM;
+                    }
+                    adapter->name = "DHD generic adapter";
+                    adapter->bus_type = -1;
+                    adapter->bus_num = -1;
+                    adapter->slot_num = -1;
+                    adapter->irq_num = -1;
+                    is_power_on = FALSE;
+                    wifi_plat_dev_probe_ret = 0;
+                    dhd_wifi_platdata = kzalloc(sizeof(bcmdhd_wifi_platdata_t), GFP_KERNEL);
+                    dhd_wifi_platdata->num_adapters = 1;
+                    dhd_wifi_platdata->adapters = adapter;
+
+                #if !defined(CONFIG_DTS)
+                    if (dts_enabled) {
+                        struct resource *resource;
+                        adapter->wifi_plat_data = (void *)&dhd_wlan_control;
+                        resource = &dhd_wlan_resources;
+                #ifdef CUSTOMER_HW
+                        wifi_plat_dev_probe_ret = dhd_wlan_init_plat_data();
+                        if (wifi_plat_dev_probe_ret)
+                            return wifi_plat_dev_probe_ret;
+                #endif
+                        adapter->irq_num = resource->start;
+                        adapter->intr_flags = resource->flags & IRQF_TRIGGER_MASK;
+                        wifi_plat_dev_probe_ret = dhd_wifi_platform_load();
+                    }
+                #endif /* !defined(CONFIG_DTS) */
+                }
+            }
+    }
+--------------------------------------------------------------------------------------------------->
+dhd_gpio.c
+->  {
+        struct resource dhd_wlan_resources[] = {
+            [0] = {
+                .name	= "bcmdhd_wlan_irq",
+                .start	= 0, /* Dummy */
+                .end	= 0, /* Dummy */
+                .flags	= IORESOURCE_IRQ | IORESOURCE_IRQ_SHAREABLE
+                    | IORESOURCE_IRQ_HIGHLEVEL, /* Dummy */
+            },
+        };
+
+        struct wifi_platform_data dhd_wlan_control = {
+            .set_power	= dhd_wlan_set_power,
+            .set_reset	= dhd_wlan_set_reset,
+            .set_carddetect	= dhd_wlan_set_carddetect,
+            .get_mac_addr	= dhd_wlan_get_mac_addr,
+        #ifdef CONFIG_DHD_USE_STATIC_BUF
+            .mem_prealloc	= dhd_wlan_mem_prealloc,
+        #endif /* CONFIG_DHD_USE_STATIC_BUF */
+            .get_country_code = dhd_wlan_get_country_code,
+        };
+
+        int dhd_wlan_init_gpio(void)
+        {
+            int err = 0;
+        #ifdef CUSTOMER_OOB
+            int host_oob_irq = -1;
+            uint host_oob_irq_flags = 0;
+        #endif
+
+            /* Please check your schematic and fill right GPIO number which connected to
+             * WL_REG_ON and WL_HOST_WAKE.
+             */
+            gpio_wl_reg_on = -1;
+        #ifdef CUSTOMER_OOB
+            gpio_wl_host_wake = -1;
+        #endif
+
+            if (gpio_wl_reg_on >= 0) {
+                err = gpio_request(gpio_wl_reg_on, "WL_REG_ON");
+                if (err < 0) {
+                    printf("%s: gpio_request(%d) for WL_REG_ON failed\n",
+                            __FUNCTION__, gpio_wl_reg_on);
+                    gpio_wl_reg_on = -1;
+                }
+            }
+
+        #ifdef CUSTOMER_OOB
+            if (gpio_wl_host_wake >= 0) {
+                err = gpio_request(gpio_wl_host_wake, "bcmdhd");
+                if (err < 0) {
+                    printf("%s: gpio_request(%d) for WL_HOST_WAKE failed\n",
+                            __FUNCTION__, gpio_wl_host_wake);
+                    return -1;
+                }
+                err = gpio_direction_input(gpio_wl_host_wake);
+                if (err < 0) {
+                    printf("%s: gpio_direction_input(%d) for WL_HOST_WAKE failed\n",
+                            __FUNCTION__, gpio_wl_host_wake);
+                    gpio_free(gpio_wl_host_wake);
+                    return -1;
+                }
+                host_oob_irq = gpio_to_irq(gpio_wl_host_wake);
+                if (host_oob_irq < 0) {
+                    printf("%s: gpio_to_irq(%d) for WL_HOST_WAKE failed\n",
+                            __FUNCTION__, gpio_wl_host_wake);
+                    gpio_free(gpio_wl_host_wake);
+                    return -1;
+                }
+            }
+
+        #ifdef HW_OOB
+        #ifdef HW_OOB_LOW_LEVEL
+            host_oob_irq_flags = IORESOURCE_IRQ | IORESOURCE_IRQ_LOWLEVEL | IORESOURCE_IRQ_SHAREABLE;
+        #else
+            host_oob_irq_flags = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE;
+        #endif
+        #else
+            host_oob_irq_flags = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHEDGE | IORESOURCE_IRQ_SHAREABLE;
+        #endif
+            host_oob_irq_flags = (IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE) & IRQF_TRIGGER_MASK;
+
+            dhd_wlan_resources[0].start = dhd_wlan_resources[0].end = host_oob_irq;
+            dhd_wlan_resources[0].flags = host_oob_irq_flags;
+            printf("%s: WL_REG_ON=%d, WL_HOST_WAKE=%d\n", __FUNCTION__, gpio_wl_reg_on, gpio_wl_host_wake);
+            printf("%s: oob_irq=%d, oob_irq_flags=0x%x\n", __FUNCTION__, host_oob_irq, host_oob_irq_flags);
+        #endif /* CUSTOMER_OOB */
+
+            return 0;
+        }
+
+        int dhd_wlan_init_plat_data(void)
+        {
+            int err = 0;
+
+            err = dhd_wlan_init_gpio();
+            return err;
+        }
+    }
+---------------------------------------------------------------------------------------------------->
+dhd_linux_platdev.c
+->  {
+        static int dhd_wifi_platform_load()
+        {
+            int err = 0;
+            printf("%s: Enter\n", __FUNCTION__);
+
+            wl_android_init();
+
+            if ((err = dhd_wifi_platform_load_usb()))
+                goto end;
+            else if ((err = dhd_wifi_platform_load_sdio()))
+                goto end;
+            else
+                err = dhd_wifi_platform_load_pcie();
+
+        end:
+            if (err)
+                wl_android_exit();
+        #if !defined(MULTIPLE_SUPPLICANT)
+            else
+                wl_android_post_init();
+        #endif
+
+            return err;
+        }
+            
+    }
+---------------------------------------------------------------------------->
+wl_android.c
+->  {
+        int wl_android_init(void)
+        {
+            int ret = 0;
+
+            if (!iface_name[0]) {
+                memset(iface_name, 0, IFNAMSIZ);
+                bcm_strncpy_s(iface_name, IFNAMSIZ, "wlan", IFNAMSIZ);      // 如果没有指定接口名，则默认使用wlan接口
+            }
+
+            wl_netlink_init();
+
+            return ret;
+        }
+        ->  {
+                static int wl_netlink_init(void)
+                {
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0))
+                    struct netlink_kernel_cfg cfg = {
+                        .input	= wl_netlink_recv,
+                    };
+                #endif
+
+                    if (nl_sk != NULL) {
+                        ANDROID_ERROR(("nl_sk already exist\n"));
+                        return BCME_ERROR;
+                    }
+
+                #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0))
+                    nl_sk = netlink_kernel_create(&init_net, NETLINK_OXYGEN,
+                            0, wl_netlink_recv, NULL, THIS_MODULE);
+                #elif (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))
+                    nl_sk = netlink_kernel_create(&init_net, NETLINK_OXYGEN, THIS_MODULE, &cfg);
+                #else
+                    nl_sk = netlink_kernel_create(&init_net, NETLINK_OXYGEN, &cfg);
+                #endif
+
+                    if (nl_sk == NULL) {
+                        ANDROID_ERROR(("nl_sk is not ready\n"));
+                        return BCME_ERROR;
+                    }
+
+                    return BCME_OK;
+                }
+            }
+    }
+----------------------------------------------------------------------------------------------->
+dhd_linux_platdev.c
+->  {
+        static int dhd_wifi_platform_load_sdio(void) {
+            sema_init(&dhd_registration_sem, 0);
+            /* power up all adapters */
+            for (i = 0; i < dhd_wifi_platdata->num_adapters; i++) {
+                bool chip_up = FALSE;
+                int retry = POWERUP_MAX_RETRY;
+                struct semaphore dhd_chipup_sem;
+
+                adapter = &dhd_wifi_platdata->adapters[i];
+
+                DHD_ERROR(("Power-up adapter '%s'\n", adapter->name));
+                DHD_INFO((" - irq %d [flags %d], firmware: %s, nvram: %s\n",
+                            adapter->irq_num, adapter->intr_flags, adapter->fw_path, adapter->nv_path));
+                DHD_INFO((" - bus type %d, bus num %d, slot num %d\n\n",
+                            adapter->bus_type, adapter->bus_num, adapter->slot_num));
+
+                do {
+                    sema_init(&dhd_chipup_sem, 0);
+                    err = dhd_bus_reg_sdio_notify(&dhd_chipup_sem);
+                    if (err) {
+                        DHD_ERROR(("%s dhd_bus_reg_sdio_notify fail(%d)\n\n",
+                                    __FUNCTION__, err));
+                        return err;
+                    }
+                    err = wifi_platform_set_power(adapter, TRUE, WIFI_TURNON_DELAY);
+                    if (err) {
+                        /* WL_REG_ON state unknown, Power off forcely */
+                        wifi_platform_set_power(adapter, FALSE, WIFI_TURNOFF_DELAY);
+                        continue;
+                    } else {
+                        wifi_platform_bus_enumerate(adapter, TRUE);
+                        err = 0;
+                    }
+
+                    if (down_timeout(&dhd_chipup_sem, msecs_to_jiffies(POWERUP_WAIT_MS)) == 0) {
+                        dhd_bus_unreg_sdio_notify();
+                        chip_up = TRUE;
+                        break;
+                    }
+
+                    DHD_ERROR(("failed to power up %s, %d retry left\n", adapter->name, retry));
+                    dhd_bus_unreg_sdio_notify();
+                    wifi_platform_set_power(adapter, FALSE, WIFI_TURNOFF_DELAY);
+                    wifi_platform_bus_enumerate(adapter, FALSE);
+                } while (retry--);
+
+                if (!chip_up) {
+                    DHD_ERROR(("failed to power up %s, max retry reached**\n", adapter->name));
+                    return -ENODEV;
+                }
+
+            }
+
+            err = dhd_bus_register();
+
+            if (err) {
+                DHD_ERROR(("%s: sdio_register_driver failed\n", __FUNCTION__));
+                goto fail;
+            }
+
+
+            /*
+             * Wait till MMC sdio_register_driver callback called and made driver attach.
+             * It's needed to make sync up exit from dhd insmod  and
+             * Kernel MMC sdio device callback registration
+             */
+            err = down_timeout(&dhd_registration_sem, msecs_to_jiffies(DHD_REGISTRATION_TIMEOUT));
+            if (err) {
+                DHD_ERROR(("%s: sdio_register_driver timeout or error \n", __FUNCTION__));
+                dhd_bus_unregister();
+                goto fail;
+            }
+
+            return err;
+        }
+    }
+--------------------------------------------------------------------------------------------------->
+dhd_sdio.c
+->  {
+        int dhd_bus_reg_sdio_notify(void* semaphore)
+        {
+            return bcmsdh_reg_sdio_notify(semaphore);
+        }
+    }
+---------------------------------------------------------------------------------------------------->
+bcmsdh_linux.c
+->  {
+        int bcmsdh_reg_sdio_notify(void* semaphore)
+        {
+            return sdio_func_reg_notify(semaphore);
+        }
+    }
+--------------------------------------------------------------------------------------------------->
+bcmsdh_sdmmc_linux.c
+->  {
+        static const struct sdio_device_id bcmsdh_sdmmc_ids[] = {
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_DEFAULT) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4325_SDGWB) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4325) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4329) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4319) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4330) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4334) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4324) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_43239) },
+            { SDIO_DEVICE_CLASS(SDIO_CLASS_NONE)		},
+            { /* end: all zeroes */				},
+        };
+
+        MODULE_DEVICE_TABLE(sdio, bcmsdh_sdmmc_ids);
+
+        static struct sdio_driver dummy_sdmmc_driver = {
+            .probe		= dummy_probe,
+            .remove		= dummy_remove,
+            .name		= "dummy_sdmmc",
+            .id_table	= bcmsdh_sdmmc_ids,
+        };
+
+        int sdio_func_reg_notify(void* semaphore)
+        {
+            notify_semaphore = semaphore;
+            return sdio_register_driver(&dummy_sdmmc_driver);
+        }
+
+        // 如果检测到sdio设备，则执行probe函数
+        static int dummy_probe(struct sdio_func *func, const struct sdio_device_id *id)
+        {
+            if (func && (func->num != 2)) {
+                return 0;
+            }
+
+            if (notify_semaphore)
+                up(notify_semaphore);
+            return 0;
+        }
+    }
+-------------------------------------------------------------------------------------------------->
+dhd_linux_platdev.c
+->  {
+        int wifi_platform_set_power(wifi_adapter_info_t *adapter, bool on, unsigned long msec)
+        {
+            struct wifi_platform_data *plat_data;
+
+            if (!adapter || !adapter->wifi_plat_data)
+                return -EINVAL;
+            plat_data = adapter->wifi_plat_data;
+
+            DHD_ERROR(("%s = %d\n", __FUNCTION__, on));
+            if (plat_data->set_power) {
+                err = plat_data->set_power(on);
+            }
+
+            if (on && !err)
+                is_power_on = TRUE;
+            else
+                is_power_on = FALSE;
+
+            return err;
+        }
+    }
+-------------------------------------------------------------------------------------------------->
+dhd_gpio.c
+->  {
+        static int dhd_wlan_set_power(bool on) {
+            int err = 0;
+
+            if (on) {
+                printf("======== PULL WL_REG_ON(%d) HIGH! ========\n", gpio_wl_reg_on);
+                if (gpio_wl_reg_on >= 0) {
+                    err = gpio_direction_output(gpio_wl_reg_on, 1);
+                    if (err) {
+                        printf("%s: WL_REG_ON didn't output high\n", __FUNCTION__);
+                        return -EIO;
+                    }
+                }
+                /* Lets customer power to get stable */
+                mdelay(100);
+            } else {
+                printf("======== PULL WL_REG_ON(%d) LOW! ========\n", gpio_wl_reg_on);
+                if (gpio_wl_reg_on >= 0) {
+                    err = gpio_direction_output(gpio_wl_reg_on, 0);
+                    if (err) {
+                        printf("%s: WL_REG_ON didn't output low\n", __FUNCTION__);
+                        return -EIO;
+                    }
+                }
+            }
+
+            return err;
+        }
+    }
+--------------------------------------------------------------------------------------------->
+dhd_linux_platdev.c
+->  {
+        int wifi_platform_bus_enumerate(wifi_adapter_info_t *adapter, bool device_present)
+        {
+            int err = 0;
+            struct wifi_platform_data *plat_data;
+
+            if (!adapter || !adapter->wifi_plat_data)
+                return -EINVAL;
+            plat_data = adapter->wifi_plat_data;
+
+            DHD_ERROR(("%s device present %d\n", __FUNCTION__, device_present));
+            if (plat_data->set_carddetect) {
+                err = plat_data->set_carddetect(device_present);
+            }
+            return err;
+
+        }
+    }
+----------------------------------------------------------------------------------------------->
+dhd_gpio.c
+->  {
+        static int dhd_wlan_set_carddetect(bool present)
+        {
+            int err = 0;
+
+            if (present) {
+        #if defined(BCMSDIO)
+                printf("======== Card detection to detect SDIO card! ========\n");
+        #ifdef CUSTOMER_HW_PLATFORM
+                err = sdhci_force_presence_change(&sdmmc_channel, 1);
+        #endif /* CUSTOMER_HW_PLATFORM */
+        #elif defined(BCMPCIE)
+                printf("======== Card detection to detect PCIE card! ========\n");
+        #endif
+                rockchip_wifi_set_carddetect(1);
+            } else {
+        #if defined(BCMSDIO)
+                printf("======== Card detection to remove SDIO card! ========\n");
+        #ifdef CUSTOMER_HW_PLATFORM
+                err = sdhci_force_presence_change(&sdmmc_channel, 0);
+        #endif /* CUSTOMER_HW_PLATFORM */
+        #endif
+                rockchip_wifi_set_carddetect(0);
+            }
+
+            return err;
+        }
+
+    }
+----------------------------------------------------------------------------------------------------->
+dhd_sdio.c
+->  {
+        static bcmsdh_driver_t dhd_sdio = {
+            dhdsdio_probe,
+            dhdsdio_disconnect,
+            dhdsdio_suspend,
+            dhdsdio_resume
+        };
+
+        int dhd_bus_register(void)
+        {
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+
+            return bcmsdh_register(&dhd_sdio);
+        }
+    }
+---------------------------------------------------------------------------------------------->
+bcmsdh_linux.c
+->  {
+        int bcmsdh_register(bcmsdh_driver_t *driver)
+        {
+            int error = 0;
+
+            drvinfo = *driver;                                              // drvinfo在这里赋值， 即dhd_sdio结构体
+            SDLX_MSG(("%s: register client driver\n", __FUNCTION__));
+            error = bcmsdh_register_client_driver();
+            if (error)
+                SDLX_MSG(("%s: failed %d\n", __FUNCTION__, error));
+
+            return error;
+        }
+    }
+------------------------------------------------------------------------------------------------->
+bcmsdh_sdmmc_linux.c
+->  {
+        static const struct sdio_device_id bcmsdh_sdmmc_ids[] = {
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_DEFAULT) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4325_SDGWB) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4325) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4329) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4319) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4330) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4334) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_4324) },
+            { SDIO_DEVICE(SDIO_VENDOR_ID_BROADCOM, SDIO_DEVICE_ID_BROADCOM_43239) },
+            { SDIO_DEVICE_CLASS(SDIO_CLASS_NONE)		},
+            { /* end: all zeroes */				},
+        };
+
+        MODULE_DEVICE_TABLE(sdio, bcmsdh_sdmmc_ids);
+
+        static struct sdio_driver bcmsdh_sdmmc_driver = {
+            .probe		= bcmsdh_sdmmc_probe,
+            .remove		= bcmsdh_sdmmc_remove,
+            .name		= "bcmsdh_sdmmc",
+            .id_table	= bcmsdh_sdmmc_ids,
+        #if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39)) && defined(CONFIG_PM)
+            .drv = {
+                .pm	= &bcmsdh_sdmmc_pm_ops,
+            },
+        #endif /* (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39)) && defined(CONFIG_PM) */
+        };
+
+        int bcmsdh_register_client_driver(void)
+        {
+            return sdio_register_driver(&bcmsdh_sdmmc_driver);
+        }
+
+        static int bcmsdh_sdmmc_probe(struct sdio_func *func, const struct sdio_device_id *id)
+        {
+            int ret = 0;
+
+            if (func == NULL)
+                return -EINVAL;
+
+            sd_err(("bcmsdh_sdmmc: %s Enter\n", __FUNCTION__));
+            sd_info(("sdio_bcmsdh: func->class=%x\n", func->class));
+            sd_info(("sdio_vendor: 0x%04x\n", func->vendor));
+            sd_info(("sdio_device: 0x%04x\n", func->device));
+            sd_info(("Function#: 0x%04x\n", func->num));
+
+            /* 4318 doesn't have function 2 */
+            if ((func->num == 2) || (func->num == 1 && func->device == 0x4))
+                ret = sdioh_probe(func);
+
+            return ret;
+        }
+    }
+-------------------------------------------------------------------------------------------------------->
+bcmsdh_sdmmc_linux.c
+->  {
+        static int sdioh_probe(struct sdio_func *func)
+        {
+            int host_idx = func->card->host->index;
+            uint32 rca = func->card->rca;
+            wifi_adapter_info_t *adapter;
+            osl_t *osh = NULL;
+            sdioh_info_t *sdioh = NULL;
+
+            sd_err(("bus num (host idx)=%d, slot num (rca)=%d\n", host_idx, rca));
+            adapter = dhd_wifi_platform_get_adapter(SDIO_BUS, host_idx, rca);
+            if (adapter != NULL) {
+                sd_err(("found adapter info '%s'\n", adapter->name));
+            } else
+                sd_err(("can't find adapter info for this chip\n"));
+
+        #ifdef WL_CFG80211
+            wl_cfg80211_set_parent_dev(&func->dev);
+        #endif
+
+            /* allocate SDIO Host Controller state info */
+            osh = osl_attach(&func->dev, SDIO_BUS, TRUE);
+            if (osh == NULL) {
+                sd_err(("%s: osl_attach failed\n", __FUNCTION__));
+                goto fail;
+            }
+            osl_static_mem_init(osh, adapter);
+            sdioh = sdioh_attach(osh, func);
+            if (sdioh == NULL) {
+                sd_err(("%s: sdioh_attach failed\n", __FUNCTION__));
+                goto fail;
+            }
+            sdioh->bcmsdh = bcmsdh_probe(osh, &func->dev, sdioh, adapter, SDIO_BUS, host_idx, rca);
+            if (sdioh->bcmsdh == NULL) {
+                sd_err(("%s: bcmsdh_probe failed\n", __FUNCTION__));
+                goto fail;
+            }
+
+            sdio_set_drvdata(func, sdioh);
+            return 0;
+
+        fail:
+            if (sdioh != NULL)
+                sdioh_detach(osh, sdioh);
+            if (osh != NULL)
+                osl_detach(osh);
+            return -ENOMEM;
+        }
+    }
+--------------------------------------------------------------------------------------------------------->
+bcmsdh_linux.c
+->  {
+        void* bcmsdh_probe(osl_t *osh, void *dev, void *sdioh, void *adapter_info, uint bus_type, uint bus_num, uint slot_num)
+        {
+            /* Read the vendor/device ID from the CIS */
+            vendevid = bcmsdh_query_device(bcmsdh);
+            /* try to attach to the target device */
+            bcmsdh_osinfo->context = drvinfo.probe((vendevid >> 16), (vendevid & 0xFFFF), bus_num,      // 这里就调用dhdsdio_probe
+                    slot_num, 0, bus_type, (void *)regs, osh, bcmsdh);
+        }    
+    }
+--------------------------------------------------------------------------------------------------------->
+bcmsdh.c
+->  {
+        int bcmsdh_query_device(void *sdh)
+        {
+            bcmsdh_info_t *bcmsdh = (bcmsdh_info_t *)sdh;
+            bcmsdh->vendevid = (VENDOR_BROADCOM << 16) | 0;                 // #define	VENDOR_BROADCOM		0x14e4
+            return (bcmsdh->vendevid);
+        }
+    }
+--------------------------------------------------------------------------------------------------------->
+dhd_sdio.c
+->  {
+        static void * dhdsdio_probe(uint16 venid, uint16 devid, uint16 bus_no, uint16 slot,
+            uint16 func, uint bustype, void *regsva, osl_t * osh, void *sdh)
+        {
+            dhd_txbound = DHD_TXBOUND;      // #define DHD_TXBOUND	20	/* Default for max tx frames in one scheduling */
+            dhd_rxbound = DHD_RXBOUND;      // #define DHD_RXBOUND	50	/* Default for max rx frames in one scheduling */
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));                                       // dhdsdio_probe: Enter
+            DHD_INFO(("%s: venid 0x%04x devid 0x%04x\n", __FUNCTION__, venid, devid));      // dhdsdio_probe: venid 0x14e4 devid 0x0000
+
+            /* attempt to attach to the dongle */
+            /* 会有如下打印：
+               F1 signature OK, socitype:0x1 chip:0x4339 rev:0x1 pkg:0x2
+               DHD: dongle ram size is set to 786432(orig 786432) at 0x180000
+            */
+            if (!(dhdsdio_probe_attach(bus, osh, sdh, regsva, devid))) {
+                DHD_ERROR(("%s: dhdsdio_probe_attach failed\n", __FUNCTION__));
+                goto fail;
+            }
+
+            /* Attach to the dhd/OS/network interface */
+            if (!(bus->dhd = dhd_attach(osh, bus, SDPCM_RESERVE))) {
+                DHD_ERROR(("%s: dhd_attach failed\n", __FUNCTION__));
+                goto fail;
+            }
+
+            /* Allocate buffers */
+            if (!(dhdsdio_probe_malloc(bus, osh, sdh))) {
+                DHD_ERROR(("%s: dhdsdio_probe_malloc failed\n", __FUNCTION__));
+                goto fail;
+            }
+
+            if (!(dhdsdio_probe_init(bus, osh, sdh))) {
+                DHD_ERROR(("%s: dhdsdio_probe_init failed\n", __FUNCTION__));
+                goto fail;
+            }
+
+            if (bus->intr) {
+                /* Register interrupt callback, but mask it (not operational yet). */
+                DHD_INTR(("%s: disable SDIO interrupts (not interested yet)\n", __FUNCTION__));
+                bcmsdh_intr_disable(sdh);
+                if ((ret = bcmsdh_intr_reg(sdh, dhdsdio_isr, bus)) != 0) {                  // 注册sdio中断处理函数
+                    DHD_ERROR(("%s: FAILED: bcmsdh_intr_reg returned %d\n",
+                                __FUNCTION__, ret));
+                    goto fail;
+                }
+                DHD_INTR(("%s: registered SDIO interrupt function ok\n", __FUNCTION__));
+            } else {
+                DHD_INFO(("%s: SDIO interrupt function is NOT registered due to polling mode\n",
+                            __FUNCTION__));
+            }
+
+        #ifdef GET_OTP_MAC_ENABLE
+            if (dhd_conf_get_mac(bus->dhd, sdh, ea_addr.octet)) {
+                DHD_TRACE(("%s: Can not read MAC address\n", __FUNCTION__));
+            } else
+                memcpy(bus->dhd->mac.octet, (void *)&ea_addr, ETHER_ADDR_LEN);
+        #endif /* GET_CUSTOM_MAC_ENABLE */
+
+            /* Ok, have the per-port tell the stack we're open for business */
+            if (dhd_register_if(bus->dhd, 0, TRUE) != 0) {
+                DHD_ERROR(("%s: Net attach failed!!\n", __FUNCTION__));
+                goto fail;
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------->
+dhd_linux.c
+->  {
+        dhd_pub_t * dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
+        {
+            if (dhd_conf_attach(&dhd->pub) != 0) {
+                DHD_ERROR(("dhd_conf_attach failed\n"));
+                goto fail;
+            }
+            dhd_conf_reset(&dhd->pub);
+            dhd_conf_set_chiprev(&dhd->pub, dhd_bus_chip(bus), dhd_bus_chiprev(bus));
+            dhd_conf_preinit(&dhd->pub);
+
+            /* Some DHD modules (e.g. cfg80211) configures operation mode based on firmware name.
+             * This is indeed a hack but we have to make it work properly before we have a better
+             * solution
+             */
+            dhd_update_fw_nv_path(dhd);
+
+            /* Set network interface name if it was provided as module parameter */
+            if (iface_name[0]) {
+                int len;
+                char ch;
+                strncpy(if_name, iface_name, IFNAMSIZ);
+                if_name[IFNAMSIZ - 1] = 0;
+                len = strlen(if_name);
+                ch = if_name[len - 1];
+                if ((ch > '9' || ch < '0') && (len < IFNAMSIZ - 2))
+                    strcat(if_name, "%d");
+            }
+
+            /* Passing NULL to dngl_name to ensure host gets if_name in dngl_name member */
+            net = dhd_allocate_if(&dhd->pub, 0, if_name, NULL, 0, TRUE, NULL);              // ifp->net = alloc_etherdev(DHD_DEV_PRIV_SIZE);
+            if (net == NULL) {
+                goto fail;
+            }
+
+        #ifdef WL_CFG80211
+            /* Attach and link in the cfg80211 */
+            if (unlikely(wl_cfg80211_attach(net, &dhd->pub))) {
+                DHD_ERROR(("wl_cfg80211_attach failed\n"));
+                goto fail;
+            }
+
+            dhd_monitor_init(&dhd->pub);
+            dhd_state |= DHD_ATTACH_STATE_CFG80211;
+        #endif
+
+        #if defined(WL_WIRELESS_EXT)
+            /* Attach and link in the iw */
+            if (!(dhd_state &  DHD_ATTACH_STATE_CFG80211)) {
+                if (wl_iw_attach(net, (void *)&dhd->pub) != 0) {
+                    DHD_ERROR(("wl_iw_attach failed\n"));
+                    goto fail;
+                }
+                dhd_state |= DHD_ATTACH_STATE_WL_ATTACH;
+            }
+        #ifdef WL_ESCAN
+            wl_escan_attach(net, &dhd->pub);
+        #endif /* WL_ESCAN */
+        #endif /* defined(WL_WIRELESS_EXT) */
+        }
+    }
+-------------------------------------------------------------------------------------------------------->
+dhd_config.c
+->  {
+        int dhd_conf_preinit(dhd_pub_t *dhd)
+        {
+            memset(&conf->country_list, 0, sizeof(conf_country_list_t));
+            conf->band = -1;
+            conf->bw_cap_2g = -1;
+            conf->bw_cap_5g = -1;
+            if (conf->chip == BCM43362_CHIP_ID || conf->chip == BCM4330_CHIP_ID) {
+                strcpy(conf->cspec.country_abbrev, "ALL");
+                strcpy(conf->cspec.ccode, "ALL");
+                conf->cspec.rev = 0;
+            } else if (conf->chip == BCM4335_CHIP_ID || conf->chip == BCM4339_CHIP_ID ||
+                    conf->chip == BCM4354_CHIP_ID || conf->chip == BCM4356_CHIP_ID ||
+                    conf->chip == BCM4345_CHIP_ID || conf->chip == BCM4371_CHIP_ID ||
+                    conf->chip == BCM43569_CHIP_ID || conf->chip == BCM4359_CHIP_ID) {
+                strcpy(conf->cspec.country_abbrev, "CN");
+                strcpy(conf->cspec.ccode, "CN");
+                conf->cspec.rev = 38;
+            } else {
+                strcpy(conf->cspec.country_abbrev, "CN");
+                strcpy(conf->cspec.ccode, "CN");
+                conf->cspec.rev = 0;
+            }
+            memset(&conf->channels, 0, sizeof(wl_channel_list_t));
+            conf->roam_off = 1;
+            conf->roam_off_suspend = 1;
+
+        #ifdef CUSTOM_ROAM_TRIGGER_SETTING
+            conf->roam_trigger[0] = CUSTOM_ROAM_TRIGGER_SETTING;
+        #else
+            conf->roam_trigger[0] = -65;
+        #endif
+            conf->roam_trigger[1] = WLC_BAND_ALL;
+            conf->roam_scan_period[0] = 10;
+            conf->roam_scan_period[1] = WLC_BAND_ALL;
+        #ifdef CUSTOM_ROAM_DELTA_SETTING
+            conf->roam_delta[0] = CUSTOM_ROAM_DELTA_SETTING;
+        #else
+            conf->roam_delta[0] = 15;
+        #endif
+            conf->roam_delta[1] = WLC_BAND_ALL;
+        #ifdef FULL_ROAMING_SCAN_PERIOD_60_SEC
+            conf->fullroamperiod = 60;
+        #else /* FULL_ROAMING_SCAN_PERIOD_60_SEC */
+            conf->fullroamperiod = 120;
+        #endif /* FULL_ROAMING_SCAN_PERIOD_60_SEC */
+        #ifdef CUSTOM_KEEP_ALIVE_SETTING
+            conf->keep_alive_period = CUSTOM_KEEP_ALIVE_SETTING;
+        #else
+            conf->keep_alive_period = 28000;
+        #endif
+            conf->force_wme_ac = 0;
+            memset(&conf->wme_sta, 0, sizeof(wme_param_t));
+            memset(&conf->wme_ap, 0, sizeof(wme_param_t));
+            conf->phy_oclscdenable = -1;
+        #ifdef PKT_FILTER_SUPPORT
+            memset(&conf->pkt_filter_add, 0, sizeof(conf_pkt_filter_add_t));
+            memset(&conf->pkt_filter_del, 0, sizeof(conf_pkt_filter_del_t));
+        #endif
+            conf->srl = -1;
+            conf->lrl = -1;
+            conf->bcn_timeout = 16;
+            conf->txbf = -1;
+            conf->disable_proptx = -1;
+            conf->dhd_poll = -1;
+        #ifdef BCMSDIO
+            conf->use_rxchain = 0;
+            conf->bus_rxglom = TRUE;
+            conf->txglom_ext = FALSE;
+            conf->tx_max_offset = 0;
+            conf->txglomsize = SDPCM_DEFGLOM_SIZE;
+            conf->txctl_tmo_fix = 300;
+            conf->tx_in_rx = TRUE;
+            conf->txglom_mode = SDPCM_TXGLOM_MDESC;
+            conf->deferred_tx_len = 0;
+            conf->dhd_txminmax = 1;
+            conf->txinrx_thres = -1;
+            conf->sd_f2_blocksize = 0;
+            conf->oob_enabled_later = FALSE;
+            conf->orphan_move = 0;
+        #endif
+            conf->dpc_cpucore = -1;
+            conf->rxf_cpucore = -1;
+            conf->frameburst = -1;
+            conf->deepsleep = FALSE;
+            conf->pm = -1;
+            conf->pm_in_suspend = -1;
+            conf->suspend_bcn_li_dtim = -1;
+            conf->num_different_channels = -1;
+            conf->xmit_in_suspend = TRUE;
+            conf->ap_in_suspend = 0;
+
+        #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
+            conf->tsq = 10;
+        #else
+            conf->tsq = 0;
+        #endif
+        #ifdef DHDTCPACK_SUPPRESS
+            conf->tcpack_sup_mode = TCPACK_SUP_OFF;
+        #endif
+            conf->pktprio8021x = -1;
+            conf->ctrl_resched = 2;
+            conf->dhd_ioctl_timeout_msec = 0;
+
+            for (i=0; i<MCHAN_MAX_NUM; i++) {
+                memset(&conf->mchan[i], -1, sizeof(mchan_params_t));
+            }
+
+            if (conf->chip == BCM4354_CHIP_ID || conf->chip == BCM4356_CHIP_ID ||
+                    conf->chip == BCM4371_CHIP_ID || conf->chip == BCM43569_CHIP_ID ||
+                    conf->chip == BCM4359_CHIP_ID) {
+        #ifdef DHDTCPACK_SUPPRESS
+        #ifdef BCMSDIO
+                conf->tcpack_sup_mode = TCPACK_SUP_REPLACE;
+        #endif
+        #endif
+                dhd_rxbound = 128;
+                dhd_txbound = 64;
+                conf->txbf = 1;
+                conf->frameburst = 1;
+        #ifdef BCMSDIO
+                conf->dhd_txminmax = -1;
+                conf->txinrx_thres = 128;
+                conf->sd_f2_blocksize = CUSTOM_SDIO_F2_BLKSIZE;
+                conf->oob_enabled_later = TRUE;
+        #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
+                conf->orphan_move = 1;
+        #else
+                conf->orphan_move = 0;
+        #endif
+        #endif
+            }
+
+        #ifdef BCMSDIO
+        #if defined(BCMSDIOH_TXGLOM_EXT)
+            if (conf->chip == BCM43362_CHIP_ID || conf->chip == BCM4330_CHIP_ID ||
+                    conf->chip == BCM43340_CHIP_ID || conf->chip == BCM43341_CHIP_ID ||
+                    conf->chip == BCM4334_CHIP_ID || conf->chip == BCM4324_CHIP_ID) {
+                conf->txglom_ext = TRUE;
+            } else {
+                conf->txglom_ext = FALSE;
+            }
+            if (conf->chip == BCM43362_CHIP_ID || conf->chip == BCM4330_CHIP_ID) {
+                conf->txglom_bucket_size = 1680; // fixed value, don't change
+                conf->txglomsize = 6;
+            }
+            if (conf->chip == BCM4334_CHIP_ID || conf->chip == BCM43340_CHIP_ID ||
+                    conf->chip == BCM43341_CHIP_ID || conf->chip == BCM4324_CHIP_ID) {
+                conf->txglom_bucket_size = 1684; // fixed value, don't change
+                conf->txglomsize = 16;
+            }
+        #endif
+            if (conf->txglomsize > SDPCM_MAXGLOM_SIZE)
+                conf->txglomsize = SDPCM_MAXGLOM_SIZE;
+        #endif
+            }        
+    }
+-------------------------------------------------------------------------------------------------------->
+wl_cfg80211.c
+->  {
+        s32 wl_cfg80211_attach(struct net_device *ndev, void *context)
+        {
+            dev = wl_cfg80211_get_parent_dev();
+            wdev = kzalloc(sizeof(*wdev), GFP_KERNEL);
+            err = wl_setup_wiphy(wdev, dev, context);
+
+            wdev->iftype = wl_mode_to_nl80211_iftype(WL_MODE_BSS);
+            cfg = (struct bcm_cfg80211 *)wiphy_priv(wdev->wiphy);
+            cfg->wdev = wdev;
+            cfg->pub = context;
+            INIT_LIST_HEAD(&cfg->net_list);
+            spin_lock_init(&cfg->net_list_sync);
+            ndev->ieee80211_ptr = wdev;
+            SET_NETDEV_DEV(ndev, wiphy_dev(wdev->wiphy));
+            wdev->netdev = ndev;
+            cfg->state_notifier = wl_notifier_change_state;
+            err = wl_alloc_netinfo(cfg, ndev, wdev, WL_MODE_BSS, PM_ENABLE, 0);
+        
+            err = wl_init_priv(cfg);
+
+            err = wl_setup_rfkill(cfg, TRUE);
+
+            if (!wl_cfg80211_netdev_notifier_registered) {
+                wl_cfg80211_netdev_notifier_registered = TRUE;
+                err = register_netdevice_notifier(&wl_cfg80211_netdev_notifier);
+                if (err) {
+                    wl_cfg80211_netdev_notifier_registered = FALSE;
+                    WL_ERR(("Failed to register notifierl %d\n", err));
+                    goto cfg80211_attach_out;
+                }
+            }
+
+        #if defined(WL_ENABLE_P2P_IF)
+            err = wl_cfg80211_attach_p2p();                                 // 注册P2P接口设备
+            if (err)
+                goto cfg80211_attach_out;
+        #endif 
+        }
+        ->  {
+                static struct cfg80211_ops wl_cfg80211_ops = {
+                    .add_virtual_intf = wl_cfg80211_add_virtual_iface,
+                    .del_virtual_intf = wl_cfg80211_del_virtual_iface,
+                    .change_virtual_intf = wl_cfg80211_change_virtual_iface,
+                #if defined(WL_CFG80211_P2P_DEV_IF)
+                    .start_p2p_device = wl_cfgp2p_start_p2p_device,
+                    .stop_p2p_device = wl_cfgp2p_stop_p2p_device,
+                #endif /* WL_CFG80211_P2P_DEV_IF */
+                    .scan = wl_cfg80211_scan,
+                    .set_wiphy_params = wl_cfg80211_set_wiphy_params,
+                    .join_ibss = wl_cfg80211_join_ibss,
+                    .leave_ibss = wl_cfg80211_leave_ibss,
+                    .get_station = wl_cfg80211_get_station,
+                    .set_tx_power = wl_cfg80211_set_tx_power,
+                    .get_tx_power = wl_cfg80211_get_tx_power,
+                    .add_key = wl_cfg80211_add_key,
+                    .del_key = wl_cfg80211_del_key,
+                    .get_key = wl_cfg80211_get_key,
+                    .set_default_key = wl_cfg80211_config_default_key,
+                    .set_default_mgmt_key = wl_cfg80211_config_default_mgmt_key,
+                    .set_power_mgmt = wl_cfg80211_set_power_mgmt,
+                    .connect = wl_cfg80211_connect,
+                    .disconnect = wl_cfg80211_disconnect,
+                    .suspend = wl_cfg80211_suspend,
+                    .resume = wl_cfg80211_resume,
+                    .set_pmksa = wl_cfg80211_set_pmksa,
+                    .del_pmksa = wl_cfg80211_del_pmksa,
+                    .flush_pmksa = wl_cfg80211_flush_pmksa,
+                    .remain_on_channel = wl_cfg80211_remain_on_channel,
+                    .cancel_remain_on_channel = wl_cfg80211_cancel_remain_on_channel,
+                    .mgmt_tx = wl_cfg80211_mgmt_tx,
+                    .mgmt_frame_register = wl_cfg80211_mgmt_frame_register,
+                    .change_bss = wl_cfg80211_change_bss,
+                #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 6, 0))
+                    .set_channel = wl_cfg80211_set_channel,
+                #endif 
+                #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 4, 0))
+                    .set_beacon = wl_cfg80211_add_set_beacon,
+                    .add_beacon = wl_cfg80211_add_set_beacon,
+                #else
+                    .change_beacon = wl_cfg80211_change_beacon,
+                    .start_ap = wl_cfg80211_start_ap,
+                    .stop_ap = wl_cfg80211_stop_ap,
+                #endif 
+                #ifdef WL_SCHED_SCAN
+                    .sched_scan_start = wl_cfg80211_sched_scan_start,
+                    .sched_scan_stop = wl_cfg80211_sched_scan_stop,
+                #endif /* WL_SCHED_SCAN */
+                #if defined(WL_SUPPORT_BACKPORTED_KPATCHES) || (LINUX_VERSION_CODE >= KERNEL_VERSION(3, \
+            2, 0))
+                    .del_station = wl_cfg80211_del_station,
+                    .change_station = wl_cfg80211_change_station,
+                    .mgmt_tx_cancel_wait = wl_cfg80211_mgmt_tx_cancel_wait,
+                #endif /* WL_SUPPORT_BACKPORTED_KPATCHES || KERNEL_VERSION >= (3,2,0) */
+                #if (LINUX_VERSION_CODE > KERNEL_VERSION(3, 2, 0))
+                    .tdls_mgmt = wl_cfg80211_tdls_mgmt,
+                    .tdls_oper = wl_cfg80211_tdls_oper,
+                #endif 
+                #ifdef WL_SUPPORT_ACS
+                    .dump_survey = wl_cfg80211_dump_survey,
+                #endif /* WL_SUPPORT_ACS */
+                #ifdef WL_CFG80211_ACL
+                    .set_mac_acl = wl_cfg80211_set_mac_acl,
+                #endif /* WL_CFG80211_ACL */
+                };
+
+                static s32 wl_setup_wiphy(struct wireless_dev *wdev, struct device *sdiofunc_dev, dhd_pub_t *context)
+                {
+                    wdev->wiphy =
+                        wiphy_new(&wl_cfg80211_ops, sizeof(struct bcm_cfg80211));       // 调用cfg80211中的wiphy_new， 新建wiphy
+                                                                                        // 关联wl_cfg80211_ops结构体
+                                                                                        // 函数中会调用 rdev->ops = ops; ops即为wl_cfg80211_ops
+                                                                                        // 在nl80211的scan会调用到rdev->ops->scan！！
+
+                    if (unlikely(!wdev->wiphy)) {
+                        WL_ERR(("Couldn not allocate wiphy device\n"));
+                        err = -ENOMEM;
+                        return err;
+                    }
+                    set_wiphy_dev(wdev->wiphy, sdiofunc_dev);
+                    wdev->wiphy->max_scan_ie_len = WL_SCAN_IE_LEN_MAX;
+                    /* Report  how many SSIDs Driver can support per Scan request */
+                    wdev->wiphy->max_scan_ssids = WL_SCAN_PARAMS_SSID_MAX;
+                    wdev->wiphy->max_num_pmkids = WL_NUM_PMKIDS_MAX;
+                #ifdef WL_SCHED_SCAN
+                    wdev->wiphy->max_sched_scan_ssids = MAX_PFN_LIST_COUNT;
+                    wdev->wiphy->max_match_sets = MAX_PFN_LIST_COUNT;
+                    wdev->wiphy->max_sched_scan_ie_len = WL_SCAN_IE_LEN_MAX;
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0))
+                    wdev->wiphy->max_sched_scan_plan_interval = PNO_SCAN_MAX_FW_SEC;
+                #else
+                    wdev->wiphy->flags |= WIPHY_FLAG_SUPPORTS_SCHED_SCAN;
+                #endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)) */
+                #endif /* WL_SCHED_SCAN */
+                    wdev->wiphy->interface_modes =
+                        BIT(NL80211_IFTYPE_STATION)
+                        | BIT(NL80211_IFTYPE_ADHOC)
+                #if !defined(WL_ENABLE_P2P_IF) && !defined(WL_CFG80211_P2P_DEV_IF)
+                        | BIT(NL80211_IFTYPE_MONITOR)
+                #endif /* !WL_ENABLE_P2P_IF && !WL_CFG80211_P2P_DEV_IF */
+                #if defined(WL_IFACE_COMB_NUM_CHANNELS) || defined(WL_CFG80211_P2P_DEV_IF)
+                        | BIT(NL80211_IFTYPE_P2P_CLIENT)
+                        | BIT(NL80211_IFTYPE_P2P_GO)
+                #endif /* WL_IFACE_COMB_NUM_CHANNELS || WL_CFG80211_P2P_DEV_IF */
+                #if defined(WL_CFG80211_P2P_DEV_IF)
+                        | BIT(NL80211_IFTYPE_P2P_DEVICE)
+                #endif /* WL_CFG80211_P2P_DEV_IF */
+                        | BIT(NL80211_IFTYPE_AP);
+
+                    wdev->wiphy->bands[IEEE80211_BAND_2GHZ] = &__wl_band_2ghz;
+
+                    wdev->wiphy->signal_type = CFG80211_SIGNAL_TYPE_MBM;
+                    wdev->wiphy->cipher_suites = __wl_cipher_suites;
+                    wdev->wiphy->n_cipher_suites = ARRAY_SIZE(__wl_cipher_suites);
+                    wdev->wiphy->max_remain_on_channel_duration = 5000;
+                    wdev->wiphy->mgmt_stypes = wl_cfg80211_default_mgmt_stypes;
+                #ifndef WL_POWERSAVE_DISABLED
+                    wdev->wiphy->flags |= WIPHY_FLAG_PS_ON_BY_DEFAULT;
+                #else
+                    wdev->wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
+                #endif				/* !WL_POWERSAVE_DISABLED */
+                    wdev->wiphy->flags |= WIPHY_FLAG_NETNS_OK |
+                        WIPHY_FLAG_4ADDR_AP |
+                #if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 39))
+                        WIPHY_FLAG_SUPPORTS_SEPARATE_DEFAULT_KEYS |
+                #endif
+                        WIPHY_FLAG_4ADDR_STATION;
+                #if ((defined(ROAM_ENABLE) || defined(BCMFW_ROAM_ENABLE)) && (LINUX_VERSION_CODE >= \ KERNEL_VERSION(3, 2, 0)))
+                    /*
+                     * If FW ROAM flag is advertised, upper layer wouldn't provide
+                     * the bssid & freq in the connect command. This will result a
+                     * delay in initial connection time due to firmware doing a full
+                     * channel scan to figure out the channel & bssid. However kernel
+                     * ver >= 3.15, provides bssid_hint & freq_hint and hence kernel
+                     * ver >= 3.15 won't have any issue. So if this flags need to be
+                     * advertised for kernel < 3.15, suggest to use RCC along with it
+                     * to avoid the initial connection delay.
+                     */
+                    wdev->wiphy->flags |= WIPHY_FLAG_SUPPORTS_FW_ROAM;
+                #endif 
+                #ifdef UNSET_FW_ROAM_WIPHY_FLAG
+                    wdev->wiphy->flags &= ~WIPHY_FLAG_SUPPORTS_FW_ROAM;
+                #endif /* UNSET_FW_ROAM_WIPHY_FLAG */
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 3, 0))
+                    wdev->wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
+                        WIPHY_FLAG_OFFCHAN_TX;
+                #endif
+                #if defined(WL_SUPPORT_BACKPORTED_KPATCHES) || (LINUX_VERSION_CODE >= KERNEL_VERSION(3, \ 4, 0))
+                    /* From 3.4 kernel ownards AP_SME flag can be advertised
+                     * to remove the patch from supplicant
+                     */
+                    wdev->wiphy->flags |= WIPHY_FLAG_HAVE_AP_SME;
+
+                #ifdef WL_CFG80211_ACL
+                    /* Configure ACL capabilities. */
+                    wdev->wiphy->max_acl_mac_addrs = MAX_NUM_MAC_FILT;
+                #endif
+
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 0))
+                    /* Supplicant distinguish between the SoftAP mode and other
+                     * modes (e.g. P2P, WPS, HS2.0) when it builds the probe
+                     * response frame from Supplicant MR1 and Kernel 3.4.0 or
+                     * later version. To add Vendor specific IE into the
+                     * probe response frame in case of SoftAP mode,
+                     * AP_PROBE_RESP_OFFLOAD flag is set to wiphy->flags variable.
+                     */
+                    if (dhd_get_fw_mode(dhd->info) == DHD_FLAG_HOSTAP_MODE) {
+                        wdev->wiphy->flags |= WIPHY_FLAG_AP_PROBE_RESP_OFFLOAD;
+                        wdev->wiphy->probe_resp_offload = 0;
+                    }
+                #endif 
+                #endif /* WL_SUPPORT_BACKPORTED_KPATCHES) || (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 0)) */
+
+                #if (LINUX_VERSION_CODE > KERNEL_VERSION(3, 2, 0))
+                    wdev->wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS;
+                #endif
+
+                #if defined(CONFIG_PM) && defined(WL_CFG80211_P2P_DEV_IF)
+                    /*
+                     * From linux-3.10 kernel, wowlan packet filter is mandated to avoid the
+                     * disconnection of connected network before suspend. So a dummy wowlan
+                     * filter is configured for kernels linux-3.8 and above.
+                     */
+
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0))
+                    wdev->wiphy->wowlan = &brcm_wowlan_support;
+                    /* If this is not provided cfg stack will get disconnect
+                     * during suspend.
+                     */
+                    brcm_wowlan_config = kmalloc(sizeof(struct cfg80211_wowlan), GFP_KERNEL);
+                    if (brcm_wowlan_config) {
+                        brcm_wowlan_config->disconnect = true;
+                        brcm_wowlan_config->gtk_rekey_failure = true;
+                        brcm_wowlan_config->eap_identity_req = true;
+                        brcm_wowlan_config->four_way_handshake = true;
+                        brcm_wowlan_config->patterns = NULL;
+                        brcm_wowlan_config->n_patterns = 0;
+                        brcm_wowlan_config->tcp = NULL;
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
+                        brcm_wowlan_config->nd_config = NULL;
+                #endif
+                    } else {
+                        WL_ERR(("Can not allocate memory for brcm_wowlan_config,"
+                                    " So wiphy->wowlan_config is set to NULL\n"));
+                    }
+                    wdev->wiphy->wowlan_config = brcm_wowlan_config;
+                #else
+                    wdev->wiphy->wowlan.flags = WIPHY_WOWLAN_ANY;
+                    wdev->wiphy->wowlan.n_patterns = WL_WOWLAN_MAX_PATTERNS;
+                    wdev->wiphy->wowlan.pattern_min_len = WL_WOWLAN_MIN_PATTERN_LEN;
+                    wdev->wiphy->wowlan.pattern_max_len = WL_WOWLAN_MAX_PATTERN_LEN;
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
+                    wdev->wiphy->wowlan.max_pkt_offset = WL_WOWLAN_MAX_PATTERN_LEN;
+                #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0) */
+                #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0) */
+                #endif /* CONFIG_PM && WL_CFG80211_P2P_DEV_IF */
+
+                    WL_DBG(("Registering custom regulatory)\n"));
+                #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
+                    wdev->wiphy->regulatory_flags |= REGULATORY_CUSTOM_REG;
+                #else
+                    wdev->wiphy->flags |= WIPHY_FLAG_CUSTOM_REGULATORY;
+                #endif
+                    wiphy_apply_custom_regulatory(wdev->wiphy, &brcm_regdom);
+                #if defined(WL_VENDOR_EXT_SUPPORT)
+                    WL_ERR(("Registering Vendor80211\n"));
+                    err = wl_cfgvendor_attach(wdev->wiphy);
+                    if (unlikely(err < 0)) {
+                        WL_ERR(("Couldn not attach vendor commands (%d)\n", err));
+                    }
+                #endif /* defined(WL_VENDOR_EXT_SUPPORT) */
+                    /* Now we can register wiphy with cfg80211 module */
+                    err = wiphy_register(wdev->wiphy);
+                    if (unlikely(err < 0)) {
+                        WL_ERR(("Couldn not register wiphy device (%d)\n", err));
+                        wiphy_free(wdev->wiphy);
+                    }
+                }
+
+                static int wl_setup_rfkill(struct bcm_cfg80211 *cfg, bool setup)
+                {
+                    s32 err = 0;
+
+                    WL_DBG(("Enter \n"));
+                    if (setup) {
+                        cfg->rfkill = rfkill_alloc("brcmfmac-wifi",
+                                wl_cfg80211_get_parent_dev(),
+                                RFKILL_TYPE_WLAN, &wl_rfkill_ops, (void *)cfg);
+
+                        if (!cfg->rfkill) {
+                            err = -ENOMEM;
+                            goto err_out;
+                        }
+
+                        err = rfkill_register(cfg->rfkill);                         // 注册rfkill节点
+
+                        if (err)
+                            rfkill_destroy(cfg->rfkill);
+                    } else {
+                        if (!cfg->rfkill) {
+                            err = -ENOMEM;
+                            goto err_out;
+                        }
+
+                        rfkill_unregister(cfg->rfkill);
+                        rfkill_destroy(cfg->rfkill);
+                    }
+                }
+                
+            }
+    }
+--------------------------------------------------------------------------------------------------------->
+dhd_sdio.c
+->  {
+        static bool dhdsdio_probe_init(dhd_bus_t *bus, osl_t *osh, void *sdh)
+        {
+            /* Query the SD clock speed */
+            if (bcmsdh_iovar_op(sdh, "sd_divisor", NULL, 0,
+                        &bus->sd_divisor, sizeof(int32), FALSE) != BCME_OK) {
+                DHD_ERROR(("%s: fail on %s get\n", __FUNCTION__, "sd_divisor"));
+                bus->sd_divisor = -1;
+            } else {
+                DHD_INFO(("%s: Initial value for %s is %d\n",
+                            __FUNCTION__, "sd_divisor", bus->sd_divisor));
+            }
+
+            /* Query the SD bus mode */
+            if (bcmsdh_iovar_op(sdh, "sd_mode", NULL, 0,
+                        &bus->sd_mode, sizeof(int32), FALSE) != BCME_OK) {
+                DHD_ERROR(("%s: fail on %s get\n", __FUNCTION__, "sd_mode"));
+                bus->sd_mode = -1;
+            } else {
+                DHD_INFO(("%s: Initial value for %s is %d\n",
+                            __FUNCTION__, "sd_mode", bus->sd_mode));
+            }
+
+            /* Query the F2 block size, set roundup accordingly */
+            fnum = 2;
+            if (bcmsdh_iovar_op(sdh, "sd_blocksize", &fnum, sizeof(int32),
+                        &bus->blocksize, sizeof(int32), FALSE) != BCME_OK) {
+                bus->blocksize = 0;
+                DHD_ERROR(("%s: fail on %s get\n", __FUNCTION__, "sd_blocksize"));
+            } else {
+                DHD_INFO(("%s: Initial value for %s is %d\n",
+                            __FUNCTION__, "sd_blocksize", bus->blocksize));
+
+                dhdsdio_tune_fifoparam(bus);
+            }
+            bus->roundup = MIN(max_roundup, bus->blocksize);
+
+            /* Query if bus module supports packet chaining, default to use if supported */
+            if (bcmsdh_iovar_op(sdh, "sd_rxchain", NULL, 0,
+                        &bus->sd_rxchain, sizeof(int32), FALSE) != BCME_OK) {
+                bus->sd_rxchain = FALSE;
+            } else {
+                DHD_INFO(("%s: bus module (through bcmsdh API) %s chaining\n",
+                            __FUNCTION__, (bus->sd_rxchain ? "supports" : "does not support")));
+            }
+            bus->use_rxchain = (bool)bus->sd_rxchain;
+            bus->txinrx_thres = CUSTOM_TXINRX_THRES;
+            /* TX first in dhdsdio_readframes() */
+            bus->dotxinrx = TRUE;
+        }
+    }
+--------------------------------------------------------------------------------------------------------->
+dhd_linux.c
+->  {
+        int dhd_register_if(dhd_pub_t *dhdp, int ifidx, bool need_rtnl_lock)
+        {
+            /* Ok, link into the network layer... */
+            if (ifidx == 0) {
+                /*
+                 * device functions for the primary interface only
+                 */
+        #if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31))
+                net->open = dhd_open;
+                net->stop = dhd_stop;
+        #else
+                net->netdev_ops = &dhd_ops_pri;
+        #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 31) */
+                if (!ETHER_ISNULLADDR(dhd->pub.mac.octet))
+                    memcpy(temp_addr, dhd->pub.mac.octet, ETHER_ADDR_LEN);
+            } else {
+                /*
+                 * We have to use the primary MAC for virtual interfaces
+                 */
+                memcpy(temp_addr, ifp->mac_addr, ETHER_ADDR_LEN);
+                /*
+                 * Android sets the locally administered bit to indicate that this is a
+                 * portable hotspot.  This will not work in simultaneous AP/STA mode,
+                 * nor with P2P.  Need to set the Donlge's MAC address, and then use that.
+                 */
+                if (!memcmp(temp_addr, dhd->iflist[0]->mac_addr,
+                            ETHER_ADDR_LEN)) {
+                    DHD_ERROR(("%s interface [%s]: set locally administered bit in MAC\n",
+                                __func__, net->name));
+                    temp_addr[0] |= 0x02;
+                }
+            }
+
+            memcpy(net->dev_addr, temp_addr, ETHER_ADDR_LEN);
+
+            if (ifidx == 0)
+                printf("%s\n", dhd_version);                    // Dongle Host Driver, version 1.201.59.4 (r506368)
+                                                                // Compiled in drivers/net/wireless/bcmdhd on Aug 26 2015 at 17:46:01
+        #ifdef WL_EXT_IAPSTA
+            else
+                wl_ext_iapsta_attach_netdev(net, ifidx);
+        #endif
+
+            if (need_rtnl_lock)
+                err = register_netdev(net);                     // 注册wlan接口
+            else
+                err = register_netdevice(net);
+        
+            // Register interface [wlan0]  MAC: 94:a1:a2:f7:55:c6
+            printf("Register interface [%s]  MAC: "MACDBG"\n\n", net->name, MAC2STRDBG(net->dev_addr));
+
+            if (ifidx == 0) {
+                up(&dhd_registration_sem);
+                if (!dhd_download_fw_on_driverload) {
+                    wl_terminate_event_handler();
+
+        #if defined(BCMPCIE) && defined(DHDTCPACK_SUPPRESS)
+                    dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_OFF);
+        #endif /* BCMPCIE && DHDTCPACK_SUPPRESS */
+
+                    dhd_net_bus_devreset(net, TRUE);
+
+        #ifdef BCMLXSDMMC
+                    dhd_net_bus_suspend(net);
+        #endif /* BCMLXSDMMC */
+
+                    wifi_platform_set_power(dhdp->info->adapter, FALSE, WIFI_TURNOFF_DELAY);        // dhd_module_init最后一步就是给模组掉电
+        /**************************************************************************************************************************************
+            wifi_platform_set_power会有如下打印:
+            wifi_platform_set_power = 0
+            ======== PULL WL_REG_ON LOW! ========
+            [WLAN_RFKILL]: rockchip_wifi_power: 0
+            [WLAN_RFKILL]: wifi shut off power.
+            [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 0
+            [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+        *************************************************************************************************************************************/
+                }
+            }
+        }
+        ->  {
+                int dhd_net_bus_devreset(struct net_device *dev, uint8 flag)
+                {
+                    int ret;
+
+                    dhd_info_t *dhd = DHD_DEV_INFO(dev);
+
+                    if (flag == TRUE) {
+                        /* Issue wl down command before resetting the chip */
+                        if (dhd_wl_ioctl_cmd(&dhd->pub, WLC_DOWN, NULL, 0, TRUE, 0) < 0) {  // dhd_module_init到这里会down掉wifi,但这里失败的
+        /**************************************************************************************************************************************
+            dhd_wl_ioctl_cmd函数会有以下打印 ： 
+            dhd_prot_ioctl : bus is down. we have nothing to do
+            dhd_net_bus_devreset: wl down failed
+            因为当前wlan本来就处在down的状态！！
+        *************************************************************************************************************************************/
+                            DHD_TRACE(("%s: wl down failed\n", __FUNCTION__));
+                        }
+
+                #ifdef PROP_TXSTATUS
+                        if (dhd->pub.wlfc_enabled)
+                            dhd_wlfc_deinit(&dhd->pub);
+                #endif /* PROP_TXSTATUS */
+
+                #ifdef PNO_SUPPORT
+                        if (dhd->pub.pno_state)
+                            dhd_pno_deinit(&dhd->pub);
+                #endif
+                    }
+
+                #ifdef BCMSDIO
+                    if (!flag) {
+                        dhd_update_fw_nv_path(dhd);
+                        /* update firmware and nvram path to sdio bus */
+                        dhd_bus_update_fw_nv_path(dhd->pub.bus,
+                                dhd->fw_path, dhd->nv_path, dhd->clm_path, dhd->conf_path);
+                    }
+                #endif /* BCMSDIO */
+
+                    ret = dhd_bus_devreset(&dhd->pub, flag);
+        /**************************************************************************************************************************************
+            dhd_bus_devreset函数会有以下打印 ： 
+            dhd_os_wd_timer: Enter
+            dhd_txflowcontrol: Enter
+            dhd_bus_stop: Enter
+            bcmsdh_oob_intr_unregister: Enter
+            bcmsdh_oob_intr_unregister: irq is not registered
+            dhdsdio_release_dongle: Enter bus->dhd dd6980a4 bus->dhd->dongle_reset 0 
+            dhdsdio_clkctl: Enter
+            dhdsdio_sdclk: Enter
+            dhd_os_wd_timer: Enter
+            dhdsdio_clkctl: 1 -> 0
+            dhdsdio_release_dongle: Disconnected
+            dhd_txglom_enable: Enter
+            dhd_txglom_enable: enable 0
+            dhd_bus_devreset:  WLAN OFF DONE
+        *************************************************************************************************************************************/
+
+                    if (ret) {
+                        DHD_ERROR(("%s: dhd_bus_devreset: %d\n", __FUNCTION__, ret));
+                        return ret;
+                    }
+
+                    return ret;
+                }
+            }
+        } 
+    }
+---------------------------------------------------------------------------------------->
+dhd_sdio.c
+->  {
+        int dhd_bus_devreset(dhd_pub_t *dhdp, uint8 flag)
+        {
+            if (flag == TRUE) {
+                if (!bus->dhd->dongle_reset) {
+                    dhd_os_sdlock(dhdp);
+                    dhd_os_wd_timer(dhdp, 0);
+                #if !defined(IGNORE_ETH0_DOWN)
+                    /* Force flow control as protection when stop come before ifconfig_down */
+                    dhd_txflowcontrol(bus->dhd, ALL_INTERFACES, ON);
+                #endif /* !defined(IGNORE_ETH0_DOWN) */
+                    /* Expect app to have torn down any connection before calling */
+                    /* Stop the bus, disable F2 */
+
+                #if defined(OOB_INTR_ONLY)
+                    /* Clean up any pending IRQ */
+                    dhd_enable_oob_intr(bus, FALSE);
+                    bcmsdh_oob_intr_set(bus->sdh, FALSE);
+                    bcmsdh_oob_intr_unregister(bus->sdh);
+                #endif 
+
+                    /* Clean tx/rx buffer pointers, detach from the dongle */
+                    dhdsdio_release_dongle(bus, bus->dhd->osh, TRUE, TRUE);
+
+                    bus->dhd->dongle_reset = TRUE;
+                    bus->dhd->up = FALSE;
+                    dhd_txglom_enable(dhdp, FALSE);
+                    dhd_os_sdunlock(dhdp);
+
+                    printf("%s:  WLAN OFF DONE\n", __FUNCTION__);           // dhd_bus_devreset:  WLAN OFF DONE
+                    /* App can now remove power from device */
+                } else
+                    bcmerror = BCME_SDIO_ERROR;
+            }
+            else
+            {
+                /* App must have restored power to device before calling */
+
+                printf("\n\n%s: == WLAN ON ==\n", __FUNCTION__);        // dhd_bus_devreset: == WLAN ON ==
+
+                if (bus->dhd->dongle_reset) {
+                    /* Turn on WLAN */
+                    dhd_os_sdlock(dhdp);
+                    /* Reset SD client */
+                    bcmsdh_reset(bus->sdh);
+
+                    /* Attempt to re-attach & download */
+                    if (dhdsdio_probe_attach(bus, bus->dhd->osh, bus->sdh,
+                                (uint32 *)SI_ENUM_BASE,
+                                bus->cl_devid)) {
+                        /* Attempt to download binary to the dongle */
+                        if (dhdsdio_probe_init(bus, bus->dhd->osh, bus->sdh) &&
+                                dhdsdio_download_firmware(bus, bus->dhd->osh, bus->sdh) >= 0) {     // 下载fw和nvram到chip内部
+                            
+        /**************************************************************************************************************************************
+            dhdsdio_download_firmware函数会有以下打印 ： 
+            dhd_conf_set_fw_name_by_chip: firmware_path=/system/etc/firmware/fw_bcm4339a0_ag.bin,nv_path=/system/etc/firmware/nvram_AP6335.txt
+            Final fw_path=/system/etc/firmware/fw_bcm4339a0_ag.bin
+            Final nv_path=/system/etc/firmware/nvram_AP6335.txt
+            Final conf_path=/system/etc/firmware/config.txt
+            dhdsdio_download_code_file: download firmware /system/etc/firmware/fw_bcm4339a0_ag.bin
+            dhdsdio_download_code_file: Download, Upload and compare succeeded.
+            NVRAM version: AP6335_NVRAM_V1.7_04102014
+            dhdsdio_downloadvars: Enter
+            dhdsdio_membytes: write 2252 bytes at offset 0x00007730 in window 0x00238000
+            Compare NVRAM dl & ul; varsize=2252
+            dhdsdio_membytes: read 2252 bytes at offset 0x00007730 in window 0x00238000
+            dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+        *************************************************************************************************************************************/
+
+                            /* Re-init bus, enable F2 transfer */
+                            bcmerror = dhd_bus_init((dhd_pub_t *) bus->dhd, FALSE);
+                            if (bcmerror == BCME_OK) {
+                #if defined(OOB_INTR_ONLY)
+                                dhd_enable_oob_intr(bus, TRUE);                         // 使能oob中断
+                                bcmsdh_oob_intr_register(bus->sdh,                      // 注册申请oob中断
+                                        dhdsdio_isr, bus);
+                                bcmsdh_oob_intr_set(bus->sdh, TRUE);
+                #elif defined(FORCE_WOWLAN)
+                                dhd_enable_oob_intr(bus, TRUE);
+                #endif 
+
+                                bus->dhd->dongle_reset = FALSE;
+                                bus->dhd->up = TRUE;
+
+                #if !defined(IGNORE_ETH0_DOWN)
+                                /* Restore flow control  */
+                                dhd_txflowcontrol(bus->dhd, ALL_INTERFACES, OFF);
+                #endif 
+                                dhd_os_wd_timer(dhdp, dhd_watchdog_ms);
+
+                                DHD_TRACE(("%s: WLAN ON DONE\n", __FUNCTION__));                // dhd_bus_devreset: WLAN ON DONE
+                            } else {
+                                dhd_bus_stop(bus, FALSE);
+                                dhdsdio_release_dongle(bus, bus->dhd->osh,
+                                        TRUE, FALSE);
+                            }
+                        } else {
+                            DHD_ERROR(("%s Failed to download binary to the dongle\n",
+                                        __FUNCTION__));
+                            if (bus->sih != NULL) {
+                                si_detach(bus->sih);
+                                bus->sih = NULL;
+                            }
+                            bcmerror = BCME_SDIO_ERROR;
+                        }
+                    } else
+                        bcmerror = BCME_SDIO_ERROR;
+
+                    dhd_os_sdunlock(dhdp);
+                }
+        }
+    }
+--------------------------------------------------------------------------------------------------------->
+dhd_linux.c
+->  {
+        int dhd_net_bus_suspend(struct net_device *dev)
+        {
+            dhd_info_t *dhd = DHD_DEV_INFO(dev);
+            return dhd_bus_suspend(&dhd->pub);
+        }
+}
+-------------------------------------------------------------------------------------------------------->
+dhd_sdio.c
+->  {
+        int dhd_bus_suspend(dhd_pub_t *dhdpub)
+        {
+            return bcmsdh_stop(dhdpub->bus->sdh);
+        }
+    }
+-------------------------------------------------------------------------------------------------------->
+bcmsdh.c
+->  {
+        int bcmsdh_stop(void *sdh)
+        {
+            bcmsdh_info_t *bcmsdh = (bcmsdh_info_t *)sdh;
+
+            return sdioh_stop(bcmsdh->sdioh);
+        }
+    }
+-------------------------------------------------------------------------------------------------------->
+bcmsdh_sdmmc.c
+->  {
+        int sdioh_stop(sdioh_info_t *sd)
+        {
+            /* MSM7201A Android sdio stack has bug with interrupt
+               So internaly within SDIO stack they are polling
+               which cause issue when device is turned off. So
+               unregister interrupt with SDIO stack to stop the
+               polling
+             */
+            if (sd->func[0]) {
+        #if !defined(OOB_INTR_ONLY)
+                sdio_claim_host(sd->func[0]);
+                if (sd->func[1])
+                    sdio_release_irq(sd->func[1]);
+                if (sd->func[2])
+                    sdio_release_irq(sd->func[2]);
+                sdio_release_host(sd->func[0]);
+        #else /* defined(OOB_INTR_ONLY) */
+        #if defined(HW_OOB)
+                sdioh_disable_func_intr(sd);
+        #endif
+                bcmsdh_oob_intr_set(sd->bcmsdh, FALSE);
+        #endif /* !defined(OOB_INTR_ONLY) */
+            }
+            else
+                sd_err(("%s Failed\n", __FUNCTION__));
+            return (0);
+        }
+    }
+==========================================================================================================
+                                以上为insmod流程
+==========================================================================================================
+
+wl_escan.c
+->  {
+        int wl_escan_attach(struct net_device *dev, dhd_pub_t *dhdp)
+        {
+            wl_escan_init(escan);
+        }
+
+        static s32 wl_escan_init(struct wl_escan_info *escan)
+        {
+            int err = 0;
+
+            printf("%s: Enter\n", __FUNCTION__);
+            if (!escan) {
+                ESCAN_ERROR(("device is not ready\n"));
+                return -EIO;
+            }
+
+            /* Init scan_timeout timer */
+        #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+            timer_setup(&escan->scan_timeout, wl_escan_timeout, 0);
+        #else
+            init_timer(&escan->scan_timeout);
+            escan->scan_timeout.data = (unsigned long) escan;
+            escan->scan_timeout.function = wl_escan_timeout;                    // 注册wl_escan_timeout函数
+        #endif
+
+            if (wl_create_event_handler(escan)) {
+                err = -ENOMEM;
+                goto err;
+            }
+            memset(escan->evt_handler, 0, sizeof(escan->evt_handler));
+
+            escan->evt_handler[WLC_E_ESCAN_RESULT] = wl_escan_handler;
+            escan->escan_state = ESCAN_STATE_IDLE;
+
+            mutex_init(&escan->usr_sync);
+
+            return 0;
+        }
+
+        static s32 wl_create_event_handler(struct wl_escan_info *escan)
+        {
+            int ret = 0;
+            ESCAN_TRACE(("Enter \n"));
+
+            /* Do not use DHD in cfg driver */
+            escan->event_tsk.thr_pid = -1;
+
+            PROC_START(wl_escan_event_handler, escan, &escan->event_tsk, 0, "wl_escan_handler");
+            if (escan->event_tsk.thr_pid < 0)
+                ret = -ENOMEM;
+            return ret;
+        }
+
+        static s32 wl_escan_event_handler(void *data)
+        {
+            while (down_interruptible (&tsk->sema) == 0) {
+                while (escan && (e = wl_deq_event(escan))) {
+                    ESCAN_TRACE(("dev=%p, event type (%d), ifidx: %d bssidx: %d \n",
+                                escan->dev, e->etype, e->emsg.ifidx, e->emsg.bsscfgidx));
+
+                    if (e->emsg.ifidx > WL_MAX_IFS) {
+                        ESCAN_ERROR(("Event ifidx not in range. val:%d \n", e->emsg.ifidx));
+                        goto fail;
+                    }
+
+                    if (escan->dev && escan->evt_handler[e->etype]) {
+                        dhd_pub_t *dhd = (struct dhd_pub *)(escan->pub);
+                        if (dhd->busstate == DHD_BUS_DOWN) {
+                            ESCAN_ERROR((": BUS is DOWN.\n"));
+                        } else {
+                            escan->evt_handler[e->etype](escan, &e->emsg, e->edata);
+                        }
+                    } else {
+                        ESCAN_TRACE(("Unknown Event (%d): ignoring\n", e->etype));
+                    }
+fail:
+                    wl_put_event(e);
+                    DHD_EVENT_WAKE_UNLOCK(escan->pub);
+                }
+            }
+        }
+
+        static void wl_escan_timeout(
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+                struct timer_list *t
+#else
+                unsigned long data
+#endif
+                )
+        {
+            bss_list = wl_escan_get_buf(escan);
+            if (!bss_list) {
+                ESCAN_ERROR(("bss_list is null. Didn't receive any partial scan results\n"));
+            } else {
+                ESCAN_ERROR(("%s: scanned AP count (%d)\n", __FUNCTION__, bss_list->count));
+                bi = next_bss(bss_list, bi);
+                for_each_bss(bss_list, bi, i) {
+                    channel = wf_chspec_ctlchan(wl_chspec_driver_to_host(escan->ioctl_ver, bi->chanspec));
+                    ESCAN_ERROR(("SSID :%s  Channel :%d\n", bi->SSID, channel));
+                }
+            }
+
+            bzero(&msg, sizeof(wl_event_msg_t));
+            ESCAN_ERROR(("timer expired\n"));
+
+            msg.event_type = hton32(WLC_E_ESCAN_RESULT);
+            msg.status = hton32(WLC_E_STATUS_TIMEOUT);
+            msg.reason = 0xFFFFFFFF;
+            wl_escan_event(escan->dev, &msg, NULL);                         // 调用wl_escan_event
+        }
+
+        void wl_escan_event(struct net_device *dev, const wl_event_msg_t * e, void *data)
+        {
+            DHD_EVENT_WAKE_LOCK(escan->pub);
+            if (likely(!wl_enq_event(escan, dev, event_type, e, data))) {
+                wl_wakeup_event(escan);                                     // 调用wl_wakeup_event
+            } else {
+                DHD_EVENT_WAKE_UNLOCK(escan->pub);
+            }
+        }
+
+        static void wl_wakeup_event(struct wl_escan_info *escan)
+        {
+            dhd_pub_t *dhd = (dhd_pub_t *)(escan->pub);
+
+            if (dhd->up && (escan->event_tsk.thr_pid >= 0)) {
+                up(&escan->event_tsk.sema);                                 // up escan->event_tsk信号量
+            }
+        }
+    }

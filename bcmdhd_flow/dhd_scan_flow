@@ -1,0 +1,148 @@
+wl_cfg80211.c
+->  {
+        static s32
+        #if defined(WL_CFG80211_P2P_DEV_IF)
+            wl_cfg80211_scan(struct wiphy *wiphy, struct cfg80211_scan_request *request)
+        #else
+            wl_cfg80211_scan(struct wiphy *wiphy, struct net_device *ndev,
+                    struct cfg80211_scan_request *request)
+        #endif /* WL_CFG80211_P2P_DEV_IF */
+            {
+                s32 err = 0;
+                struct bcm_cfg80211 *cfg = wiphy_priv(wiphy);
+        #if defined(WL_CFG80211_P2P_DEV_IF)
+                struct net_device *ndev = wdev_to_wlc_ndev(request->wdev, cfg);
+        #endif /* WL_CFG80211_P2P_DEV_IF */
+
+                WL_DBG(("Enter\n"));
+                RETURN_EIO_IF_NOT_UP(cfg);
+
+                if (ndev == bcmcfg_to_prmry_ndev(cfg)) {
+                    if (wl_cfg_multip2p_operational(cfg)) {
+                        WL_ERR(("wlan0 scan failed, p2p devices are operational"));
+                        return -ENODEV;
+                    }
+                }
+
+                mutex_lock(&cfg->usr_sync);
+                err = __wl_cfg80211_scan(wiphy, ndev, request, NULL);
+                if (unlikely(err)) {
+                    WL_ERR(("scan error (%d)\n", err));
+                }
+                mutex_unlock(&cfg->usr_sync);
+
+                return err;
+            }
+            ->  {
+                    static s32 __wl_cfg80211_scan(struct wiphy *wiphy, struct net_device *ndev,
+                                struct cfg80211_scan_request *request,
+                                struct cfg80211_ssid *this_ssid)
+                        {
+                            /*
+                             * Hostapd triggers scan before starting automatic channel selection
+                             * to collect channel characteristics. However firmware scan engine
+                             * doesn't support any channel characteristics collection along with
+                             * scan. Hence return scan success.
+                             */
+                            if (request && (scan_req_iftype(request) == NL80211_IFTYPE_AP)) {
+                                WL_INFORM(("Scan Command on SoftAP Interface. Ignoring...\n"));
+                                // terence 20161023: let it scan in SoftAP mode
+                                //		return 0;
+                            }
+
+                            WL_DBG(("Enter wiphy (%p)\n", wiphy));
+                            if (wl_get_drv_status_all(cfg, SCANNING)) {
+                                if (cfg->scan_request == NULL) {
+                                    wl_clr_drv_status_all(cfg, SCANNING);
+                                    WL_DBG(("<<<<<<<<<<<Force Clear Scanning Status>>>>>>>>>>>\n"));
+                                } else {
+                                    WL_ERR(("Scanning already\n"));
+                                    return -EAGAIN;
+                                }
+                            }
+                            if (wl_get_drv_status(cfg, SCAN_ABORTING, ndev)) {
+                                WL_ERR(("Scanning being aborted\n"));
+                                return -EAGAIN;
+                            }
+                            if (request && request->n_ssids > WL_SCAN_PARAMS_SSID_MAX) {            // WL_SCAN_PARAMS_SSID_MAX = 10
+                                WL_ERR(("request null or n_ssids > WL_SCAN_PARAMS_SSID_MAX\n"));
+                                return -EOPNOTSUPP;
+                            }
+
+                            err = wl_do_escan(cfg, wiphy, ndev, request);               // 调用wl_do_escan函数
+                        }
+                }
+                ->  {
+                        static s32 wl_do_escan(struct bcm_cfg80211 *cfg, struct wiphy *wiphy, struct net_device *ndev,
+                                    struct cfg80211_scan_request *request)
+                        {
+                            cfg->escan_info.ndev = ndev;
+                            cfg->escan_info.wiphy = wiphy;
+                            cfg->escan_info.escan_state = WL_ESCAN_STATE_SCANING;
+                            passive_scan = cfg->active_scan ? 0 : 1;
+                            err = wldev_ioctl_set(ndev, WLC_SET_PASSIVE_SCAN, &passive_scan, sizeof(passive_scan));
+
+                            if (passive_channel_skip) {
+
+                                err = wldev_ioctl_get(ndev, WLC_GET_SCAN_PASSIVE_TIME,
+                                        &passive_scan_time_org, sizeof(passive_scan_time_org));
+                                if (unlikely(err)) {
+                                    WL_ERR(("== error (%d)\n", err));
+                                    goto exit;
+                                }
+
+                                WL_SCAN(("PASSIVE SCAN time : %d \n", passive_scan_time_org));
+
+                                passive_scan_time = 0;
+                                err = wldev_ioctl_set(ndev, WLC_SET_SCAN_PASSIVE_TIME,
+                                        &passive_scan_time, sizeof(passive_scan_time));
+                                if (unlikely(err)) {
+                                    WL_ERR(("== error (%d)\n", err));
+                                    goto exit;
+                                }
+
+                                WL_SCAN(("PASSIVE SCAN SKIPED!! (passive_channel_skip:%d) \n",
+                                            passive_channel_skip));
+                            }
+
+                            err = wl_run_escan(cfg, ndev, request, WL_SCAN_ACTION_START);           // 调用wl_run_escan函数
+
+                            if (passive_channel_skip) {
+                                err = wldev_ioctl_set(ndev, WLC_SET_SCAN_PASSIVE_TIME,
+                                        &passive_scan_time_org, sizeof(passive_scan_time_org));
+                                if (unlikely(err)) {
+                                    WL_ERR(("== error (%d)\n", err));
+                                    goto exit;
+                                }
+
+                                WL_SCAN(("PASSIVE SCAN RECOVERED!! (passive_scan_time_org:%d) \n",
+                                            passive_scan_time_org));
+                            }
+                        }
+                        ->  {
+                                static s32 wl_run_escan(struct bcm_cfg80211 *cfg, struct net_device *ndev,
+                                        struct cfg80211_scan_request *request, uint16 action)
+                                {
+                                    params = (wl_escan_params_t *) kzalloc(params_size, GFP_KERNEL);
+                                    if (params == NULL) {
+                                        err = -ENOMEM;
+                                        goto exit;
+                                    }
+                                    wl_scan_prep(cfg, &params->params, request);                    // prepare scan
+
+                                    if (cfg->active_scan == PASSIVE_SCAN) {
+                                        params->params.scan_type = DOT11_SCANTYPE_PASSIVE;
+                                        WL_DBG(("Passive scan_type %d \n", params->params.scan_type));
+                                    }
+                                
+                                    bssidx = wl_get_bssidx_by_wdev(cfg, ndev->ieee80211_ptr);
+
+                                    err = wldev_iovar_setbuf(ndev, "escan", params, params_size,
+                                            cfg->escan_ioctl_buf, WLC_IOCTL_MEDLEN, NULL);
+                                    printf("%s: LEGACY_SCAN sync ID: %d, bssidx: %d\n", __FUNCTION__, params->sync_id, bssidx);
+                                }
+                            }
+
+                    }
+    }
+

@@ -1,0 +1,2 @@
+dhd_priv iapsta_init mode apsta
+dhd_priv iapsta_enable ifname wlan1

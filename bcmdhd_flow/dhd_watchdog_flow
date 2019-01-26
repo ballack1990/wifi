@@ -1,0 +1,198 @@
+dhd_linux.c
+->  {
+        dhd_pub_t * dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen
+        #ifdef BCMDBUS
+                , void *data
+        #endif
+                )
+        {
+        #ifndef BCMDBUS
+            /* Set up the watchdog timer */
+        #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+            timer_setup(&dhd->timer, dhd_watchdog, 0);
+        #else
+            init_timer(&dhd->timer);
+            dhd->timer.data = (ulong)dhd;
+            dhd->timer.function = dhd_watchdog;
+        #endif
+            dhd->default_wd_interval = dhd_watchdog_ms;
+
+            if (dhd_watchdog_prio >= 0) {
+                /* Initialize watchdog thread */
+                PROC_START(dhd_watchdog_thread, dhd, &dhd->thr_wdt_ctl, 0, "dhd_watchdog_thread");
+                if (dhd->thr_wdt_ctl.thr_pid < 0) {
+                    goto fail;
+                }
+
+            } else {
+                dhd->thr_wdt_ctl.thr_pid = -1;
+            }
+        }
+
+/****************************************************************************************************************************
+            dhd_poll作用是如果配置了oob， 并且oob中断不起作用的时候会采用轮询的方式读取FUN1 和 FUN2的状态
+            从而判断是否有数据可读取主要体现在dhd_watchdog_thread。
+****************************************************************************************************************************/
+        static int dhd_watchdog_thread(void *data)
+        {
+            while (1) {
+                if (down_interruptible (&tsk->sema) == 0) {
+                    if (dhd->pub.dongle_reset == FALSE) {
+                        DHD_TIMER(("%s:\n", __FUNCTION__));
+                        dhd_bus_watchdog(&dhd->pub);                    // 调用dhd_bus_watchdog
+
+                        /* Reschedule the watchdog */
+                        if (dhd->wd_timer_valid) {
+                            mod_timer(&dhd->timer,                      // 这里就调用了dhd_watchdog这个timer
+                                    jiffies +
+                                    msecs_to_jiffies(dhd_watchdog_ms) -
+                                    min(msecs_to_jiffies(dhd_watchdog_ms), time_lapse));
+                        }
+                    }
+                }
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------
+dhd_sdio.c
+->  {
+        extern bool dhd_bus_watchdog(dhd_pub_t *dhdp)
+        {
+            if (1 && (bus->poll && (++bus->polltick >= bus->pollrate))) {       // 如果定义了dhd_poll=1, 则会走这里，polling SDIO_FUNC_0状态
+                uint32 intstatus = 0;                                           // 查看是否有数据可读？ 如果定义了oob，但是wl_host_wake没正确配置
+                                                                                // 导致主控收不到data中断, 从而up失败，可以打开dhd_poll=1测试下
+                /* Reset poll tick */                                           // 应该就可以up成功了。 
+                bus->polltick = 0;
+
+                /* Check device if no interrupts */
+                if (!bus->intr || (bus->intrcount == bus->lastintrs)) {
+
+                    if (!bus->dpc_sched) {
+                        uint8 devpend;
+                        devpend = bcmsdh_cfg_read(bus->sdh, SDIO_FUNC_0,
+                                SDIOD_CCCR_INTPEND, NULL);
+                        intstatus = devpend & (INTR_STATUS_FUNC1 | INTR_STATUS_FUNC2);
+                    }
+
+                    /* If there is something, make like the ISR and schedule the DPC */
+                    if (intstatus) {
+                        bus->pollcnt++;
+                        bus->ipend = TRUE;
+                        if (bus->intr) {
+                            bcmsdh_intr_disable(bus->sdh);
+                        }
+                        bus->dpc_sched = TRUE;
+                        dhd_sched_dpc(bus->dhd);
+                    }
+                }
+
+                /* Update interrupt tracking */
+                bus->lastintrs = bus->intrcount;
+            }
+
+            if ((!bus->dpc_sched) && pktq_len(&bus->txq)) {                 // 这里是为了解决上层下发数据到driver tx queue                                            
+                bus->dpc_sched = TRUE;                                      // 但是没有触发dhd_dpc进程去拿数据发送，从而用此watchdog来
+                dhd_sched_dpc(bus->dhd);                                    // polling tx queue，查看是否有数据需要发送
+            }
+
+        #ifdef DHD_DEBUG
+            /* Poll for console output periodically */
+            if (dhdp->busstate == DHD_BUS_DATA && dhd_console_ms != 0) {    // 如果dhd_console_ms=20， 则会调用dhdsdio_readconsole读取fw的log
+                bus->console.count += dhd_watchdog_ms;
+                if (bus->console.count >= dhd_console_ms) {
+                    bus->console.count -= dhd_console_ms;
+                    /* Make sure backplane clock is on */
+                    if (SLPAUTO_ENAB(bus))                                  // 这里如果打开了dhd_slpauto， 则要确保CLK_AVAIL
+                        dhdsdio_bussleep(bus, FALSE);
+                    else
+                        dhdsdio_clkctl(bus, CLK_AVAIL, FALSE);
+                    if (dhdsdio_readconsole(bus) < 0)                       // 调用dhdsdio_readconsole函数
+                        dhd_console_ms = 0;	/* On error, stop trying */
+                }
+            }
+        #endif /* DHD_DEBUG */
+        
+        #ifdef DHD_USE_IDLECOUNT
+            if (bus->activity)
+                bus->activity = FALSE;
+            else {
+                bus->idlecount++;
+
+                /*
+                 * If the condition to switch off the clock is reached And if
+                 * BT is inactive (in case of BT_OVER_SDIO build) turn off clk.
+                 *
+                 * Consider the following case, DHD is configured with
+                 * 1) idletime == DHD_IDLE_IMMEDIATE
+                 * 2) BT is the last user of the clock
+                 * We cannot disable the clock from __dhdsdio_clk_disable
+                 * since WLAN might be using it. If WLAN is active then
+                 * from the respective function/context after doing the job
+                 * the clk is turned off.
+                 * But if WLAN is actually inactive then the watchdog should
+                 * disable the clock. So the condition check below should be
+                 * bus->idletime != 0 instead of idletime == 0
+                 */
+                if ((bus->idletime != 0) && (bus->idlecount >= bus->idletime) &&
+                        NO_OTHER_ACTIVE_BUS_USER(bus)) {
+                    DHD_TIMER(("%s: DHD Idle state!!\n", __FUNCTION__));
+                    if (!bus->poll && SLPAUTO_ENAB(bus)) {                  // 如果没开启dhd_poll且开启了dhd_slpauto，则可以进sleep，设为CLK_NONE
+                        if (dhdsdio_bussleep(bus, TRUE) != BCME_BUSY)
+                            dhd_os_wd_timer(bus->dhd, 0);
+                    } else
+                        dhdsdio_clkctl(bus, CLK_NONE, FALSE);
+
+                    bus->idlecount = 0;
+                }
+            }
+        #endif
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+static void dhd_watchdog(
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	struct timer_list *t
+#else
+	ulong data
+#endif
+)
+{
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	dhd_info_t *dhd = from_timer(dhd, t, timer);
+#else
+	dhd_info_t *dhd = (dhd_info_t *)data;
+#endif
+	unsigned long flags;
+
+	if (dhd->pub.dongle_reset) {
+		return;
+	}
+
+	if (dhd->thr_wdt_ctl.thr_pid >= 0) {                    // 这里是有创建dhd_watchdog_thread这个进程，则在这里直接返回
+		up(&dhd->thr_wdt_ctl.sema);
+		return;
+	}
+
+	DHD_OS_WD_WAKE_LOCK(&dhd->pub);
+	/* Call the bus module watchdog */
+	dhd_bus_watchdog(&dhd->pub);                            // 否则是在这里调用的dhd_bus_watchdog
+
+#ifdef DHD_TIMESYNC
+	/* Call the timesync module watchdog */
+	dhd_timesync_watchdog(&dhd->pub);
+#endif /* DHD_TIMESYNC */
+
+	DHD_GENERAL_LOCK(&dhd->pub, flags);
+	/* Count the tick for reference */
+	dhd->pub.tickcnt++;
+
+#ifdef DHD_L2_FILTER
+	dhd_l2_filter_watchdog(&dhd->pub);
+#endif /* DHD_L2_FILTER */
+	/* Reschedule the watchdog */
+	if (dhd->wd_timer_valid)
+		mod_timer(&dhd->timer, jiffies + msecs_to_jiffies(dhd_watchdog_ms));
+	DHD_GENERAL_UNLOCK(&dhd->pub, flags);
+	DHD_OS_WD_WAKE_UNLOCK(&dhd->pub);
+}
+

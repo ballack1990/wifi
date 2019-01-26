@@ -1,0 +1,6 @@
+can you add this in the config.txt ：  
+dhd_msg_level=0x801
+wl_dbg_level=0x9
+dhd_console_ms=20
+
+sd_msglevel=0x8001
