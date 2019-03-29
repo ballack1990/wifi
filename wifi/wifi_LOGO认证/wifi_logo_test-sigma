@@ -1,0 +1,6 @@
+测WIFI logo用的wts工具，又叫sigma tool.
+
+The WFA test bench including the UCC(Unify Center Controller) Application, Sniffer, and endpoints with sigma tools on different STA/AP.
+The sigma tool is just for one of the STAUT or APUT devices, and it only accepts the control command from UCC and feedback the execute result.
+Here we just add some scripts for checking the PATH to the sigma tool on your device works as expected, but that doesn’t mean all the testing script are in side the package.
+For the full test script related with WFA test bench, you or final customer should turn to WiFi-Alliance for the resources.

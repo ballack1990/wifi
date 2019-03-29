@@ -1,0 +1,6 @@
+請他休眠前要先下如下命令
+dhd_priv setsuspendmode 1
+喚醒後要下這個命令
+dhd_priv setsuspendmode 0
+
+dhd_priv setsuspendmode 1後才會去enable pkt filter，否則有可能一睡下去馬上就被喚醒了(WL_HOST_WAKE就被拉高)

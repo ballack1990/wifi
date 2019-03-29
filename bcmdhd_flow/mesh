@@ -1,0 +1,142 @@
+insmod /lib/modules/4.9.54/kernel/broadcom/wifi/dhd.ko firmware_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin nvram_path=/etc/wifi/4359/nvram.txt
+
+1. Initialize the bcmdhd driver to be a Mesh mode on interface wlan0
+# dhd_priv isam_init mode mesh
+
+2. Configure wlan0 to be an open system with SSID ttt_mesh on channel 1
+# dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 1 amode open emode none
+
+3. Enable Mesh mode on wlan0
+# dhd_priv isam_enable ifname wlan0
+
+4. Check the Mesh mode enabled successfully
+# dhd_priv isam_status
+
+5. Set IP address and the IP address should not conflict on each mesh device
+
+6. Check Mesh devices connected.
+# dhd_priv wl mesh_peer_status
+
+insmod /lib/modules/4.9.54/kernel/broadcom/wifi/dhd.ko firmware_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin nvram_path=/etc/wifi/4359/nvram.txt
+ifconfig wlan0 up
+dhd_priv isam_init mode mesh
+dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 1 amode open emode none
+dhd_priv isam_enable ifname wlan0
+dhd_priv isam_status
+ifconfig wlan0 192.168.2.2
+dhd_priv wl mesh_peer_status
+
+------------------------------------------------------------------------------------------
+SAE Authentication:
+1. Initialize the bcmdhd driver to be a Mesh mode on interface wlan0
+# dhd_priv isam_init mode mesh
+
+2. Configure wlan0 to be an open system with SSID ttt_mesh on channel 1
+# dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 1 amode sae key 12345678
+
+3. Enable Mesh mode on wlan0
+# dhd_priv isam_enable ifname wlan0
+
+4. Check the Mesh mode enabled successfully
+# dhd_priv isam_status
+
+5. Set IP address and the IP address should not conflict on each mesh device
+
+6. Check Mesh devices connected.
+# dhd_priv wl mesh_peer_status
+
+insmod /lib/modules/4.9.54/kernel/broadcom/wifi/dhd.ko firmware_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin nvram_path=/etc/wifi/4359/nvram.txt
+ifconfig wlan0 up
+dhd_priv isam_init mode mesh
+dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 1 amode sae key 12345678
+dhd_priv isam_enable ifname wlan0
+dhd_priv isam_status
+ifconfig wlan0 192.168.2.1
+dhd_priv wl mesh_peer_status
+
+===========================================================================================
+External AP:
+Setup an external AP with IP address 192.168.31.1
+DUT:
+1. Initialize the bcmdhd driver to be a STA, AP and Mesh mixed mode
+# dhd_priv isam_init mode sta-ap-mesh
+
+2. Setup bridge br0 with IP address 192.168.2.1
+# brctl addbr br0
+# brctl addif br0 wlan1
+# brctl addif br0 wlan2
+# ifconfig br0 192.168.2.1
+
+3. Initialize and start dhcp server on br0 interface
+# dnsmasq -ibr0 --dhcp-option=3,192.168.2.1 --dhcp-range=192.168.2.4,192.168.2.50,12h
+
+4. IP routing setting
+# iptables -F
+# iptables -F -t nat
+# iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
+# iptables -A FORWARD -i br0 -o wlan0 -j ACCEPT
+# echo 1 > /proc/sys/net/ipv4/ip_forward
+# ip rule add from all lookup main
+
+5. STA of DUT connect to External AP
+# wpa_supplicant -i wlan0 -Dnl80211 -c /etc/wifi/wpa_supplicant.conf &
+# dhcpcd wlan0
+
+6. Configure and enable AP of DUT
+# dhd_priv isam_config ifname wlan1 ssid ttt_ap chan 36 amode open emode none
+# dhd_priv isam_enable ifname wlan1
+
+7. Configure and enable Mesh of DUT
+# dhd_priv isam_config ifname wlan2 ssid ttt_mesh chan 36 amode open emode none
+# dhd_priv isam_enable ifname wlan2
+
+killall wpa_supplicant
+killall hostapd 
+killall dnsmasq
+rmmod dhd
+
+insmod /lib/modules/4.9.54/kernel/broadcom/wifi/dhd.ko firmware_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin nvram_path=/etc/wifi/4359/nvram.txt
+ifconfig wlan0 up
+
+dhd_priv isam_init mode sta-ap-mesh
+
+brctl addbr br0
+brctl addif br0 wlan1
+brctl addif br0 wlan2
+ifconfig br0 192.168.3.1
+
+dnsmasq -ibr0 --dhcp-option=3,192.168.3.1 --dhcp-range=192.168.3.4,192.168.3.50,12h
+
+iptables -F
+iptables -F -t nat
+iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
+iptables -A FORWARD -i br0 -o wlan0 -j ACCEPT
+echo 1 > /proc/sys/net/ipv4/ip_forward
+ip rule add from all lookup main
+
+wpa_supplicant -i wlan0 -Dnl80211 -c /etc/wifi/4359/wpa_supplicant.conf &
+dhcpcd wlan0
+
+dhd_priv isam_config ifname wlan1 ssid ttt_ap chan 36 amode open emode none
+dhd_priv isam_enable ifname wlan1
+
+dhd_priv isam_config ifname wlan2 ssid ttt_mesh chan 36 amode open emode none
+dhd_priv isam_enable ifname wlan2
+-----------------------------------------------------------------------------------
+TB1 and TB2:
+1. Initialize, configure and enable mesh
+# dhd_priv isam_init mode mesh
+# dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 36 amode open emode none
+# dhd_priv isam_enable ifname wlan0
+
+2. Mesh connect automatically and get IP 192.168.2.4 from DUT
+# dhcpcd wlan0
+Wi-Fi Phone
+Connect to the AP of DUT and get IP address 192.168.2.11
+
+
+dhd_priv isam_init mode mesh
+dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 36 amode open emode none
+dhd_priv isam_enable ifname wlan0
+dhd_priv isam_status
+dhd_priv wl mesh_peer_status

@@ -179,6 +179,42 @@ class L2ConnectedState extends State {
 }
 ->  {
         void handlePreDhcpSetup() {
+            mDhcpActive = true;
+            if (!mBluetoothConnectionActive) {
+                /*
+                 * There are problems setting the Wi-Fi driver's power
+                 * mode to active when bluetooth coexistence mode is
+                 * enabled or sense.
+                 * <p>
+                 * We set Wi-Fi to active mode when
+                 * obtaining an IP address because we've found
+                 * compatibility issues with some routers with low power
+                 * mode.
+                 * <p>
+                 * In order for this active power mode to properly be set,
+                 * we disable coexistence mode until we're done with
+                 * obtaining an IP address.  One exception is if we
+                 * are currently connected to a headset, since disabling
+                 * coexistence would interrupt that connection.
+                 */
+                // Disable the coexistence mode
+                mWifiNative.setBluetoothCoexistenceMode(                            // disable共存模式
+                        mWifiNative.BLUETOOTH_COEXISTENCE_MODE_DISABLED);
+            }
+
+            // Disable power save and suspend optimizations during DHCP
+            // Note: The order here is important for now. Brcm driver changes
+            // power settings when we control suspend mode optimizations.
+            // TODO: Remove this comment when the driver is fixed.
+            setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, false);
+            mWifiNative.setPowerSave(false);                                    // 在dhcp期间关闭power save功能
+
+            stopBatchedScan();
+            WifiNative.pauseScan();
+
+            // Update link layer stats
+            getWifiLinkLayerStats(false);
+
             Message msg = new Message();
             msg.what = WifiP2pServiceImpl.BLOCK_DISCOVERY;
             msg.arg1 = WifiP2pServiceImpl.ENABLED;
@@ -243,10 +279,12 @@ class WaitBeforeStartState extends State {
                 NetworkUtils.stopDhcp(mInterfaceName);
                 success = NetworkUtils.runDhcp(mInterfaceName, dhcpResults);
 
-                mDhcpResults = dhcpResults;
+                if (success) {
+                    mDhcpResults = dhcpResults;
 
-                // 向WifiStateMachine发送CMD_POST_DHCP_ACTION消息
-                mController.obtainMessage(CMD_POST_DHCP_ACTION, DHCP_SUCCESS, 0, dhcpResults).sendToTarget();   
+                    // 向WifiStateMachine发送CMD_POST_DHCP_ACTION消息
+                    mController.obtainMessage(CMD_POST_DHCP_ACTION, DHCP_SUCCESS, 0, dhcpResults).sendToTarget();   
+                }
             }
     }
 ----------------------------------------------------------------------------------------------->
@@ -424,7 +462,7 @@ WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\servic
 void handlePostDhcpSetup() {
     /* Restore power save and suspend optimizations */
     setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, true);
-    mWifiNative.setPowerSave(true);
+    mWifiNative.setPowerSave(true);                                 // dhcp结束， 打开power save功能
 
     mWifiP2pChannel.sendMessage(WifiP2pServiceImpl.BLOCK_DISCOVERY, WifiP2pServiceImpl.DISABLED);
 
@@ -437,9 +475,44 @@ void handlePostDhcpSetup() {
     startBatchedScan();
     WifiNative.restartScan();
 }
+--------------------------------------------------------------------------------------------------------------------
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        private void setSuspendOptimizationsNative(int reason, boolean enabled) {   
+            if (enabled) {
+                mSuspendOptNeedsDisabled &= ~reason;
+                /* None of dhcp, screen or highperf need it disabled and user wants it enabled */
+                if (mSuspendOptNeedsDisabled == 0 && mUserWantsSuspendOpt.get()) {
+                    if (DBG) {
+                        log("setSuspendOptimizationsNative do it " + reason + " " + enabled
+                                + " stack:" + Thread.currentThread().getStackTrace()[2].getMethodName()
+                                +" - "+ Thread.currentThread().getStackTrace()[3].getMethodName()
+                                +" - "+ Thread.currentThread().getStackTrace()[4].getMethodName()
+                                +" - "+ Thread.currentThread().getStackTrace()[5].getMethodName());
+                    }
+                    mWifiNative.setSuspendOptimizations(true);
+                }
+            } else {
+                mSuspendOptNeedsDisabled |= reason;
+                mWifiNative.setSuspendOptimizations(false);
+            }
+        }
+    }
 ------------------------------------------------------------------------------------------------------------->
 WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
 ->  {
+        public boolean setSuspendOptimizations(boolean enabled) {
+            // if (mSuspendOptEnabled == enabled) return true;
+            mSuspendOptEnabled = enabled;
+
+            Log.e("native", "do suspend " + enabled);
+            if (enabled) {
+                return doBooleanCommand("DRIVER SETSUSPENDMODE 1");
+            } else {
+                return doBooleanCommand("DRIVER SETSUSPENDMODE 0");
+            }
+        }
+
         public void setPowerSave(boolean enabled) {
             if (enabled) {
                 doBooleanCommand("SET ps 1");
@@ -447,7 +520,19 @@ WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java
                 doBooleanCommand("SET ps 0");
             }
         }
-    
+
+        /**
+         * Sets the bluetooth coexistence mode.
+         *
+         * @param mode One of {@link #BLUETOOTH_COEXISTENCE_MODE_DISABLED},
+         *            {@link #BLUETOOTH_COEXISTENCE_MODE_ENABLED}, or
+         *            {@link #BLUETOOTH_COEXISTENCE_MODE_SENSE}.
+         * @return Whether the mode was successfully set.
+         */
+        public boolean setBluetoothCoexistenceMode(int mode) {
+            return doBooleanCommand("DRIVER BTCOEXMODE " + mode);
+        }
+    }
 ------------------------------------------------------------------------------------------------------------->
 Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
 ->  {
@@ -456,18 +541,58 @@ Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplican
                 if (wpa_supplicant_ctrl_iface_set(wpa_s, buf + 4))
                     reply_len = -1;
             }
+        #ifdef ANDROID
+            else if (os_strncmp(buf, "DRIVER ", 7) == 0) {
+                reply_len = wpa_supplicant_driver_cmd(wpa_s, buf + 7, reply,
+                        reply_size);
+            }
+        #endif /* ANDROID */
         }
         ->  {
-            static int wpa_supplicant_ctrl_iface_set(struct wpa_supplicant *wpa_s, char *cmd) {
-                if (os_strcasecmp(cmd, "ps") == 0) {
-                    ret = wpa_drv_set_p2p_powersave(wpa_s, atoi(value), -1, -1);
+            #ifdef ANDROID
+                static int wpa_supplicant_driver_cmd(struct wpa_supplicant *wpa_s, char *cmd,
+                        char *buf, size_t buflen)
+                {
+                    int ret;
+
+                    ret = wpa_drv_driver_cmd(wpa_s, cmd, buf, buflen);          // wpa_drv_driver_cmd
+                    if (ret == 0) {
+                        if (os_strncasecmp(cmd, "COUNTRY", 7) == 0) {
+                            struct p2p_data *p2p = wpa_s->global->p2p;
+                            if (p2p) {
+                                char country[3];
+                                country[0] = cmd[8];
+                                country[1] = cmd[9];
+                                country[2] = 0x04;
+                                p2p_set_country(p2p, country);
+                            }
+                        }
+                        ret = os_snprintf(buf, buflen, "%s\n", "OK");
+                    }
+                    return ret;
+                }
+            #endif /* ANDROID */
+            
+                static int wpa_supplicant_ctrl_iface_set(struct wpa_supplicant *wpa_s, char *cmd) {
+                    if (os_strcasecmp(cmd, "ps") == 0) {
+                        ret = wpa_drv_set_p2p_powersave(wpa_s, atoi(value), -1, -1);
+                    }
                 }
             }
-        }
     }
 ------------------------------------------------------------------------------------------------------->
 Driver_i.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
 ->  {
+    #ifdef ANDROID
+        static inline int wpa_drv_driver_cmd(struct wpa_supplicant *wpa_s,
+                char *cmd, char *buf, size_t buf_len)
+        {
+            if (!wpa_s->driver->driver_cmd)
+                return -1;
+            return wpa_s->driver->driver_cmd(wpa_s->drv_priv, cmd, buf, buf_len);
+        }
+    #endif /* ANDROID */
+
         static inline int wpa_drv_set_p2p_powersave(struct wpa_supplicant *wpa_s, int legacy_ps, int opp_ps, int ctwindow)
         {
             if (!wpa_s->driver->set_p2p_powersave)
@@ -481,6 +606,15 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
 ->  {
         const struct wpa_driver_ops wpa_driver_nl80211_ops = {
             .set_p2p_powersave = nl80211_set_p2p_powersave,
+        #ifdef ANDROID
+            .driver_cmd = wpa_driver_nl80211_driver_cmd,
+        #endif /* ANDROID */
+        }
+
+        int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
+                size_t buf_len )
+        {
+            ret = ioctl(drv->global->ioctl_sock, SIOCDEVPRIVATE + 1, &ifr);
         }
 
         static int nl80211_set_p2p_powersave(void *priv, int legacy_ps, int opp_ps, int ctwindow)

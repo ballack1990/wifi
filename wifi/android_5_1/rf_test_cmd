@@ -1,0 +1,529 @@
+
+insmod /system/lib/dhd.ko firmware_path=/etc/wifi/6255/fw_bcm43455c0_ag_mfg.bin nvram_path=/etc/wifi/6255/nvram.txt
+insmod /data/rftesttool/bcmdhd.ko firmware_path=/data/rftesttool/fw_bcm43455c0_ag_mfg.bin nvram_path=/data/rftesttool/nvram.txt
+
+----------------------------------------------------------------------------------------------------------------------------------
+                                                2.4G  test  cmd
+----------------------------------------------------------------------------------------------------------------------------------
+一， 2.4G_11B TX test command
+
+wl down
+wl band b
+wl mpc 0
+wl nrate -r 11
+wl rateset 11b
+wl country ALL
+wl up
+wl channel 1
+wl scansuppress 1
+wl txpwr1 -1
+wl phy_forcecal 1
+wl pkteng_start 00:11:22:33:44:55 tx 100 1000 0
+
+
+二， 2.4G_11G TX test command
+
+wl down
+wl band b
+wl mpc 0
+wl nrate -r 54
+wl rateset 54b
+wl country ALL
+wl up
+wl channel 1
+wl scansuppress 1
+wl txpwr1 -1
+wl phy_forcecal 1
+wl pkteng_start 00:11:22:33:44:55 tx 100 1000 0 
+
+
+三， 2.4G_11N HT20 TX test command
+
+wl down
+wl band b
+wl mpc 0
+wl nrate -m 7
+wl rateset 54b
+wl country ALL
+wl up
+wl channel 1
+wl scansuppress 1
+wl txpwr1 -1
+wl phy_forcecal 1
+wl pkteng_start 00:11:22:33:44:55 tx 100 1000 0 
+
+
+四， 2.4G_11N HT40 TX test command
+
+wl down 
+wl mpc 0 
+wl country ALL 
+wl band b 
+wl mimo_bw_cap 1 
+wl mimo_txbw 4 
+wl nrate -m 7
+wl up 
+wl chanspec -c 11 -b 2 -w 40 -s 1 
+wl phy_watchdog 0 
+wl scansuppress 1 
+wl phy_forcecal 1 
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0 
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+                                                5.8G  test  cmd
+----------------------------------------------------------------------------------------------------------------------------------
+
+五， 5G_11A TX test command
+
+wl down
+wl band a
+wl mpc 0
+wl nrate -r 54
+wl rateset 54b
+wl country ALL
+wl up
+wl channel 161
+wl scansuppress 1
+wl txpwr1 -1
+wl phy_forcecal 1
+wl pkteng_start 00:11:22:33:44:55 tx 40 1000 0 
+
+
+六， 5G_11n HT20 TX test command
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_txbw -1
+wl up
+wl nrate -m 7
+wl channel 161
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl txpwr1 -1
+wl pkteng_start 00:11:22:33:44:55 tx 40 1000 0 
+
+
+七，5G_11n HT40 TX test command
+
+wl down 
+wl mpc 0 
+wl country ALL 
+wl band a 
+wl mimo_bw_cap 1 
+wl mimo_txbw 4 
+wl nrate -m 7
+wl up 
+wl chanspec -c 159 -b 5 -w 40 -s 1 
+wl phy_watchdog 0
+wl scansuppress 1 
+wl phy_forcecal 1 
+wl txpwr1 -1
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+八， 5G_11ac HT20 5G TX test command
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl up
+wl 5g_rate -v 7 -s 1 -b 20
+wl chanspec 161/20
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl txpwr1 -1
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0 
+
+
+九，5G_11ac HT40 5G TX test command
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl up
+wl 5g_rate -v 8 -s 1 -b 40
+wl chanspec 161/40
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl txpwr1 -1
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0 
+
+
+十，5G_11ac HT80 TX test command
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_bw_cap 1 
+wl mimo_txbw -1
+wl nrate -m 0
+wl up
+wl 5g_rate -v 9 -s 1 -b 80
+wl chanspec 149/80
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+                                                RX   TEST
+----------------------------------------------------------------------------------------------------------------------------------
+
+十一， 11a/b/g/nHT20 RX test command (single ant)
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl channel 36
+wl bi 65535
+wl up
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl reset_cnts        
+wl counters
+
+
+十二，5.8G RX (HT40)test command (single ant)
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl mimo_bw_cap 1
+wl mimo_txbw -1
+wl chanspec -c 151 -b 5 -w 40 -s 1 
+wl bi 65535
+wl up
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl reset_cnts
+wl counters
+
+
+十三， 802.11ac(HT20) test command (single ant)
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl mimo_txbw 4
+wl chanspec 36/20
+wl bi 65535
+wl up
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl reset conts
+wl counters
+
+
+十四， 802.11ac(HT40) test command (single ant)
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl mimo_txbw 4
+wl chanspec 36/40
+wl bi 65535
+wl up
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl reset conts
+wl counters
+
+
+十五， 802.11ac(HT80) test command (single ant)
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl mimo_txbw 4
+wl chanspec 149/80
+wl bi 65535
+wl up
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_forcecal 1
+wl reset_cnts
+wl counters
+
+
+wl down
+wl mpc 0
+wl up
+wl country ALL
+wl PM 0
+wl scansuppress 1
+wl band a
+wl channel 36/80
+wl phy_forcecal 1
+wl pkteng_start 00:11:22:33:44:55 rx
+wl counters
+
+
+十六， 2.4G_11b TX test command (double ant)
+
+wl down
+wl rsdb_mode 0
+wl mpc 0
+wl country ALL
+wl band b
+wl mimo_txbw -1
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl nrate -r 11
+wl channel 13
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+十七，2.4G_11g TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band b
+wl mimo_txbw -1
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl nrate -r 54
+wl channel 13
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+十八， 2.4G_11n(HT20) TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band b
+wl mimo_txbw -1
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl nrate -m 7
+wl channel 1
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+十九， 2.4G_11n(HT40) TX test command (double ant)
+
+wl down 
+wl mpc 0 
+wl country ALL 
+wl band b 
+wl mimo_bw_cap 1 
+wl mimo_txbw 4 
+wl nrate -m  0 
+wl txchain 1
+wl rxchain 1
+wl up 
+wl nrate -m 0 
+wl chanspec -c 3 -b 2 -w 40 -s 1 
+wl phy_watchdog 0 
+wl scansuppress 1 
+wl phy_oclscdenable 0 
+wl phy_activecal 1 
+wl phy_forcecal 1 
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0 
+
+
+二十， 5G_11a TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_txbw -1
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl nrate -r 54
+wl channel 36
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+二十一， 5G_11n(HT40) TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_bw_cap 1 
+wl mimo_txbw 4
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl nrate -m 7
+wl chanspec -c 38 -b 5 -w 40 -s 1 
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+二十二， 11AC_11n(HT20) TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_bw_cap 1 
+wl mimo_txbw 4
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl 5g_rate -v 8 -s 1 -b 20
+wl chanspec 36/20
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+二十三， 11AC_11n(HT40) TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_bw_cap 1 
+wl mimo_txbw 4
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl 5g_rate -v 9 -s 1 -b 40
+wl chanspec 36/40
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+二十四， 11AC_11n(HT80) TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_bw_cap 1 
+wl mimo_txbw -1
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl 5g_rate -v 9 -s 1 -b 80
+wl chanspec 149/80
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+二十五， 11AC(HT80) TX test command (double ant)
+
+wl down
+wl mpc 0
+wl country ALL
+wl band a
+wl mimo_bw_cap 1 
+wl mimo_txbw -1
+wl nrate -m 0
+wl txchain 1
+wl rxchain 1
+wl up
+wl 5g_rate -v 9 -s 1 -b 80
+wl chanspec 149/80
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_activecal 1
+wl phy_forcecal 1
+wl txpwr1 -1 
+wl pkteng_start 00:90:4c:14:43:19 tx 40 1000 0
+
+
+二十六，11a/b/g/nHT20 RX test command (double ant) 
+
+wl down
+wl band auto
+wl mpc 0
+wl country ALL
+wl mimo_bw_cap 1 
+wl mimo_txbw -1 
+wl channel 149
+wl txchain 2
+wl rxchain 2
+wl bi 65535
+wl up
+wl phy_watchdog 0
+wl scansuppress 1
+wl phy_oclscdenable 0
+wl phy_forcecal 1
+wl reset_cnts
+wl counters
+
+

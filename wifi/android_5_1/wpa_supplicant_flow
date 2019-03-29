@@ -1930,4 +1930,145 @@ Driver_wext.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
                     drv->ctx);
         }
     }
+------------------------------------------------------------------------------------------------------
+wl_iw.c
+->  {
+        static const iw_handler wl_iw_handler[] =
+        {
+        #if WIRELESS_EXT > 13                                               // 在rk上面WIRELESS_EXT 为 22
+        #ifdef WL_ESCAN
+            (iw_handler) wl_escan_set_scan,	/* SIOCSIWSCAN */
+            (iw_handler) wl_escan_get_scan,	/* SIOCGIWSCAN */
+        #else
+            (iw_handler) wl_iw_iscan_set_scan,	/* SIOCSIWSCAN */
+            (iw_handler) wl_iw_iscan_get_scan,	/* SIOCGIWSCAN */
+        #endif
+        #else	/* WIRELESS_EXT > 13 */
+            (iw_handler) NULL,			/* SIOCSIWSCAN */
+            (iw_handler) NULL,			/* SIOCGIWSCAN */
+        #endif	/* WIRELESS_EXT > 13 */
+        }
+    }
+------------------------------------------------------------------------------------------------------
+wl_escan.c
+->  {
+        int wl_escan_set_scan(
+                struct net_device *dev,
+                struct iw_request_info *info,
+                union iwreq_data *wrqu,
+                char *extra
+                )
+        {
+            struct wl_escan_info *escan = g_escan;
+
+        #if WIRELESS_EXT > 17
+            /* check for given essid */
+            if (wrqu->data.length == sizeof(struct iw_scan_req)) {
+                if (wrqu->data.flags & IW_SCAN_THIS_ESSID) {
+                    struct iw_scan_req *req = (struct iw_scan_req *)extra;
+                    ssid.SSID_len = MIN(sizeof(ssid.SSID), req->essid_len);
+                    memcpy(ssid.SSID, req->essid, ssid.SSID_len);
+                    ssid.SSID_len = htod32(ssid.SSID_len);
+                }
+            }
+        #endif
+        
+            /* if scan request is not empty parse scan request paramters */
+            memset(valid_chan_list, 0, sizeof(valid_chan_list));
+            list = (wl_uint32_list_t *)(void *) valid_chan_list;
+            list->count = htod32(WL_NUMCHANNELS);
+            err = wldev_ioctl(escan->dev, WLC_GET_VALID_CHANNELS, valid_chan_list, sizeof(valid_chan_list), false);
+
+            if (err != 0) {
+                ESCAN_ERROR(("%s: get channels failed with %d\n", __FUNCTION__, err));
+                goto exit;
+            }
+            n_channels = dtoh32(list->count);
+            /* Allocate space for populating ssids in wl_escan_params_t struct */
+            if (dtoh32(list->count) % 2)
+                /* If n_channels is odd, add a padd of u16 */
+                params_size += sizeof(u16) * (n_channels + 1);
+            else
+                params_size += sizeof(u16) * n_channels;
+            if (ssid.SSID_len) {
+                params_size += sizeof(struct wlc_ssid) * 2;
+            }
+
+            params = (wl_escan_params_t *) kzalloc(params_size, GFP_KERNEL);
+            if (params == NULL) {
+                err = -ENOMEM;
+                goto exit;
+            }
+            wl_escan_prep(escan, list, &params->params, &ssid);                     // 调用wl_escan_prep函数
+        }
+        ->  {
+                static int wl_escan_prep(struct wl_escan_info *escan, wl_uint32_list_t *list,
+                            wl_scan_params_t *params, wlc_ssid_t *ssid)
+                {
+                    n_channels = dtoh32(list->count);
+                    /* Copy channel array if applicable */
+                    ESCAN_SCAN(("### List of channelspecs to scan ###\n"));
+                    if (n_channels > 0) {
+                        for (i = 0; i < n_channels; i++) {
+                            channel = dtoh32(list->element[i]);
+                            if (!dhd_conf_match_channel(escan->pub, channel))           // 匹配config.txt里面指定的channels
+                                continue;
+                            chanspec = WL_CHANSPEC_BW_20;
+                            if (chanspec == INVCHANSPEC) {
+                                ESCAN_ERROR(("Invalid chanspec! Skipping channel\n"));
+                                continue;
+                            }
+                            if (channel <= CH_MAX_2G_CHANNEL) {
+                                chanspec |= WL_CHANSPEC_BAND_2G;
+                            } else {
+                                chanspec |= WL_CHANSPEC_BAND_5G;
+                            }
+                            params->channel_list[j] = channel;
+                            params->channel_list[j] &= WL_CHANSPEC_CHAN_MASK;
+                            params->channel_list[j] |= chanspec;
+                            ESCAN_SCAN(("Chan : %d, Channel spec: %x \n",
+                                        channel, params->channel_list[j]));
+                            params->channel_list[j] = wl_chspec_host_to_driver(params->channel_list[j]);
+                            j++;
+                        }
+                    } else {
+                        ESCAN_SCAN(("Scanning all channels\n"));
+                    }
+
+                    if (ssid && ssid->SSID_len) {
+                        /* Copy ssid array if applicable */
+                        ESCAN_SCAN(("### List of SSIDs to scan ###\n"));
+                        offset = offsetof(wl_scan_params_t, channel_list) + n_channels * sizeof(u16);
+                        offset = roundup(offset, sizeof(u32));
+                        ptr = (char*)params + offset;
+
+                        ESCAN_SCAN(("0: Broadcast scan\n"));
+                        memset(&ssid_tmp, 0, sizeof(wlc_ssid_t));
+                        ssid_tmp.SSID_len = 0;
+                        memcpy(ptr, &ssid_tmp, sizeof(wlc_ssid_t));
+                        ptr += sizeof(wlc_ssid_t);
+
+                        memset(&ssid_tmp, 0, sizeof(wlc_ssid_t));
+                        ssid_tmp.SSID_len = ssid->SSID_len;
+                        memcpy(ssid_tmp.SSID, ssid->SSID, ssid->SSID_len);
+                        memcpy(ptr, &ssid_tmp, sizeof(wlc_ssid_t));
+                        ptr += sizeof(wlc_ssid_t);
+                        ESCAN_SCAN(("1: scan for %s size=%d\n", ssid_tmp.SSID, ssid_tmp.SSID_len));
+                        /* Adding mask to channel numbers */
+                        params->channel_num =
+                            htod32((2 << WL_SCAN_PARAMS_NSSID_SHIFT) |
+                                    (n_channels & WL_SCAN_PARAMS_COUNT_MASK));
+                    }
+                    else {
+                        ESCAN_SCAN(("Broadcast scan\n"));
+                    }
+
+                    params->params.scan_type = DOT11_SCANTYPE_ACTIVE;
+                    ESCAN_TRACE(("Passive scan_type %d\n", params->params.scan_type));
+
+                    err = wldev_iovar_setbuf(dev, "escan", params, params_size,
+                            escan->escan_ioctl_buf, WLC_IOCTL_MEDLEN, NULL);
+                }
+            }
+    }
 

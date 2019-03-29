@@ -1,0 +1,18 @@
+设备端：
+1，修改broadcom_sigma_DUT中的wfa-dut-setup.sh文件， 将WFA_ROOT_DIR=/etc/broadcom_sigma_DUT修改为WFA_ROOT_DIR=/data/broadcom_sigma_DUT。
+2，ifconfig  rndis0  192.168.128.1  netmask 255.255.255.0
+
+PC端：
+3, PC手动设置ip为192.168.128.100， 此时可以ping通192.168.128.1
+
+设备端:
+4，执行/data/broadcom_sigma_DUT/wfa-dut-setup.sh  rndis0  8000
+
+PC端：
+5，执行broadcom_sigma_PC/wfa-ca-setup.sh  lo 9000 192.168.128.1 8000 
+   会提示：
+	wfaCreateTCPServSock: bind src_itf='any', src_port=9000
+	main: connect to IP=192.168.128.1, port=8000
+
+6，另开一个窗口，执行broadcom_sigma_PC/test文件夹下的测试脚本即可。
+	

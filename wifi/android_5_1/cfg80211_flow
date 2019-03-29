@@ -1,0 +1,955 @@
+Core.c (net\wireless)
+->  {
+        static struct notifier_block cfg80211_netdev_notifier = {
+            .notifier_call = cfg80211_netdev_notifier_call,
+        };
+
+        static int __init cfg80211_init(void)
+        {
+            int err;
+
+            err = register_pernet_device(&cfg80211_pernet_ops);
+            if (err)
+                goto out_fail_pernet;
+
+            err = wiphy_sysfs_init();
+            if (err)
+                goto out_fail_sysfs;
+
+            err = register_netdevice_notifier(&cfg80211_netdev_notifier);
+            if (err)
+                goto out_fail_notifier;
+
+            err = nl80211_init();
+            if (err)
+                goto out_fail_nl80211;
+
+            ieee80211_debugfs_dir = debugfs_create_dir("ieee80211", NULL);
+
+            err = regulatory_init();
+            if (err)
+                goto out_fail_reg;
+
+            cfg80211_wq = create_singlethread_workqueue("cfg80211");
+            if (!cfg80211_wq) {
+                err = -ENOMEM;
+                goto out_fail_wq;
+            }
+
+            return 0;
+        }
+
+        subsys_initcall(cfg80211_init);
+
+        static int cfg80211_netdev_notifier_call(struct notifier_block *nb, unsigned long state, void *ndev)
+        {
+            struct net_device *dev = ndev;
+            struct wireless_dev *wdev = dev->ieee80211_ptr;
+            struct cfg80211_registered_device *rdev;
+            int ret;
+
+            if (!wdev)
+                return NOTIFY_DONE;
+
+            rdev = wiphy_to_dev(wdev->wiphy);
+
+            WARN_ON(wdev->iftype == NL80211_IFTYPE_UNSPECIFIED);
+
+            switch (state) {
+                case NETDEV_POST_INIT:
+                    SET_NETDEV_DEVTYPE(dev, &wiphy_type);
+                    break;
+                case NETDEV_REGISTER:
+                    /*
+                     * NB: cannot take rdev->mtx here because this may be
+                     * called within code protected by it when interfaces
+                     * are added with nl80211.
+                     */
+                    mutex_init(&wdev->mtx);
+                    INIT_WORK(&wdev->cleanup_work, wdev_cleanup_work);
+                    INIT_LIST_HEAD(&wdev->event_list);
+                    spin_lock_init(&wdev->event_lock);
+                    INIT_LIST_HEAD(&wdev->mgmt_registrations);
+                    spin_lock_init(&wdev->mgmt_registrations_lock);
+
+                    mutex_lock(&rdev->devlist_mtx);
+                    wdev->identifier = ++rdev->wdev_id;
+                    list_add_rcu(&wdev->list, &rdev->wdev_list);
+                    rdev->devlist_generation++;
+                    /* can only change netns with wiphy */
+                    dev->features |= NETIF_F_NETNS_LOCAL;
+
+                    if (sysfs_create_link(&dev->dev.kobj, &rdev->wiphy.dev.kobj,
+                                "phy80211")) {
+                        pr_err("failed to add phy80211 symlink to netdev!\n");
+                    }
+                    wdev->netdev = dev;
+                    wdev->sme_state = CFG80211_SME_IDLE;
+                    mutex_unlock(&rdev->devlist_mtx);
+        #ifdef CONFIG_CFG80211_WEXT
+                    wdev->wext.default_key = -1;
+                    wdev->wext.default_mgmt_key = -1;
+                    wdev->wext.connect.auth_type = NL80211_AUTHTYPE_AUTOMATIC;
+        #endif
+
+                    if (wdev->wiphy->flags & WIPHY_FLAG_PS_ON_BY_DEFAULT)
+                        wdev->ps = true;
+                    else
+                        wdev->ps = false;
+                    /* allow mac80211 to determine the timeout */
+                    wdev->ps_timeout = -1;
+
+                    netdev_set_default_ethtool_ops(dev, &cfg80211_ethtool_ops);
+
+                    if ((wdev->iftype == NL80211_IFTYPE_STATION ||
+                                wdev->iftype == NL80211_IFTYPE_P2P_CLIENT ||
+                                wdev->iftype == NL80211_IFTYPE_ADHOC) && !wdev->use_4addr)
+                        dev->priv_flags |= IFF_DONT_BRIDGE;
+                    break;
+                case NETDEV_GOING_DOWN:
+                    cfg80211_leave(rdev, wdev);
+                    break;
+                case NETDEV_DOWN:
+                    cfg80211_update_iface_num(rdev, wdev->iftype, -1);
+                    dev_hold(dev);
+                    queue_work(cfg80211_wq, &wdev->cleanup_work);
+                    break;
+                case NETDEV_UP:
+                    /*
+                     * If we have a really quick DOWN/UP succession we may
+                     * have this work still pending ... cancel it and see
+                     * if it was pending, in which case we need to account
+                     * for some of the work it would have done.
+                     */
+                    if (cancel_work_sync(&wdev->cleanup_work)) {
+                        mutex_lock(&rdev->devlist_mtx);
+                        rdev->opencount--;
+                        mutex_unlock(&rdev->devlist_mtx);
+                        dev_put(dev);
+                    }
+                    cfg80211_update_iface_num(rdev, wdev->iftype, 1);
+                    cfg80211_lock_rdev(rdev);
+                    mutex_lock(&rdev->devlist_mtx);
+                    mutex_lock(&rdev->sched_scan_mtx);
+                    wdev_lock(wdev);
+                    switch (wdev->iftype) {
+        #ifdef CONFIG_CFG80211_WEXT
+                        case NL80211_IFTYPE_ADHOC:
+                            cfg80211_ibss_wext_join(rdev, wdev);
+                            break;
+                        case NL80211_IFTYPE_STATION:
+                            cfg80211_mgd_wext_connect(rdev, wdev);
+                            break;
+        #endif
+        #ifdef CONFIG_MAC80211_MESH
+                        case NL80211_IFTYPE_MESH_POINT:
+                            {
+                                /* backward compat code... */
+                                struct mesh_setup setup;
+                                memcpy(&setup, &default_mesh_setup,
+                                        sizeof(setup));
+                                /* back compat only needed for mesh_id */
+                                setup.mesh_id = wdev->ssid;
+                                setup.mesh_id_len = wdev->mesh_id_up_len;
+                                if (wdev->mesh_id_up_len)
+                                    __cfg80211_join_mesh(rdev, dev,
+                                            &setup,
+                                            &default_mesh_config);
+                                break;
+                            }
+        #endif
+                        default:
+                            break;
+                    }
+                    wdev_unlock(wdev);
+                    mutex_unlock(&rdev->sched_scan_mtx);
+                    rdev->opencount++;
+                    mutex_unlock(&rdev->devlist_mtx);
+                    cfg80211_unlock_rdev(rdev);
+
+                    /*
+                     * Configure power management to the driver here so that its
+                     * correctly set also after interface type changes etc.
+                     */
+                    if ((wdev->iftype == NL80211_IFTYPE_STATION ||
+                                wdev->iftype == NL80211_IFTYPE_P2P_CLIENT) &&
+                            rdev->ops->set_power_mgmt)
+                        if (rdev_set_power_mgmt(rdev, dev, wdev->ps,
+                                    wdev->ps_timeout)) {
+                            /* assume this means it's off */
+                            wdev->ps = false;
+                        }
+                    break;
+                case NETDEV_UNREGISTER:
+                    /*
+                     * NB: cannot take rdev->mtx here because this may be
+                     * called within code protected by it when interfaces
+                     * are removed with nl80211.
+                     */
+                    mutex_lock(&rdev->devlist_mtx);
+                    /*
+                     * It is possible to get NETDEV_UNREGISTER
+                     * multiple times. To detect that, check
+                     * that the interface is still on the list
+                     * of registered interfaces, and only then
+                     * remove and clean it up.
+                     */
+                    if (!list_empty(&wdev->list)) {
+                        sysfs_remove_link(&dev->dev.kobj, "phy80211");
+                        list_del_rcu(&wdev->list);
+                        rdev->devlist_generation++;
+                        cfg80211_mlme_purge_registrations(wdev);
+        #ifdef CONFIG_CFG80211_WEXT
+                        kfree(wdev->wext.keys);
+        #endif
+                    }
+                    mutex_unlock(&rdev->devlist_mtx);
+                    /*
+                     * synchronise (so that we won't find this netdev
+                     * from other code any more) and then clear the list
+                     * head so that the above code can safely check for
+                     * !list_empty() to avoid double-cleanup.
+                     */
+                    synchronize_rcu();
+                    INIT_LIST_HEAD(&wdev->list);
+                    /*
+                     * Ensure that all events have been processed and
+                     * freed.
+                     */
+                    cfg80211_process_wdev_events(wdev);
+                    break;
+                case NETDEV_PRE_UP:
+                    if (!(wdev->wiphy->interface_modes & BIT(wdev->iftype)))
+                        return notifier_from_errno(-EOPNOTSUPP);
+                    if (rfkill_blocked(rdev->rfkill))
+                        return notifier_from_errno(-ERFKILL);
+                    mutex_lock(&rdev->devlist_mtx);
+                    ret = cfg80211_can_add_interface(rdev, wdev->iftype);
+                    mutex_unlock(&rdev->devlist_mtx);
+                    if (ret)
+                        return notifier_from_errno(ret);
+                    break;
+            }
+
+            return NOTIFY_DONE;
+        }
+    }
+--------------------------------------------------------------------------------------->
+Nl80211.c (net\wireless)
+->  {
+        static struct genl_ops nl80211_ops[] = {
+            {
+                .cmd = NL80211_CMD_GET_WIPHY,
+                .doit = nl80211_get_wiphy,
+                .dumpit = nl80211_dump_wiphy,
+                .policy = nl80211_policy,
+                /* can be retrieved by unprivileged users */
+                .internal_flags = NL80211_FLAG_NEED_WIPHY,
+            },
+            {
+                .cmd = NL80211_CMD_SET_WIPHY,
+                .doit = nl80211_set_wiphy,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_INTERFACE,
+                .doit = nl80211_get_interface,
+                .dumpit = nl80211_dump_interface,
+                .policy = nl80211_policy,
+                /* can be retrieved by unprivileged users */
+                .internal_flags = NL80211_FLAG_NEED_WDEV,
+            },
+            {
+                .cmd = NL80211_CMD_SET_INTERFACE,
+                .doit = nl80211_set_interface,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_NEW_INTERFACE,
+                .doit = nl80211_new_interface,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DEL_INTERFACE,
+                .doit = nl80211_del_interface,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_KEY,
+                .doit = nl80211_get_key,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_KEY,
+                .doit = nl80211_set_key,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_NEW_KEY,
+                .doit = nl80211_new_key,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DEL_KEY,
+                .doit = nl80211_del_key,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_BEACON,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .doit = nl80211_set_beacon,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_START_AP,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .doit = nl80211_start_ap,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_STOP_AP,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .doit = nl80211_stop_ap,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_STATION,
+                .doit = nl80211_get_station,
+                .dumpit = nl80211_dump_station,
+                .policy = nl80211_policy,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_STATION,
+                .doit = nl80211_set_station,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_NEW_STATION,
+                .doit = nl80211_new_station,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DEL_STATION,
+                .doit = nl80211_del_station,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_MPATH,
+                .doit = nl80211_get_mpath,
+                .dumpit = nl80211_dump_mpath,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_MPATH,
+                .doit = nl80211_set_mpath,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_NEW_MPATH,
+                .doit = nl80211_new_mpath,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DEL_MPATH,
+                .doit = nl80211_del_mpath,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_BSS,
+                .doit = nl80211_set_bss,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_REG,
+                .doit = nl80211_get_reg,
+                .policy = nl80211_policy,
+                /* can be retrieved by unprivileged users */
+            },
+            {
+                .cmd = NL80211_CMD_SET_REG,
+                .doit = nl80211_set_reg,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+            },
+            {
+                .cmd = NL80211_CMD_REQ_SET_REG,
+                .doit = nl80211_req_set_reg,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+            },
+            {
+                .cmd = NL80211_CMD_GET_MESH_CONFIG,
+                .doit = nl80211_get_mesh_config,
+                .policy = nl80211_policy,
+                /* can be retrieved by unprivileged users */
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_MESH_CONFIG,
+                .doit = nl80211_update_mesh_config,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_TRIGGER_SCAN,
+                .doit = nl80211_trigger_scan,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_SCAN,
+                .policy = nl80211_policy,
+                .dumpit = nl80211_dump_scan,
+            },
+            {
+                .cmd = NL80211_CMD_START_SCHED_SCAN,
+                .doit = nl80211_start_sched_scan,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_STOP_SCHED_SCAN,
+                .doit = nl80211_stop_sched_scan,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_AUTHENTICATE,
+                .doit = nl80211_authenticate,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_ASSOCIATE,
+                .doit = nl80211_associate,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DEAUTHENTICATE,
+                .doit = nl80211_deauthenticate,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DISASSOCIATE,
+                .doit = nl80211_disassociate,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_JOIN_IBSS,
+                .doit = nl80211_join_ibss,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_LEAVE_IBSS,
+                .doit = nl80211_leave_ibss,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+#ifdef CONFIG_NL80211_TESTMODE
+            {
+                .cmd = NL80211_CMD_TESTMODE,
+                .doit = nl80211_testmode_do,
+                .dumpit = nl80211_testmode_dump,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+#endif
+            {
+                .cmd = NL80211_CMD_CONNECT,
+                .doit = nl80211_connect,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DISCONNECT,
+                .doit = nl80211_disconnect,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_WIPHY_NETNS,
+                .doit = nl80211_wiphy_netns,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_SURVEY,
+                .policy = nl80211_policy,
+                .dumpit = nl80211_dump_survey,
+            },
+            {
+                .cmd = NL80211_CMD_SET_PMKSA,
+                .doit = nl80211_setdel_pmksa,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_DEL_PMKSA,
+                .doit = nl80211_setdel_pmksa,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_FLUSH_PMKSA,
+                .doit = nl80211_flush_pmksa,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_REMAIN_ON_CHANNEL,
+                .doit = nl80211_remain_on_channel,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_CANCEL_REMAIN_ON_CHANNEL,
+                .doit = nl80211_cancel_remain_on_channel,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_TX_BITRATE_MASK,
+                .doit = nl80211_set_tx_bitrate_mask,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_REGISTER_FRAME,
+                .doit = nl80211_register_mgmt,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_FRAME,
+                .doit = nl80211_tx_mgmt,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_FRAME_WAIT_CANCEL,
+                .doit = nl80211_tx_mgmt_cancel_wait,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_POWER_SAVE,
+                .doit = nl80211_set_power_save,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_POWER_SAVE,
+                .doit = nl80211_get_power_save,
+                .policy = nl80211_policy,
+                /* can be retrieved by unprivileged users */
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_CQM,
+                .doit = nl80211_set_cqm,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_CHANNEL,
+                .doit = nl80211_set_channel,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_WDS_PEER,
+                .doit = nl80211_set_wds_peer,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_JOIN_MESH,
+                .doit = nl80211_join_mesh,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_LEAVE_MESH,
+                .doit = nl80211_leave_mesh,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+#ifdef CONFIG_PM
+            {
+                .cmd = NL80211_CMD_GET_WOWLAN,
+                .doit = nl80211_get_wowlan,
+                .policy = nl80211_policy,
+                /* can be retrieved by unprivileged users */
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_WOWLAN,
+                .doit = nl80211_set_wowlan,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+#endif
+            {
+                .cmd = NL80211_CMD_SET_REKEY_OFFLOAD,
+                .doit = nl80211_set_rekey_data,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_TDLS_MGMT,
+                .doit = nl80211_tdls_mgmt,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_TDLS_OPER,
+                .doit = nl80211_tdls_oper,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_UNEXPECTED_FRAME,
+                .doit = nl80211_register_unexpected_frame,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_PROBE_CLIENT,
+                .doit = nl80211_probe_client,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_REGISTER_BEACONS,
+                .doit = nl80211_register_beacons,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_NOACK_MAP,
+                .doit = nl80211_set_noack_map,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_START_P2P_DEVICE,
+                .doit = nl80211_start_p2p_device,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_STOP_P2P_DEVICE,
+                .doit = nl80211_stop_p2p_device,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_MCAST_RATE,
+                .doit = nl80211_set_mcast_rate,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_SET_MAC_ACL,
+                .doit = nl80211_set_mac_acl,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_RADAR_DETECT,
+                .doit = nl80211_start_radar_detection,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_GET_PROTOCOL_FEATURES,
+                .doit = nl80211_get_protocol_features,
+                .policy = nl80211_policy,
+            },
+            {
+                .cmd = NL80211_CMD_UPDATE_FT_IES,
+                .doit = nl80211_update_ft_ies,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_CRIT_PROTOCOL_START,
+                .doit = nl80211_crit_protocol_start,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_CRIT_PROTOCOL_STOP,
+                .doit = nl80211_crit_protocol_stop,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+            {
+                .cmd = NL80211_CMD_VENDOR,
+                .doit = nl80211_vendor_cmd,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+        };
+
+        static struct genl_multicast_group nl80211_mlme_mcgrp = {
+            .name = "mlme",
+        };
+
+        /* multicast groups */
+        static struct genl_multicast_group nl80211_config_mcgrp = {
+            .name = "config",
+        };
+        static struct genl_multicast_group nl80211_scan_mcgrp = {
+            .name = "scan",
+        };
+        static struct genl_multicast_group nl80211_regulatory_mcgrp = {
+            .name = "regulatory",
+        };
+
+        /* the netlink family */
+        static struct genl_family nl80211_fam = {
+            .id = GENL_ID_GENERATE,	/* don't bother with a hardcoded ID */
+            .name = "nl80211",	/* have users key off the name instead */
+            .hdrsize = 0,		/* no private header */
+            .version = 1,		/* no particular meaning now */
+            .maxattr = NL80211_ATTR_MAX,
+            .netnsok = true,
+            .pre_doit = nl80211_pre_doit,
+            .post_doit = nl80211_post_doit,
+        };
+
+        //----------------------------------------------------------------------------
+        int nl80211_init(void)
+        {
+            int err;
+
+            err = genl_register_family_with_ops(&nl80211_fam,
+                    nl80211_ops, ARRAY_SIZE(nl80211_ops));
+            if (err)
+                return err;
+
+            err = genl_register_mc_group(&nl80211_fam, &nl80211_config_mcgrp);
+            if (err)
+                goto err_out;
+
+            err = genl_register_mc_group(&nl80211_fam, &nl80211_scan_mcgrp);
+            if (err)
+                goto err_out;
+
+            err = genl_register_mc_group(&nl80211_fam, &nl80211_regulatory_mcgrp);
+            if (err)
+                goto err_out;
+
+            err = genl_register_mc_group(&nl80211_fam, &nl80211_mlme_mcgrp);
+            if (err)
+                goto err_out;
+
+    #ifdef CONFIG_NL80211_TESTMODE
+            err = genl_register_mc_group(&nl80211_fam, &nl80211_testmode_mcgrp);
+            if (err)
+                goto err_out;
+
+            err = genl_register_mc_group(&nl80211_fam, &nl80211_vendor_mcgrp);
+            if (err)
+                goto err_out;
+    #endif
+
+            err = netlink_register_notifier(&nl80211_netlink_notifier);
+            if (err)
+                goto err_out;
+
+            return 0;
+err_out:
+            genl_unregister_family(&nl80211_fam);
+            return err;
+        }
+
+        static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+        {
+            request->no_cck =
+                nla_get_flag(info->attrs[NL80211_ATTR_TX_NO_CCK_RATE]);
+
+            request->wdev = wdev;
+            request->wiphy = &rdev->wiphy;
+            request->scan_start = jiffies;
+
+            rdev->scan_req = request;
+            err = rdev_scan(rdev, request);
+        }
+    }
+--------------------------------------------------------------------------------------------->
+Rdev-ops.h (net\wireless)
+->  {
+        static inline int rdev_scan(struct cfg80211_registered_device *rdev,
+                struct cfg80211_scan_request *request)
+        {
+            int ret;
+            trace_rdev_scan(&rdev->wiphy, request);
+            ret = rdev->ops->scan(&rdev->wiphy, request);
+            trace_rdev_return_int(&rdev->wiphy, ret);
+            return ret;
+        }
+    }
+-------------------------------------------------------------------------------------------->
+wifi驱动中的wl_cfg80211.c
+->  {
+        static struct cfg80211_ops wl_cfg80211_ops = {
+            .scan = wl_cfg80211_scan,
+        }
+    }
+接着见dhd_scan_flow流程！！

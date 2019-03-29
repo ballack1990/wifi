@@ -1,0 +1,2219 @@
+dhd_priv isam_init mode mesh
+dhd_priv(1.4): failed to issue private commands -1
+# 
+# 
+# 
+# 
+# insmod /lib/modules/4.9.54/kernel/broadcom/wifi/dhd.ko firmware_path=/etc/wifi
+/4359/fw_bcm4359c0_ag_mesh.bin nvram_path=/etc/wifi/4359/nvram.txt
+[ 3266.441048@2] dhd_module_init: in Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 3266.442819@2] ======== dhd_wlan_init_plat_data ========
+[ 3266.448043@2] dhd_wlan_init_gpio: WL_HOST_WAKE=-1, oob_irq=91, oob_irq_flags=0x418
+[ 3266.455497@2] dhd_wlan_init_gpio: WL_REG_ON=-1
+[ 3266.459907@2] dhd_wifi_platform_load: Enter
+[ 3266.464063@2] Power-up adapter 'DHD generic adapter'
+[ 3266.468950@2] wifi_platform_set_power = 1
+[ 3266.472908@2] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 3266.478198@2] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 3266.584784@2] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 3266.940041@2] wifi_platform_bus_enumerate device present 1
+[ 3266.940244@2] ======== Card detection to detect SDIO card! ========
+[ 3266.946471@2] sdio_reset_comm():
+[ 3266.949651@2] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3266.961523@2] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3266.968905@2] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 3266.975626@2] actual_clock :400000, HHI_nand: 0x0
+[ 3266.980117@2] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3266.988782@0] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 3266.993217@0] actual_clock :0, HHI_nand: 0x0
+[ 3266.997352@0] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3267.019751@0] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 3267.021711@0] actual_clock :400000, HHI_nand: 0x0
+[ 3267.026396@0] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3267.051520@0] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 3267.054438@0] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3267.060054@0] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3267.067948@0] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 3267.074684@0] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 3267.169708@0] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3267.174276@0] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3267.182115@0] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 3267.189964@0] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 3267.199837@0] actual_clock :199999805, HHI_nand: 0x0
+[ 3267.204425@0] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 3267.210494@0] sdio: clk 200000000 SDR mode tuning start
+[ 3267.215963@2] sdio: rx_tuning_result[0] = 10
+[ 3267.220139@2] sdio: rx_tuning_result[2] = 10
+[ 3267.224420@2] sdio: rx_tuning_result[3] = 10
+[ 3267.228356@0] sdio: best_win_start =2, best_win_size =2
+[ 3267.233524@0] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 3267.240911@0] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 3267.247634@0] [sdio_reinit] finish
+[ 3267.251643@0] parse loopback:, 	lb mode:0
+[ 3267.255013@0] 	datain_src:4, datain_chnum:8, datain_chumask:3f
+[ 3267.260776@0] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3
+[ 3267.267177@0] parse loopback:, 	lb mode:0
+[ 3267.270447@0] 	datain_src:4, datain_chnum:8, datain_chumask:3f
+[ 3267.276205@0] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3
+[ 3267.282706@3] bcmsdh_register: register client driver
+[ 3267.287157@3] bcmsdh_sdmmc_probe: Enter num=1
+[ 3267.291745@3] parse loopback:, 	lb mode:0
+[ 3267.295138@3] 	datain_src:4, datain_chnum:8, datain_chumask:3f
+[ 3267.299955@2] bcmsdh_sdmmc_probe: Enter num=2
+[ 3267.299959@2] bus num (host idx)=0, slot num (rca)=1
+[ 3267.299963@2] found adapter info 'DHD generic adapter'
+[ 3267.300028@2] sdioh_attach: set sd_f2_blocksize 256
+[ 3267.300074@2] sdioh_attach: sd clock rate = 0
+[ 3267.300423@2] dhdsdio_probe : no mutex held. set lock
+[ 3267.300550@2] F1 signature read @0x18000000=0x17294359
+[ 3267.304567@2] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 3267.305190@2] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 3267.305289@2] dhd_conf_set_chiprev: chip=0x4359, chiprev=9
+[ 3267.305456@2] CFG80211-ERROR) wl_setup_wiphy : 
+[ 3267.305457@2] Registering Vendor80211
+[ 3267.306349@2] CFG80211-ERROR) wl_init_prof : 
+[ 3267.306349@2] wl_init_prof: No profile
+[ 3267.306779@2] wl_escan_attach: Enter
+[ 3267.306825@2] wl_escan_init: Enter
+[ 3267.306969@2] wl_create_event_handler(): thread:wl_escan_handler:379b started
+[ 3267.308129@1] tsk Enter, tsk = 0xffffffc01ca70198
+[ 3267.312397@1] dhd_attach(): thread:dhd_watchdog_thread:379c started
+[ 3267.312580@1] dhd_attach(): thread:dhd_dpc:379d started
+[ 3267.315357@1] dhd_attach(): thread:dhd_rxf:379e started
+[ 3267.315374@1] dhd_deferred_work_init: work queue initialized
+[ 3267.315380@1] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 2
+[ 3267.315437@1] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 3267.315770@2] sdioh_cis_read: func_cis_ptr[0]=0x10ac
+[ 3267.327017@2] Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 3267.328318@2] ANDROID-MSG) 
+[ 3267.328319@2] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 3267.328328@2] Register interface [wlan0]  MAC: 28:ed:e0:e6:ba:ba
+[ 3267.328328@2] 
+[ 3267.328499@2] dhd_tcpack_suppress_set: TCP ACK Suppress mode 2 -> mode 0
+[ 3267.328518@2] dhd_wl_ioctl: returning as busstate=0
+[ 3267.328526@2] dhd_bus_devreset: == Power OFF ==
+[ 3267.329013@2] bcmsdh_oob_intr_unregister: Enter
+[ 3267.329018@2] bcmsdh_oob_intr_unregister: irq is not registered
+[ 3267.329035@2] dhd_txglom_enable: enable 0
+[ 3267.329039@2] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 3267.329043@2] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[ 3267.329046@2] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 3267.329050@2] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 3267.329055@2] dhd_bus_devreset:  WLAN OFF DONE
+[ 3267.329124@2] wifi_platform_set_power = 0
+[ 3267.329128@2] ======== PULL WL_REG_ON(-1) LOW! ========
+[ 3267.329132@2] wl_escan_deinit: Enter
+[ 3267.329161@1] wl_escan_event_handler: was terminated
+[ 3267.329172@2] wl_destroy_event_handler(): thread:wl_escan_handler:379b terminated OK
+[ 3267.329182@2] dhdsdio_probe : the lock is released.
+[ 3267.329498@2] dhd_module_init: Exit err=0
+[ 3267.544327@3] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3
+[ 3267.550779@3] parse loopback:, 	lb mode:0
+[ 3267.554027@3] 	datain_src:4, datain_chnum:8, datain_chumask:3f
+[ 3267.559782@3] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3
+# 
+# 
+# ifconfig wlan0 up
+[ 3278.067136@1] dhd_open: Enter ffffffc01d378000
+[ 3278.067331@1] dhd_open : no mutex held. set lock
+[ 3278.071166@1] 
+[ 3278.071166@1] Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 3278.078052@1] ANDROID-MSG) [ 3278.080463@1] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 3278.086057@1] wl_android_wifi_on in 1
+[ 3278.089681@1] wl_android_wifi_on in 2: g_wifi_on=0
+[ 3278.094457@1] wifi_platform_set_power = 1
+[ 3278.098393@1] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 3278.103669@1] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 3278.210228@1] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 3278.568339@1] sdio_reset_comm():
+[ 3278.568594@1] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3278.579063@2] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3278.585765@2] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 3278.592647@2] actual_clock :400000, HHI_nand: 0x0
+[ 3278.596841@2] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3278.606390@3] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 3278.609878@3] actual_clock :0, HHI_nand: 0x0
+[ 3278.614048@3] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3278.639719@3] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 3278.641692@3] actual_clock :400000, HHI_nand: 0x0
+[ 3278.646340@3] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3278.670975@2] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 3278.673876@2] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3278.679472@2] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3278.687390@2] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 3278.694128@0] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 3278.791856@2] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3278.796480@2] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3278.804305@2] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 3278.812109@2] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 3278.821707@2] actual_clock :199999805, HHI_nand: 0x0
+[ 3278.826615@2] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 3278.832643@2] sdio: clk 200000000 SDR mode tuning start
+[ 3278.838232@2] sdio: rx_tuning_result[0] = 10
+[ 3278.842354@2] sdio: rx_tuning_result[2] = 10
+[ 3278.846587@2] sdio: rx_tuning_result[3] = 10
+[ 3278.850531@2] sdio: best_win_start =2, best_win_size =2
+[ 3278.855647@2] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 3278.863058@2] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 3278.869881@0] sdioh_start: set sd_f2_blocksize 256
+[ 3278.874927@2] 
+[ 3278.874927@2] 
+[ 3278.874927@2] dhd_bus_devreset: == WLAN ON ==
+[ 3278.882283@2] F1 signature read @0x18000000=0x17294359
+[ 3278.891006@2] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 3278.894356@2] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 3278.900823@2] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 3278.907105@2] dhd_os_open_image: /etc/wifi/4359/config.txt (47 bytes) open success
+[ 3278.914329@2] dhd_conf_read_others: bcn_timeout = 20
+[ 3278.919205@2] dhd_conf_read_sdio_params: dhd_slpauto = 0
+[ 3278.924473@2] dhd_conf_read_others: ccode = CN
+[ 3278.928879@2] dhd_conf_read_others: regrev = 38
+[ 3278.933365@2] Final fw_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin
+[ 3278.939561@2] Final nv_path=/etc/wifi/4359/nvram.txt
+[ 3278.944475@2] Final clm_path=/etc/wifi/4359/clm.blob
+[ 3278.949395@2] Final conf_path=/etc/wifi/4359/config.txt
+[ 3278.955146@2] dhd_os_open_image: /etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin (749970 bytes) open success
+[ 3279.045242@2] dhd_os_open_image: /etc/wifi/4359/nvram.txt (5639 bytes) open success
+[ 3279.047272@2] NVRAM version: AP6398S_NVRAM_V1.1_20170926
+[ 3279.053200@2] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+[ 3279.231262@2] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+[ 3279.231672@2] si_get_pmu_reg_addr: addrRET: 18000670
+[ 3279.236818@2] bcmsdh_oob_intr_register: HW_OOB irq=91 flags=0x8
+[ 3279.242459@2] meson_pinctrl: gpio virq[91] connect to GIC hwirq[96]
+[ 3279.248666@2] bcmsdh_oob_intr_register: enable_irq_wake failed with -6
+[ 3279.256142@1] Disable tdls_auto_op failed. -1
+[ 3279.259419@1] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 1
+[ 3279.266903@2] dhd_apply_default_clm: Ignore clm file /etc/wifi/4359/clm.blob
+[ 3279.274252@2] Firmware up: op_mode=0x0405, MAC=28:ed:e0:e6:ba:ba
+[ 3279.280920@1] dhd_preinit_ioctls Set scancache failed -23
+[ 3279.286878@1] dhd_wl_ioctl_set_intiovar: set int iovar arpoe failed, ERR -23
+[ 3279.291338@1] dhd_arp_offload_enable: failed to enabe ARP offload to 1, retcode = -23
+[ 3279.299530@1] dhd_wl_ioctl_get_intiovar: get int iovar arp_version failed, ERR -23
+[ 3279.306974@1] dhd_wl_ioctl_set_intiovar: set int iovar arp_ol failed, ERR -23
+[ 3279.313681@1] dhd_arp_offload_set: failed to set ARP offload mode to 0x9, retcode = -23
+[ 3279.324777@1]   Driver: 1.579.77.41.12 (r)
+[ 3279.324777@1]   Firmware: wl0: Nov 21 2018 12:44:02 version 9.87.51.11.0-debug-10 FWID 01-27467671
+[ 3279.324777@1]   CLM: 9.7.5 
+[ 3279.337519@1] dhd_txglom_enable: enable 1
+[ 3279.341281@1] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 3279.346743@1] dhd_conf_set_txglom_params: txglomsize=36, deferred_tx_len=0
+[ 3279.353570@3] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 3279.360436@3] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 3279.367459@3] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+[ 3279.374879@1] dhd_wlfc_hostreorder_init(): successful bdcv2 tlv signaling, 64
+[ 3279.382271@1] dhd_preinit_ioctls: SensorHub diabled 0
+[ 3279.386599@1] dhd_preinit_ioctls failed to set ShubHub disable
+[ 3279.392873@1] failed to set WNM capabilities
+[ 3279.424563@1] dhd_conf_set_country: set country CN, revision 38
+[ 3279.424576@0] CFG80211-ERROR) wl_cfg80211_event : 
+[ 3279.424576@0] Event handler is not created
+[ 3279.435745@1] Country code: CN (CN/38)
+[ 3279.438755@1] CONFIG-ERROR) [ 3279.440066@1] dhd_conf_set_intiovar: txbf setting failed -23
+[ 3279.449856@1] wl_android_wifi_on: Success
+[ 3279.494828@1] wl_escan_init: Enter
+[ 3279.494981@1] wl_create_event_handler(): thread:wl_escan_handler:37d1 started
+[ 3279.494986@2] tsk Enter, tsk = 0xffffffc01ca70198
+[ 3279.504383@1] dhd_open : the lock is released.
+[ 3279.508757@1] dhd_open: Exit ret=0
+# 
+# 
+# 
+# dhd_priv isam_init mode mesh
+[ 3288.536641@1] ANDROID-MSG) [ 3288.536670@1] wl_ext_iapsta_preinit: set rsdb_mode 1
+[ 3288.563923@1] ANDROID-MSG) [ 3288.563968@1] wl_ext_iapsta_preinit: apstamode=8
+
+# 
+# dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 1 amode sae key 12345678
+
+# 
+# dhd_priv isam_enable ifname wlan0
+[ 3300.802163@1] ANDROID-MSG) [ 3300.802194@1] wl_ext_enable_iface: wlan0[M] Enabling
+[ 3300.807708@1] ANDROID-MSG) [ 3300.807740@2] wl_ext_set_chanspec: wlan0 channel 1, 0x1001
+[ 3300.918458@2] ANDROID-MSG) [ 3300.918527@0] wl_ext_iapsta_event: wlan0[M] Link up
+[ 3300.920443@0] wl_iw_event: Link UP with 28:ed:e0:e6:ba:ba
+[ 3300.925847@0] ANDROID-MSG) [ 3300.928308@0] wl_ext_iapsta_event: wlan0[M] Link up
+[ 3300.933358@0] wl_notify_connect_status : Invalid wlan0 mode 3 event 2 status 0
+[ 3300.940413@0] wl_notify_connect_status : Invalid wlan0 mode 3 event 16 status 0
+[ 3300.947525@0] wl_notify_connect_status : Invalid wlan0 mode 3 event 0 status 0
+[ 3301.324338@0] ANDROID-MSG) [ 3301.324505@2] wl_ext_enable_iface: wlan0[M] enabled with SSID: "ttt_mesh"
+
+# 
+# 
+# [ 3306.050990@2] ANDROID-MSG) [ 3306.051037@0] wl_ext_iapsta_event: wlan0[M] connected device 28:ed:e0:e6:b9:c2
+[ 3306.055372@0] wl_notify_connect_status : Invalid wlan0 mode 3 event 8 status 0
+
+# 
+# dhd_priv isam_status
+wlan0[M-E*]: chan   1, amode sae, emode sae, SSID "ttt_mesh"
+
+# 
+# ifconfig wlan0 192.168.2.1
+[ 3322.143872@1] dhd_arp_get_arp_hostip_table: ioctl WLC_GET_VAR error -23
+[ 3322.145270@1] dhd_aoe_hostip_clr failed code -23
+[ 3322.149467@1] aoe_update_host_ipv4_table failed
+# 
+# 
+# dhd_priv wl mesh_peer_status
+no: ------addr------  :  l.aid : state  :  p.aid : mppid : llid : plid : entry_state : rssi
+ 0: 28:ed:e0:e6:b9:c2 :   NA   :   NA   :   NA   :   NA  :  NA  :  NA  :   TIMEDOUT  :  NA 
+# 
+# pign 192ng 192.168.2.2
+PING 192.168.2.2 (192.168.2.2): 56 data bytes
+64 bytes from 192.168.2.2: seq=0 ttl=64 time=38.358 ms
+64 bytes from 192.168.2.2: seq=1 ttl=64 time=7.512 ms
+64 bytes from 192.168.2.2: seq=2 ttl=64 time=13.543 ms
+64 bytes from 192.168.2.2: seq=3 ttl=64 time=31.728 ms
+64 bytes from 192.168.2.2: seq=4 ttl=64 time=21.460 ms
+64 bytes from 192.168.2.2: seq=5 ttl=64 time=25.995 ms
+^C
+--- 192.168.2.2 ping statistics ---
+6 packets transmitted, 6 packets received, 0% packet loss
+round-trip min/avg/max = 7.512/23.099/38.358 ms
+# 
+# 
+# dmesg 
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 4.9.54 (jay@jay) (gcc version 6.3.1 20170109 (Linaro GCC 6.3-2017.02) ) #2 SMP PREEMPT Fri Dec 7 16:58:11 CST 2018
+[    0.000000] Boot CPU: AArch64 Processor [410fd034]
+[    0.000000] earlycon: aml_uart0 at MMIO 0x00000000ff803000 (options '')
+[    0.000000] bootconsole [aml_uart0] enabled
+[    0.000000] efi: Getting EFI parameters from FDT:
+[    0.000000] efi: UEFI not found.
+[    0.000000] Reserved memory: created CMA memory pool at 0x000000000f000000, size 8 MiB
+[    0.000000] OF: reserved mem: initialized node linux,meson-fb, compatible id shared-dma-pool
+[    0.000000] Reserved memory: created CMA memory pool at 0x0000000005000000, size 4 MiB
+[    0.000000] OF: reserved mem: initialized node linux,secmon, compatible id shared-dma-pool
+[    0.000000] cma: Reserved 16 MiB at 0x000000001f000000
+[    0.000000] On node 0 totalpages: 131072
+[    0.000000]   DMA zone: 2048 pages used for memmap
+[    0.000000]   DMA zone: 0 pages reserved
+[    0.000000]   DMA zone: 131072 pages, LIFO batch:31
+[    0.000000] psci: probing for conduit method from DT.
+[    0.000000] psci: PSCIv1.0 detected in firmware.
+[    0.000000] psci: Using standard PSCI v0.2 function IDs
+[    0.000000] psci: MIGRATE_INFO_TYPE not supported.
+[    0.000000] percpu: Embedded 23 pages/cpu @ffffffc01ef19000 s53528 r8192 d32488 u94208
+[    0.000000] pcpu-alloc: s53528 r8192 d32488 u94208 alloc=23*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+[    0.000000] Detected VIPT I-cache on CPU0
+[    0.000000] CPU features: enabling workaround for ARM erratum 845719
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 129024
+[    0.000000] Kernel command line: rootfstype=ramfs init=/init console=ttyS0,115200 no_console_suspend earlycon=aml_uart,0xff803000 ramoops.pstore_en=1 ramoops.record_size=0x8000 ramoops.console_size=0x4000 logo=osd0,loaded,0x3d800000 vout=panel,enable panel_type=lcd_1 osd_reverse=0 video_reverse=0 androidboot.selinux=enforcing androidboot.firstboot=1 jtag=apao androidboot.hardware=amlogic androidboot.serialno=1234567890 androidboot.rpmb_state=0 root=/dev/ubi0_0 rootfstype=ubifs init=/sbin/init
+[    0.000000] fb: osd0
+[    0.000000] fb: loaded
+[    0.000000] fb: 0x3d800000
+[    0.000000] vout: panel
+[    0.000000] vout: enable: 1
+[    0.000000] lcd: panel_type: lcd_1
+[    0.000000] vpp_axis_reverse: bootargs is 0
+[    0.000000] jtag: jtag select apao
+[    0.000000] PID hash table entries: 2048 (order: 2, 16384 bytes)
+[    0.000000] Dentry cache hash table entries: 65536 (order: 7, 524288 bytes)
+[    0.000000] Inode-cache hash table entries: 32768 (order: 6, 262144 bytes)
+[    0.000000] Memory: 452552K/524288K available (11836K kernel code, 1514K rwdata, 3376K rodata, 4352K init, 1350K bss, 43064K reserved, 28672K cma-reserved)
+[    0.000000] Virtual kernel memory layout:
+[    0.000000]     modules : 0xffffff8000000000 - 0xffffff8008000000   (   128 MB)
+[    0.000000]     vmalloc : 0xffffff8008000000 - 0xffffffbebfff0000   (   250 GB)
+[    0.000000]       .text : 0xffffff8009080000 - 0xffffff8009c10000   ( 11840 KB)
+[    0.000000]     .rodata : 0xffffff8009c10000 - 0xffffff8009f70000   (  3456 KB)
+[    0.000000]       .init : 0xffffff8009f70000 - 0xffffff800a3b0000   (  4352 KB)
+[    0.000000]       .data : 0xffffff800a3b0000 - 0xffffff800a52aa00   (  1515 KB)
+[    0.000000]        .bss : 0xffffff800a52aa00 - 0xffffff800a67c394   (  1351 KB)
+[    0.000000]     fixed   : 0xffffffbefe7fd000 - 0xffffffbefec00000   (  4108 KB)
+[    0.000000]     PCI I/O : 0xffffffbefee00000 - 0xffffffbeffe00000   (    16 MB)
+[    0.000000]     vmemmap : 0xffffffbf00000000 - 0xffffffc000000000   (     4 GB maximum)
+[    0.000000]               0xffffffbf00000000 - 0xffffffbf00800000   (     8 MB actual)
+[    0.000000]     memory  : 0xffffffc000000000 - 0xffffffc020000000   (   512 MB)
+[    0.000000] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+[    0.000000] Preemptible hierarchical RCU implementation.
+[    0.000000] 	Build-time adjustment of leaf fanout to 64.\x004.
+[    0.000000] 	RCU restricting CPUs from NR_CPUS=8 to nr_cpu_ids=4.\x004.
+[    0.000000] RCU: Adjusting geometry for rcu_fanout_leaf=64, nr_cpu_ids=4
+[    0.000000] NR_IRQS:64 nr_irqs:64 0
+[    0.000000] axg_aoclkc_init: register ao clk ok!
+[    0.000000] axg_amlogic_init_sdemmc: register amlogic sdemmc clk
+[    0.000000] axg_amlogic_init_sdemmc: register amlogic sdemmc clk
+[    0.000000] axg_amlogic_init_media: register meson media clk
+[    0.000000] axg_amlogic_init_misc: register amlogic axg misc clks
+[    0.000000] axg_amlogic_init_misc: register amlogic sdemmc clk
+[    0.000000] axg_clkc_init initialization complete
+[    0.000000] arm_arch_timer: Architected cp15 timer(s) running at 24.00MHz (phys).
+[    0.000000] clocksource: arch_sys_counter: mask: 0xffffffffffffff max_cycles: 0x588fe9dc0, max_idle_ns: 440795202592 ns
+[    0.000004] sched_clock: 56 bits at 24MHz, resolution 41ns, wraps every 4398046511097ns
+[    0.008253] meson_bc_timer: mclk->mux_reg =ffffff8008008190,mclk->reg =ffffff800800a194
+[    0.016854] Console: colour dummy device 80x25
+[    0.021104] Calibrating delay loop (skipped), value calculated using timer frequency.. 48.00 BogoMIPS (lpj=96000)
+[    0.031587] pid_max: default: 32768 minimum: 301
+[    0.036467] Security Framework initialized
+[    0.040696] SELinux:  Initializing.
+[    0.044416] SELinux:  Starting in permissive mode
+[    0.044459] Mount-cache hash table entries: 1024 (order: 1, 8192 bytes)
+[    0.051195] Mountpoint-cache hash table entries: 1024 (order: 1, 8192 bytes)
+[    0.059020] ftrace: allocating 39894 entries in 156 pages
+[    0.127098] sched-energy: CPU device node has no sched-energy-costs
+[    0.127910] Invalid sched_group_energy for CPU0
+[    0.132662] CPU0: update cpu_capacity 1024
+[    0.136941] ASID allocator initialised with 65536 entries
+[    0.175168] EFI services will not be available.
+[    0.175282] Meson chip version = RevB (25:B - 22:0)
+[    0.207611] Detected VIPT I-cache on CPU1
+[    0.207669] Invalid sched_group_energy for CPU1
+[    0.207672] CPU1: update cpu_capacity 1024
+[    0.207674] CPU1: Booted secondary processor [410fd034]
+[    0.235649] Detected VIPT I-cache on CPU2
+[    0.235689] Invalid sched_group_energy for CPU2
+[    0.235692] CPU2: update cpu_capacity 1024
+[    0.235694] CPU2: Booted secondary processor [410fd034]
+[    0.263722] Detected VIPT I-cache on CPU3
+[    0.263761] Invalid sched_group_energy for CPU3
+[    0.263764] CPU3: update cpu_capacity 1024
+[    0.263766] CPU3: Booted secondary processor [410fd034]
+[    0.263841] Brought up 4 CPUs
+[    0.317232] SMP: Total of 4 processors activated.
+[    0.322140] CPU features: detected feature: 32-bit EL0 Support
+[    0.328223] CPU: All CPU(s) started at EL2
+[    0.332484] alternatives: patching kernel code
+[    0.337235] Invalid sched_group_energy for CPU3
+[    0.341830] Invalid sched_group_energy for Cluster3
+[    0.346900] Invalid sched_group_energy for CPU2
+[    0.351625] Invalid sched_group_energy for Cluster2
+[    0.356699] Invalid sched_group_energy for CPU1
+[    0.361425] Invalid sched_group_energy for Cluster1
+[    0.366499] Invalid sched_group_energy for CPU0
+[    0.371225] Invalid sched_group_energy for Cluster0
+[    0.377063] devtmpfs: initialized
+[    0.391936] DMI not present or invalid.
+[    0.392304] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 7645041785100000 ns
+[    0.400315] futex hash table entries: 1024 (order: 5, 131072 bytes)
+[    0.407621] pinctrl core: initialized pinctrl subsystem
+[    0.413524] NET: Registered protocol family 16
+[    0.436920] cpuidle: using governor menu
+[    0.437047] register canvas platform driver
+[    0.439802] register rdma platform driver
+[    0.445310] vdso: 2 pages (1 code @ ffffff8009c17000, 1 data @ ffffff800a3b5000)
+[    0.451599] hw-breakpoint: found 6 breakpoint and 4 watchpoint registers.
+[    0.459086] DMA: preallocated 256 KiB pool for atomic allocations
+[    0.464975] codec_mm_module_init
+[    0.468315] media_configs_system_init
+[    0.480425] aml_iomap: amlogic iomap probe done
+[    0.495087] vpu: driver version: v02
+[    0.495137] vpu: load vpu_clk: 250000000Hz(3)
+[    0.497865] vpu: vpu_clktree_init
+[    0.501305] vpu: vpu_probe OK
+[    0.504795] aml_snd_reg_map[0], reg:ff632000, size:20
+[    0.509678] aml_snd_reg_map[1], reg:ff642000, size:2000
+[    0.515068] aml snd iomap probe done
+[    0.806425] vgaarb: loaded
+[    0.807228] SCSI subsystem initialized
+[    0.807901] usbcore: registered new interface driver usbfs
+[    0.813392] usbcore: registered new interface driver hub
+[    0.818912] usbcore: registered new device driver usb
+[    0.824282] Linux video capture interface: v2.00
+[    0.828960] pps_core: LinuxPPS API ver. 1 registered
+[    0.834037] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.843421] PTP clock support registered
+[    0.847902] dmi: Firmware registration failed.
+[    0.852403] aml_i2c version: 20140813
+[    0.856552] aml-i2c ff805000.i2c: add adapter aml_i2c_adap0(ffffffc01cd608d0)
+[    0.863901] aml-i2c ffd1e000.i2c: add adapter aml_i2c_adap2(ffffffc01cd610d0)
+[    0.871140] aml-i2c ffd1d000.i2c: add adapter aml_i2c_adap3(ffffffc01cd618d0)
+[    0.878746] lcd: detect mode: tablet, fr_auto_policy: 0, key_valid: 0
+[    0.884830] lcd: lcd_clktree_probe
+[    0.888257] lcd: status: 1
+[    0.891160] vout: vout_register_server
+[    0.895082] lcd: lcd_get_config from dts
+[    0.899212] lcd: failed to get range_setting
+[    0.903754] lcd: HARMAN_FH28, mipi, 8bit, 800x186
+[    0.908574] lcd: pixel_clk = 14.976MHz, bit_rate = 254.592MHz
+[    0.914853] lcd: lcd_fops_create OK
+[    0.918184] lcd: lcd_probe ok
+[    0.921715] vout: init mode panel
+[    0.924882] vout: create vout attribute OK
+[    0.929139] vout: aml_vout_probe OK
+[    0.932863] fb: osd_init_module
+[    0.936398] fb: viu vsync irq: 143
+[    0.939720] fb: mapped phy: 0xff900000
+[    0.943667] vpu: switch_vpu_mem_pd: unsupport vpu mod: 1
+[    0.949162] vpu: switch_vpu_mem_pd: unsupport vpu mod: 7
+[    0.954802] meson-fb meson-fb: assigned reserved memory node linux,meson-fb
+[    0.961853] fb: reserved memory base:f000000, size:800000
+[    0.967741] fb: init fbdev bpp is:32
+[    0.972037] fb: set osd0 reverse as NONE
+[    0.988840] fb: osd probe OK
+[    0.989288] Advanced Linux Sound Architecture Driver Initialized.
+[    0.993173] Bluetooth: Core ver 2.22
+[    0.996360] NET: Registered protocol family 31
+[    1.000959] Bluetooth: HCI device and connection manager initialized
+[    1.007516] Bluetooth: HCI socket layer initialized
+[    1.012586] Bluetooth: L2CAP socket layer initialized
+[    1.017872] Bluetooth: SCO socket layer initialized
+[    1.023395] NetLabel: Initializing
+[    1.026480] NetLabel:  domain hash size = 128
+[    1.031061] NetLabel:  protocols = UNLABELED CIPSOv4
+[    1.036266] NetLabel:  unlabeled traffic allowed by default
+[    1.043718] clocksource: Switched to clocksource arch_sys_counter
+[    1.135772] VFS: Disk quotas dquot_6.6.0
+[    1.135866] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    1.152511] jtag: module init
+[    1.152907] NET: Registered protocol family 2
+[    1.155161] TCP established hash table entries: 4096 (order: 3, 32768 bytes)
+[    1.161953] TCP bind hash table entries: 4096 (order: 4, 65536 bytes)
+[    1.168556] TCP: Hash tables configured (established 4096 bind 4096)
+[    1.175386] UDP hash table entries: 256 (order: 1, 8192 bytes)
+[    1.181092] UDP-Lite hash table entries: 256 (order: 1, 8192 bytes)
+[    1.187818] NET: Registered protocol family 1
+[    1.192568] RPC: Registered named UNIX socket transport module.
+[    1.198246] RPC: Registered udp transport module.
+[    1.203129] RPC: Registered tcp transport module.
+[    1.208016] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    1.214672] PCI: CLS 0 bytes, default 128
+[    1.215883] wifi: power_on_pin_OD = 0;
+[    1.218699] aml_wifi wifi: [pwm_double_channel_conf_dt] wifi pwm dt ok
+[    1.225364] aml_wifi wifi: [pwm_double_channel_conf] wifi pwm conf ok
+[    1.232002] aml_wifi wifi: [wifi_dev_probe] dhd_static_buf setup
+[    1.238423] Wifi: bcmdhd_init_wlan_mem: bcmdhd_init_wlan_mem prealloc ok
+[    1.245154] aml_wifi wifi: [wifi_dev_probe] interrupt_pin=68
+[    1.250982] aml_wifi wifi: [wifi_dev_probe] irq_num=0, irq_trigger_type=1
+[    1.257986] aml_wifi wifi: [wifi_dev_probe] power_on_pin=69
+[    1.263754] aml_wifi wifi: [wifi_dev_probe] clock_32k_pin=0
+[    1.269799] aml_wifi wifi: [wifi_setup_dt] wifi_setup_dt
+[    1.275086] aml_wifi wifi: [wifi_setup_dt] irq num is:(91)
+[    1.280735] aml_wifi wifi: [wifi_setup_dt] interrupt_pin(68)
+[    1.286606] aml_wifi wifi: [wifi_setup_dt] power_on_pin(69)
+[    1.292381] aml_wifi wifi: [wifi_setup_dt] power_on_pin2(78)
+[    1.298590] Unpacking initramfs...
+[    1.413677] Freeing initrd memory: 2676K
+[    1.415194] hw perfevents: enabled with armv8_pmuv3 PMU driver, 7 counters available
+[    1.421568] audit: initializing netlink subsys (disabled)
+[    1.425794] audit: type=2000 audit(1.284:1): initialized
+[    1.432195] workingset: timestamp_bits=62 max_order=17 bucket_order=0
+[    1.448333] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    1.450257] NFS: Registering the id_resolver key type
+[    1.454003] Key type id_resolver registered
+[    1.458336] Key type id_legacy registered
+[    1.462596] ntfs: driver 2.1.32 [Flags: R/O].
+[    1.467650] fuse init (API version 7.26)
+[    1.472295] SELinux:  Registering netfilter hooks
+[    1.475541] NET: Registered protocol family 38
+[    1.475858] Key type asymmetric registered
+[    1.480132] Asymmetric key parser 'x509' registered
+[    1.485484] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+[    1.492830] io scheduler noop registered
+[    1.496926] io scheduler deadline registered
+[    1.501606] io scheduler cfq registered (default)
+[    1.516772] Unable to detect cache hierarchy from DT for CPU 0
+[    1.524062] loop: module loaded
+[    1.524955] zram: Added device: zram0
+[    1.526010] mtdoops: mtd device (mtddev=name/number) must be supplied
+[    1.533172] libphy: Fixed MDIO Bus: probed
+[    1.536972] tun: Universal TUN/TAP device driver, 1.6
+[    1.541798] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+[    1.549599] meson6-dwmac ff3f0000.ethernet: no reset control found
+[    1.554569] stmmac - user ID: 0x11, Synopsys ID: 0x37
+[    1.559826]  Ring mode enabled
+[    1.563021]  DMA HW capability register supported
+[    1.567764]  Normal descriptors
+[    1.571070]  RX Checksum Offload Engine supported
+[    1.575992] 	COE Type 2\x00 2
+[    1.578594]  TX Checksum insertion supported
+[    1.583070]  Wake-Up On Lan supported
+[    1.586971]  Enable RX Mitigation via HW Watchdog Timer
+[    1.600373] libphy: stmmac: probed
+[    1.600405] eth%d: PHY ID 001cc916 at 0 IRQ POLL (stmmac-0:00) active
+[    1.604958] eth%d: PHY ID 001cc916 at 3 IRQ POLL (stmmac-0:03)
+[    1.612205] PPP generic driver version 2.4.2
+[    1.615737] PPP BSD Compression module registered
+[    1.620357] PPP Deflate Compression module registered
+[    1.625632] PPP MPPE Compression module registered
+[    1.630589] NET: Registered protocol family 24
+[    1.635353] usbcore: registered new interface driver asix
+[    1.640957] usbcore: registered new interface driver ax88179_178a
+[    1.647219] usbcore: registered new interface driver cdc_ether
+[    1.653254] usbcore: registered new interface driver net1080
+[    1.659120] usbcore: registered new interface driver cdc_subset
+[    1.665234] usbcore: registered new interface driver zaurus
+[    1.671020] usbcore: registered new interface driver cdc_ncm
+[    1.678031] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    1.683554] ehci-pci: EHCI PCI platform driver
+[    1.688287] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    1.694608] ohci-pci: OHCI PCI platform driver
+[    1.699837] usbcore: registered new interface driver cdc_acm
+[    1.705068] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+[    1.713401] usbcore: registered new interface driver usb-storage
+[    1.719653] usbcore: registered new interface driver usbserial
+[    1.726101] mousedev: PS/2 mouse device common for all mice
+[    1.731679] usbcore: registered new interface driver xpad
+[    1.737123] i2c /dev entries driver
+[    1.741246] usbcore: registered new interface driver uvcvideo
+[    1.746548] USB Video Class driver (1.1.1)
+[    1.750818] md: linear personality registered for level -1
+[    1.757009] device-mapper: ioctl: 4.35.0-ioctl (2016-06-23) initialised: dm-devel@redhat.com
+[    1.766499] cpu cpu0: bL_cpufreq_init: CPU 0 initialized
+[    1.772468] arm_big_little: bL_cpufreq_register: Registered platform driver: scpi
+[    1.780126] usbcore: registered new interface driver usbhid
+[    1.784166] usbhid: USB HID core driver
+[    1.788408] ashmem: initialized
+[    1.791819] logger: created 512K log 'log_main'
+[    1.796411] logger: created 1K log 'log_events'
+[    1.801124] logger: created 1K log 'log_radio'
+[    1.805772] logger: created 16K log 'log_system'
+[    1.811202] ff803000.serial: clock gate not found
+[    1.815372] meson_uart ff803000.serial: ==uart0 reg addr = ffffff8008206000
+[    1.822543] ff803000.serial: ttyS0 at MMIO 0xff803000 (irq = 124, base_baud = 1500000) is a meson_uart
+[    1.837606] meson_uart ff803000.serial: ttyS0 use xtal(8M) 24000000 change 0 to 115200
+[    1.840197] console [ttyS0] enabled
+[    1.847395] bootconsole [aml_uart0] disabled
+[    1.856883] meson_uart ffd24000.serial: ==uart1 reg addr = ffffff8008239000
+[    1.863332] ffd24000.serial: ttyS1 at MMIO 0xffd24000 (irq = 141, base_baud = 1500000) is a meson_uart
+[    1.873273] secmon secmon: assigned reserved memory node linux,secmon
+[    1.883692] secmon: share in base: 0xffffffc0050fe000, share out base: 0xffffffc0050ff000
+[    1.887494] secmon: phy_in_base: 0x50fe000, phy_out_base: 0x50ff000
+[    1.894704] amlogic-new-usb2 ffe09000.usb2phy: USB2 phy probe:phy_mem:0xffe09000, iomap phy_base:0xffffff800823b000
+[    1.904724] amlogic-new-usb3 ffe09080.usb3phy: This phy has no usb port
+[    1.911260] amlogic-new-usb3 ffe09080.usb3phy: USB3 phy probe:phy_mem:0xffe09080, iomap phy_base:0xffffff80082f3080
+[    1.922592] clkmsr: msr_clk_reg0=ffffff80082f5004,msr_clk_reg2=ffffff80082f700c
+[    1.929279] clkmsr: clkmsr: driver init
+[    1.933858] aml_aes_dma ff63e000.aml_aes: Aml AES_dma
+[    1.939929] aml_sha_dma ff63e000.aml_sha: Aml SHA1/SHA224/SHA256 dma
+[    1.944846] meson-remote: Driver init
+[    1.948759] meson-remote: remote_probe
+[    1.952393] meson-remote ff808040.rc: protocol = 0x1
+[    1.957512] meson-remote ff808040.rc: platform_data irq =132
+[    1.963272] meson-remote ff808040.rc: custom_number = 3
+[    1.968593] meson-remote ff808040.rc: ptable->map_size = 50
+[    1.974277] meson-remote ff808040.rc: ptable->custom_name = amlogic-remote-1
+[    1.981432] meson-remote ff808040.rc: ptable->custom_code = 0xfb04
+[    1.987724] meson-remote ff808040.rc: ptable->release_delay = 80
+[    1.993878] meson-remote ff808040.rc: ptable->map_size = 53
+[    1.999547] meson-remote ff808040.rc: ptable->custom_name = amlogic-remote-2
+[    2.006707] meson-remote ff808040.rc: ptable->custom_code = 0xfe01
+[    2.012997] meson-remote ff808040.rc: ptable->release_delay = 80
+[    2.019141] meson-remote ff808040.rc: ptable->map_size = 17
+[    2.024815] meson-remote ff808040.rc: ptable->custom_name = amlogic-remote-3
+[    2.031975] meson-remote ff808040.rc: ptable->custom_code = 0xbd02
+[    2.038267] meson-remote ff808040.rc: ptable->release_delay = 80
+[    2.044398] meson-remote ff808040.rc: default protocol = 0x1 and id = 0
+[    2.051118] meson-remote ff808040.rc: reg=0x0, val=0x1f40190
+[    2.056898] meson-remote ff808040.rc: reg=0x4, val=0x12c00c8
+[    2.062675] meson-remote ff808040.rc: reg=0x8, val=0x960050
+[    2.068368] meson-remote ff808040.rc: reg=0xc, val=0x480028
+[    2.074062] meson-remote ff808040.rc: reg=0x10, val=0x70fa0013
+[    2.080011] meson-remote ff808040.rc: reg=0x18, val=0x8616800
+[    2.085876] meson-remote ff808040.rc: reg=0x1c, val=0x9f00
+[    2.091484] meson-remote ff808040.rc: reg=0x20, val=0x0
+[    2.096830] meson-remote ff808040.rc: reg=0x24, val=0x0
+[    2.102177] meson-remote ff808040.rc: reg=0x28, val=0x0
+[    2.108168] input: aml_keypad as /devices/platform/ff808040.rc/input/input0
+[    2.114974] meson-remote: IR XMP protocol handler initialized
+[    2.120478] [FTS]fts_ts_init: Enter
+[    2.124159] [FTS]fts_ts_init: Exit(1464)
+[    2.128420] efusekeynum: 4
+[    2.130990] efusekeyname:             mac	offset:     0	size:     6\x00    6
+[    2.137381] efusekeyname:          mac_bt	offset:     6	size:     6\x00    6
+[    2.143764] efusekeyname:        mac_wifi	offset:    12	size:     6\x00    6
+[    2.150141] efusekeyname:            usid	offset:    18	size:    16\x00   16
+[    2.156881] efuse efuse: probe OK!
+[    2.162969] ge2d: ge2d_init_module
+[    2.163910] ge2d: ge2d_dev major:240
+[    2.167594] ge2d: clock source clk_ge2d_gate ffffffc01d309500
+[    2.173203] ge2d: clock clk_ge2d source ffffffc01d309880
+[    2.178613] ge2d: clock source clk_vapb_0 ffffffc01d309780
+[    2.184205] ge2d: vpu clock is 250000000 HZ
+[    2.188581] success set parent vapb_p1_composite rate to 249999756
+[    2.194822] ge2d: ge2d clock is 249 MHZ
+[    2.198791] ge2d: find address resource
+[    2.202759] ge2d: map io source 0x00000000ff940000,size=65536 to 0xffffff8008410000
+[    2.210512] ge2d: ge2d: pdev=ffffffc01d0e6000, irq=144, rstc=0x          (null), clk=ffffffc01d309500
+[    2.219881] ge2d: ge2d start monitor
+[    2.223637] ge2d: ge2d workqueue monitor start
+[    2.224282] [tsync_pcr_init]init success.
+[    2.225796] DI: di_module_init ok.
+[    2.225804] DI: di_module_init: major 238
+[    2.226120] vdin_drv_init: major 237
+[    2.226410] vdin_drv_init: vdin driver init done
+[    2.226415] [viuin..]viuin_init_module viuin module init
+[    2.226811] [viuin..]viuin_probe probe ok.
+[    2.227073] amlvid:info: amlvideo_init called
+[    2.227074] amlvid:info: amlvideo_create_instance called
+[    2.227079] amlvid:info: v4l2_dev.name=:amlvideo-000
+[    2.227363] amlvideo-000: V4L2 device registered as video10
+[    2.227618] PPMGRDRV: warn: ppmgr module init func called
+[    2.228975] aml_vecm_init:module init
+[    2.229637] mmc driver version: 3.02, 2017-05-15: New Emmc Host Controller
+[    2.232644] core->rate: 166666504
+[    2.232647] core->name: axg_emmc_b
+[    2.232672] rate: 24000000, name: sd_emmc_p0_B_comp
+[    2.232694] rate: 999999023, name: fclk_div2
+[    2.232698] clk_name: ffe05000.sdio#mux
+[    2.232770] [aml_emmc_clktree_init] clock: 0x0
+[    2.232860] get property:                ocr_avail, value:0x00200080
+[    2.232863] get property:                    f_min, value:400000
+[    2.232866] get property:                    f_max, value:200000000
+[    2.232869] get property:             max_req_size, value:0x00020000
+[    2.232878] get property:                  pinname, str:sdio
+[    2.232883] get property:                card_type, value:3
+[    2.232886] get property:              pinmux_base, value:0xff634400
+[    2.232919] sdio:pdata->caps = 7810f
+[    2.232922] sdio:pdata->caps2 = 0
+[    2.232948] sdio reg val:
+[    2.232950] SD_EMMC_CLOCK = 0x1000033c
+[    2.232962] SD_EMMC_CFG = 0x804890
+[    2.232976] SD_EMMC_STATUS = 0x1ff0000
+[    2.232992] SD_EMMC_IRQ_EN = 0x3fff
+[    2.233253] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000033c
+[    2.233345] actual_clock :400000, HHI_nand: 0x80
+[    2.233348] [meson_mmc_clk_set_rate_v3] after clock: 0x1000033c
+[    2.251741] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000033c
+[    2.271743] meson_mmc_probe() : success!
+[    2.271872] amlogic mtd driver init
+[    2.272531] prase_get_dtb_nand_parameter:124,parse dts start
+[    2.272618] bl mode descrete
+[    2.272621] fip_copies 4
+[    2.272624] fip_size 0x200000
+[    2.272627] nand_clk_ctrl 0xffe07000
+[    2.272630] prase_get_dtb_nand_parameter:230,parse dts end
+[    2.272663] nand_clk_ctrl 0xffe07000
+[    2.272671] nand register base ffffff80084a6800, nand clock register ffffff80084a8000
+[    2.272946] plat->aml_nand_device ffffff800a4c8cf8
+[    2.272954] m3_nand_probe() aml_nand_device ffffff800a4c8cf8
+[    2.274295] nand: Could not find valid ONFI parameter page; aborting
+[    2.274309] nand: device found, Manufacturer ID: 0xc2, Chip ID: 0xdc
+[    2.274311] nand: Macronix NAND 512MiB 3,3V 8-bit
+[    2.274315] nand: 512 MiB, SLC, erase size: 128 KiB, page size: 2048, OOB size: 64
+[    2.274327] nand: NAND_ECC_NONE selected by board driver. This is not recommended!
+[    2.274504] NAND device id: c2 dc 90 95 56 0
+[    2.274516] NAND device: Manufacturer ID: 
+[    2.274516]  0xc2, Chip ID: 0xc2 (Macronix Slc NAND 4Gib MX30LF4G18AC )
+[    2.274539] nand: NAND_ECC_NONE selected by board driver. This is not recommended!
+[    2.274546] oob_fill_cnt =32 oob_size =64, bch_bytes =14
+[    2.274548] ecc mode:6 ecc_page_num=2 eep_need_oobsize=16
+[    2.274552] plane_num=1 writesize=0x800 ecc.size=0x200 bch_mode=1
+[    2.274727] aml_nand_init 2180: plat-name:bootloader
+[    2.274732] Creating 1 MTD partitions on "bootloader":
+[    2.274741] 0x000000000000-0x000000200000 : "bootloader"
+[    2.277426] bootloader initialized ok
+[    2.277436] plat->aml_nand_device ffffff800a4c8cf8
+[    2.277443] m3_nand_probe() aml_nand_device ffffff800a4c8cf8
+[    2.278844] nand: Could not find valid ONFI parameter page; aborting
+[    2.278859] nand: device found, Manufacturer ID: 0xc2, Chip ID: 0xdc
+[    2.278861] nand: Macronix NAND 512MiB 3,3V 8-bit
+[    2.278865] nand: 512 MiB, SLC, erase size: 128 KiB, page size: 2048, OOB size: 64
+[    2.278879] nand: NAND_ECC_NONE selected by board driver. This is not recommended!
+[    2.279057] NAND device id: c2 dc 90 95 56 0
+[    2.279067] NAND device: Manufacturer ID: 
+[    2.279068]  0xc2, Chip ID: 0xc2 (Macronix Slc NAND 4Gib MX30LF4G18AC )
+[    2.279090] nand: NAND_ECC_NONE selected by board driver. This is not recommended!
+[    2.279097] oob_fill_cnt =32 oob_size =64, bch_bytes =14
+[    2.279100] ecc mode:6 ecc_page_num=2 eep_need_oobsize=16
+[    2.279104] plane_num=1 writesize=0x800 ecc.size=0x200 bch_mode=1
+[    2.279259] aml_nand_init 2180: plat-name:nandnormal
+[    2.279298] bbt_start=20 env_start=24 key_start=32 dtb_start=40
+[    2.279302] nbbt: info size=0x1000 max_scan_blk=24, start_blk=20
+[    2.279670] get_free_node 43: bitmap=0
+[    2.279672] get_free_node 52: bitmap=1
+[    2.279904] get_free_node 43: bitmap=1
+[    2.279906] get_free_node 52: bitmap=3
+[    2.280074] get_free_node 43: bitmap=3
+[    2.280076] get_free_node 52: bitmap=7
+[    2.280079] nbbt : phy_blk_addr=20, ec=0, phy_page_addr=0, timestamp=1
+[    2.280081] nbbt free list:
+[    2.280083] blockN=21, ec=-1, dirty_flag=0
+[    2.280085] blockN=22, ec=-1, dirty_flag=0
+[    2.280087] blockN=23, ec=-1, dirty_flag=0
+[    2.280090] aml_nand_scan_rsv_info 1081: page_num=2
+[    2.280092] aml_nand_scan_rsv_info 1084
+[    2.280589] nbbt valid addr: 280000
+[    2.280592] aml_nand_bbt_check 1221 bbt is valid, reading.
+[    2.280596] aml_nand_read_rsv_info:414,read nbbt info to 280000
+[    2.280930] nenv: info size=0x10000 max_scan_blk=32, start_blk=24
+[    2.281261] get_free_node 43: bitmap=7
+[    2.281263] get_free_node 52: bitmap=f
+[    2.281430] get_free_node 43: bitmap=f
+[    2.281432] get_free_node 52: bitmap=1f
+[    2.281600] get_free_node 43: bitmap=1f
+[    2.281602] get_free_node 52: bitmap=3f
+[    2.281769] get_free_node 43: bitmap=3f
+[    2.281771] get_free_node 52: bitmap=7f
+[    2.281938] get_free_node 43: bitmap=7f
+[    2.281941] get_free_node 52: bitmap=ff
+[    2.282107] get_free_node 43: bitmap=ff
+[    2.282110] get_free_node 52: bitmap=1ff
+[    2.282277] get_free_node 43: bitmap=1ff
+[    2.282279] get_free_node 52: bitmap=3ff
+[    2.282282] nenv : phy_blk_addr=24, ec=0, phy_page_addr=0, timestamp=3
+[    2.282284] nenv free list:
+[    2.282286] blockN=25, ec=-1, dirty_flag=0
+[    2.282288] blockN=26, ec=-1, dirty_flag=0
+[    2.282290] blockN=27, ec=-1, dirty_flag=0
+[    2.282292] blockN=28, ec=-1, dirty_flag=0
+[    2.282294] blockN=29, ec=-1, dirty_flag=0
+[    2.282296] blockN=30, ec=-1, dirty_flag=0
+[    2.282298] blockN=31, ec=-1, dirty_flag=0
+[    2.282300] aml_nand_scan_rsv_info 1081: page_num=32
+[    2.282302] aml_nand_scan_rsv_info 1084
+[    2.292832] nenv valid addr: 310000
+[    2.292835] nkey: info size=0x8000 max_scan_blk=40, start_blk=32
+[    2.293003] get_free_node 43: bitmap=3ff
+[    2.293005] get_free_node 52: bitmap=7ff
+[    2.293172] get_free_node 43: bitmap=7ff
+[    2.293174] get_free_node 52: bitmap=fff
+[    2.293341] get_free_node 43: bitmap=fff
+[    2.293343] get_free_node 52: bitmap=1fff
+[    2.293511] get_free_node 43: bitmap=1fff
+[    2.293513] get_free_node 52: bitmap=3fff
+[    2.293681] get_free_node 43: bitmap=3fff
+[    2.293683] get_free_node 52: bitmap=7fff
+[    2.293849] get_free_node 43: bitmap=7fff
+[    2.293851] get_free_node 52: bitmap=ffff
+[    2.294018] get_free_node 43: bitmap=ffff
+[    2.294020] get_free_node 52: bitmap=1ffff
+[    2.294187] get_free_node 43: bitmap=1ffff
+[    2.294189] get_free_node 52: bitmap=3ffff
+[    2.294192] nkey : phy_blk_addr=-1, ec=0, phy_page_addr=0, timestamp=0
+[    2.294194] nkey free list:
+[    2.294196] blockN=32, ec=-1, dirty_flag=0
+[    2.294198] blockN=33, ec=-1, dirty_flag=0
+[    2.294200] blockN=34, ec=-1, dirty_flag=0
+[    2.294202] blockN=35, ec=-1, dirty_flag=0
+[    2.294204] blockN=36, ec=-1, dirty_flag=0
+[    2.294206] blockN=37, ec=-1, dirty_flag=0
+[    2.294208] blockN=38, ec=-1, dirty_flag=0
+[    2.294210] blockN=39, ec=-1, dirty_flag=0
+[    2.294213] aml_nand_scan_rsv_info 1081: page_num=16
+[    2.294215] nkey valid addr: fffffffffffe0000
+[    2.294217] aml_nand_key_check 1182 NO key exist
+[    2.294220] ndtb: info size=0x20000 max_scan_blk=44, start_blk=40
+[    2.294551] get_free_node 43: bitmap=3ffff
+[    2.294553] get_free_node 52: bitmap=7ffff
+[    2.294720] get_free_node 43: bitmap=7ffff
+[    2.294723] get_free_node 52: bitmap=fffff
+[    2.294890] get_free_node 43: bitmap=fffff
+[    2.294892] get_free_node 52: bitmap=1fffff
+[    2.294895] ndtb : phy_blk_addr=40, ec=0, phy_page_addr=0, timestamp=2
+[    2.294897] ndtb free list:
+[    2.294899] blockN=41, ec=-1, dirty_flag=0
+[    2.294901] blockN=42, ec=-1, dirty_flag=0
+[    2.294903] blockN=43, ec=-1, dirty_flag=0
+[    2.294905] aml_nand_scan_rsv_info 1081: page_num=64
+[    2.294907] aml_nand_scan_rsv_info 1084
+[    2.305419] ndtb valid addr: 500000
+[    2.305424] tpl: off 8388608, size 8388608
+[    2.326195]  NAND bbt detect factory Bad block at 52e0000
+[    2.326203] aml_nand_add_partition:441 factory bad addr=297
+[    2.326278]  NAND bbt detect factory Bad block at 5320000
+[    2.326286] aml_nand_add_partition:441 factory bad addr=299
+[    2.345479]  NAND bbt detect factory Bad block at 9100000
+[    2.345487] aml_nand_add_partition:441 factory bad addr=488
+[    2.454910]  NAND bbt detect factory Bad block at 1f200000
+[    2.459223] Creating 6 MTD partitions on "nandnormal":
+[    2.459234] 0x000000800000-0x000001000000 : "tpl"
+[    2.463480] 0x000001000000-0x000001200000 : "logo"
+[    2.465461] 0x000001200000-0x000002200000 : "recovery"
+[    2.471946] 0x000002200000-0x000003100000 : "boot"
+[    2.478028] 0x000003100000-0x000014960000 : "system"
+[    2.488761]  NAND bbt detect factory Bad block at 52e0000
+[    2.488844]  NAND bbt detect factory Bad block at 5320000
+[    2.508121]  NAND bbt detect factory Bad block at 9100000
+[    2.566886] 0x000014960000-0x000020000000 : "data"
+[    2.619468]  NAND bbt detect factory Bad block at 1f200000
+[    2.625252] nandnormal initialized ok
+[    2.625303] aml_ubootenv_init: register env chardev
+[    2.625529] aml_ubootenv_init: register env chardev OK
+[    2.625642] amlnf_dtb_init: register dtb cdev
+[    2.625842] amlnf_dtb_init: register dtd cdev OK
+[    2.626647] aml_vrtc rtc: rtc core: registered aml_vrtc as rtc0
+[    2.627176] no efuse-version set, use default value: -1
+[    2.627179] key unify config unifykey-num is 6
+[    2.627228] key unify fact unifykey-num is 6
+[    2.627236] aml_unifykeys_probe:1441=============unifykey_devno:ea00000
+[    2.627531] unifykey: device unifykeys created ok
+[    2.627598] aml_unifykeys_init done!
+[    2.627838] storage: storage in base: 0xffffffc005000000
+[    2.627840] storage: storage out base: 0xffffffc005040000
+[    2.627842] storage: storage block base: 0xffffffc005080000
+[    2.627844] storage: probe done!
+[    2.628093] audio_dsp: [dsp]register dsp to char divece(257)
+[    2.628705] sysled: module init
+[    2.629081] amlogic rfkill init
+[    2.629258] enter bt_probe of_node
+[    2.629293] not get gpio_en
+[    2.629300] power on valid level is high
+[    2.629300] bt: power_on_pin_OD = 0;
+[    2.629559] BLASTER Driver Init
+[    2.631959] usbcore: registered new interface driver snd-usb-audio
+[    2.635524] asoc debug: aml_audio_controller_probe-115
+[    2.636098] aml-audio-clocks ff642000.audio_clocks: aml_audio_clocks_probe register audio gate clks
+[    2.636909] parse loopback:, 	lb mode:0\x00:0
+[    2.636912] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[    2.636914] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[    2.637357] aml_tdm_platform_probe, tdm ID = 0
+[    2.637700] aml_tdm_platform_probe, tdm ID = 1
+[    2.637997] aml_tdm_platform_probe, tdm ID = 2
+[    2.638956] aml_spdif_platform_probe, register soc platform
+[    2.639633] aml_pdm_platform_probe pdm filter mode from dts:1
+[    2.639654] aml_pdm_platform_probe, register soc platform
+[    2.640203] 0, irqs toddr 125, frddr 128
+[    2.640206] 1, irqs toddr 126, frddr 129
+[    2.640208] 2, irqs toddr 127, frddr 130
+[    2.640521] GACT probability NOT on
+[    2.640538] Mirror/redirect action on
+[    2.640548] u32 classifier
+[    2.640550]     Actions configured
+[    2.640558] Netfilter messages via NETLINK v0.30.
+[    2.640820] nf_conntrack version 0.5.0 (4096 buckets, 16384 max)
+[    2.641150] ctnetlink v0.93: registering with nfnetlink.
+[    2.641780] xt_time: kernel timezone is -0000
+[    2.641879] ipip: IPv4 and MPLS over IPv4 tunneling driver
+[    2.651383] ip_tables: (C) 2000-2006 Netfilter Core Team
+[    2.651556] arp_tables: arp_tables: (C) 2002 David S. Miller
+[    2.657377] Initializing XFRM netlink socket
+[    2.657931] NET: Registered protocol family 10
+[    2.659413] mip6: Mobile IPv6
+[    2.659446] ip6_tables: (C) 2000-2006 Netfilter Core Team
+[    2.667555] sit: IPv6, IPv4 and MPLS over IPv4 tunneling driver
+[    2.669115] NET: Registered protocol family 17
+[    2.669149] NET: Registered protocol family 15
+[    2.669201] bridge: filtering via arp/ip/ip6tables is no longer available by default. Update your scripts to load br_netfilter if you need this.
+[    2.669346] Bluetooth: RFCOMM TTY layer initialized
+[    2.669360] Bluetooth: RFCOMM socket layer initialized
+[    2.669399] Bluetooth: RFCOMM ver 1.11
+[    2.669411] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[    2.669413] Bluetooth: BNEP filters: protocol multicast
+[    2.669423] Bluetooth: BNEP socket layer initialized
+[    2.669426] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+[    2.669433] Bluetooth: HIDP socket layer initialized
+[    2.669522] l2tp_core: L2TP core driver, V2.0
+[    2.669534] l2tp_ppp: PPPoL2TP kernel driver, V2.0
+[    2.669536] l2tp_ip: L2TP IP encapsulation support (L2TPv3)
+[    2.669569] l2tp_netlink: L2TP netlink interface
+[    2.669624] l2tp_eth: L2TP ethernet pseudowire support (L2TPv3)
+[    2.669668] l2tp_debugfs: L2TP debugfs support
+[    2.669670] l2tp_ip6: L2TP IP encapsulation support for IPv6 (L2TPv3)
+[    2.669715] NET: Registered protocol family 35
+[    2.669792] Key type dns_resolver registered
+[    2.671250] Registered cp15_barrier emulation handler
+[    2.671281] Registered setend emulation handler
+[    2.672380] registered taskstats version 1
+[    2.681211] dwc3 ff500000.dwc3: Configuration mismatch. dr_mode forced to host
+[    3.383827] xhci-hcd xhci-hcd.0.auto: xHCI Host Controller
+[    3.383855] xhci-hcd xhci-hcd.0.auto: new USB bus registered, assigned bus number 1
+[    3.384248] xhci-hcd xhci-hcd.0.auto: hcc params 0x0220f664 hci version 0x100 quirks 0x02010010
+[    3.384317] xhci-hcd xhci-hcd.0.auto: irq 138, io mem 0xff500000
+[    3.385393] hub 1-0:1.0: USB hub found
+[    3.385439] hub 1-0:1.0: 1 port detected
+[    3.385742] xhci-hcd xhci-hcd.0.auto: xHCI Host Controller
+[    3.385757] xhci-hcd xhci-hcd.0.auto: new USB bus registered, assigned bus number 2
+[    3.385824] usb usb2: We don't know the algorithms for LPM for this host, disabling LPM.
+[    3.386701] hub 2-0:1.0: USB hub found
+[    3.386740] hub 2-0:1.0: config failed, hub doesn't have any ports! (err -19)
+[    3.387616] parse loopback:, 	lb mode:0\x00:0
+[    3.387620] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[    3.387622] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[    3.392485] aml_vrtc rtc: setting system clock to 2015-01-01 00:00:06 UTC (1420070406)
+[    3.392962] dwc_otg ff400000.dwc2_a: dwc_otg_driver_probe(ffffffc01d193400)
+[    3.393006] dwc_otg: usb0: type: 2 speed: 0, 
+[    3.393008] config: 0, dma: 0, id: 0, 
+[    3.393009] phy: ffe09000, ctrl: 0
+[    3.393023] dwc_otg ff400000.dwc2_a: base=0xffffff8008640000
+[    3.393028] dwc_otg ff400000.dwc2_a: dwc_otg_device=0xffffffc01bca7e00
+[    3.493447] dwc_otg: Core Release: 3.10a
+[    3.493454] dwc_otg: Setting default values for core params
+[    3.493474] dwc_otg: curmode: 0, host_only: 0
+[    3.493506] dwc_otg ff400000.dwc2_a: DMA config: BURST_DEFAULT
+[    3.505826] dwc_otg: Using Buffer DMA mode
+[    3.505830] dwc_otg: OTG VER PARAM: 1, OTG VER FLAG: 1
+[    3.505834] dwc_otg: Working on port type = SLAVE
+[    3.505840] dwc_otg: Dedicated Tx FIFOs mode
+[    3.506982] parse loopback:, 	lb mode:0\x00:0
+[    3.506985] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[    3.506988] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[    3.508061] lcd extern: key_valid: 0
+[    3.508065] lcd extern: lcd_extern_get_config from dts
+[    3.508081] lcd extern: load config: mipi_fh28[2]
+[    3.508088] lcd extern: add driver mipi_fh28(2)
+[    3.508143] lcd extern: aml_lcd_extern_probe ok
+[    3.508667] parse loopback:, 	lb mode:0\x00:0
+[    3.508670] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[    3.508672] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[    3.509490] bl: key_valid: 0
+[    3.509493] bl: aml_bl_config_load from dts
+[    3.509501] bl: load: backlight_0
+[    3.509568] bl: bl pwm_port: PWM_B(1)
+[    3.509575] bl: name              = backlight_pwm
+[    3.509578] bl: method            = pwm(1)
+[    3.509623] bl:  bl pwm config ok
+[    3.510167] bl: probe OK
+[    3.510711] parse loopback:, 	lb mode:0\x00:0
+[    3.510714] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[    3.510716] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[    3.512020] cpucore_cooling_register, max_cpu_core_num:4
+[    3.520347] parse loopback:, 	lb mode:0\x00:0
+[    3.520351] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[    3.520354] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[    3.520981] gxbb_pm: enter meson_pm_probe!
+[    3.521101] gxbb_pm: meson_pm_probe done
+[    3.521606] parse loopback:, 	lb mode:0\x00:0
+[    3.521611] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[    3.521614] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[    3.522375] ALSA device list:
+[    3.522379]   No soundcards found.
+[    3.825719] meson_uart ff803000.serial: ttyS0 use xtal(8M) 24000000 change 115200 to 115200
+[    3.831067] Freeing unused kernel memory: 4352K
+[    4.019396] ubi0: attaching mtd5
+[    4.111483]  NAND bbt detect factory Bad block at 52e0000
+[    4.111903]  NAND bbt detect factory Bad block at 5320000
+[    4.283637]  NAND bbt detect factory Bad block at 9100000
+[    4.584818] ubi0: scanning is finished
+[    4.601346] ubi0: volume 0 ("rootfs") re-sized from 927 to 2159 LEBs
+[    4.602234] CHRDEV "ubi0" major number 233 goes below the dynamic allocation range
+[    4.610701] ubi0: attached mtd5 (name "system", size 280 MiB)
+[    4.615796] ubi0: PEB size: 131072 bytes (128 KiB), LEB size: 126976 bytes
+[    4.622770] ubi0: min./max. I/O unit sizes: 2048/2048, sub-page size 2048
+[    4.629664] ubi0: VID header offset: 2048 (aligned 2048), data offset: 4096
+[    4.636739] ubi0: good PEBs: 2240, bad PEBs: 3, corrupted PEBs: 0
+[    4.642946] ubi0: user volume: 1, internal volumes: 1, max. volumes count: 128
+[    4.650282] ubi0: max/mean erase counter: 1/0, WL threshold: 4096, image sequence number: 1478930499
+[    4.659506] ubi0: available PEBs: 0, total reserved PEBs: 2240, PEBs reserved for bad PEB handling: 77
+[    4.668925] ubi0: background thread "ubi_bgt0d" started, PID 1901
+[    4.676354] UBIFS (ubi0:0): background thread "ubifs_bgt0_0" started, PID 1904
+[    4.693500] random: fast init done
+[    4.693829] UBIFS (ubi0:0): start fixing up free space
+[   12.070182] UBIFS (ubi0:0): free space fixup complete
+[   12.079379] UBIFS (ubi0:0): UBIFS: mounted UBI device 0, volume 0, name "rootfs"
+[   12.081333] UBIFS (ubi0:0): LEB size: 126976 bytes (124 KiB), min./max. I/O unit sizes: 2048 bytes/2048 bytes
+[   12.091310] UBIFS (ubi0:0): FS size: 272744448 bytes (260 MiB, 2148 LEBs), journal size 9023488 bytes (8 MiB, 72 LEBs)
+[   12.102089] UBIFS (ubi0:0): reserved for root: 0 bytes (0 KiB)
+[   12.108041] UBIFS (ubi0:0): media format: w4/r0 (latest is w4/r0), UUID 50517364-EFE9-4899-935A-705EEDA93275, small LPT model
+[   12.260682] meson_uart ff803000.serial: ttyS0 use xtal(8M) 24000000 change 115200 to 115200
+[   12.426409] ubi1: attaching mtd6
+[   12.683558]  NAND bbt detect factory Bad block at 1f200000
+[   12.704430] ubi1: scanning is finished
+[   12.704454] ubi1: empty MTD device detected
+[   12.720228] CHRDEV "ubi1" major number 232 goes below the dynamic allocation range
+[   12.722784] ubi1: attached mtd6 (name "data", size 182 MiB)
+[   12.728049] ubi1: PEB size: 131072 bytes (128 KiB), LEB size: 126976 bytes
+[   12.735018] ubi1: min./max. I/O unit sizes: 2048/2048, sub-page size 2048
+[   12.741913] ubi1: VID header offset: 2048 (aligned 2048), data offset: 4096
+[   12.748988] ubi1: good PEBs: 1460, bad PEBs: 1, corrupted PEBs: 0
+[   12.755192] ubi1: user volume: 0, internal volumes: 1, max. volumes count: 128
+[   12.762530] ubi1: max/mean erase counter: 0/0, WL threshold: 4096, image sequence number: 694904515
+[   12.771667] ubi1: available PEBs: 1377, total reserved PEBs: 83, PEBs reserved for bad PEB handling: 79
+[   12.781249] ubi1: background thread "ubi_bgt1d" started, PID 1954
+[   12.800732] ubi: mtd6 is already attached to ubi1
+[   12.844545] UBIFS (ubi1:0): default file-system created
+[   12.845445] UBIFS (ubi1:0): background thread "ubifs_bgt1_0" started, PID 1961
+[   12.878370] UBIFS (ubi1:0): UBIFS: mounted UBI device 1, volume 0, name "data"
+[   12.880145] UBIFS (ubi1:0): LEB size: 126976 bytes (124 KiB), min./max. I/O unit sizes: 2048 bytes/2048 bytes
+[   12.890217] UBIFS (ubi1:0): FS size: 166338560 bytes (158 MiB, 1310 LEBs), journal size 8380416 bytes (7 MiB, 66 LEBs)
+[   12.900927] UBIFS (ubi1:0): reserved for root: 4952683 bytes (4836 KiB)
+[   12.907668] UBIFS (ubi1:0): media format: w4/r0 (latest is w4/r0), UUID 2A65E9C2-7431-4A10-AE63-C0E65BA9107D, small LPT model
+[   14.261992] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[   14.463005] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[   14.665224] [meson_mmc_irq] sdio: resp_timeout,vstat:0xa1ff2800,virqc:3fff
+[   14.666624] [aml_host_bus_fsm_show] sdio: err: wait for irq service, bus_fsm:0x8
+[   14.674195] meson_mmc_irq_thread_v3 399 sdio: cmd:52
+[   14.680368] [meson_mmc_irq] sdio: resp_timeout,vstat:0xa1ff2800,virqc:3fff
+[   14.686200] [aml_host_bus_fsm_show] sdio: err: wait for irq service, bus_fsm:0x8
+[   14.693761] meson_mmc_irq_thread_v3 399 sdio: cmd:52
+[   14.698840] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000033c
+[   14.710271] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000033c
+[   14.718844] [meson_mmc_irq] sdio: resp_timeout,vstat:0xa1ff2800,virqc:3fff
+[   14.723719] [aml_host_bus_fsm_show] sdio: err: wait for irq service, bus_fsm:0x8
+[   14.731284] meson_mmc_irq_thread_v3 399 sdio: cmd:8
+[   14.738992] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000033c
+[   14.743394] actual_clock :0, HHI_nand: 0x0
+[   14.747542] [meson_mmc_clk_set_rate_v3] after clock: 0x1000033c
+[   14.771724] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000033c
+[   14.773682] actual_clock :400000, HHI_nand: 0x0
+[   14.778318] [meson_mmc_clk_set_rate_v3] after clock: 0x1000033c
+[   14.802959] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[   14.806022] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[   14.811414] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[   14.819740] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[   14.826210] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[   14.924177] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000033c
+[   14.928863] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000033c
+[   14.936578] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[   14.944370] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[   14.953982] actual_clock :199999805, HHI_nand: 0x0
+[   14.958891] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[   14.964933] sdio: clk 200000000 SDR mode tuning start
+[   14.970395] sdio: rx_tuning_result[0] = 10
+[   14.974654] sdio: rx_tuning_result[2] = 10
+[   14.978763] sdio: rx_tuning_result[3] = 10
+[   14.982803] sdio: best_win_start =2, best_win_size =2
+[   14.987956] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[   14.995373] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[   15.005539] sdio: new ultra high speed SDR104 SDIO card at address 0001
+[   15.008820] sdio: clock 200000000, 4-bit-bus-width
+                \x00a 
+[   15.014427] [sdio_reinit] finish
+[   15.017251] aml_wifi wifi: [pci_reinit] pci wifi reinit!
+[   15.023120] aml_wifi wifi: [wifi_power_ioctl] Set sdio wifi power up!
+[   15.029317] aml_wifi wifi: [wifi_power_ioctl] wifi interface dev type: sdio, length = 4
+[   15.127114] dhd: loading out-of-tree module taints kernel.
+[   15.183805] dhd_module_init: in Dongle Host Driver, version 1.579.77.41.12 (r)
+[   15.185575] ======== dhd_wlan_init_plat_data ========
+[   15.190811] dhd_wlan_init_gpio: WL_HOST_WAKE=-1, oob_irq=91, oob_irq_flags=0x418
+[   15.198299] dhd_wlan_init_gpio: WL_REG_ON=-1
+[   15.202650] dhd_wifi_platform_load: Enter
+[   15.206823] Power-up adapter 'DHD generic adapter'
+[   15.211706] wifi_platform_set_power = 1
+[   15.215655] ======== PULL WL_REG_ON(-1) HIGH! ========
+[   15.220962] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[   15.327526] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[   15.683726] wifi_platform_bus_enumerate device present 1
+[   15.683756] ======== Card detection to detect SDIO card! ========
+[   15.689803] sdio_reset_comm():
+[   15.692996] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[   15.704313] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[   15.712439] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[   15.719033] actual_clock :400000, HHI_nand: 0x0
+[   15.723606] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[   15.732473] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[   15.736751] actual_clock :0, HHI_nand: 0x0
+[   15.740938] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[   15.763732] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[   15.765685] actual_clock :400000, HHI_nand: 0x0
+[   15.770318] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[   15.794891] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[   15.797776] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[   15.803379] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[   15.811252] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[   15.818004] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[   15.911357] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[   15.915978] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[   15.923757] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[   15.931541] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[   15.941159] actual_clock :199999805, HHI_nand: 0x0
+[   15.946066] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[   15.952143] sdio: clk 200000000 SDR mode tuning start
+[   15.957577] sdio: rx_tuning_result[0] = 10
+[   15.961759] sdio: rx_tuning_result[2] = 10
+[   15.966025] sdio: rx_tuning_result[3] = 10
+[   15.969989] sdio: best_win_start =2, best_win_size =2
+[   15.975135] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[   15.982577] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[   15.989281] [sdio_reinit] finish
+[   15.993271] parse loopback:, 	lb mode:0\x00:0
+[   15.996645] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[   16.002425] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[   16.008799] parse loopback:, 	lb mode:0\x00:0
+[   16.012077] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[   16.012290] bcmsdh_register: register client driver
+[   16.012572] bcmsdh_sdmmc_probe: Enter num=1
+[   16.012764] bcmsdh_sdmmc_probe: Enter num=2
+[   16.012769] bus num (host idx)=0, slot num (rca)=1
+[   16.012775] found adapter info 'DHD generic adapter'
+[   16.012852] sdioh_attach: set sd_f2_blocksize 256
+[   16.012905] sdioh_attach: sd clock rate = 0
+[   16.013296] dhdsdio_probe : no mutex held. set lock
+[   16.013446] F1 signature read @0x18000000=0x17294359
+[   16.017667] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[   16.018385] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[   16.018500] dhd_conf_set_chiprev: chip=0x4359, chiprev=9
+[   16.018689] CFG80211-ERROR) wl_setup_wiphy : 
+[   16.018690] Registering Vendor80211
+[   16.021441] CFG80211-ERROR) wl_init_prof : 
+[   16.021441] wl_init_prof: No profile
+[   16.021955] wl_escan_attach: Enter
+[   16.022004] wl_escan_init: Enter
+[   16.022174] wl_create_event_handler(): thread:wl_escan_handler:7f4 started
+[   16.022249] tsk Enter, tsk = 0xffffffc01ca70198
+[   16.026937] dhd_attach(): thread:dhd_watchdog_thread:7f5 started
+[   16.027085] dhd_attach(): thread:dhd_dpc:7f6 started
+[   16.027152] dhd_attach(): thread:dhd_rxf:7f7 started
+[   16.027166] dhd_deferred_work_init: work queue initialized
+[   16.027172] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 2
+[   16.027229] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[   16.027578] sdioh_cis_read: func_cis_ptr[0]=0x10ac
+[   16.039822] Dongle Host Driver, version 1.579.77.41.12 (r)
+[   16.040810] ANDROID-MSG) 
+[   16.040811] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[   16.040818] Register interface [wlan0]  MAC: 28:ed:e0:e6:ba:ba
+\x000a
+[   16.041544] dhd_tcpack_suppress_set: TCP ACK Suppress mode 2 -> mode 0
+[   16.041564] dhd_wl_ioctl: returning as busstate=0
+[   16.041574] dhd_bus_devreset: == Power OFF ==
+[   16.042802] bcmsdh_oob_intr_unregister: Enter
+[   16.042806] bcmsdh_oob_intr_unregister: irq is not registered
+[   16.042824] dhd_txglom_enable: enable 0
+[   16.042829] dhd_conf_set_txglom_params: txglom_mode=copy
+[   16.042832] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[   16.042835] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[   16.042839] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[   16.042844] dhd_bus_devreset:  WLAN OFF DONE
+[   16.042909] wifi_platform_set_power = 0
+[   16.042914] ======== PULL WL_REG_ON(-1) LOW! ========
+[   16.042919] wl_escan_deinit: Enter
+[   16.042954] wl_escan_event_handler: was terminated
+[   16.042968] wl_destroy_event_handler(): thread:wl_escan_handler:7f4 terminated OK
+[   16.042978] dhdsdio_probe : the lock is released.
+[   16.043325] dhd_module_init: Exit err=0
+[   16.047626] dhd_open: Enter ffffffc01bf4c000
+[   16.047629] dhd_open : no mutex held. set lock
+[   16.047645] 
+               Dongle Host Driver, version 1.579.77.41.12 (r)\x00r)
+[   16.047656] ANDROID-MSG) 
+[   16.047656] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[   16.047662] wl_android_wifi_on in 1
+[   16.047665] wl_android_wifi_on in 2: g_wifi_on=0
+[   16.047668] wifi_platform_set_power = 1
+[   16.047672] ======== PULL WL_REG_ON(-1) HIGH! ========
+[   16.047787] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[   16.147913] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[   16.325296] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[   16.331764] parse loopback:, 	lb mode:0\x00:0
+[   16.334948] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[   16.340748] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[   16.499782] sdio_reset_comm():
+[   16.499823] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[   16.508782] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[   16.516877] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[   16.523449] actual_clock :400000, HHI_nand: 0x0
+[   16.528030] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[   16.537082] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[   16.541204] actual_clock :0, HHI_nand: 0x0
+[   16.545359] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[   16.567725] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[   16.569682] actual_clock :400000, HHI_nand: 0x0
+[   16.574317] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[   16.710023] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[   16.714566] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[   16.722411] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[   16.730216] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[   16.739823] actual_clock :199999805, HHI_nand: 0x0
+[   16.744720] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[   16.750773] sdio: clk 200000000 SDR mode tuning start
+[   16.756186] sdio: rx_tuning_result[0] = 10
+[   16.760440] sdio: rx_tuning_result[2] = 10
+[   16.764611] sdio: rx_tuning_result[3] = 10
+[   16.768645] sdio: best_win_start =2, best_win_size =2
+[   16.773792] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[   16.781210] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[   16.788008] sdioh_start: set sd_f2_blocksize 256
+[   16.793066] 
+               
+               dhd_bus_devreset: == WLAN ON ==\x00ON ==
+[   16.800388] F1 signature read @0x18000000=0x17294359
+[   16.809077] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[   16.812511] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[   16.818969] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[   16.826359] dhd_os_open_image: /etc/wifi/4359/config.txt (47 bytes) open success
+[   16.832836] dhd_conf_read_others: bcn_timeout = 20
+[   16.837364] dhd_conf_read_sdio_params: dhd_slpauto = 0
+[   16.842623] dhd_conf_read_others: ccode = CN
+[   16.847018] dhd_conf_read_others: regrev = 38
+[   16.851519] Final fw_path=/etc/wifi/4359/fw_bcm4359c0_ag.bin
+[   16.857282] Final nv_path=/etc/wifi/4359/nvram.txt
+[   16.862198] Final clm_path=/etc/wifi/4359/clm.blob
+[   16.867109] Final conf_path=/etc/wifi/4359/config.txt
+[   16.873569] dhd_os_open_image: /etc/wifi/4359/fw_bcm4359c0_ag.bin (594889 bytes) open success
+[   16.983676] dhd_os_open_image: /etc/wifi/4359/nvram.txt (5639 bytes) open success
+[   16.986081] NVRAM version: AP6398S_NVRAM_V1.1_20170926
+[   16.991638] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+[   17.175628] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+[   17.176043] si_get_pmu_reg_addr: addrRET: 18000670
+[   17.181127] bcmsdh_oob_intr_register: HW_OOB irq=91 flags=0x8
+[   17.186830] meson_pinctrl: gpio virq[91] connect to GIC hwirq[96]
+[   17.193080] bcmsdh_oob_intr_register: enable_irq_wake failed with -6
+[   17.200806] Disable tdls_auto_op failed. -1
+[   17.203797] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 1
+[   17.210867] dhd_apply_default_clm: Ignore clm file /etc/wifi/4359/clm.blob
+[   17.218652] Firmware up: op_mode=0x0405, MAC=28:ed:e0:e6:ba:ba
+[   17.232582]   Driver: 1.579.77.41.12 (r)
+                 Firmware: wl0: Nov  1 2017 10:40:09 version 9.87.51.11.5 (2334dcf@sh-git) (r) FWID 01-f9f1e123
+                 CLM: 9.7.5 \x00.7.5 
+[   17.244625] dhd_txglom_enable: enable 1
+[   17.247734] dhd_conf_set_txglom_params: txglom_mode=copy
+[   17.253155] dhd_conf_set_txglom_params: txglomsize=36, deferred_tx_len=0
+[   17.259967] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[   17.266862] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[   17.273859] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+[   17.281355] dhd_wlfc_hostreorder_init(): successful bdcv2 tlv signaling, 64
+[   17.288785] dhd_pno_init: Support Android Location Service
+[   17.293277] dhd_preinit_ioctls: SensorHub diabled 0
+[   17.298580] dhd_preinit_ioctls failed to set ShubHub disable
+[   17.306236] failed to set WNM capabilities
+[   17.333762] dhd_wlfc_enable: ret=0
+[   17.333800] CFG80211-ERROR) wl_cfg80211_event : 
+[   17.333815] dhd_conf_set_country: set country CN, revision 38
+[   17.342145] Event handler is not created
+[   17.346262] CFG80211-ERROR) wl_cfg80211_event : 
+[   17.350771] Event handler is not created
+[   17.354856] CFG80211-ERROR) wl_cfg80211_event : 
+[   17.359396] Event handler is not created
+[   17.363473] dhd_wlfc_enable: ret=0
+[   17.367000] CFG80211-ERROR) wl_cfg80211_event : 
+[   17.371557] Event handler is not created
+[   17.375650] CFG80211-ERROR) wl_cfg80211_event : 
+[   17.380182] Event handler is not created
+[   17.384855] Country code: CN (CN/38)
+[   17.389375] CONFIG-ERROR) 
+[   17.390621] dhd_conf_set_intiovar: txbf setting failed -23
+[   17.402540] wl_android_wifi_on: Success
+[   17.442540] wl_escan_init: Enter
+[   17.442667] wl_create_event_handler(): thread:wl_escan_handler:7ff started
+[   17.442676] tsk Enter, tsk = 0xffffffc01ca70198
+[   17.452000] dhd_open : the lock is released.
+[   17.456382] dhd_open: Exit ret=0
+[   17.461419] random: crng init done
+[   19.594492] P2P interface registered
+[   19.594529] wl_cfgp2p_add_p2p_disc_if: wdev: ffffffc01d3be800, wdev->net:           (null)
+[   19.611958] WLC_E_IF: NO_IF set, event Ignored\x000d
+[   19.613245] P2P interface started
+[   20.484839] WLC_E_IF: NO_IF set, event Ignored\x000d
+[   20.485670] CFG80211-ERROR) wl_cfg80211_event : 
+[   20.485705] ANDROID-MSG) 
+[   20.485709] wl_ext_iapsta_attach_netdev: ifidx=1, bssidx=2
+[   20.496852] ignore event 54, not interested
+[   20.503329] Register interface [wlan1]  MAC: 2a:ed:e0:e6:ba:ba
+\x000a
+[   20.632180] wl_cfg80211_del_station: Disconnect STA : ff:ff:ff:ff:ff:ff scb_val.val 3
+[   20.678125] wl_cfg80211_set_channel: netdev_ifidx(7), chan_type(1) target channel(6) 
+[   20.684711] CFG80211-ERROR) wl_bss_iovar_war : 
+[   20.684967] wl bss 3
+[   20.761813] wl_notify_connect_status_ap: ** AP/GO Link up event **
+[   21.833984] BT_RADIO going: off
+[   21.834015] BCM_BT: going OFF
+[   22.863162] BT_RADIO going: on
+[   22.863191] BCM_BT: going ON
+[   24.305588] meson_uart ffd24000.serial: ttyS1 use xtal(8M) 24000000 change 0 to 9600
+[   24.311646] meson_uart ffd24000.serial: ttyS1 use xtal(8M) 24000000 change 9600 to 9600
+[   24.319746] meson_uart ffd24000.serial: ttyS1 use xtal(8M) 24000000 change 9600 to 115200
+[   24.364565] meson_uart ffd24000.serial: ttyS1 use xtal(8M) 24000000 change 115200 to 2000000
+[   24.912354] meson_uart ffd24000.serial: ttyS1 use xtal(8M) 24000000 change 2000000 to 115200
+[   24.946265] meson_uart ffd24000.serial: ttyS1 use xtal(8M) 24000000 change 115200 to 2000000
+[   27.358371] using random self ethernet address
+[   27.358407] using random host ethernet address
+[   27.367162] file system registered
+[   27.385066] read descriptors
+[   27.385109] read strings
+[   29.380084] usb0: HOST MAC 32:ff:2a:14:e7:59
+[   29.380304] usb0: MAC 2e:a2:22:c2:fa:c9
+[   29.383443] USB RESET
+[   29.388921] IPv6: ADDRCONF(NETDEV_UP): usb0: link is not ready
+[   29.404895] parse loopback:, 	lb mode:0\x00:0
+[   29.404928] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[   29.410460] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[   29.456569] meson-remote ff808040.rc: remote_ioctl invalid user space pointer
+[   62.572354] fb: mem_free_work, free memory: addr:180000
+[  932.651206] ANDROID-ERROR) 
+[  932.651368] wl_ext_isam_init: wrong fw type
+[ 1014.515901] CFGP2P-ERROR) wl_cfgp2p_disable_discovery : 
+[ 1014.515989]  do nothing, not initialized
+[ 1014.519670] Exit. P2P interface stopped
+[ 1031.095701] wl_cfg80211_del_station: Disconnect STA : ff:ff:ff:ff:ff:ff scb_val.val 3
+[ 1031.162126] CFG80211-ERROR) wl_bss_iovar_war : 
+[ 1031.162208] wl bss 2
+[ 1051.615507] dhd_module_cleanup: Enter
+[ 1051.616483] sdioh_remove: Enter
+[ 1051.617320] dhdsdio_disconnect : no mutex held. set lock
+[ 1051.622671] dhd_stop: Enter ffffffc01bf4c000
+[ 1051.626953] dhd_wl_ioctl: returning as busstate=5
+[ 1051.631788] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 1051.637133] wsec clear failed 
+[ 1051.640294] dhd_wl_ioctl: returning as busstate=5
+[ 1051.645126] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 1051.650476] auth clear failed 
+[ 1051.653662] dhd_wl_ioctl: returning as busstate=5
+[ 1051.658501] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 1051.663842] wpa_auth clear failed 
+[ 1051.667364] deleting interface 'wlan1' idx 1
+[ 1051.671830] dhd_get_stats: BAD_IF
+[ 1051.675388] dhd_get_stats: BAD_IF
+[ 1051.678881] dhd_get_stats: BAD_IF
+[ 1051.682479] dhd_wl_ioctl: returning as busstate=5
+[ 1051.687010] CFG80211-ERROR) wl_get_tx_power : 
+[ 1051.691356] error (-19)
+[ 1051.693931] CFG80211-ERROR) wl_cfg80211_get_tx_power : 
+[ 1051.699118] error (-19)
+[ 1051.723799] dhd_get_stats: BAD_IF
+[ 1051.723832] Cannot find ifidx for(wlan1) set to 0
+[ 1051.726496] dhd_wl_ioctl: returning as busstate=5
+[ 1051.731350] dhd_arp_get_arp_hostip_table: ioctl WLC_GET_VAR error -19
+[ 1051.737914] dhd_wl_ioctl: returning as busstate=5
+[ 1051.742730] dhd_aoe_hostip_clr failed code -19
+[ 1051.747303] aoe_update_host_ipv4_table failed
+[ 1051.751832] dhd_get_stats: BAD_IF
+[ 1051.755338] dhd_get_stats: BAD_IF
+[ 1051.759032] ANDROID-MSG) 
+[ 1051.761314] wl_ext_iapsta_dettach_netdev: ifidx=1
+[ 1051.766138] dhd_wl_ioctl: returning as busstate=5
+[ 1051.770944] CFG80211-ERROR) wl_cfg80211_bss_isup : 
+[ 1051.775766] 'cfg bss -C 0' failed: -19
+[ 1051.779621] CFG80211-ERROR) wl_cfg80211_bss_isup : 
+[ 1051.784491] NOTE: this ioctl error is normal when the BSS has not been created yet.
+[ 1051.792253] dhd_wl_ioctl: returning as busstate=5
+[ 1051.797065] dhd_wl_ioctl: returning as busstate=5
+[ 1051.801898] CFG80211-ERROR) wl_cfg80211_update_power_mode : 
+[ 1051.807493] wl_cfg80211_update_power_mode:error (-19)
+[ 1051.812734] CFGP2P-ERROR) wl_cfgp2p_disable_discovery : 
+[ 1051.817940]  do nothing, not initialized
+[ 1051.821990] CFG80211-ERROR) wl_cfgp2p_down : 
+[ 1051.826300] Clean up the p2p discovery IF
+[ 1051.830452] wl_cfgp2p_del_p2p_disc_if: wdev: ffffffc01d3be800, wdev->net:           (null)
+[ 1051.859711] P2P interface unregistered
+[ 1051.859753] CFGP2P-ERROR) wl_cfgp2p_deinit_priv : 
+[ 1051.862748] In
+[ 1051.864599] dhd_wl_ioctl: returning as busstate=5
+[ 1051.869428] CFG80211-ERROR) wl_dongle_down : 
+[ 1051.873713] WLC_DOWN error (-19)
+[ 1051.877089] dhd_tcpack_suppress_set: TCP ACK Suppress mode 1 -> mode 0
+[ 1051.883735] wl_escan_deinit: Enter
+[ 1051.887263] wl_escan_event_handler: was terminated
+[ 1051.892237] wl_destroy_event_handler(): thread:wl_escan_handler:7ff terminated OK
+[ 1051.899794] wl_android_wifi_off in 1
+[ 1051.903460] wl_android_wifi_off in 2: g_wifi_on=1, on_failure=1
+[ 1051.909525] dhd_wl_ioctl: returning as busstate=5
+[ 1051.914362] dhd_bus_devreset: == Power OFF ==
+[ 1051.919127] bcmsdh_oob_intr_unregister: Enter
+[ 1051.923355] dhd_txglom_enable: enable 0
+[ 1051.927279] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 1051.932717] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[ 1051.939440] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 1051.946352] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 1051.953369] dhd_bus_devreset:  WLAN OFF DONE
+[ 1051.957827] wifi_platform_set_power = 0
+[ 1051.961705] ======== PULL WL_REG_ON(-1) LOW! ========
+[ 1051.966880] wl_android_wifi_off out
+[ 1051.970497] ANDROID-MSG) 
+[ 1051.973086] wl_ext_iapsta_dettach_netdev: ifidx=0
+[ 1051.977905] dhd_stop: Exit
+[ 1051.995776] bcmsdh_oob_intr_unregister: Enter
+[ 1051.995810] bcmsdh_oob_intr_unregister: irq is not registered
+[ 1052.000581] dhd_wlfc_deinit():3751, Already disabled!
+[ 1052.005744] wl_escan_detach: Enter
+[ 1052.009272] wl_escan_deinit: Enter
+[ 1052.059902] dhd_detach(): thread:dhd_watchdog_thread:7f5 terminated OK
+[ 1052.060986] dhd_detach(): thread:dhd_rxf:7f7 terminated OK
+[ 1052.066627] dhd_dpc_thread: Unexpected up_cnt 0
+[ 1052.071259] dhd_detach(): thread:dhd_dpc:7f6 terminated OK
+[ 1052.095838] dhd_tcpack_suppress_set 362: already set to 0
+[ 1052.095899] dhdsdio_disconnect : the lock is released.
+[ 1052.101499] unregister wifi platform drivers
+[ 1052.105498] wifi_platform_bus_enumerate device present 0
+[ 1052.110907] ======== Card detection to remove SDIO card! ========
+[ 1052.117125] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 1052.323684] ======== dhd_wlan_deinit_plat_data ========
+[ 1052.323725] dhd_module_cleanup: Exit
+[ 1403.866072] dhd_module_init: in Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 1403.867885] ======== dhd_wlan_init_plat_data ========
+[ 1403.873041] dhd_wlan_init_gpio: WL_HOST_WAKE=-1, oob_irq=91, oob_irq_flags=0x418
+[ 1403.880516] dhd_wlan_init_gpio: WL_REG_ON=-1
+[ 1403.884916] dhd_wifi_platform_load: Enter
+[ 1403.889083] Power-up adapter 'DHD generic adapter'
+[ 1403.893975] wifi_platform_set_power = 1
+[ 1403.897934] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 1403.903241] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 1404.009796] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 1404.367813] wifi_platform_bus_enumerate device present 1
+[ 1404.367852] ======== Card detection to detect SDIO card! ========
+[ 1404.373916] sdio_reset_comm():
+[ 1404.377315] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 1404.389422] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 1404.396581] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 1404.403149] actual_clock :400000, HHI_nand: 0x0
+[ 1404.407717] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 1404.416463] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 1404.420905] actual_clock :0, HHI_nand: 0x0
+[ 1404.425045] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 1404.447734] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 1404.449693] actual_clock :400000, HHI_nand: 0x0
+[ 1404.454337] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 1404.479370] sdio_read_cis: 5 callbacks suppressed
+[ 1404.479396] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 1404.487123] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 1404.492711] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 1404.500854] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 1404.507277] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 1404.601500] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 1404.606108] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 1404.613972] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 1404.621768] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 1404.631343] actual_clock :199999805, HHI_nand: 0x0
+[ 1404.636229] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 1404.642379] sdio: clk 200000000 SDR mode tuning start
+[ 1404.647837] sdio: rx_tuning_result[0] = 10
+[ 1404.651909] sdio: rx_tuning_result[2] = 10
+[ 1404.656104] sdio: rx_tuning_result[3] = 10
+[ 1404.660139] sdio: best_win_start =2, best_win_size =2
+[ 1404.665322] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 1404.672719] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 1404.679451] [sdio_reinit] finish
+[ 1404.683430] parse loopback:, 	lb mode:0\x00:0
+[ 1404.686796] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 1404.692638] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 1404.699011] parse loopback:, 	lb mode:0\x00:0
+[ 1404.702224] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 1404.707986] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 1404.708965] bcmsdh_register: register client driver
+[ 1404.709232] bcmsdh_sdmmc_probe: Enter num=1
+[ 1404.709369] bcmsdh_sdmmc_probe: Enter num=2
+[ 1404.709372] bus num (host idx)=0, slot num (rca)=1
+[ 1404.709379] found adapter info 'DHD generic adapter'
+[ 1404.709443] sdioh_attach: set sd_f2_blocksize 256
+[ 1404.709491] sdioh_attach: sd clock rate = 0
+[ 1404.709875] dhdsdio_probe : no mutex held. set lock
+[ 1404.710014] F1 signature read @0x18000000=0x17294359
+[ 1404.714668] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 1404.715367] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 1404.715482] dhd_conf_set_chiprev: chip=0x4359, chiprev=9
+[ 1404.715662] CFG80211-ERROR) wl_setup_wiphy : 
+[ 1404.715662] Registering Vendor80211
+[ 1404.727379] CFG80211-ERROR) wl_init_prof : 
+[ 1404.727379] wl_init_prof: No profile
+[ 1404.727634] wl_escan_attach: Enter
+[ 1404.727679] wl_escan_init: Enter
+[ 1404.727800] wl_create_event_handler(): thread:wl_escan_handler:1cb6 started
+[ 1404.727804] tsk Enter, tsk = 0xffffffc019850198
+[ 1404.727866] dhd_attach(): thread:dhd_watchdog_thread:1cb7 started
+[ 1404.727924] dhd_attach(): thread:dhd_dpc:1cb8 started
+[ 1404.727989] dhd_attach(): thread:dhd_rxf:1cb9 started
+[ 1404.728003] dhd_deferred_work_init: work queue initialized
+[ 1404.728009] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 2
+[ 1404.728065] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 1404.728389] sdioh_cis_read: func_cis_ptr[0]=0x10ac
+[ 1404.741450] Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 1404.742918] ANDROID-MSG) 
+[ 1404.742918] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 1404.742927] Register interface [wlan0]  MAC: 28:ed:e0:e6:ba:ba
+\x000a
+[ 1404.743100] dhd_tcpack_suppress_set: TCP ACK Suppress mode 2 -> mode 0
+[ 1404.743118] dhd_wl_ioctl: returning as busstate=0
+[ 1404.743126] dhd_bus_devreset: == Power OFF ==
+[ 1404.743624] bcmsdh_oob_intr_unregister: Enter
+[ 1404.743628] bcmsdh_oob_intr_unregister: irq is not registered
+[ 1404.743644] dhd_txglom_enable: enable 0
+[ 1404.743649] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 1404.743651] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[ 1404.743655] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 1404.743658] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 1404.743664] dhd_bus_devreset:  WLAN OFF DONE
+[ 1404.743932] wifi_platform_set_power = 0
+[ 1404.743938] ======== PULL WL_REG_ON(-1) LOW! ========
+[ 1404.743943] wl_escan_deinit: Enter
+[ 1404.743964] wl_escan_event_handler: was terminated
+[ 1404.744064] wl_destroy_event_handler(): thread:wl_escan_handler:1cb6 terminated OK
+[ 1404.744073] dhdsdio_probe : the lock is released.
+[ 1404.744407] dhd_module_init: Exit err=0
+[ 1404.967114] parse loopback:, 	lb mode:0\x00:0
+[ 1404.970394] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 1404.976141] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 1408.495952] dhd_open: Enter ffffffc01b6fc000
+[ 1408.496153] dhd_open : no mutex held. set lock
+[ 1408.499481] 
+               Dongle Host Driver, version 1.579.77.41.12 (r)\x00r)
+[ 1408.507061] ANDROID-MSG) 
+[ 1408.509522] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 1408.514884] wl_android_wifi_on in 1
+[ 1408.518506] wl_android_wifi_on in 2: g_wifi_on=0
+[ 1408.523239] wifi_platform_set_power = 1
+[ 1408.527236] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 1408.532494] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 1408.639057] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 1408.996053] sdio_reset_comm():
+[ 1408.996310] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 1409.006052] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 1409.013427] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 1409.020485] actual_clock :400000, HHI_nand: 0x0
+[ 1409.024666] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 1409.033352] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 1409.037572] actual_clock :0, HHI_nand: 0x0
+[ 1409.041717] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 1409.067745] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 1409.069707] actual_clock :400000, HHI_nand: 0x0
+[ 1409.074353] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 1409.099611] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 1409.102511] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 1409.108144] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 1409.116106] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 1409.122724] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 1409.216871] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 1409.221450] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 1409.229279] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 1409.237083] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 1409.246712] actual_clock :199999805, HHI_nand: 0x0
+[ 1409.251592] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 1409.257630] sdio: clk 200000000 SDR mode tuning start
+[ 1409.263047] sdio: rx_tuning_result[0] = 10
+[ 1409.267276] sdio: rx_tuning_result[2] = 10
+[ 1409.271538] sdio: rx_tuning_result[3] = 10
+[ 1409.275499] sdio: best_win_start =2, best_win_size =2
+[ 1409.280652] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 1409.288082] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 1409.294899] sdioh_start: set sd_f2_blocksize 256
+[ 1409.300051] 
+               
+               dhd_bus_devreset: == WLAN ON ==\x00ON ==
+[ 1409.307288] F1 signature read @0x18000000=0x17294359
+[ 1409.316212] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 1409.319320] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 1409.325855] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 1409.332106] dhd_os_open_image: /etc/wifi/4359/config.txt (47 bytes) open success
+[ 1409.339351] dhd_conf_read_others: bcn_timeout = 20
+[ 1409.344220] dhd_conf_read_sdio_params: dhd_slpauto = 0
+[ 1409.349467] dhd_conf_read_others: ccode = CN
+[ 1409.353874] dhd_conf_read_others: regrev = 38
+[ 1409.358371] Final fw_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin
+[ 1409.364575] Final nv_path=/etc/wifi/4359/nvram.txt
+[ 1409.369483] Final clm_path=/etc/wifi/4359/clm.blob
+[ 1409.374397] Final conf_path=/etc/wifi/4359/config.txt
+[ 1409.380160] dhd_os_open_image: /etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin (749970 bytes) open success
+[ 1409.519220] dhd_os_open_image: /etc/wifi/4359/nvram.txt (5639 bytes) open success
+[ 1409.521290] NVRAM version: AP6398S_NVRAM_V1.1_20170926
+[ 1409.527183] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+[ 1409.703940] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+[ 1409.704354] si_get_pmu_reg_addr: addrRET: 18000670
+[ 1409.709489] bcmsdh_oob_intr_register: HW_OOB irq=91 flags=0x8
+[ 1409.715131] meson_pinctrl: gpio virq[91] connect to GIC hwirq[96]
+[ 1409.721347] bcmsdh_oob_intr_register: enable_irq_wake failed with -6
+[ 1409.728752] Disable tdls_auto_op failed. -1
+[ 1409.732138] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 1
+[ 1409.739584] dhd_apply_default_clm: Ignore clm file /etc/wifi/4359/clm.blob
+[ 1409.746904] Firmware up: op_mode=0x0405, MAC=28:ed:e0:e6:ba:ba
+[ 1409.753535] dhd_preinit_ioctls Set scancache failed -23
+[ 1409.759568] dhd_wl_ioctl_set_intiovar: set int iovar arpoe failed, ERR -23
+[ 1409.764018] dhd_arp_offload_enable: failed to enabe ARP offload to 1, retcode = -23
+[ 1409.772233] dhd_wl_ioctl_get_intiovar: get int iovar arp_version failed, ERR -23
+[ 1409.779595] dhd_wl_ioctl_set_intiovar: set int iovar arp_ol failed, ERR -23
+[ 1409.786350] dhd_arp_offload_set: failed to set ARP offload mode to 0x9, retcode = -23
+[ 1409.797417]   Driver: 1.579.77.41.12 (r)
+                 Firmware: wl0: Nov 21 2018 12:44:02 version 9.87.51.11.0-debug-10 FWID 01-27467671
+                 CLM: 9.7.5 \x00.7.5 
+[ 1409.810186] dhd_txglom_enable: enable 1
+[ 1409.813957] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 1409.819429] dhd_conf_set_txglom_params: txglomsize=36, deferred_tx_len=0
+[ 1409.826220] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 1409.833097] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 1409.840142] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+[ 1409.847555] dhd_wlfc_hostreorder_init(): successful bdcv2 tlv signaling, 64
+[ 1409.854922] dhd_preinit_ioctls: SensorHub diabled 0
+[ 1409.859284] dhd_preinit_ioctls failed to set ShubHub disable
+[ 1409.865529] failed to set WNM capabilities
+[ 1409.897249] dhd_conf_set_country: set country CN, revision 38
+[ 1409.897261] CFG80211-ERROR) wl_cfg80211_event : 
+[ 1409.897262] Event handler is not created
+[ 1409.908501] Country code: CN (CN/38)
+[ 1409.911331] CONFIG-ERROR) 
+[ 1409.912741] dhd_conf_set_intiovar: txbf setting failed -23
+[ 1409.922511] wl_android_wifi_on: Success
+[ 1409.960718] wl_escan_init: Enter
+[ 1409.960866] wl_create_event_handler(): thread:wl_escan_handler:1ccf started
+[ 1409.960870] tsk Enter, tsk = 0xffffffc019850198
+[ 1409.970276] dhd_open : the lock is released.
+[ 1409.974661] dhd_open: Exit ret=0
+[ 2013.284016] ANDROID-MSG) 
+[ 2013.284088] wl_ext_iapsta_preinit: set rsdb_mode 1
+[ 2013.319130] ANDROID-MSG) 
+[ 2013.319273] wl_ext_iapsta_preinit: apstamode=8
+[ 2030.416709] ANDROID-MSG) 
+[ 2030.416870] wl_ext_enable_iface: wlan0[M] Enabling
+[ 2030.425985] ANDROID-MSG) 
+[ 2030.426057] wl_ext_set_chanspec: wlan0 channel 1, 0x1001
+[ 2030.535890] wl_notify_connect_status : Invalid wlan0 mode 3 event 2 status 0
+[ 2030.537783] ANDROID-MSG) 
+[ 2030.537785] wl_ext_iapsta_event: wlan0[M] Link up
+[ 2030.537845] wl_iw_event: Link UP with 28:ed:e0:e6:ba:ba
+[ 2030.537922] ANDROID-MSG) 
+[ 2030.537923] wl_ext_iapsta_event: wlan0[M] Link up
+[ 2030.558279] wl_notify_connect_status : Invalid wlan0 mode 3 event 16 status 0
+[ 2030.565548] wl_notify_connect_status : Invalid wlan0 mode 3 event 0 status 0
+[ 2030.956549] ANDROID-MSG) 
+[ 2030.956720] wl_ext_enable_iface: wlan0[M] enabled with SSID: "ttt_mesh"
+[ 2106.258423] dhd_arp_get_arp_hostip_table: ioctl WLC_GET_VAR error -23
+[ 2106.262042] dhd_aoe_hostip_clr failed code -23
+[ 2106.264122] aoe_update_host_ipv4_table failed
+[ 2679.088022] ANDROID-MSG) 
+[ 2679.088184] wl_ext_iapsta_event: wlan0[M] connected device 28:ed:e0:e6:b9:c2
+[ 2679.093009] wl_notify_connect_status : Invalid wlan0 mode 3 event 8 status 0
+[ 2917.154826] dhd_module_cleanup: Enter
+[ 2917.155270] sdioh_remove: Enter
+[ 2917.157160] dhdsdio_disconnect : no mutex held. set lock
+[ 2917.163013] dhd_stop: Enter ffffffc01b6fc000
+[ 2917.166288] dhd_wl_ioctl: returning as busstate=5
+[ 2917.171086] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 2917.176417] wsec clear failed 
+[ 2917.179597] dhd_wl_ioctl: returning as busstate=5
+[ 2917.184464] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 2917.189806] auth clear failed 
+[ 2917.192978] dhd_wl_ioctl: returning as busstate=5
+[ 2917.197809] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 2917.203161] wpa_auth clear failed 
+[ 2917.206705] dhd_wl_ioctl: returning as busstate=5
+[ 2917.211530] CFG80211-ERROR) wl_cfg80211_bss_isup : 
+[ 2917.216350] 'cfg bss -C 0' failed: -19
+[ 2917.220222] CFG80211-ERROR) wl_cfg80211_bss_isup : 
+[ 2917.225067] NOTE: this ioctl error is normal when the BSS has not been created yet.
+[ 2917.232846] dhd_wl_ioctl: returning as busstate=5
+[ 2917.237659] dhd_wl_ioctl: returning as busstate=5
+[ 2917.242483] CFG80211-ERROR) wl_cfg80211_update_power_mode : 
+[ 2917.248080] wl_cfg80211_update_power_mode:error (-19)
+[ 2917.253339] dhd_wl_ioctl: returning as busstate=5
+[ 2917.258151] CFG80211-ERROR) wl_dongle_down : 
+[ 2917.262404] WLC_DOWN error (-19)
+[ 2917.265768] dhd_tcpack_suppress_set: TCP ACK Suppress mode 1 -> mode 0
+[ 2917.272419] wl_escan_deinit: Enter
+[ 2917.275970] wl_escan_event_handler: was terminated
+[ 2917.280917] wl_destroy_event_handler(): thread:wl_escan_handler:1ccf terminated OK
+[ 2917.288569] wl_android_wifi_off in 1
+[ 2917.292254] wl_android_wifi_off in 2: g_wifi_on=1, on_failure=1
+[ 2917.298287] dhd_wl_ioctl: returning as busstate=5
+[ 2917.303136] dhd_bus_devreset: == Power OFF ==
+[ 2917.308789] bcmsdh_oob_intr_unregister: Enter
+[ 2917.312124] dhd_txglom_enable: enable 0
+[ 2917.316071] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 2917.321486] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[ 2917.328218] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 2917.335141] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 2917.342106] dhd_bus_devreset:  WLAN OFF DONE
+[ 2917.346581] wifi_platform_set_power = 0
+[ 2917.350482] ======== PULL WL_REG_ON(-1) LOW! ========
+[ 2917.355645] wl_android_wifi_off out
+[ 2917.359267] ANDROID-MSG) 
+[ 2917.361845] wl_ext_iapsta_dettach_netdev: ifidx=0
+[ 2917.366687] dhd_stop: Exit
+[ 2917.369942] bcmsdh_oob_intr_unregister: Enter
+[ 2917.374026] bcmsdh_oob_intr_unregister: irq is not registered
+[ 2917.379901] dhd_wlfc_deinit():3751, Already disabled!
+[ 2917.385082] wl_escan_detach: Enter
+[ 2917.388594] wl_escan_deinit: Enter
+[ 2917.443805] dhd_detach(): thread:dhd_watchdog_thread:1cb7 terminated OK
+[ 2917.444968] dhd_detach(): thread:dhd_rxf:1cb9 terminated OK
+[ 2917.450696] dhd_dpc_thread: Unexpected up_cnt 0
+[ 2917.455336] dhd_detach(): thread:dhd_dpc:1cb8 terminated OK
+[ 2917.483866] dhd_tcpack_suppress_set 362: already set to 0
+[ 2917.483930] dhdsdio_disconnect : the lock is released.
+[ 2917.489602] unregister wifi platform drivers
+[ 2917.493527] wifi_platform_bus_enumerate device present 0
+[ 2917.498934] ======== Card detection to remove SDIO card! ========
+[ 2917.505176] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 2917.711719] ======== dhd_wlan_deinit_plat_data ========
+[ 2917.711753] dhd_module_cleanup: Exit
+[ 3012.372783] dhd_module_init: in Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 3012.374556] ======== dhd_wlan_init_plat_data ========
+[ 3012.379773] dhd_wlan_init_gpio: WL_HOST_WAKE=-1, oob_irq=91, oob_irq_flags=0x418
+[ 3012.387237] dhd_wlan_init_gpio: WL_REG_ON=-1
+[ 3012.391630] dhd_wifi_platform_load: Enter
+[ 3012.395807] Power-up adapter 'DHD generic adapter'
+[ 3012.400690] wifi_platform_set_power = 1
+[ 3012.404652] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 3012.409938] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 3012.516506] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 3012.871769] wifi_platform_bus_enumerate device present 1
+[ 3012.871827] ======== Card detection to detect SDIO card! ========
+[ 3012.877910] sdio_reset_comm():
+[ 3012.881112] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3012.892590] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3012.900600] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 3012.907112] actual_clock :400000, HHI_nand: 0x0
+[ 3012.911677] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3012.920595] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 3012.924842] actual_clock :0, HHI_nand: 0x0
+[ 3012.929005] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3012.951719] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 3012.953683] actual_clock :400000, HHI_nand: 0x0
+[ 3012.958316] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3012.982849] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 3012.985720] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3012.991326] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3012.999479] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 3013.005959] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 3013.102018] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3013.106623] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3013.114453] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 3013.122901] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 3013.131885] actual_clock :199999805, HHI_nand: 0x0
+[ 3013.136749] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 3013.142786] sdio: clk 200000000 SDR mode tuning start
+[ 3013.148354] sdio: rx_tuning_result[0] = 10
+[ 3013.152518] sdio: rx_tuning_result[2] = 10
+[ 3013.156849] sdio: rx_tuning_result[3] = 10
+[ 3013.160683] sdio: best_win_start =2, best_win_size =2
+[ 3013.165816] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 3013.173262] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 3013.179956] [sdio_reinit] finish
+[ 3013.183978] parse loopback:, 	lb mode:0\x00:0
+[ 3013.187260] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 3013.193152] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 3013.199556] parse loopback:, 	lb mode:0\x00:0
+[ 3013.202747] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 3013.208491] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 3013.209479] bcmsdh_register: register client driver
+[ 3013.209739] bcmsdh_sdmmc_probe: Enter num=1
+[ 3013.209859] bcmsdh_sdmmc_probe: Enter num=2
+[ 3013.209862] bus num (host idx)=0, slot num (rca)=1
+[ 3013.209867] found adapter info 'DHD generic adapter'
+[ 3013.209938] sdioh_attach: set sd_f2_blocksize 256
+[ 3013.209990] sdioh_attach: sd clock rate = 0
+[ 3013.210402] dhdsdio_probe : no mutex held. set lock
+[ 3013.210551] F1 signature read @0x18000000=0x17294359
+[ 3013.215626] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 3013.216333] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 3013.216435] dhd_conf_set_chiprev: chip=0x4359, chiprev=9
+[ 3013.216597] CFG80211-ERROR) wl_setup_wiphy : 
+[ 3013.216597] Registering Vendor80211
+[ 3013.221427] CFG80211-ERROR) wl_init_prof : 
+[ 3013.221427] wl_init_prof: No profile
+[ 3013.221737] wl_escan_attach: Enter
+[ 3013.221783] wl_escan_init: Enter
+[ 3013.227366] wl_create_event_handler(): thread:wl_escan_handler:33d7 started
+[ 3013.227372] tsk Enter, tsk = 0xffffffc019850198
+[ 3013.227513] dhd_attach(): thread:dhd_watchdog_thread:33d8 started
+[ 3013.227566] dhd_attach(): thread:dhd_dpc:33d9 started
+[ 3013.227628] dhd_attach(): thread:dhd_rxf:33da started
+[ 3013.227643] dhd_deferred_work_init: work queue initialized
+[ 3013.227648] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 2
+[ 3013.227807] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 3013.228090] sdioh_cis_read: func_cis_ptr[0]=0x10ac
+[ 3013.239832] Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 3013.241300] ANDROID-MSG) 
+[ 3013.241300] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 3013.241310] Register interface [wlan0]  MAC: 28:ed:e0:e6:ba:ba
+\x000a
+[ 3013.241482] dhd_tcpack_suppress_set: TCP ACK Suppress mode 2 -> mode 0
+[ 3013.241501] dhd_wl_ioctl: returning as busstate=0
+[ 3013.241509] dhd_bus_devreset: == Power OFF ==
+[ 3013.241989] bcmsdh_oob_intr_unregister: Enter
+[ 3013.241993] bcmsdh_oob_intr_unregister: irq is not registered
+[ 3013.242008] dhd_txglom_enable: enable 0
+[ 3013.242013] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 3013.242015] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[ 3013.242020] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 3013.242023] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 3013.242027] dhd_bus_devreset:  WLAN OFF DONE
+[ 3013.242088] wifi_platform_set_power = 0
+[ 3013.242093] ======== PULL WL_REG_ON(-1) LOW! ========
+[ 3013.242097] wl_escan_deinit: Enter
+[ 3013.242129] wl_escan_event_handler: was terminated
+[ 3013.242231] wl_destroy_event_handler(): thread:wl_escan_handler:33d7 terminated OK
+[ 3013.242242] dhdsdio_probe : the lock is released.
+[ 3013.242625] dhd_module_init: Exit err=0
+[ 3013.467609] parse loopback:, 	lb mode:0\x00:0
+[ 3013.470915] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 3013.476657] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 3025.570715] dhd_open: Enter ffffffc01a7bd000
+[ 3025.570910] dhd_open : no mutex held. set lock
+[ 3025.574756] 
+               Dongle Host Driver, version 1.579.77.41.12 (r)\x00r)
+[ 3025.581681] ANDROID-MSG) 
+[ 3025.584044] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 3025.589635] wl_android_wifi_on in 1
+[ 3025.593269] wl_android_wifi_on in 2: g_wifi_on=0
+[ 3025.598012] wifi_platform_set_power = 1
+[ 3025.601970] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 3025.607260] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 3025.713811] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 3026.072369] sdio_reset_comm():
+[ 3026.072627] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3026.082290] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3026.089831] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 3026.096744] actual_clock :400000, HHI_nand: 0x0
+[ 3026.101024] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3026.109672] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 3026.113932] actual_clock :0, HHI_nand: 0x0
+[ 3026.118057] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3026.143720] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 3026.145682] actual_clock :400000, HHI_nand: 0x0
+[ 3026.150333] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3026.175478] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 3026.178373] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3026.184199] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3026.192165] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 3026.198599] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 3026.294292] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3026.298910] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3026.306730] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 3026.314545] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 3026.324159] actual_clock :199999805, HHI_nand: 0x0
+[ 3026.329027] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 3026.335066] sdio: clk 200000000 SDR mode tuning start
+[ 3026.340545] sdio: rx_tuning_result[0] = 10
+[ 3026.344817] sdio: rx_tuning_result[2] = 10
+[ 3026.348932] sdio: rx_tuning_result[3] = 10
+[ 3026.352941] sdio: best_win_start =2, best_win_size =2
+[ 3026.358083] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 3026.365515] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 3026.372313] sdioh_start: set sd_f2_blocksize 256
+[ 3026.377340] 
+               
+               dhd_bus_devreset: == WLAN ON ==\x00ON ==
+[ 3026.384714] F1 signature read @0x18000000=0x17294359
+[ 3026.393481] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 3026.396817] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 3026.403251] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 3026.409546] dhd_os_open_image: /etc/wifi/4359/config.txt (47 bytes) open success
+[ 3026.416760] dhd_conf_read_others: bcn_timeout = 20
+[ 3026.421650] dhd_conf_read_sdio_params: dhd_slpauto = 0
+[ 3026.426908] dhd_conf_read_others: ccode = CN
+[ 3026.431315] dhd_conf_read_others: regrev = 38
+[ 3026.435814] Final fw_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin
+[ 3026.441997] Final nv_path=/etc/wifi/4359/nvram.txt
+[ 3026.446908] Final clm_path=/etc/wifi/4359/clm.blob
+[ 3026.451827] Final conf_path=/etc/wifi/4359/config.txt
+[ 3026.457569] dhd_os_open_image: /etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin (749970 bytes) open success
+[ 3026.546965] dhd_os_open_image: /etc/wifi/4359/nvram.txt (5639 bytes) open success
+[ 3026.549013] NVRAM version: AP6398S_NVRAM_V1.1_20170926
+[ 3026.554993] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+[ 3026.731843] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+[ 3026.732251] si_get_pmu_reg_addr: addrRET: 18000670
+[ 3026.737498] bcmsdh_oob_intr_register: HW_OOB irq=91 flags=0x8
+[ 3026.743048] meson_pinctrl: gpio virq[91] connect to GIC hwirq[96]
+[ 3026.749265] bcmsdh_oob_intr_register: enable_irq_wake failed with -6
+[ 3026.757028] Disable tdls_auto_op failed. -1
+[ 3026.760013] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 1
+[ 3026.767026] dhd_apply_default_clm: Ignore clm file /etc/wifi/4359/clm.blob
+[ 3026.774831] Firmware up: op_mode=0x0405, MAC=28:ed:e0:e6:ba:ba
+[ 3026.781418] dhd_preinit_ioctls Set scancache failed -23
+[ 3026.787464] dhd_wl_ioctl_set_intiovar: set int iovar arpoe failed, ERR -23
+[ 3026.791925] dhd_arp_offload_enable: failed to enabe ARP offload to 1, retcode = -23
+[ 3026.800088] dhd_wl_ioctl_get_intiovar: get int iovar arp_version failed, ERR -23
+[ 3026.807553] dhd_wl_ioctl_set_intiovar: set int iovar arp_ol failed, ERR -23
+[ 3026.814255] dhd_arp_offload_set: failed to set ARP offload mode to 0x9, retcode = -23
+[ 3026.825356]   Driver: 1.579.77.41.12 (r)
+                 Firmware: wl0: Nov 21 2018 12:44:02 version 9.87.51.11.0-debug-10 FWID 01-27467671
+                 CLM: 9.7.5 \x00.7.5 
+[ 3026.838101] dhd_txglom_enable: enable 1
+[ 3026.841863] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 3026.847333] dhd_conf_set_txglom_params: txglomsize=36, deferred_tx_len=0
+[ 3026.854161] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 3026.861012] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 3026.868024] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+[ 3026.875473] dhd_wlfc_hostreorder_init(): successful bdcv2 tlv signaling, 64
+[ 3026.882805] dhd_preinit_ioctls: SensorHub diabled 0
+[ 3026.887162] dhd_preinit_ioctls failed to set ShubHub disable
+[ 3026.893449] failed to set WNM capabilities
+[ 3026.925238] dhd_conf_set_country: set country CN, revision 38
+[ 3026.925251] CFG80211-ERROR) wl_cfg80211_event : 
+[ 3026.925252] Event handler is not created
+[ 3026.936523] Country code: CN (CN/38)
+[ 3026.939330] CONFIG-ERROR) 
+[ 3026.940739] dhd_conf_set_intiovar: txbf setting failed -23
+[ 3026.950526] wl_android_wifi_on: Success
+[ 3026.988709] wl_escan_init: Enter
+[ 3026.988849] wl_create_event_handler(): thread:wl_escan_handler:3416 started
+[ 3026.988858] tsk Enter, tsk = 0xffffffc019850198
+[ 3026.998267] dhd_open : the lock is released.
+[ 3027.002643] dhd_open: Exit ret=0
+[ 3038.583523] ANDROID-MSG) 
+[ 3038.583552] wl_ext_iapsta_preinit: set rsdb_mode 1
+[ 3038.610844] ANDROID-MSG) 
+[ 3038.610871] wl_ext_iapsta_preinit: apstamode=8
+[ 3062.918711] ANDROID-MSG) 
+[ 3062.918743] wl_ext_enable_iface: wlan0[M] Enabling
+[ 3062.924303] ANDROID-MSG) 
+[ 3062.924332] wl_ext_set_chanspec: wlan0 channel 1, 0x1001
+[ 3063.037400] wl_notify_connect_status : Invalid wlan0 mode 3 event 2 status 0
+[ 3063.039011] ANDROID-MSG) 
+[ 3063.039011] wl_ext_iapsta_event: wlan0[M] Link up
+[ 3063.046985] wl_iw_event: Link UP with 28:ed:e0:e6:ba:ba
+[ 3063.052453] ANDROID-MSG) 
+[ 3063.054580] wl_ext_iapsta_event: wlan0[M] Link up
+[ 3063.060747] wl_notify_connect_status : Invalid wlan0 mode 3 event 16 status 0
+[ 3063.066688] wl_notify_connect_status : Invalid wlan0 mode 3 event 0 status 0
+[ 3063.435750] ANDROID-MSG) 
+[ 3063.435795] wl_ext_enable_iface: wlan0[M] enabled with SSID: "ttt_mesh"
+[ 3066.211321] ANDROID-MSG) 
+[ 3066.211488] wl_ext_iapsta_event: wlan0[M] connected device 28:ed:e0:e6:b9:c2
+[ 3066.216598] wl_notify_connect_status : Invalid wlan0 mode 3 event 8 status 0
+[ 3078.506275] dhd_arp_get_arp_hostip_table: ioctl WLC_GET_VAR error -23
+[ 3078.507792] dhd_aoe_hostip_clr failed code -23
+[ 3078.511855] aoe_update_host_ipv4_table failed
+[ 3183.078486] dhd_module_cleanup: Enter
+[ 3183.078926] sdioh_remove: Enter
+[ 3183.080953] dhdsdio_disconnect : no mutex held. set lock
+[ 3183.085654] dhd_stop: Enter ffffffc01a7bd000
+[ 3183.089933] dhd_wl_ioctl: returning as busstate=5
+[ 3183.094754] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 3183.100080] wsec clear failed 
+[ 3183.103260] dhd_wl_ioctl: returning as busstate=5
+[ 3183.108117] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 3183.113472] auth clear failed 
+[ 3183.116639] dhd_wl_ioctl: returning as busstate=5
+[ 3183.121472] CFG80211-ERROR) wl_cfg80211_clear_security : 
+[ 3183.126816] wpa_auth clear failed 
+[ 3183.130369] dhd_wl_ioctl: returning as busstate=5
+[ 3183.135185] CFG80211-ERROR) wl_cfg80211_bss_isup : 
+[ 3183.140014] 'cfg bss -C 0' failed: -19
+[ 3183.143884] CFG80211-ERROR) wl_cfg80211_bss_isup : 
+[ 3183.148723] NOTE: this ioctl error is normal when the BSS has not been created yet.
+[ 3183.156514] dhd_wl_ioctl: returning as busstate=5
+[ 3183.161324] dhd_wl_ioctl: returning as busstate=5
+[ 3183.166153] CFG80211-ERROR) wl_cfg80211_update_power_mode : 
+[ 3183.171746] wl_cfg80211_update_power_mode:error (-19)
+[ 3183.177048] dhd_wl_ioctl: returning as busstate=5
+[ 3183.181769] CFG80211-ERROR) wl_dongle_down : 
+[ 3183.186063] WLC_DOWN error (-19)
+[ 3183.189430] dhd_tcpack_suppress_set: TCP ACK Suppress mode 1 -> mode 0
+[ 3183.196081] wl_escan_deinit: Enter
+[ 3183.199607] wl_escan_event_handler: was terminated
+[ 3183.204602] wl_destroy_event_handler(): thread:wl_escan_handler:3416 terminated OK
+[ 3183.212212] wl_android_wifi_off in 1
+[ 3183.215911] wl_android_wifi_off in 2: g_wifi_on=1, on_failure=1
+[ 3183.221959] dhd_wl_ioctl: returning as busstate=5
+[ 3183.226782] dhd_bus_devreset: == Power OFF ==
+[ 3183.231562] bcmsdh_oob_intr_unregister: Enter
+[ 3183.235791] dhd_txglom_enable: enable 0
+[ 3183.239719] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 3183.245177] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[ 3183.251881] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 3183.258782] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 3183.265778] dhd_bus_devreset:  WLAN OFF DONE
+[ 3183.270321] wifi_platform_set_power = 0
+[ 3183.274143] ======== PULL WL_REG_ON(-1) LOW! ========
+[ 3183.279308] wl_android_wifi_off out
+[ 3183.282929] ANDROID-MSG) 
+[ 3183.285511] wl_ext_iapsta_dettach_netdev: ifidx=0
+[ 3183.290354] dhd_stop: Exit
+[ 3183.297186] bcmsdh_oob_intr_unregister: Enter
+[ 3183.297661] bcmsdh_oob_intr_unregister: irq is not registered
+[ 3183.303590] dhd_wlfc_deinit():3751, Already disabled!
+[ 3183.308734] wl_escan_detach: Enter
+[ 3183.312299] wl_escan_deinit: Enter
+[ 3183.363813] dhd_detach(): thread:dhd_watchdog_thread:33d8 terminated OK
+[ 3183.364973] dhd_detach(): thread:dhd_rxf:33da terminated OK
+[ 3183.370696] dhd_dpc_thread: Unexpected up_cnt 0
+[ 3183.375338] dhd_detach(): thread:dhd_dpc:33d9 terminated OK
+[ 3183.399845] dhd_tcpack_suppress_set 362: already set to 0
+[ 3183.399913] dhdsdio_disconnect : the lock is released.
+[ 3183.405716] unregister wifi platform drivers
+[ 3183.409516] wifi_platform_bus_enumerate device present 0
+[ 3183.414936] ======== Card detection to remove SDIO card! ========
+[ 3183.421235] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 3183.627729] ======== dhd_wlan_deinit_plat_data ========
+[ 3183.627768] dhd_module_cleanup: Exit
+[ 3266.441048] dhd_module_init: in Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 3266.442819] ======== dhd_wlan_init_plat_data ========
+[ 3266.448043] dhd_wlan_init_gpio: WL_HOST_WAKE=-1, oob_irq=91, oob_irq_flags=0x418
+[ 3266.455497] dhd_wlan_init_gpio: WL_REG_ON=-1
+[ 3266.459907] dhd_wifi_platform_load: Enter
+[ 3266.464063] Power-up adapter 'DHD generic adapter'
+[ 3266.468950] wifi_platform_set_power = 1
+[ 3266.472908] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 3266.478198] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 3266.584784] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 3266.940041] wifi_platform_bus_enumerate device present 1
+[ 3266.940244] ======== Card detection to detect SDIO card! ========
+[ 3266.946471] sdio_reset_comm():
+[ 3266.949651] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3266.961523] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3266.968905] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 3266.975626] actual_clock :400000, HHI_nand: 0x0
+[ 3266.980117] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3266.988782] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 3266.993217] actual_clock :0, HHI_nand: 0x0
+[ 3266.997352] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3267.019751] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 3267.021711] actual_clock :400000, HHI_nand: 0x0
+[ 3267.026396] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3267.051520] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 3267.054438] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3267.060054] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3267.067948] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 3267.074684] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 3267.169708] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3267.174276] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3267.182115] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 3267.189964] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 3267.199837] actual_clock :199999805, HHI_nand: 0x0
+[ 3267.204425] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 3267.210494] sdio: clk 200000000 SDR mode tuning start
+[ 3267.215963] sdio: rx_tuning_result[0] = 10
+[ 3267.220139] sdio: rx_tuning_result[2] = 10
+[ 3267.224420] sdio: rx_tuning_result[3] = 10
+[ 3267.228356] sdio: best_win_start =2, best_win_size =2
+[ 3267.233524] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 3267.240911] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 3267.247634] [sdio_reinit] finish
+[ 3267.251643] parse loopback:, 	lb mode:0\x00:0
+[ 3267.255013] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 3267.260776] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 3267.267177] parse loopback:, 	lb mode:0\x00:0
+[ 3267.270447] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 3267.276205] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 3267.282706] bcmsdh_register: register client driver
+[ 3267.287157] bcmsdh_sdmmc_probe: Enter num=1
+[ 3267.291745] parse loopback:, 	lb mode:0\x00:0
+[ 3267.295138] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 3267.299955] bcmsdh_sdmmc_probe: Enter num=2
+[ 3267.299959] bus num (host idx)=0, slot num (rca)=1
+[ 3267.299963] found adapter info 'DHD generic adapter'
+[ 3267.300028] sdioh_attach: set sd_f2_blocksize 256
+[ 3267.300074] sdioh_attach: sd clock rate = 0
+[ 3267.300423] dhdsdio_probe : no mutex held. set lock
+[ 3267.300550] F1 signature read @0x18000000=0x17294359
+[ 3267.304567] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 3267.305190] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 3267.305289] dhd_conf_set_chiprev: chip=0x4359, chiprev=9
+[ 3267.305456] CFG80211-ERROR) wl_setup_wiphy : 
+[ 3267.305457] Registering Vendor80211
+[ 3267.306349] CFG80211-ERROR) wl_init_prof : 
+[ 3267.306349] wl_init_prof: No profile
+[ 3267.306779] wl_escan_attach: Enter
+[ 3267.306825] wl_escan_init: Enter
+[ 3267.306969] wl_create_event_handler(): thread:wl_escan_handler:379b started
+[ 3267.308129] tsk Enter, tsk = 0xffffffc01ca70198
+[ 3267.312397] dhd_attach(): thread:dhd_watchdog_thread:379c started
+[ 3267.312580] dhd_attach(): thread:dhd_dpc:379d started
+[ 3267.315357] dhd_attach(): thread:dhd_rxf:379e started
+[ 3267.315374] dhd_deferred_work_init: work queue initialized
+[ 3267.315380] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 2
+[ 3267.315437] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 3267.315770] sdioh_cis_read: func_cis_ptr[0]=0x10ac
+[ 3267.327017] Dongle Host Driver, version 1.579.77.41.12 (r)
+[ 3267.328318] ANDROID-MSG) 
+[ 3267.328319] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 3267.328328] Register interface [wlan0]  MAC: 28:ed:e0:e6:ba:ba
+\x000a
+[ 3267.328499] dhd_tcpack_suppress_set: TCP ACK Suppress mode 2 -> mode 0
+[ 3267.328518] dhd_wl_ioctl: returning as busstate=0
+[ 3267.328526] dhd_bus_devreset: == Power OFF ==
+[ 3267.329013] bcmsdh_oob_intr_unregister: Enter
+[ 3267.329018] bcmsdh_oob_intr_unregister: irq is not registered
+[ 3267.329035] dhd_txglom_enable: enable 0
+[ 3267.329039] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 3267.329043] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+[ 3267.329046] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 3267.329050] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 3267.329055] dhd_bus_devreset:  WLAN OFF DONE
+[ 3267.329124] wifi_platform_set_power = 0
+[ 3267.329128] ======== PULL WL_REG_ON(-1) LOW! ========
+[ 3267.329132] wl_escan_deinit: Enter
+[ 3267.329161] wl_escan_event_handler: was terminated
+[ 3267.329172] wl_destroy_event_handler(): thread:wl_escan_handler:379b terminated OK
+[ 3267.329182] dhdsdio_probe : the lock is released.
+[ 3267.329498] dhd_module_init: Exit err=0
+[ 3267.544327] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 3267.550779] parse loopback:, 	lb mode:0\x00:0
+[ 3267.554027] 	datain_src:4, datain_chnum:8, datain_chumask:3f\x003f
+[ 3267.559782] 	datalb_src:2, datalb_chnum:2, datalb_chumask:3\x00:3
+[ 3278.067136] dhd_open: Enter ffffffc01d378000
+[ 3278.067331] dhd_open : no mutex held. set lock
+[ 3278.071166] 
+               Dongle Host Driver, version 1.579.77.41.12 (r)\x00r)
+[ 3278.078052] ANDROID-MSG) 
+[ 3278.080463] wl_ext_iapsta_attach_netdev: ifidx=0, bssidx=0
+[ 3278.086057] wl_android_wifi_on in 1
+[ 3278.089681] wl_android_wifi_on in 2: g_wifi_on=0
+[ 3278.094457] wifi_platform_set_power = 1
+[ 3278.098393] ======== PULL WL_REG_ON(-1) HIGH! ========
+[ 3278.103669] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Disable! 69
+[ 3278.210228] aml_wifi wifi: [extern_wifi_set_enable] WIFI  Enable! 69
+[ 3278.568339] sdio_reset_comm():
+[ 3278.568594] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3278.579063] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,  return .............. clock: 0x10000245
+[ 3278.585765] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x10000245
+[ 3278.592647] actual_clock :400000, HHI_nand: 0x0
+[ 3278.596841] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3278.606390] [meson_mmc_clk_set_rate_v3] clk_ios: 0,before clock: 0x1000023c
+[ 3278.609878] actual_clock :0, HHI_nand: 0x0
+[ 3278.614048] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3278.639719] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,before clock: 0x1000023c
+[ 3278.641692] actual_clock :400000, HHI_nand: 0x0
+[ 3278.646340] [meson_mmc_clk_set_rate_v3] after clock: 0x1000023c
+[ 3278.670975] sdio: queuing unknown CIS tuple 0x80 (2 bytes)
+[ 3278.673876] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3278.679472] sdio: queuing unknown CIS tuple 0x80 (3 bytes)
+[ 3278.687390] sdio: queuing unknown CIS tuple 0x80 (7 bytes)
+[ 3278.694128] sdio: queuing unknown CIS tuple 0x81 (9 bytes)
+[ 3278.791856] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3278.796480] [meson_mmc_clk_set_rate_v3] clk_ios: 400000,  return .............. clock: 0x1000023c
+[ 3278.804305] [meson_mmc_clk_set_rate_v3] clk_ios: 200000000,before clock: 0x1000023c
+[ 3278.812109] meson-aml-mmc ffe05000.sdio: divider requested rate 200000000 != actual rate 199999805: ret=0
+[ 3278.821707] actual_clock :199999805, HHI_nand: 0x0
+[ 3278.826615] [meson_mmc_clk_set_rate_v3] after clock: 0x10000245
+[ 3278.832643] sdio: clk 200000000 SDR mode tuning start
+[ 3278.838232] sdio: rx_tuning_result[0] = 10
+[ 3278.842354] sdio: rx_tuning_result[2] = 10
+[ 3278.846587] sdio: rx_tuning_result[3] = 10
+[ 3278.850531] sdio: best_win_start =2, best_win_size =2
+[ 3278.855647] sdio: sd_emmc_regs->gclock=0x10000245,sd_emmc_regs->gadjust=0x32000
+[ 3278.863058] sdio: gclock=0x10000245, gdelay1=0x0, gdelay2=0x0,intf3=0x0
+[ 3278.869881] sdioh_start: set sd_f2_blocksize 256
+[ 3278.874927] 
+               
+               dhd_bus_devreset: == WLAN ON ==\x00ON ==
+[ 3278.882283] F1 signature read @0x18000000=0x17294359
+[ 3278.891006] F1 signature OK, socitype:0x1 chip:0x4359 rev:0x9 pkg:0x2
+[ 3278.894356] DHD: dongle ram size is set to 917504(orig 917504) at 0x160000
+[ 3278.900823] dhd_bus_set_default_min_res_mask: Unhandled chip id
+[ 3278.907105] dhd_os_open_image: /etc/wifi/4359/config.txt (47 bytes) open success
+[ 3278.914329] dhd_conf_read_others: bcn_timeout = 20
+[ 3278.919205] dhd_conf_read_sdio_params: dhd_slpauto = 0
+[ 3278.924473] dhd_conf_read_others: ccode = CN
+[ 3278.928879] dhd_conf_read_others: regrev = 38
+[ 3278.933365] Final fw_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin
+[ 3278.939561] Final nv_path=/etc/wifi/4359/nvram.txt
+[ 3278.944475] Final clm_path=/etc/wifi/4359/clm.blob
+[ 3278.949395] Final conf_path=/etc/wifi/4359/config.txt
+[ 3278.955146] dhd_os_open_image: /etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin (749970 bytes) open success
+[ 3279.045242] dhd_os_open_image: /etc/wifi/4359/nvram.txt (5639 bytes) open success
+[ 3279.047272] NVRAM version: AP6398S_NVRAM_V1.1_20170926
+[ 3279.053200] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+[ 3279.231262] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+[ 3279.231672] si_get_pmu_reg_addr: addrRET: 18000670
+[ 3279.236818] bcmsdh_oob_intr_register: HW_OOB irq=91 flags=0x8
+[ 3279.242459] meson_pinctrl: gpio virq[91] connect to GIC hwirq[96]
+[ 3279.248666] bcmsdh_oob_intr_register: enable_irq_wake failed with -6
+[ 3279.256142] Disable tdls_auto_op failed. -1
+[ 3279.259419] dhd_tcpack_suppress_set: TCP ACK Suppress mode 0 -> mode 1
+[ 3279.266903] dhd_apply_default_clm: Ignore clm file /etc/wifi/4359/clm.blob
+[ 3279.274252] Firmware up: op_mode=0x0405, MAC=28:ed:e0:e6:ba:ba
+[ 3279.280920] dhd_preinit_ioctls Set scancache failed -23
+[ 3279.286878] dhd_wl_ioctl_set_intiovar: set int iovar arpoe failed, ERR -23
+[ 3279.291338] dhd_arp_offload_enable: failed to enabe ARP offload to 1, retcode = -23
+[ 3279.299530] dhd_wl_ioctl_get_intiovar: get int iovar arp_version failed, ERR -23
+[ 3279.306974] dhd_wl_ioctl_set_intiovar: set int iovar arp_ol failed, ERR -23
+[ 3279.313681] dhd_arp_offload_set: failed to set ARP offload mode to 0x9, retcode = -23
+[ 3279.324777]   Driver: 1.579.77.41.12 (r)
+                 Firmware: wl0: Nov 21 2018 12:44:02 version 9.87.51.11.0-debug-10 FWID 01-27467671
+                 CLM: 9.7.5 \x00.7.5 
+[ 3279.337519] dhd_txglom_enable: enable 1
+[ 3279.341281] dhd_conf_set_txglom_params: txglom_mode=copy
+[ 3279.346743] dhd_conf_set_txglom_params: txglomsize=36, deferred_tx_len=0
+[ 3279.353570] dhd_conf_set_txglom_params: txinrx_thres=128, dhd_txminmax=-1
+[ 3279.360436] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+[ 3279.367459] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+[ 3279.374879] dhd_wlfc_hostreorder_init(): successful bdcv2 tlv signaling, 64
+[ 3279.382271] dhd_preinit_ioctls: SensorHub diabled 0
+[ 3279.386599] dhd_preinit_ioctls failed to set ShubHub disable
+[ 3279.392873] failed to set WNM capabilities
+[ 3279.424563] dhd_conf_set_country: set country CN, revision 38
+[ 3279.424576] CFG80211-ERROR) wl_cfg80211_event : 
+[ 3279.424576] Event handler is not created
+[ 3279.435745] Country code: CN (CN/38)
+[ 3279.438755] CONFIG-ERROR) 
+[ 3279.440066] dhd_conf_set_intiovar: txbf setting failed -23
+[ 3279.449856] wl_android_wifi_on: Success
+[ 3279.494828] wl_escan_init: Enter
+[ 3279.494981] wl_create_event_handler(): thread:wl_escan_handler:37d1 started
+[ 3279.494986] tsk Enter, tsk = 0xffffffc01ca70198
+[ 3279.504383] dhd_open : the lock is released.
+[ 3279.508757] dhd_open: Exit ret=0
+[ 3288.536641] ANDROID-MSG) 
+[ 3288.536670] wl_ext_iapsta_preinit: set rsdb_mode 1
+[ 3288.563923] ANDROID-MSG) 
+[ 3288.563968] wl_ext_iapsta_preinit: apstamode=8
+[ 3300.802163] ANDROID-MSG) 
+[ 3300.802194] wl_ext_enable_iface: wlan0[M] Enabling
+[ 3300.807708] ANDROID-MSG) 
+[ 3300.807740] wl_ext_set_chanspec: wlan0 channel 1, 0x1001
+[ 3300.918458] ANDROID-MSG) 
+[ 3300.918527] wl_ext_iapsta_event: wlan0[M] Link up
+[ 3300.920443] wl_iw_event: Link UP with 28:ed:e0:e6:ba:ba
+[ 3300.925847] ANDROID-MSG) 
+[ 3300.928308] wl_ext_iapsta_event: wlan0[M] Link up
+[ 3300.933358] wl_notify_connect_status : Invalid wlan0 mode 3 event 2 status 0
+[ 3300.940413] wl_notify_connect_status : Invalid wlan0 mode 3 event 16 status 0
+[ 3300.947525] wl_notify_connect_status : Invalid wlan0 mode 3 event 0 status 0
+[ 3301.324338] ANDROID-MSG) 
+[ 3301.324505] wl_ext_enable_iface: wlan0[M] enabled with SSID: "ttt_mesh"
+[ 3306.050990] ANDROID-MSG) 
+[ 3306.051037] wl_ext_iapsta_event: wlan0[M] connected device 28:ed:e0:e6:b9:c2
+[ 3306.055372] wl_notify_connect_status : Invalid wlan0 mode 3 event 8 status 0
+[ 3322.143872] dhd_arp_get_arp_hostip_table: ioctl WLC_GET_VAR error -23
+[ 3322.145270] dhd_aoe_hostip_clr failed code -23
+[ 3322.149467] aoe_update_host_ipv4_table failed
+# 
+# 
+# 

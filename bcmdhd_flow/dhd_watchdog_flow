@@ -11,7 +11,7 @@ dhd_linux.c
         #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
             timer_setup(&dhd->timer, dhd_watchdog, 0);
         #else
-            init_timer(&dhd->timer);
+            init_timer(&dhd->timer);            // 这里只是init_timer, 真正启动定时器是在dhd_open->dhd_bus_start->dhd_os_wd_timer中调用mod_timer
             dhd->timer.data = (ulong)dhd;
             dhd->timer.function = dhd_watchdog;
         #endif
@@ -31,12 +31,14 @@ dhd_linux.c
 
 /****************************************************************************************************************************
             dhd_poll作用是如果配置了oob， 并且oob中断不起作用的时候会采用轮询的方式读取FUN1 和 FUN2的状态
-            从而判断是否有数据可读取主要体现在dhd_watchdog_thread。
+            从而判断是否有数据可读取, 主要体现在dhd_watchdog_thread。
 ****************************************************************************************************************************/
         static int dhd_watchdog_thread(void *data)
         {
+            tsk_ctl_t *tsk = (tsk_ctl_t *)data;
+
             while (1) {
-                if (down_interruptible (&tsk->sema) == 0) {
+                if (down_interruptible (&tsk->sema) == 0) {             // 等待dhd->thr_wdt_ctl->sema信号量
                     if (dhd->pub.dongle_reset == FALSE) {
                         DHD_TIMER(("%s:\n", __FUNCTION__));
                         dhd_bus_watchdog(&dhd->pub);                    // 调用dhd_bus_watchdog
@@ -136,7 +138,7 @@ dhd_sdio.c
                 if ((bus->idletime != 0) && (bus->idlecount >= bus->idletime) &&
                         NO_OTHER_ACTIVE_BUS_USER(bus)) {
                     DHD_TIMER(("%s: DHD Idle state!!\n", __FUNCTION__));
-                    if (!bus->poll && SLPAUTO_ENAB(bus)) {                  // 如果没开启dhd_poll且开启了dhd_slpauto，则可以进sleep，设为CLK_NONE
+                    if (!bus->poll && SLPAUTO_ENAB(bus)) {                // 如果没开启dhd_poll且开启了dhd_slpauto，则可以进sleep，设为CLK_NONE
                         if (dhdsdio_bussleep(bus, TRUE) != BCME_BUSY)
                             dhd_os_wd_timer(bus->dhd, 0);
                     } else
@@ -196,3 +198,31 @@ static void dhd_watchdog(
 	DHD_OS_WD_WAKE_UNLOCK(&dhd->pub);
 }
 
+---------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        static int dhd_open(struct net_device *net)
+        {
+			ret = dhd_bus_start(&dhd->pub);
+        }
+        ->  {
+                int dhd_bus_start(dhd_pub_t *dhdp)
+                {
+                    /* Start the watchdog timer */
+                    dhd->pub.tickcnt = 0;
+                    dhd_os_wd_timer(&dhd->pub, dhd_watchdog_ms);                // dhd_watchdog_ms 默认是 2s
+                }
+            }
+            ->  {
+                    void dhd_os_wd_timer(void *bus, uint wdtick)
+                    {
+                        if (wdtick) {
+                            dhd_watchdog_ms = (uint)wdtick;
+                            /* Re arm the timer, at last watchdog period */
+                            mod_timer(&dhd->timer, jiffies + msecs_to_jiffies(dhd_watchdog_ms));
+                            dhd->wd_timer_valid = TRUE;
+                        }
+                    }
+                }
+
+    }

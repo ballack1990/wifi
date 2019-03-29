@@ -1,0 +1,235 @@
+wl_iw.c
+->  {
+        static const iw_handler wl_iw_handler[] =
+        {
+            (iw_handler) wl_iw_config_commit,	/* SIOCSIWCOMMIT */
+            (iw_handler) wl_iw_get_name,		/* SIOCGIWNAME */
+            (iw_handler) NULL,			/* SIOCSIWNWID */
+            (iw_handler) NULL,			/* SIOCGIWNWID */
+            (iw_handler) wl_iw_set_freq,		/* SIOCSIWFREQ */
+            (iw_handler) wl_iw_get_freq,		/* SIOCGIWFREQ */
+            (iw_handler) wl_iw_set_mode,		/* SIOCSIWMODE */
+            (iw_handler) wl_iw_get_mode,		/* SIOCGIWMODE */
+        }
+
+        static int wl_iw_set_freq( struct net_device *dev, struct iw_request_info *info, struct iw_freq *fwrq, char *extra)
+        {
+            int error, chan;
+            uint sf = 0;
+
+            WL_TRACE(("%s: SIOCSIWFREQ\n", dev->name));
+
+            /* Setting by channel number */
+            if (fwrq->e == 0 && fwrq->m < MAXCHANNEL) {
+                chan = fwrq->m;
+            }
+            /* Setting by frequency */
+            else {
+                /* Convert to MHz as best we can */
+                if (fwrq->e >= 6) {
+                    fwrq->e -= 6;
+                    while (fwrq->e--)
+                        fwrq->m *= 10;
+                } else if (fwrq->e < 6) {
+                    while (fwrq->e++ < 6)
+                        fwrq->m /= 10;
+                }
+                /* handle 4.9GHz frequencies as Japan 4 GHz based channelization */
+                if (fwrq->m > 4000 && fwrq->m < 5000) {
+                    sf = WF_CHAN_FACTOR_4_G; /* start factor for 4 GHz */
+                }
+                chan = wf_mhz2channel(fwrq->m, sf);
+            }
+            WL_ERROR(("%s: chan=%d\n", __FUNCTION__, chan));
+            chan = htod32(chan);
+            if ((error = dev_wlc_ioctl(dev, WLC_SET_CHANNEL, &chan, sizeof(chan)))) {
+                WL_ERROR(("%s: WLC_SET_CHANNEL failed (%d).\n", __FUNCTION__, error));
+                return error;
+            }
+
+            /* -EINPROGRESS: Call commit handler */
+            return -EINPROGRESS;
+        }
+
+        static int dev_wlc_ioctl( struct net_device *dev, int cmd, void *arg, int len)
+        {
+            struct ifreq ifr;
+            wl_ioctl_t ioc;
+            mm_segment_t fs;
+            int ret;
+
+            memset(&ioc, 0, sizeof(ioc));
+            ioc.cmd = cmd;
+            ioc.buf = arg;
+            ioc.len = len;
+
+            strncpy(ifr.ifr_name, dev->name, sizeof(ifr.ifr_name));
+            ifr.ifr_name[sizeof(ifr.ifr_name) - 1] = '\0';
+            ifr.ifr_data = (caddr_t) &ioc;
+
+            fs = get_fs();
+            set_fs(get_ds());
+#if defined(WL_USE_NETDEV_OPS)
+            ret = dev->netdev_ops->ndo_do_ioctl(dev, &ifr, SIOCDEVPRIVATE);
+#else
+            ret = dev->do_ioctl(dev, &ifr, SIOCDEVPRIVATE);
+#endif
+            set_fs(fs);
+
+            return ret;
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 31))
+        static struct net_device_ops dhd_ops_pri = {
+            .ndo_open = dhd_open,
+            .ndo_stop = dhd_stop,
+            .ndo_get_stats = dhd_get_stats,
+            .ndo_do_ioctl = dhd_ioctl_entry,
+            .ndo_start_xmit = dhd_start_xmit,
+            .ndo_set_mac_address = dhd_set_mac_address,
+    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
+            .ndo_set_rx_mode = dhd_set_multicast_list,
+    #else
+            .ndo_set_multicast_list = dhd_set_multicast_list,
+    #endif
+        };
+
+        static int dhd_ioctl_entry(struct net_device *net, struct ifreq *ifr, int cmd)
+        {
+            ifidx = dhd_net2idx(dhd, net);
+            DHD_TRACE(("%s: ifidx %d, cmd 0x%04x\n", __FUNCTION__, ifidx, cmd));
+
+        #if defined(WL_WIRELESS_EXT)
+            /* linux wireless extensions */
+            if ((cmd >= SIOCIWFIRST) && (cmd <= SIOCIWLAST)) {
+                /* may recurse, do NOT lock */
+                ret = wl_iw_ioctl(net, ifr, cmd);                   // 如果定义了WL_WIRELESS_EXT, 则调用wl_iw_ioctl
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                DHD_OS_WAKE_UNLOCK(&dhd->pub);
+                return ret;
+            }
+        #endif /* defined(WL_WIRELESS_EXT) */
+
+        #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 2)
+            if (cmd == SIOCETHTOOL) {
+                ret = dhd_ethtool(dhd, (void*)ifr->ifr_data);
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                DHD_OS_WAKE_UNLOCK(&dhd->pub);
+                return ret;
+            }
+        #endif /* LINUX_VERSION_CODE > KERNEL_VERSION(2, 4, 2) */
+
+            if (cmd == SIOCDEVPRIVATE+1) {                          // 处理SIOCDEVPRIVATE+1
+                ret = wl_android_priv_cmd(net, ifr, cmd);           
+                dhd_check_hang(net, &dhd->pub, ret);
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                DHD_OS_WAKE_UNLOCK(&dhd->pub);
+                return ret;
+            }
+
+            if (cmd != SIOCDEVPRIVATE) {                            // 如果不是SIOCDEVPRIVATE命令，则返回！！
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                DHD_OS_WAKE_UNLOCK(&dhd->pub);
+                return -EOPNOTSUPP;
+            }
+
+            memset(&ioc, 0, sizeof(ioc));
+
+            /* Copy the ioc control structure part of ioctl request */
+            if (copy_from_user(&ioc, ifr->ifr_data, sizeof(wl_ioctl_t))) {
+                bcmerror = BCME_BADADDR;
+                goto done;
+            }
+
+            /* To differentiate between wl and dhd read 4 more byes */
+            if ((copy_from_user(&ioc.driver, (char *)ifr->ifr_data + sizeof(wl_ioctl_t),
+                            sizeof(uint)) != 0)) {
+                bcmerror = BCME_BADADDR;
+                goto done;
+            }
+
+            /* Take backup of ioc.buf and restore later */
+            ioc_buf_user = ioc.buf;
+
+            if (ioc.len > 0) {
+                buflen = MIN(ioc.len, DHD_IOCTL_MAXLEN);
+                if (!(local_buf = MALLOC(dhd->pub.osh, buflen+1))) {
+                    bcmerror = BCME_NOMEM;
+                    goto done;
+                }
+
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                if (copy_from_user(local_buf, ioc.buf, buflen)) {
+                    DHD_PERIM_LOCK(&dhd->pub);
+                    bcmerror = BCME_BADADDR;
+                    goto done;
+                }
+                DHD_PERIM_LOCK(&dhd->pub);
+
+                *((char *)local_buf + buflen) = '\0';
+
+                /* For some platforms accessing userspace memory
+                 * of ioc.buf is causing kernel panic, so to avoid that
+                 * make ioc.buf pointing to kernel space memory local_buf
+                 */
+                ioc.buf = local_buf;
+            }
+
+            /* Skip all the non DHD iovars (wl iovars) after f/w hang */
+            if (ioc.driver != DHD_IOCTL_MAGIC && dhd->pub.hang_was_sent) {
+                DHD_TRACE(("%s: HANG was sent up earlier\n", __FUNCTION__));
+                DHD_OS_WAKE_LOCK_CTRL_TIMEOUT_ENABLE(&dhd->pub, DHD_EVENT_TIMEOUT_MS);
+                bcmerror = BCME_DONGLE_DOWN;
+                goto done;
+            }
+
+            bcmerror = dhd_ioctl_process(&dhd->pub, ifidx, &ioc, local_buf);            // 调用dhd_ioctl_process函数
+
+            /* Restore back userspace pointer to ioc.buf */
+            ioc.buf = ioc_buf_user;
+        }
+
+        int dhd_ioctl_process(dhd_pub_t *pub, int ifidx, dhd_ioctl_t *ioc, void *data_buf)
+        {
+            bcmerror = dhd_wl_ioctl(pub, ifidx, (wl_ioctl_t *)ioc, data_buf, buflen);
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+dhd_common.c
+->  {
+        int dhd_wl_ioctl_cmd(dhd_pub_t *dhd_pub, int cmd, void *arg, int len, uint8 set, int ifidx)
+        {
+            wl_ioctl_t ioc;
+
+            ioc.cmd = cmd;
+            ioc.buf = arg;
+            ioc.len = len;
+            ioc.set = set;
+
+            return dhd_wl_ioctl(dhd_pub, ifidx, &ioc, arg, len);
+        }
+
+        int dhd_wl_ioctl(dhd_pub_t *dhd_pub, int ifidx, wl_ioctl_t *ioc, void *buf, int len)
+        {
+            if (dhd_os_proto_block(dhd_pub))
+            {
+        #ifdef DHD_LOG_DUMP
+                int slen, i, val, rem, lval, min_len;
+                char *pval, *pos, *msg;
+                char tmp[64];
+
+                /* WLC_GET_VAR */
+                if (ioc->cmd == WLC_GET_VAR) {
+                    min_len = MIN(sizeof(tmp) - 1, strlen(buf));
+                    memset(tmp, 0, sizeof(tmp));
+                    bcopy(buf, tmp, min_len);
+                    tmp[min_len] = '\0';
+                }
+        #endif /* DHD_LOG_DUMP */
+        }
+    }
+
+

@@ -1296,6 +1296,21 @@ dhd_sdio.c
 --------------------------------------------------------------------------------------------------------->
 dhd_linux.c
 ->  {
+    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 31))
+        static struct net_device_ops dhd_ops_pri = {
+            .ndo_open = dhd_open,
+            .ndo_stop = dhd_stop,
+            .ndo_get_stats = dhd_get_stats,
+            .ndo_do_ioctl = dhd_ioctl_entry,
+            .ndo_start_xmit = dhd_start_xmit,
+            .ndo_set_mac_address = dhd_set_mac_address,
+    #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
+            .ndo_set_rx_mode = dhd_set_multicast_list,
+    #else
+            .ndo_set_multicast_list = dhd_set_multicast_list,
+    #endif
+        };
+
         int dhd_register_if(dhd_pub_t *dhdp, int ifidx, bool need_rtnl_lock)
         {
             /* Ok, link into the network layer... */
@@ -1750,4 +1765,136 @@ fail:
                 up(&escan->event_tsk.sema);                                 // up escan->event_tsk信号量
             }
         }
+    }
+---------------------------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        static int dhd_ioctl_entry(struct net_device *net, struct ifreq *ifr, int cmd)
+        {
+            ifidx = dhd_net2idx(dhd, net);
+            DHD_TRACE(("%s: ifidx %d, cmd 0x%04x\n", __FUNCTION__, ifidx, cmd));
+
+        #if defined(WL_WIRELESS_EXT)
+            /* linux wireless extensions */
+            if ((cmd >= SIOCIWFIRST) && (cmd <= SIOCIWLAST)) {
+                /* may recurse, do NOT lock */
+                ret = wl_iw_ioctl(net, ifr, cmd);
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                DHD_OS_WAKE_UNLOCK(&dhd->pub);
+                return ret;
+            }
+        #endif /* defined(WL_WIRELESS_EXT) */
+        
+            if (cmd == SIOCDEVPRIVATE+1) {
+                ret = wl_android_priv_cmd(net, ifr, cmd);
+                dhd_check_hang(net, &dhd->pub, ret);
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                DHD_OS_WAKE_UNLOCK(&dhd->pub);
+                return ret;
+            }
+
+            bcmerror = dhd_ioctl_process(&dhd->pub, ifidx, &ioc, local_buf);
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------
+wl_android.c
+->  {
+        int wl_android_priv_cmd(struct net_device *net, struct ifreq *ifr, int cmd)
+        {
+            bytes_written = wl_handle_private_cmd(net, command, priv_cmd.total_len);
+        }
+        ->  {
+                int wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
+                {
+                    if (strnicmp(command, CMD_START, strlen(CMD_START)) == 0) {
+                        ANDROID_INFO(("%s, Received regular START command\n", __FUNCTION__));
+                #ifdef  BT_OVER_SDIO
+                        bytes_written = dhd_net_bus_get(net);
+                #else
+                        bytes_written = wl_android_wifi_on(net);
+                #endif /* BT_OVER_SDIO */
+                    }
+                    else if (strnicmp(command, CMD_BTCOEXMODE, strlen(CMD_BTCOEXMODE)) == 0) {
+                #ifdef WL_CFG80211
+                        void *dhdp = wl_cfg80211_get_dhdp(net);
+                        bytes_written = wl_cfg80211_set_btcoex_dhcp(net, dhdp, command);
+                #else
+                #ifdef PKT_FILTER_SUPPORT
+                        uint mode = *(command + strlen(CMD_BTCOEXMODE) + 1) - '0';
+
+                        if (mode == 1)
+                            net_os_enable_packet_filter(net, 0); /* DHCP starts */
+                        else
+                            net_os_enable_packet_filter(net, 1); /* DHCP ends */
+                #endif /* PKT_FILTER_SUPPORT */
+                #endif /* WL_CFG80211 */
+                    }
+                    else if (strnicmp(command, CMD_SETSUSPENDMODE, strlen(CMD_SETSUSPENDMODE)) == 0) {
+                        bytes_written = wl_android_set_suspendmode(net, command, priv_cmd.total_len);
+                    }
+                }
+            }
+
+        static int wl_android_set_suspendmode(struct net_device *dev, char *command, int total_len)
+        {
+            int ret = 0;
+
+        #if !defined(CONFIG_HAS_EARLYSUSPEND) || !defined(DHD_USE_EARLYSUSPEND)
+            int suspend_flag;
+
+            suspend_flag = *(command + strlen(CMD_SETSUSPENDMODE) + 1) - '0';
+            if (suspend_flag != 0)
+                suspend_flag = 1;
+
+            if (!(ret = net_os_set_suspend(dev, suspend_flag, 0)))
+                ANDROID_INFO(("%s: Suspend Mode %d\n", __FUNCTION__, suspend_flag));
+            else
+                ANDROID_ERROR(("%s: failed %d\n", __FUNCTION__, ret));
+        #endif
+
+            return ret;
+        }
+    }
+----------------------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        int net_os_set_suspend(struct net_device *dev, int val, int force)
+        {
+            int ret = 0;
+            dhd_info_t *dhd = DHD_DEV_INFO(dev);
+
+            if (dhd) {
+        #if defined(CONFIG_HAS_EARLYSUSPEND) && defined(DHD_USE_EARLYSUSPEND)
+                ret = dhd_set_suspend(val, &dhd->pub);
+        #else
+                ret = dhd_suspend_resume_helper(dhd, val, force);
+        #endif
+        #ifdef WL_CFG80211
+                wl_cfg80211_update_power_mode(dev);
+        #endif
+            }
+            return ret;
+        }
+        ->  {
+                static int dhd_suspend_resume_helper(struct dhd_info *dhd, int val, int force)
+                {
+                    dhd_pub_t *dhdp = &dhd->pub;
+                    int ret = 0;
+
+                    DHD_OS_WAKE_LOCK(dhdp);
+                    DHD_PERIM_LOCK(dhdp);
+
+                    /* Set flag when early suspend was called */
+                    dhdp->in_suspend = val;
+                    if ((force || !dhdp->suspend_disable_flag) &&
+                            (dhd_support_sta_mode(dhdp) || dhd_conf_get_ap_mode_in_suspend(dhdp)))
+                    {
+                        ret = dhd_set_suspend(val, dhdp);
+                    }
+
+                    DHD_PERIM_UNLOCK(dhdp);
+                    DHD_OS_WAKE_UNLOCK(dhdp);
+                    return ret;
+                }
+            }
     }

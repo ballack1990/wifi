@@ -412,16 +412,48 @@ WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\servic
     ->  {
             class DriverStartedState extends State {
                 public void enter() {
-                    if (mOperationalMode != CONNECT_MODE) 
+                    if (mOperationalMode != CONNECT_MODE) {
+                        mWifiNative.disconnect();
+                        mWifiConfigStore.disableAllNetworks();
+                        if (mOperationalMode == SCAN_ONLY_WITH_WIFI_OFF_MODE) {
+                            setWifiState(WIFI_STATE_DISABLED);
+                        }
                         transitionTo(mScanModeState);
-                    else
+                    } else {
+
+                        // Status pulls in the current supplicant state and network connection state
+                        // events over the monitor connection. This helps framework sync up with
+                        // current supplicant state
+                        // TODO: actually check th supplicant status string and make sure the supplicant
+                        // is in disconnecte4d state.
+                        mWifiNative.status();
+                        // Transitioning to Disconnected state will trigger a scan and subsequently AutoJoin
                         transitionTo(mDisconnectedState);
+                    }
+
+                    // We may have missed screen update at boot
+                    if (mScreenBroadcastReceived.get() == false) {
+                        PowerManager powerManager = (PowerManager)mContext.getSystemService(
+                                Context.POWER_SERVICE);
+                        handleScreenStateChanged(powerManager.isScreenOn(),
+                                /* startBackgroundScanIfNeeded = */ false);
+                    } else {
+                        // Set the right suspend mode settings
+                        mWifiNative.setSuspendOptimizations(mSuspendOptNeedsDisabled == 0
+                                && mUserWantsSuspendOpt.get());
+                    }
+                    mWifiNative.setPowerSave(true);             // scan之前打开power save功能 ？？？
 
                     if (mP2pSupported) {                         //注意这里， 如果是支持wifi direct的话会在这里发送CMD_ENABLE_P2P命令！！
                         if (mOperationalMode == CONNECT_MODE) {
                             mWifiP2pChannel.sendMessage(WifiStateMachine.CMD_ENABLE_P2P);
                         }
                     }
+
+                    final Intent intent = new Intent(WifiManager.WIFI_SCAN_AVAILABLE);
+                    intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
+                    intent.putExtra(WifiManager.EXTRA_SCAN_AVAILABLE, WIFI_STATE_ENABLED);
+                    mContext.sendStickyBroadcastAsUser(intent, UserHandle.ALL);
                 }
             }
         }  
@@ -863,9 +895,9 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
         ->  {
                 static int wpa_driver_nl80211_scan(struct i802_bss *bss,
 				   struct wpa_driver_scan_params *params) {
-                    msg = nl80211_scan_common(drv, NL80211_CMD_TRIGGER_SCAN, params,
+                    msg = nl80211_scan_common(drv, NL80211_CMD_TRIGGER_SCAN, params,        
                             bss->wdev_id_set ? &bss->wdev_id : NULL);
-                    ret = send_and_recv_msgs(drv, msg, NULL, NULL);
+                    ret = send_and_recv_msgs(drv, msg, NULL, NULL);                     // 向nl80211.c发送NL80211_CMD_TRIGGER_SCAN消息
 
                     drv->scan_state = SCAN_REQUESTED;
 

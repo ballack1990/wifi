@@ -540,7 +540,7 @@ Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\co
                         switch (message.what) {
                             case CMD_TETHER_REQUESTED:
                                 setLastError(ConnectivityManager.TETHER_ERROR_NO_ERROR);
-                                mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_REQUESTED,
+                                mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_REQUESTED,   // 注意！这里是给mTetherMasterSM发消息!
                                         TetherInterfaceSM.this);
                                 transitionTo(mStartingState);
                                 break;
@@ -734,7 +734,7 @@ TetherController.cpp (z:\home\ballack\prj\rk3288\system\netd\server)
         }
     }
 -------------------------------------------------------------------------------------------------------------------
-接着继续 transitionTo(mStartingState);的流程：
+接着继续TetherInterfaceSM的 transitionTo(mStartingState);的流程：
 
 Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server\connectivity)
 ->  {
@@ -831,6 +831,62 @@ public WifiStateMachine(Context context, String wlanInterface, WifiTrafficPoller
             }
         },new IntentFilter(ConnectivityManager.ACTION_TETHER_STATE_CHANGED));
 }
+----------------------------------------------------------------------------------------------------------------------
+Tethering.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server\connectivity)
+->  {
+        private void sendTetherStateChangedBroadcast() {
+            synchronized (mPublicSync) {
+                Set ifaces = mIfaces.keySet();
+                for (Object iface : ifaces) {
+                    TetherInterfaceSM sm = mIfaces.get(iface);
+                    if (sm != null) {
+                        if (sm.isErrored()) {
+                            erroredList.add((String)iface);
+                        } else if (sm.isAvailable()) {
+                            availableList.add((String)iface);
+                        } else if (sm.isTethered()) {
+                            if (isUsb((String)iface)) {
+                                usbTethered = true;
+                            } else if (isWifi((String)iface)) {
+                                wifiTethered = true;
+                            } else if (isBluetooth((String)iface)) {
+                                bluetoothTethered = true;
+                            }
+                            activeList.add((String)iface);
+                        }
+                    }
+                }
+            }
+            Intent broadcast = new Intent(ConnectivityManager.ACTION_TETHER_STATE_CHANGED);
+            broadcast.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING |
+                    Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
+            broadcast.putStringArrayListExtra(ConnectivityManager.EXTRA_AVAILABLE_TETHER,
+                    availableList);
+            broadcast.putStringArrayListExtra(ConnectivityManager.EXTRA_ACTIVE_TETHER, activeList);
+            broadcast.putStringArrayListExtra(ConnectivityManager.EXTRA_ERRORED_TETHER,
+                    erroredList);
+            mContext.sendStickyBroadcastAsUser(broadcast, UserHandle.ALL);              // 发送ACTION_TETHER_STATE_CHANGED广播
+
+            if (usbTethered) {
+                if (wifiTethered || bluetoothTethered) {
+                    showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_general);
+                } else {
+                    showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_usb);
+                }
+            } else if (wifiTethered) {
+                if (bluetoothTethered) {
+                    showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_general);
+                } else {
+                    /* We now have a status bar icon for WifiTethering, so drop the notification */
+                    clearTetheredNotification();
+                }
+            } else if (bluetoothTethered) {
+                showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_bluetooth);
+            } else {
+                clearTetheredNotification();
+            }
+        }
+    }
 ---------------------------------------------------------------------------------------------------------------------->
 NetworkManagementService.java (z:\home\ballack\prj\rk3288\frameworks\base\services\core\java\com\android\server)
 ->  {

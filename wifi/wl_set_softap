@@ -1,0 +1,21 @@
+
+Init:
+wl down
+wl arp_ol 0
+wl arpoe 0
+wl mpc 0
+wl apsta 0
+wl ap 1
+
+Enable:
+wl mpc 0
+wl up
+wl chanspec 1
+wl ssid "ttt"
+wl up
+
+Disable:
+wl deauthenticate
+wl down
+wl ssid ""
+wl mpc 1
