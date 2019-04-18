@@ -1,0 +1,17 @@
+dhd_priv isam_init mode ap
+dhd_priv isam_config ifname wlan0 ssid tttv_ap chan 6 amode [open|wpa2psk] emode [none|aes] key [xxxxx]
+dhd_priv isam_enable ifname wlan0
+ifconfig wlan0 192.168.2.1
+
+
+dhd_priv isam_config ifname wlan0 ssid tttv_ap chan 6 amode open emode none
+dhd_priv isam_config ifname wlan1 ssid ttt_ap chan 36 amode open emode none
+
+
+driver版本差異，改為iapsta_init, iapsta_config, iapsta_enable, iapsta_disable
+
+
+dhd_priv iapsta_init mode ap
+dhd_priv iapsta_config ifname wlan0 ssid tttv_ap chan 6 amode [open|wpa2psk] emode [none|aes] key [xxxxx]
+dhd_priv iapsta_enable ifname wlan0
+ifconfig wlan0 192.168.2.1

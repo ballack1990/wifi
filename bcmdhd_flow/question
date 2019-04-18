@@ -1,0 +1,266 @@
+1, 正常打开wifi后， 会有如下进程出现：
+
+root      1562  2     0      0     c005af4c 00000000 S wl_escan_handle
+root      1563  2     0      0     c005af4c 00000000 S dhd_watchdog_thread
+root      1564  2     0      0     c005af4c 00000000 S dhd_dpc
+root      1565  2     0      0     c005af4c 00000000 S dhd_rxf
+root      1570  2     0      0     c0557bc8 00000000 S ksdioirqd/mmc1
+root      1571  2     0      0     c005af4c 00000000 S wl_event_handle
+
+请解释下分别的意义 。 
+
+
+cfg80211 -> escan  有一个AP就发送一个上来。
+wext  wl_iw.c -> iscan  所有AP一起送上来
+---------------------------------------------------------------------------------------
+
+2, ENABLE_INSMOD_NO_FW_LOAD 的具体意义。 
+
+从字面上来看， 这个宏是允许insmod的时候不需要加载fw， 也就是说不需要指定fw。
+但是从代码流程上并没有体现出来， 这个如何理解的 ？ 
+
+---------------------------------------------------------------------------------------
+
+3, wifi模组中使用的sdio fun0 fun1 fun2分别功能是什么？ 
+   从driver来看， fun0是和寄存器相关，比如状态等， bcmsdh_cfg_read(bus->sdh, SDIO_FUNC_0, SDIOD_CCCR_INTPEND, NULL);？  
+   fun1主要用于下载fw 和 nvram ？ 
+sdioh_start
+->  {
+            /* Need to do this stages as we can't enable the interrupt till
+               downloading of the firmware is complete, other wise polling
+               sdio access will come in way
+             */
+            if (sd->func[0]) {
+                if (stage == 0) {
+                    /* Since the power to the chip is killed, we will have              // 之前wifi掉过电，这里要重新设置sdio block size
+                       re enumerate the device again. Set the block size                // 并使能funtion 1以便下载代码？     
+                       and enable the fucntion 1 for in preparation for
+                       downloading the code
+                     */
+                    /* sdio_reset_comm() - has been fixed in latest kernel/msm.git for Linux
+                       2.6.27. The implementation prior to that is buggy, and needs broadcom's
+                       patch for it
+                     */
+        /**************************************************************************************************************************************
+            sdio_reset_comm函数会有类似如下打印：             
+            mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 200000Hz, actual 200000HZ div = 125)
+            rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 400000Hz for init[mmc2]
+            mmc2: queuing unknown CIS tuple 0x80 (2 bytes)
+            mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+            mmc2: queuing unknown CIS tuple 0x80 (3 bytes)
+            mmc2: queuing unknown CIS tuple 0x80 (7 bytes)
+            mmc_host mmc2: Bus speed (slot 0) = 50000000Hz (slot req 50000000Hz, actual 50000000HZ div = 0)
+            rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc2]
+        **************************************************************************************************************************************/
+                    if ((ret = sdio_reset_comm(sd->func[0]->card))) {
+                        sd_err(("%s Failed, error = %d\n", __FUNCTION__, ret));
+                        return ret;
+                    }
+        
+    }
+
+
+而fun2 主要用于数据通信？ 
+   关于sdio driver的部分， 我们需要多了解一些什么内容, 比如上次遇到的polling mode？ 
+
+---------------------------------------------------------------------------------------
+
+4, driver insmod的时候调用了 wl_init_priv, 在该函数里面调用了wl_init_scan
+    而在driver open的时候 ， __wl_cfg80211_up 函数中也调用了 wl_init_scan , 
+    请问在insmod的时候初始化scan的处理函数有何意义？
+
+wl_init_scan函数定义如下： 
+static s32 wl_init_scan(struct bcm_cfg80211 *cfg)
+{
+	int err = 0;
+
+	cfg->evt_handler[WLC_E_ESCAN_RESULT] = wl_escan_handler;
+	cfg->escan_info.escan_state = WL_ESCAN_STATE_IDLE;
+	wl_escan_init_sync_id(cfg);
+
+	/* Init scan_timeout timer */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+	timer_setup(&cfg->scan_timeout, wl_scan_timeout, 0);
+#else
+	init_timer(&cfg->scan_timeout);
+	cfg->scan_timeout.data = (unsigned long) cfg;
+	cfg->scan_timeout.function = wl_scan_timeout;
+#endif
+
+	return err;
+}
+
+---------------------------------------------------------------------------------------
+
+5, dhd_watchdog_thread 中调用了dhd_bus_watchdog, 而dhd_watchdog中也调用了dhd_bus_watchdog , 这两者是什么关系？ 
+
+dhd_attach
+->  {
+    #ifndef BCMDBUS
+        /* Set up the watchdog timer */
+    #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+        timer_setup(&dhd->timer, dhd_watchdog, 0);
+    #else
+        init_timer(&dhd->timer);
+        dhd->timer.data = (ulong)dhd;
+        dhd->timer.function = dhd_watchdog;
+    #endif
+        dhd->default_wd_interval = dhd_watchdog_ms;
+
+        if (dhd_watchdog_prio >= 0) {
+            /* Initialize watchdog thread */
+            PROC_START(dhd_watchdog_thread, dhd, &dhd->thr_wdt_ctl, 0, "dhd_watchdog_thread");
+            if (dhd->thr_wdt_ctl.thr_pid < 0) {
+                goto fail;
+            }
+
+        } else {
+            dhd->thr_wdt_ctl.thr_pid = -1;
+        }
+    }
+
+----------------------------------------------------------------------------------------------------------------
+dhd_poll作用是如果配置了oob， 并且oob中断不起作用的时候会采用轮询的方式读取FUN1 和 FUN2的状态, 从而判断是否有数据可读取？
+主要体现在dhd_watchdog_thread。
+
+static int
+dhd_watchdog_thread(void *data)
+{
+    while (1) {
+        if (down_interruptible (&tsk->sema) == 0) {
+            if (dhd->pub.dongle_reset == FALSE) {
+                DHD_TIMER(("%s:\n", __FUNCTION__));
+                dhd_bus_watchdog(&dhd->pub);
+
+                /* Reschedule the watchdog */
+                if (dhd->wd_timer_valid) {
+                    mod_timer(&dhd->timer,
+                            jiffies +
+                            msecs_to_jiffies(dhd_watchdog_ms) -
+                            min(msecs_to_jiffies(dhd_watchdog_ms), time_lapse));
+                }
+            }
+        }
+    }
+}
+->  {
+        extern bool dhd_bus_watchdog(dhd_pub_t *dhdp)
+        {
+            if (1 && (bus->poll && (++bus->polltick >= bus->pollrate))) {
+                uint32 intstatus = 0;
+
+                /* Reset poll tick */
+                bus->polltick = 0;
+
+                /* Check device if no interrupts */
+                if (!bus->intr || (bus->intrcount == bus->lastintrs)) {
+
+                    if (!bus->dpc_sched) {
+                        uint8 devpend;
+                        devpend = bcmsdh_cfg_read(bus->sdh, SDIO_FUNC_0,
+                                SDIOD_CCCR_INTPEND, NULL);
+                        intstatus = devpend & (INTR_STATUS_FUNC1 | INTR_STATUS_FUNC2);
+                    }
+
+                    /* If there is something, make like the ISR and schedule the DPC */
+                    if (intstatus) {
+                        bus->pollcnt++;
+                        bus->ipend = TRUE;
+                        if (bus->intr) {
+                            bcmsdh_intr_disable(bus->sdh);
+                        }
+                        bus->dpc_sched = TRUE;
+                        dhd_sched_dpc(bus->dhd);
+                    }
+                }
+
+                /* Update interrupt tracking */
+                bus->lastintrs = bus->intrcount;
+            }
+
+            if ((!bus->dpc_sched) && pktq_len(&bus->txq)) {
+                bus->dpc_sched = TRUE;
+                dhd_sched_dpc(bus->dhd);
+            }
+        }
+    }
+
+-------------------------------------------------------------------------------------------
+那代码中dhd_dpcpoll这个功能是 ？
+
+dhdsdio_dpc
+->  {
+        /* On frame indication, read available frames */
+        if (PKT_AVAILABLE(bus, intstatus)) {
+
+            framecnt = dhdsdio_readframes(bus, rxlimit, &rxdone);               // 调用 dhdsdio_readframes 函数
+            if (rxdone || bus->rxskip)
+                intstatus  &= ~FRAME_AVAIL_MASK(bus);
+            rxlimit -= MIN(framecnt, rxlimit);
+        }
+
+        if (!resched) {
+            /* Re-enable interrupts to detect new device events (mailbox, rx frame)
+             * or clock availability.  (Allows tx loop to check ipend if desired.)
+             * (Unless register access seems hosed, as we may not be able to ACK...)
+             */
+            if (bus->dhd->conf->oob_enabled_later && bus->intr && bus->intdis && !bcmsdh_regfail(sdh)) {
+                DHD_INTR(("%s: enable SDIO interrupts, rxdone %d framecnt %d\n",
+                            __FUNCTION__, rxdone, framecnt));
+                bus->intdis = FALSE;
+#if defined(OOB_INTR_ONLY)
+                bcmsdh_oob_intr_set(bus->sdh, TRUE);
+#endif /* defined(OOB_INTR_ONLY) */
+                bcmsdh_intr_enable(sdh);
+            }
+            if (dhd_dpcpoll) {                                                  // 如果打开轮询机制dhd_dpcpoll ?????
+                if (dhdsdio_readframes(bus, dhd_rxbound, &rxdone) != 0) {       // 调用 dhdsdio_readframes 函数
+                    resched = TRUE;
+#ifdef DEBUG_DPC_THREAD_WATCHDOG
+                    is_resched_by_readframe = TRUE;
+#endif /* DEBUG_DPC_THREAD_WATCHDOG */
+                }
+            }
+        }
+    }
+--------------------------------------------------------------------------------------
+
+6, 代码中dpc_sched的作用， tx和rx直接是如何协调资源的？ 
+
+--------------------------------------------------------------------------------------
+
+7 讲解下休眠唤醒的流程 
+
+--------------------------------------------------------------------------------------
+
+8, 关于CUSTOM_SDIO_F2_BLKSIZE的大小设置， 有些driver是128, 而有些是256，应该根据什么情况设置？
+
+---------------------------------------------------------------------------------------
+
+9, 关于1.201 / 1.363 / 1.579的 driver版本差异，应该如何根据kernel版本选择适配？ 
+
+---------------------------------------------------------------------------------------
+
+10, DHD_USE_STATIC_CTRLBUF 什么时候需要自定义？ 功能是什么？ 
+
+---------------------------------------------------------------------------------------
+
+11, wifi mesh功能如何使用？ 
+
+--------------------------------------------------------------------------------------
+
+12， 和蓝牙共存问题
+
+---------------------------------------------------------------------------------------
+driver  hw_oob
+nvram muxenab=0x10 配合使用
+
+fw有数据上来，触发WL_HOST_WAKE中断， 此时WL_HOST_WAKE维持在高电平
+ISR ->  dhd_dpc - > clear isr ->   WL_HOST_WAKE才会变成低电平
+
+
+
+scatter gather
+pktchain error -> copy mode
+
+
