@@ -756,4 +756,126 @@ Cfg.c (net\mac80211)
             return 0;
         }
     }
+-----------------------------------------------------------------------------------------------------------------
+WifiNative.reconnect()的处理：
+
+Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        char * wpa_supplicant_ctrl_iface_process(struct wpa_supplicant *wpa_s,
+                char *buf, size_t *resp_len)
+        {
+            if (os_strcmp(buf, "RECONNECT") == 0) {
+                if (wpa_s->wpa_state == WPA_INTERFACE_DISABLED)
+                    reply_len = -1;
+                else if (wpa_s->disconnected)
+                    wpas_request_connection(wpa_s);
+            }
+        }
+    }
+------------------------------------------------------------------------------------------
+Wpa_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        void wpas_request_connection(struct wpa_supplicant *wpa_s)
+        {
+            wpa_s->normal_scans = 0;
+            wpa_supplicant_reinit_autoscan(wpa_s);
+            wpa_s->extra_blacklist_count = 0;
+            wpa_s->disconnected = 0;
+            wpa_s->reassociate = 1;
+
+            if (wpa_supplicant_fast_associate(wpa_s) != 1)
+                wpa_supplicant_req_scan(wpa_s, 0, 0);
+        }
+    }
+-------------------------------------------------------------------------------------------
+Events.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        int wpa_supplicant_fast_associate(struct wpa_supplicant *wpa_s)
+        {
+        #ifdef CONFIG_NO_SCAN_PROCESSING
+            return -1;
+        #else /* CONFIG_NO_SCAN_PROCESSING */
+            struct os_reltime now;
+
+            if (wpa_s->last_scan_res_used <= 0)
+                return -1;
+
+            os_get_reltime(&now);
+            if (os_reltime_expired(&now, &wpa_s->last_scan, 5)) {
+                wpa_printf(MSG_DEBUG, "Fast associate: Old scan results");
+                return -1;
+            }
+
+            return wpas_select_network_from_last_scan(wpa_s, 0, 1);
+        #endif /* CONFIG_NO_SCAN_PROCESSING */
+        }
+        ->  {
+                static int wpas_select_network_from_last_scan(struct wpa_supplicant *wpa_s,
+                        int new_scan, int own_request)
+                {   
+                    selected = wpa_supplicant_pick_network(wpa_s, &ssid);
+                    if (selected) {
+                        int skip;
+                        skip = !wpa_supplicant_need_to_roam(wpa_s, selected, ssid);
+                        if (skip) {
+                            if (new_scan)
+                                wpa_supplicant_rsn_preauth_scan_results(wpa_s);
+                            return 0;
+                        }
+
+                        if (wpa_supplicant_connect(wpa_s, selected, ssid) < 0) {
+                            wpa_dbg(wpa_s, MSG_DEBUG, "Connect failed");
+                            return -1;
+                        }
+                        if (new_scan)
+                            wpa_supplicant_rsn_preauth_scan_results(wpa_s);
+                        /*
+                         * Do not notify other virtual radios of scan results since we do not
+                         * want them to start other associations at the same time.
+                         */
+                        return 1;
+                    }
+                    else {
+                        wpa_dbg(wpa_s, MSG_DEBUG, "No suitable network found");
+                        ssid = wpa_supplicant_pick_new_network(wpa_s);
+                        if (ssid) {
+                            wpa_dbg(wpa_s, MSG_DEBUG, "Setup a new network");
+                            wpa_supplicant_associate(wpa_s, NULL, ssid);
+                            if (new_scan)
+                                wpa_supplicant_rsn_preauth_scan_results(wpa_s);
+                        } else if (own_request) {
+                            /*
+                             * No SSID found. If SCAN results are as a result of
+                             * own scan request and not due to a scan request on
+                             * another shared interface, try another scan.
+                             */
+                        }
+                    #ifdef CONFIG_P2P
+                        if (wpas_p2p_scan_no_go_seen(wpa_s) == 1)
+                            return 0;
+
+                        if (wpa_s->p2p_in_provisioning ||
+                                wpa_s->show_group_started ||
+                                wpa_s->p2p_in_invitation) {
+                            /*
+                             * Use shorter wait during P2P Provisioning
+                             * state and during P2P join-a-group operation
+                             * to speed up group formation.
+                             */
+                            timeout_sec = 0;
+                            timeout_usec = 250000;
+                            wpa_supplicant_req_new_scan(wpa_s, timeout_sec,
+                                    timeout_usec);
+                            return 0;
+                        }
+                    #endif /* CONFIG_P2P */
+                        if (wpa_supplicant_req_sched_scan(wpa_s))
+                            wpa_supplicant_req_new_scan(wpa_s, timeout_sec,             // 触发scan机制
+                                    timeout_usec);
+                    }
+                }
+            }
+    }
+
+
 

@@ -1,1 +1,0 @@
-wpa_cli ifname=wlan0 log_level DEBUG
