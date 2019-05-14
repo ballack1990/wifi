@@ -1,0 +1,31 @@
+GO Client角色的协商过程
+
+ 协商参数 
+协商过程中，GO、Client角色由两个参数确定： 
+Intent：作为GO的优先级； 
+breaker：在Intent相同是，用于判定谁做GO； 
+Intent的取值范围为：0~1(#define P2P_MAX_GO_INTENT 15) 
+该Intent初始化时为0，在每次P2P_CONNECT时，由上层传下来，android系统下，java层默认为6，该定义在： 
+/frameworks/opt/net/wifi/service/java/com/android/server/wifi/WifiNative.java 
+private static final int DEFAULT_GROUP_OWNER_INTENT = 6; 
+在协商时，谁的Intent值大，谁就作为GO；如果一端指定Intent值为15（P2P_MAX_GO_INTENT）那这端是GO，如果两端都指定Intent为15，那这次的协商就会失败。在协商两端的值都不为15，并且值相等的情况下，就要breaker的值进行判定谁做GO了。 
+breaker的值只有0或1，该值在初始化时采用随机生成： 
+if (os_get_random(&p2p->next_tie_breaker, 1) < 0) 
+p2p->next_tie_breaker = 0; 
+p2p->next_tie_breaker &= 0x01;
+
+dev->tie_breaker = p2p->next_tie_breaker; 
+p2p->next_tie_breaker = !p2p->next_tie_breaker; 
+breaker值在每次发起P2P_CONNECT时都取反一次，这样做的目的是在双方的Intent值相同的情况下，多次协商时，双方都有机会做GO。并且在发送Request时才填入自己的breaker值，在回应Response时，是把对方的breaker值取反后作为breaker值发送。 
+在协商流程中，由第二次Request/Response的Intent、breaker值决定谁做GO，这是谁的Intent（非15的情况下）值大谁就做GO，当Intent值相同时，这时由发送Request端的breaker值确定谁做GO，当发送Request端的breaker的值为1时，发送Request端作为GO，反之则作为Client。接收Request端的就刚好相反。
+
+ 参数在协商阶段的作用 
+这里结合图1进行说明： 
+1、 A发送Request给B，该Request包含A的Intent、breaker值； 
+2、 B收到Request后，由于B还没准备好，回应一个Response给A，该Response中包含B的Intent值，同时把A的breaker值取反作为breaker填入Response中。在wifi打开的首次接受P2P连接时，由于B上层还没有调用过P2P_CONNECT，这时的Intent值为0，但这次的Intent值不影响最后的GO、Client判定； 
+3、 上面个这个回合的Request/Response不做GO、Client判定； 
+4、 B发送Request给A，该Request包含A的Intent、breaker值； 
+5、 A收到Request后，回应一个Response给B，该Response中包含A的Intent值，同时把B的breaker值取反作为breaker填入Response中； 
+6、 在这回合的Request/Response中，就决定了谁做GO，谁的Intent（非15的情况下）值大谁就做GO，在Intent相同的情况下，若B的breaker值为1，则B做GO，若B的breaker值为0，则B做Client，A的角色则刚好与B相反；
+
+可以看到，最终的GO、Client角色是在第二回合的Request/Response中决定的。

@@ -1,0 +1,63 @@
+root@firefly-rk3288:/data # <3>[  137.965785] win[2]->area[1],not support scale
+<3>[  137.965825] xact=18,yact=28,xsize=19,ysize=28
+<4>[  140.302385] hjc:hp_det_irq_handler>>>>
+<4>[  140.394070] hjc:hp_detect_do_switch,irq=194
+<4>[  140.394093] mic_state_switch 0
+<4>[  140.394099] hp_det = 0,insert hp
+<4>[  140.394103] hp mic use intern
+<4>[  141.822439] wl_run_escan: LEGACY_SCAN
+<4>[  145.812750] wl_run_escan: LEGACY_SCAN
+<4>[  151.681218] wl_run_escan: LEGACY_SCAN
+<6>[  163.337373] CFG80211-ERROR) wl_escan_handler : ACTION FRAME SCAN : Peer 16:a5:1a:fd:72:c0 found, channel : 1
+<6>[  163.337820] CFG80211-ERROR) wl_escan_handler : escan is not ready ndev c583e000 drv_status 0x0 e_type 69 e_states 4
+<6>[  163.355690] CFG80211-ERROR) wl_notify_rx_mgmt_frame : WLC_GET_BSSID error -17
+<4>[  163.362114] dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+<4>[  163.362676] dhd_wlfc_init: query wlfc_mode succeed, fw_caps=0x1c
+<4>[  163.363214] dhd_wlfc_init(): wlfc_mode=0x1c, ret=0
+<4>[  163.363525] dhd_wlfc_enable: ret=0
+<3>[  163.364999] ANDROID-MSG) wl_ext_iapsta_attach_netdev: ifidx=1, bssidx=2
+<4>[  163.366120] Register interface [p2p-wlan0-0]  MAC: ae:83:f3:ee:40:98
+<4>[  163.366120] 
+<6>[  163.367887] CFG80211-ERROR) wl_cfg80211_add_virtual_iface :  virtual interface(p2p-wlan0-0) is created net attach done
+<6>[  163.367901] CFG80211-ERROR) dhd_cfg80211_set_p2p_info : Set : op_mode=0x0025
+<6>[  164.422351] CFG80211-ERROR) wl_escan_handler : ACTION FRAME SCAN : Peer 16:a5:1a:fd:72:c0 found, channel : 1
+<6>[  164.425749] CFG80211-ERROR) wl_escan_handler : escan is not ready ndev c583e000 drv_status 0x0 e_type 69 e_states 4
+<6>[  164.439494] CFG80211-ERROR) wl_notify_rx_mgmt_frame : WLC_GET_BSSID error -17
+<6>[  166.593528] CFG80211-ERROR) wl_notify_rx_mgmt_frame : WLC_GET_BSSID error -17
+<6>[  166.615590] CFG80211-ERROR) wl_notify_rx_mgmt_frame : WLC_GET_BSSID error -17
+<4>[  166.825475] wl_run_escan: LEGACY_SCAN
+<4>[  167.336050] wl_run_escan: LEGACY_SCAN
+<4>[  167.561873] Connectting with 16:a5:1a:fd:f2:c0 channel (1) ssid "DIRECT-Gy-Honor6X", len (17)
+<4>[  167.561873] 
+<4>[  167.575049] wl_bss_connect_done succeeded with 16:a5:1a:fd:f2:c0
+<6>[  167.575412] CFG80211-ERROR) wl_cfg80211_scan_abort : scan abort  failed 
+<4>[  167.579454] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAP Packet, Request, Identity
+<4>[  167.581667] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAP Packet, Response, Identity
+<4>[  167.585872] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAP Packet, WSC Start
+<4>[  167.630422] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAP Packet, WPS M1
+<4>[  167.657834] wl_bss_connect_done succeeded with 16:a5:1a:fd:f2:c0
+<4>[  167.659450] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAP Packet, WPS M2
+<4>[  167.684419] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAP Packet, WPS M3
+<4>[  167.690611] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAP Packet, WPS M4
+<4>[  167.692727] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAP Packet, WPS M5
+<4>[  167.699215] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAP Packet, WPS M6
+<4>[  167.701240] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAP Packet, WPS M7
+<4>[  167.708517] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAP Packet, WPS M8
+<4>[  167.713362] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAP Packet, WSC Done
+<4>[  167.739962] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: ver 2, type 0, replay 0
+<6>[  167.740920] CFG80211-ERROR) wl_cfg80211_disconnect : Reason 3
+<6>[  167.743779] cfg80211: Calling CRDA for country: CN
+<6>[  167.747263] CFG80211-ERROR) wl_is_linkdown : Link down Reason : WLC_E_LINK
+<4>[  167.747330] link down if p2p-wlan0-0 may call cfg80211_disconnected. event : 16, reason=2 from 16:a5:1a:fd:f2:c0
+<4>[  167.762663] Connectting with 16:a5:1a:fd:f2:c0 channel (1) ssid "DIRECT-Gy-Honor6X", len (17)
+<4>[  167.762663] 
+<4>[  167.775524] wl_bss_connect_done succeeded with 16:a5:1a:fd:f2:c0
+<6>[  167.775822] CFG80211-ERROR) wl_cfg80211_scan_abort : scan abort  failed 
+<4>[  167.778558] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAPOL Packet, 4-way handshake, M1
+<4>[  167.781945] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAPOL Packet, 4-way handshake, M2
+<4>[  167.788278] ETHER_TYPE_802_1X[p2p-wlan0-0] [RX]: EAPOL Packet, 4-way handshake, M3
+<4>[  167.789225] ETHER_TYPE_802_1X[p2p-wlan0-0] [TX]: EAPOL Packet, 4-way handshake, M4
+<4>[  167.859204] wl_bss_connect_done succeeded with 16:a5:1a:fd:f2:c0
+<4>[  168.211076] DHCP[p2p-wlan0-0] - REQUEST [TX] [REQUEST]
+<4>[  168.230137] DHCP[p2p-wlan0-0] - ACK [RX] [REPLY]
+<4>[  171.364373] wl_run_escan: LEGACY_SCAN

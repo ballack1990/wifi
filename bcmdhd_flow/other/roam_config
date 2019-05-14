@@ -1,0 +1,12 @@
+roam_off=0
+roam_trigger=-65
+roam_scan_period=10
+roam_delta=8
+fullroamperiod=20
+
+可以支持当rssi低于roam_triger时，就开始进行roaming scan，找到一个比目前rssi大roam_delta时，就开始进行roaming
+
+roam_scan_period: 指的是只会scan partial channel，至于是哪些channel我不是很清楚，可能是当下同一个ap的channel，或是包含其它少数的channel
+fullroamperiod: 指的是会对所有的channel scan
+
+partial channel我猜可能是 channel 1,6,11

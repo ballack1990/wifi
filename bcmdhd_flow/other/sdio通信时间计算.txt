@@ -1,0 +1,30 @@
+我们driver bcmsdh_sdmmc.c里面会调用一下这几个接口后把时间差计算出来的。
+
+sdioh_request_byte(sdioh_info_t *sd, uint rw, uint func, uint regaddr, uint8 *byte)
+{
+…
+sdio_writeb()
+sdio_f0_writeb()
+sdio_f0_readb()
+sdio_readb()
+sunxi_mci_check_r1_ready()
+
+sdioh_request_word(sdioh_info_t *sd, uint cmd_type, uint rw, uint func, uint addr,
+                                   uint32 *word, uint nbytes)
+{
+…
+sdio_writel()
+sdio_writew()
+sdio_readl()
+sdio_readw()
+sunxi_mci_check_r1_ready()
+
+sdioh_buffer_tofrom_bus(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
+                     uint addr, uint8 *buf, uint len)
+{
+…
+sdio_memcpy_toio()
+sdio_memcpy_toio()
+sdio_readsb()
+sdio_memcpy_fromio()
+sunxi_mci_check_r1_ready()

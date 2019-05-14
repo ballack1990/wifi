@@ -1,0 +1,19 @@
+01-01 12:08:06.409 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_FIND 120'
+01-01 12:08:15.273 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_STOP_FIND'
+01-01 12:08:15.281 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_PEER 16:a5:1a:fd:72:c0'
+01-01 12:08:15.289 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_PEER 16:a5:1a:fd:72:c0'
+01-01 12:08:15.300 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_PROV_DISC 16:a5:1a:fd:72:c0 pbc'
+01-01 12:08:15.696 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_PEER 16:a5:1a:fd:72:c0'
+01-01 12:08:15.698 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_CONNECT 16:a5:1a:fd:72:c0 pbc persistent go_intent=6 '
+
+
+01-01 12:08:20.255 D/wpa_supplicant( 1288): p2p-wlan0-0: Control interface command 'P2P_SET ps 0'
+01-01 12:08:20.255 D/wpa_supplicant( 1288): nl80211: set_p2p_powersave (legacy_ps=0 opp_ps=-1 ctwindow=-1)
+01-01 12:08:20.465 I/dhcpcd  ( 1383): version 5.5.6 starting
+01-01 12:08:20.550 I/dhcpcd  ( 1383): p2p-wlan0-0: rebinding lease of 192.168.49.213
+01-01 12:08:20.648 I/dhcpcd  ( 1383): p2p-wlan0-0: acknowledged 192.168.49.213 from 192.168.49.1
+01-01 12:08:20.689 I/dhcpcd  ( 1383): p2p-wlan0-0: leased 192.168.49.213 for 3600 seconds
+01-01 12:08:21.073 D/wpa_supplicant( 1288): p2p-wlan0-0: Control interface command 'P2P_SET ps 1'
+
+
+01-01 12:08:24.287 D/wpa_supplicant( 1288): p2p-dev-wlan0: Control interface command 'P2P_STOP_FIND'

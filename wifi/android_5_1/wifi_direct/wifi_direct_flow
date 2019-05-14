@@ -1,0 +1,707 @@
+SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)	
+->  {
+        private static final String WIFI_P2P_SERVICE_CLASS =
+            "com.android.server.wifi.p2p.WifiP2pService";
+
+        mSystemServiceManager.startService(WIFI_P2P_SERVICE_CLASS);
+    }
+------------------------------------------------------------------------------------------>
+WifiP2pService.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        final WifiP2pServiceImpl mImpl;
+
+        public WifiP2pService(Context context) {
+            super(context);
+            mImpl = new WifiP2pServiceImpl(context);
+        }
+
+        public void onStart() {
+            Log.i(TAG, "Registering " + Context.WIFI_P2P_SERVICE);
+            publishBinderService(Context.WIFI_P2P_SERVICE, mImpl);
+        }
+    }
+---------------------------------------------------------------------------------------------------------------------->
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        public WifiP2pServiceImpl(Context context) {
+            mP2pStateMachine = new P2pStateMachine(TAG, wifiP2pThread.getLooper(), mP2pSupported);
+            mP2pStateMachine.start();
+        }
+    }
+    ->  {
+            private class P2pStateMachine extends StateMachine {
+                if (p2pSupported) {
+                    setInitialState(mP2pDisabledState);
+                } else {
+                    setInitialState(mP2pNotSupportedState);
+                }
+            }
+        }
+wifi_direct的功能，首先是需要打开wifi，然后在选择wifi直连功能， 根据之前的知识可以知道，
+打开wifi的时候会向mP2pStateMachine发送CMD_ENABLE_P2P消息， 此时由mP2pDisabledState处理：
+class P2pDisabledState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {
+            case WifiStateMachine.CMD_ENABLE_P2P:
+                mNwService.setInterfaceUp(mInterface);
+                mWifiMonitor.startMonitoring();                 // 这里会向mP2pStateMachine发送SUP_CONNECTION_EVENT
+                transitionTo(mP2pEnablingState);
+        }
+    }
+}
+->  {
+        class P2pEnablingState extends State {
+            public boolean processMessage(Message message) {
+            switch (message.what) {
+                case WifiMonitor.SUP_CONNECTION_EVENT:
+                    transitionTo(mInactiveState);               // 切换到mInactiveState状态
+                    break;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------>
+WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
+->  {
+        public boolean onOptionsItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+                case MENU_ID_SEARCH:
+                    startSearch();
+                    return true;
+                case MENU_ID_RENAME:
+                    showDialog(DIALOG_RENAME);
+                    return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+    ->  {
+            private void startSearch() {
+                if (mWifiP2pManager != null && !mWifiP2pSearching) {
+                    mWifiP2pManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+                        public void onSuccess() {
+                            // 这里啥都不做！！！！
+                        }
+                        public void onFailure(int reason) {
+                            if (DBG) Log.d(TAG, " discover fail " + reason);
+                        }
+                    });
+                }
+            }
+        }
+---------------------------------------------------------------------------------------------------->
+WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi\p2p)	
+->  {
+        public void discoverPeers(Channel c, ActionListener listener) {
+            checkChannel(c);
+            c.mAsyncChannel.sendMessage(DISCOVER_PEERS, 0, c.putListener(listener));
+        }
+    }
+---------------------------------------------------------------------------------------------------->
+由前面的知识可以知道， WifiP2pServiceImpl的Handler会处理DISCOVER_PEERS消息：
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        private class ClientHandler extends Handler {
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case WifiP2pManager.DISCOVER_PEERS:
+                        mP2pStateMachine.sendMessage(Message.obtain(msg));
+                        break;
+                }
+            }
+    }
+
+由上面可知道，mP2pStateMachine当前处在mInactiveState状态， 那么由于其不处理DISCOVER_PEERS消息，故由其父类mP2pEnabledState处理：
+addState(mInactiveState, mP2pEnabledState);
+
+class P2pEnabledState extends State {
+    public boolean processMessage(Message message) {
+        switch (message.what) {   
+            case WifiP2pManager.DISCOVER_PEERS:
+                if (mWifiNative.p2pFind(DISCOVER_TIMEOUT_S)) {          // DISCOVER_TIMEOUT_S = 120, 这里会查找P2P设备，超时时间120s
+                    replyToMessage(message, WifiP2pManager.DISCOVER_PEERS_SUCCEEDED);
+                    sendP2pDiscoveryChangedBroadcast(true);
+                } else {
+                    replyToMessage(message, WifiP2pManager.DISCOVER_PEERS_FAILED,
+                            WifiP2pManager.ERROR);
+                }
+                break;
+        }
+    }
+}
+---------------------------------------------------------------------------------------------------------->
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean p2pFind(int timeout) {
+            if (timeout <= 0) {
+                return p2pFind();
+            }
+            return doBooleanCommand("P2P_FIND " + timeout);
+        }
+    }
+-------------------------------------------------------------------------------------------------->
+WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi\p2p)	
+->  {
+        class P2pHandler extends Handler {
+            public void handleMessage(Message message) {
+                case DISCOVER_PEERS_SUCCEEDED:
+                    if (listener != null) {
+                        ((ActionListener) listener).onSuccess();        // 上面可以看到， 返回去后啥都不做！！
+                    }
+                    break;
+                case RESPONSE_PEERS:                                    // 收到p2p设备的回应，添加到显示列表中
+                    WifiP2pDeviceList peers = (WifiP2pDeviceList) message.obj;
+                    if (listener != null) {
+                        ((PeerListListener) listener).onPeersAvailable(peers);
+                    }
+                    break;
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------->
+WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
+->  {
+        public void onPeersAvailable(WifiP2pDeviceList peers) {
+            mPeers = peers;
+            handlePeersChanged();
+        }       
+    }
+    ->  {
+            private void handlePeersChanged() {           
+                mPeersGroup.removeAll();
+
+                mConnectedDevices = 0;
+                for (WifiP2pDevice peer: mPeers.getDeviceList()) {
+                    mPeersGroup.addPreference(new WifiP2pPeer(getActivity(), peer));
+                    if (peer.status == WifiP2pDevice.CONNECTED) mConnectedDevices++;
+                }
+            }
+        }
+
+选择一个需要连接的p2p设备：
+public boolean onPreferenceTreeClick(PreferenceScreen screen, Preference preference) {
+    if (preference instanceof WifiP2pPeer) {
+        mWifiP2pManager.connect(mChannel, config,
+                new WifiP2pManager.ActionListener() {
+                    public void onSuccess() {
+                        if (DBG) Log.d(TAG, " connect success");
+                    }
+
+                    public void onFailure(int reason) {
+                        Log.e(TAG, " connect fail " + reason);
+                        Toast.makeText(getActivity(),
+                            R.string.wifi_p2p_failed_connect_message,
+                            Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+}
+--------------------------------------------------------------------------------------------------->
+WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi\p2p)	
+->  {
+        public void connect(Channel c, WifiP2pConfig config, ActionListener listener) {
+            checkChannel(c);
+            checkP2pConfig(config);
+            c.mAsyncChannel.sendMessage(CONNECT, 0, c.putListener(listener), config);
+        }
+    }
+--------------------------------------------------------------------------------------------------->
+由上面可知道，mP2pStateMachine当前处在mInactiveState状态：
+class InactiveState extends State {
+    public boolean processMessage(Message message) {
+            switch (message.what) {
+                case WifiP2pManager.CONNECT:
+                    mWifiNative.p2pStopFind();
+                    if (reinvokePersistentGroup(config)) {
+                        transitionTo(mGroupNegotiationState);
+                    } else {
+                        transitionTo(mProvisionDiscoveryState);
+                    }
+                    sendPeersChangedBroadcast();                                // 发送WIFI_P2P_PEERS_CHANGED_ACTION消息
+                    replyToMessage(message, WifiP2pManager.CONNECT_SUCCEEDED);
+            }
+    }
+}
+----------------------------------------------------------------------------------------------------->
+WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
+->  {
+        private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
+                    mPeers = (WifiP2pDeviceList) intent.getParcelableExtra(
+                            WifiP2pManager.EXTRA_P2P_DEVICE_LIST);
+                    handlePeersChanged();
+                }
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------>
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+->  {
+        // 利用 Wi-Fi Direct 功能在两个安卓收件之间传送文件的操作步骤：
+        // 1. 确认其中有一个安卓手机支持 Wi-Fi Direct 功能。
+        // 2. 在支持 Wi-Fi Direct 的手机里 设置 -> 无线与网络的“更多” -> 勾选 Wi-Fi Direct。
+        // 3. Wi-Fi Direct 采用了 WPS (Wi-Fi Protected Setup) 的机制， 选择 Wi-Fi Direct 的安全连接模式，有三种：
+            // (1) PIN模式，PIN (Personal Information Number)，即个人信息数字，直接输入一组数字（4或8位数）。
+            //      这种方式连接速度快，只要输入完成即可连接。
+            // (2) PBC模式，PBC (Push Button Configuration)，即按按钮配置（软件模拟的按钮或硬按钮）。
+            //      分别按下两个设备的按钮，即可完成连接。这种连接方式的连接速度较慢。
+            // (3) WPA2加密模式，此模式和第一种模式一样，是输入密码，输入完成即可开始连接。
+            // 设置一种加密方式即可。
+        // 4. 然后另外一台手机就按照使用 Wi-Fi 的方式去找到开启了 Wi-Fi Direct 的手机，在 设置 -> 无线与网络 -> 开启 Wi-Fi，
+        //    然后选择 Wi-Fi Direct 的手机，输入安全密码，两者即可开始连接。
+        // 5. 然后利用可以支持 Wi-Fi Direct 的软件，如三星的 AllShare，摩托罗拉的媒体中心，或者 iMediaShare 软件。
+        //    一般都是在软件中，先选择需要传送的设备，然后再选择需要传送的文件即可。
+        public boolean processMessage(Message message) {
+            switch (message.what) {
+                case WifiMonitor.P2P_PROV_DISC_PBC_RSP_EVENT:
+                case WifiMonitor.P2P_PROV_DISC_ENTER_PIN_EVENT:
+                case WifiMonitor.P2P_PROV_DISC_SHOW_PIN_EVENT:
+                case WifiMonitor.P2P_PROV_DISC_FAILURE_EVENT:
+                    // 各种处理！！！！
+                    break;
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------------
+Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        char * wpa_supplicant_ctrl_iface_process(struct wpa_supplicant *wpa_s, char *buf, size_t *resp_len) {
+            if (os_strncmp(buf, "P2P_FIND ", 9) == 0) {
+                if (p2p_ctrl_find(wpa_s, buf + 9))
+                    reply_len = -1;
+            }
+        }
+        ->  {
+                static int p2p_ctrl_find(struct wpa_supplicant *wpa_s, char *cmd)
+                {
+                    unsigned int timeout = atoi(cmd);
+                    enum p2p_discovery_type type = P2P_FIND_START_WITH_FULL;
+                    u8 dev_id[ETH_ALEN], *_dev_id = NULL;
+                    u8 dev_type[WPS_DEV_TYPE_LEN], *_dev_type = NULL;
+                    char *pos;
+                    unsigned int search_delay;
+
+                    if (wpa_s->wpa_state == WPA_INTERFACE_DISABLED) {
+                        wpa_dbg(wpa_s, MSG_INFO,
+                                "Reject P2P_FIND since interface is disabled");
+                        return -1;
+                    }
+                    if (os_strstr(cmd, "type=social"))
+                        type = P2P_FIND_ONLY_SOCIAL;
+                    else if (os_strstr(cmd, "type=progressive"))
+                        type = P2P_FIND_PROGRESSIVE;
+
+                    pos = os_strstr(cmd, "dev_id=");
+                    if (pos) {
+                        pos += 7;
+                        if (hwaddr_aton(pos, dev_id))
+                            return -1;
+                        _dev_id = dev_id;
+                    }
+
+                    pos = os_strstr(cmd, "dev_type=");
+                    if (pos) {
+                        pos += 9;
+                        if (wps_dev_type_str2bin(pos, dev_type) < 0)
+                            return -1;
+                        _dev_type = dev_type;
+                    }
+
+                    pos = os_strstr(cmd, "delay=");
+                    if (pos) {
+                        pos += 6;
+                        search_delay = atoi(pos);
+                    } else
+                        search_delay = wpas_p2p_search_delay(wpa_s);
+
+                    return wpas_p2p_find(wpa_s, timeout, type, _dev_type != NULL, _dev_type,
+                            _dev_id, search_delay);
+                }
+            }
+    }
+---------------------------------------------------------------------------------------------------
+P2p_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        int wpas_p2p_find(struct wpa_supplicant *wpa_s, unsigned int timeout,
+                enum p2p_discovery_type type,
+                unsigned int num_req_dev_types, const u8 *req_dev_types,
+                const u8 *dev_id, unsigned int search_delay)
+        {
+            wpas_p2p_clear_pending_action_tx(wpa_s);
+            wpa_s->p2p_long_listen = 0;
+
+            if (wpa_s->global->p2p_disabled || wpa_s->global->p2p == NULL ||
+                    wpa_s->p2p_in_provisioning)
+                return -1;
+
+            wpa_supplicant_cancel_sched_scan(wpa_s);
+
+            return p2p_find(wpa_s->global->p2p, timeout, type,
+                    num_req_dev_types, req_dev_types, dev_id,
+                    search_delay);
+        }
+    }
+-----------------------------------------------------------------------------------------------------
+P2p.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\p2p)
+->  {
+        int p2p_find(struct p2p_data *p2p, unsigned int timeout,
+                enum p2p_discovery_type type,
+                unsigned int num_req_dev_types, const u8 *req_dev_types,
+                const u8 *dev_id, unsigned int search_delay)
+        {
+            p2p_dbg(p2p, "Starting find (type=%d)", type);
+        
+            p2p->start_after_scan = P2P_AFTER_SCAN_NOTHING;
+            p2p_clear_timeout(p2p);
+            p2p->cfg->stop_listen(p2p->cfg->cb_ctx);
+            p2p->find_type = type;
+            p2p_device_clear_reported(p2p);
+            p2p_set_state(p2p, P2P_SEARCH);
+            p2p->search_delay = search_delay;
+            p2p->in_search_delay = 0;
+            eloop_cancel_timeout(p2p_find_timeout, p2p, NULL);
+            p2p->last_p2p_find_timeout = timeout;
+            if (timeout)
+                eloop_register_timeout(timeout, 0, p2p_find_timeout, p2p, NULL);
+
+            switch (type) {
+                case P2P_FIND_START_WITH_FULL:
+                case P2P_FIND_PROGRESSIVE:
+                    res = p2p->cfg->p2p_scan(p2p->cfg->cb_ctx, P2P_SCAN_FULL, 0,
+                            p2p->num_req_dev_types,
+                            p2p->req_dev_types, dev_id,
+                            DEV_PW_DEFAULT);
+                    break;
+                case P2P_FIND_ONLY_SOCIAL:
+                    res = p2p->cfg->p2p_scan(p2p->cfg->cb_ctx, P2P_SCAN_SOCIAL, 0,
+                            p2p->num_req_dev_types,
+                            p2p->req_dev_types, dev_id,
+                            DEV_PW_DEFAULT);
+                    break;
+                default:
+                    return -1;
+            }
+
+            if (res == 0) {
+                p2p_dbg(p2p, "Running p2p_scan");
+                p2p->p2p_scan_running = 1;
+                eloop_cancel_timeout(p2p_scan_timeout, p2p, NULL);
+                eloop_register_timeout(P2P_SCAN_TIMEOUT, 0, p2p_scan_timeout,
+                        p2p, NULL);
+            } else if (p2p->p2p_scan_running) {
+                p2p_dbg(p2p, "Failed to start p2p_scan - another p2p_scan was already running");
+                /* wait for the previous p2p_scan to complete */
+                res = 0; /* do not report failure */
+            } else {
+                p2p_dbg(p2p, "Failed to start p2p_scan");
+                p2p_set_state(p2p, P2P_IDLE);
+                eloop_cancel_timeout(p2p_find_timeout, p2p, NULL);
+            }
+
+            return res;
+        }
+    }
+------------------------------------------------------------------------------------------------------------
+P2p_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        int wpas_p2p_init(struct wpa_global *global, struct wpa_supplicant *wpa_s)
+        {
+            if (wpa_s->conf->p2p_disabled)
+                return 0;
+
+            if (!(wpa_s->drv_flags & WPA_DRIVER_FLAGS_P2P_CAPABLE))
+                return 0;
+
+            if (global->p2p)
+                return 0;
+
+            os_memset(&p2p, 0, sizeof(p2p));
+            p2p.cb_ctx = wpa_s;
+            p2p.debug_print = wpas_p2p_debug_print;
+            p2p.p2p_scan = wpas_p2p_scan;                               // 调用wpas_p2p_scan
+            p2p.send_action = wpas_send_action;
+            p2p.send_action_done = wpas_send_action_done;
+            p2p.go_neg_completed = wpas_go_neg_completed;
+            p2p.go_neg_req_rx = wpas_go_neg_req_rx;
+            p2p.dev_found = wpas_dev_found;
+            p2p.dev_lost = wpas_dev_lost;
+            p2p.find_stopped = wpas_find_stopped;
+            p2p.start_listen = wpas_start_listen;
+            p2p.stop_listen = wpas_stop_listen;
+            p2p.send_probe_resp = wpas_send_probe_resp;
+            p2p.sd_request = wpas_sd_request;
+            p2p.sd_response = wpas_sd_response;
+            p2p.prov_disc_req = wpas_prov_disc_req;
+            p2p.prov_disc_resp = wpas_prov_disc_resp;
+            p2p.prov_disc_fail = wpas_prov_disc_fail;
+            p2p.invitation_process = wpas_invitation_process;
+            p2p.invitation_received = wpas_invitation_received;
+            p2p.invitation_result = wpas_invitation_result;
+            p2p.get_noa = wpas_get_noa;
+            p2p.go_connected = wpas_go_connected;
+            p2p.presence_resp = wpas_presence_resp;
+            p2p.is_concurrent_session_active = wpas_is_concurrent_session_active;
+            p2p.is_p2p_in_progress = _wpas_p2p_in_progress;
+
+            os_memcpy(wpa_s->global->p2p_dev_addr, wpa_s->own_addr, ETH_ALEN);
+            os_memcpy(p2p.dev_addr, wpa_s->global->p2p_dev_addr, ETH_ALEN);
+            p2p.dev_name = wpa_s->conf->device_name;
+            p2p.manufacturer = wpa_s->conf->manufacturer;
+            p2p.model_name = wpa_s->conf->model_name;
+            p2p.model_number = wpa_s->conf->model_number;
+            p2p.serial_number = wpa_s->conf->serial_number;
+
+            if (wpa_s->wps) {
+                os_memcpy(p2p.uuid, wpa_s->wps->uuid, 16);
+                p2p.config_methods = wpa_s->wps->config_methods;
+            }
+
+            if (wpas_p2p_setup_channels(wpa_s, &p2p.channels, &p2p.cli_channels)) {
+                wpa_printf(MSG_ERROR,
+                        "P2P: Failed to configure supported channel list");
+                return -1;
+            }
+
+            global->p2p = p2p_init(&p2p);                                       // 调用p2p_init
+
+            global->p2p_init_wpa_s = wpa_s;
+
+            for (i = 0; i < MAX_WPS_VENDOR_EXT; i++) {
+                if (wpa_s->conf->wps_vendor_ext[i] == NULL)
+                    continue;
+                p2p_add_wps_vendor_extension(
+                        global->p2p, wpa_s->conf->wps_vendor_ext[i]);
+            }
+
+            p2p_set_no_go_freq(global->p2p, &wpa_s->conf->p2p_no_go_freq);
+
+            return 0;
+        }
+
+        static int wpas_p2p_scan(void *ctx, enum p2p_scan_type type, int freq,
+                unsigned int num_req_dev_types,
+                const u8 *req_dev_types, const u8 *dev_id, u16 pw_id)
+        {
+            wpa_s->wps->dev.p2p = 1;
+            wps_ie = wps_build_probe_req_ie(pw_id, &wpa_s->wps->dev,
+                    wpa_s->wps->uuid, WPS_REQ_ENROLLEE,
+                    num_req_dev_types, req_dev_types);
+
+            ielen = p2p_scan_ie_buf_len(wpa_s->global->p2p);
+            ies = wpabuf_alloc(wpabuf_len(wps_ie) + ielen);
+
+            wpabuf_put_buf(ies, wps_ie);
+            wpabuf_free(wps_ie);
+
+            p2p_scan_ie(wpa_s->global->p2p, ies, dev_id);
+            params->p2p_probe = 1;
+
+            switch (type) {
+                case P2P_SCAN_SOCIAL:
+                    params->freqs = os_calloc(ARRAY_SIZE(social_channels_freq) + 1,
+                            sizeof(int));
+                    if (params->freqs == NULL)
+                        goto fail;
+                    for (i = 0; i < ARRAY_SIZE(social_channels_freq); i++) {
+                        if (p2p_supported_freq(wpa_s->global->p2p,
+                                    social_channels_freq[i]))
+                            params->freqs[num_channels++] =
+                                social_channels_freq[i];
+                    }
+                    params->freqs[num_channels++] = 0;
+                    break;
+                case P2P_SCAN_FULL:
+                    break;
+                case P2P_SCAN_SOCIAL_PLUS_ONE:
+                    params->freqs = os_calloc(ARRAY_SIZE(social_channels_freq) + 2,
+                            sizeof(int));
+                    if (params->freqs == NULL)
+                        goto fail;
+                    for (i = 0; i < ARRAY_SIZE(social_channels_freq); i++) {
+                        if (p2p_supported_freq(wpa_s->global->p2p,
+                                    social_channels_freq[i]))
+                            params->freqs[num_channels++] =
+                                social_channels_freq[i];
+                    }
+                    if (p2p_supported_freq(wpa_s->global->p2p, freq))
+                        params->freqs[num_channels++] = freq;
+                    params->freqs[num_channels++] = 0;
+                    break;
+            }
+
+            radio_remove_works(wpa_s, "p2p-scan", 0);
+            if (radio_add_work(wpa_s, 0, "p2p-scan", 0, wpas_p2p_trigger_scan_cb,
+                        params) < 0)
+                goto fail;
+            return 0;
+        }
+
+        static void wpas_p2p_trigger_scan_cb(struct wpa_radio_work *work, int deinit)
+        {
+            struct wpa_supplicant *wpa_s = work->wpa_s;
+            struct wpa_driver_scan_params *params = work->ctx;
+            int ret;
+
+            if (deinit) {
+                if (!work->started) {
+                    wpa_scan_free_params(params);
+                    return;
+                }
+
+                wpa_s->p2p_scan_work = NULL;
+                return;
+            }
+
+            ret = wpa_drv_scan(wpa_s, params);
+            wpa_scan_free_params(params);
+            work->ctx = NULL;
+            if (ret) {
+                radio_work_done(work);
+                return;
+            }
+
+            os_get_reltime(&wpa_s->scan_trigger_time);
+            wpa_s->scan_res_handler = wpas_p2p_scan_res_handler;
+            wpa_s->own_scan_requested = 1;
+            wpa_s->p2p_scan_work = work;
+        }
+
+        static void wpas_p2p_scan_res_handler(struct wpa_supplicant *wpa_s,
+                struct wpa_scan_results *scan_res)
+        {
+            wpa_printf(MSG_DEBUG, "P2P: Scan results received (%d BSS)",
+                    (int) scan_res->num);
+
+            for (i = 0; i < scan_res->num; i++) {
+                struct wpa_scan_res *bss = scan_res->res[i];
+                struct os_reltime time_tmp_age, entry_ts;
+                const u8 *ies;
+                size_t ies_len;
+
+                time_tmp_age.sec = bss->age / 1000;
+                time_tmp_age.usec = (bss->age % 1000) * 1000;
+                os_reltime_sub(&scan_res->fetch_time, &time_tmp_age, &entry_ts);
+
+                ies = (const u8 *) (bss + 1);
+                ies_len = bss->ie_len;
+                if (bss->beacon_ie_len > 0 &&
+                        !wpa_scan_get_vendor_ie(bss, P2P_IE_VENDOR_TYPE) &&
+                        wpa_scan_get_vendor_ie_beacon(bss, P2P_IE_VENDOR_TYPE)) {
+                    wpa_printf(MSG_DEBUG, "P2P: Use P2P IE(s) from Beacon frame since no P2P IE(s) in Probe Response frames received for "
+                            MACSTR, MAC2STR(bss->bssid));
+                    ies = ies + ies_len;
+                    ies_len = bss->beacon_ie_len;
+                }
+
+
+                if (p2p_scan_res_handler(wpa_s->global->p2p, bss->bssid,
+                            bss->freq, &entry_ts, bss->level,
+                            ies, ies_len) > 0)
+                    break;
+            }
+
+            p2p_scan_res_handled(wpa_s->global->p2p);
+        }
+    }
+-----------------------------------------------------------------------------------------------
+P2p.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\p2p)
+->  {
+        int p2p_scan_res_handler(struct p2p_data *p2p, const u8 *bssid, int freq,
+                struct os_reltime *rx_time, int level, const u8 *ies,
+                size_t ies_len)
+        {
+            if (os_reltime_before(rx_time, &p2p->find_start)) {
+                /*
+                 * The driver may have cached (e.g., in cfg80211 BSS table) the
+                 * scan results for relatively long time. To avoid reporting
+                 * stale information, update P2P peers only based on results
+                 * that have based on frames received after the last p2p_find
+                 * operation was started.
+                 */
+                p2p_dbg(p2p, "Ignore old scan result for " MACSTR
+                        " (rx_time=%u.%06u)",
+                        MAC2STR(bssid), (unsigned int) rx_time->sec,
+                        (unsigned int) rx_time->usec);
+                return 0;
+            }
+
+            p2p_add_device(p2p, bssid, freq, rx_time, level, ies, ies_len, 1);
+
+            return 0;
+        }
+
+
+        int p2p_add_device(struct p2p_data *p2p, const u8 *addr, int freq,
+                struct os_reltime *rx_time, int level, const u8 *ies,
+                size_t ies_len, int scan_res)
+        {
+            os_memset(&msg, 0, sizeof(msg));
+            if (p2p_parse_ies(ies, ies_len, &msg)) {
+                p2p_dbg(p2p, "Failed to parse P2P IE for a device entry");
+                p2p_parse_free(&msg);
+                return -1;
+            }
+
+            dev = p2p_create_device(p2p, p2p_dev_addr);
+
+            dev->flags &= ~(P2P_DEV_PROBE_REQ_ONLY | P2P_DEV_GROUP_CLIENT_ONLY);
+
+            p2p_copy_wps_info(p2p, dev, 0, &msg);
+
+            if (scan_res) {
+                p2p_add_group_clients(p2p, p2p_dev_addr, addr, freq,
+                        msg.group_info, msg.group_info_len);
+            }
+
+            p2p_update_peer_vendor_elems(dev, ies, ies_len);
+
+            if (dev->flags & P2P_DEV_REPORTED)
+                return 0;
+
+            p2p_dbg(p2p, "Peer found with Listen frequency %d MHz (rx_time=%u.%06u)",
+                    freq, (unsigned int) rx_time->sec,
+                    (unsigned int) rx_time->usec);
+
+            p2p->cfg->dev_found(p2p->cfg->cb_ctx, addr, &dev->info,
+                    !(dev->flags & P2P_DEV_REPORTED_ONCE));
+            dev->flags |= P2P_DEV_REPORTED | P2P_DEV_REPORTED_ONCE;
+
+            return 0;
+        }
+    }
+------------------------------------------------------------------------------------------------
+P2p_supplicant.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        static void wpas_dev_found(void *ctx, const u8 *addr,
+                const struct p2p_peer_info *info,
+                int new_device)
+        {
+            struct wpa_supplicant *wpa_s = ctx;
+            char devtype[WPS_DEV_TYPE_BUFSIZE];
+            char *wfd_dev_info_hex = NULL;
+
+        #ifdef CONFIG_WIFI_DISPLAY
+            wfd_dev_info_hex = wifi_display_subelem_hex(info->wfd_subelems,
+                    WFD_SUBELEM_DEVICE_INFO);
+        #endif /* CONFIG_WIFI_DISPLAY */
+
+            wpa_msg_global(wpa_s, MSG_INFO, P2P_EVENT_DEVICE_FOUND MACSTR
+                    " p2p_dev_addr=" MACSTR
+                    " pri_dev_type=%s name='%s' config_methods=0x%x "
+                    "dev_capab=0x%x group_capab=0x%x%s%s%s",
+                    MAC2STR(addr), MAC2STR(info->p2p_device_addr),
+                    wps_dev_type_bin2str(info->pri_dev_type, devtype,
+                        sizeof(devtype)),
+                    info->device_name, info->config_methods,
+                    info->dev_capab, info->group_capab,
+                    wfd_dev_info_hex ? " wfd_dev_info=0x" : "",
+                    wfd_dev_info_hex ? wfd_dev_info_hex : "",
+                    info->vendor_elems ? " vendor_elems=1" : "");
+
+            os_free(wfd_dev_info_hex);
+
+            wpas_notify_p2p_device_found(ctx, info->p2p_device_addr, new_device);
+        }
+    }
+
+
+
