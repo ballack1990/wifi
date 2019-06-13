@@ -1,0 +1,6 @@
+#muxenab=0x10
+sd_oobonly=1
+sd_gpout=0
+sd_gpval=0      // 0：默认是高电平，有数据才会拉低，时间是ns级别的。
+
+sd_gpval=1      // 1：默认是低电平，有数据才会拉高，时间是ns级别的。

@@ -1,0 +1,4 @@
+
+wl join 4366muap
+ifconfig wlan0 192.168.1.201
+ip rule add from all lookup main
