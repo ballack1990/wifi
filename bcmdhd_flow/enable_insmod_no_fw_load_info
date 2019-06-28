@@ -1,0 +1,330 @@
+bcmsdh_sdmmc.c
+->  {
+    #if defined(ENABLE_INSMOD_NO_FW_LOAD) && !defined(BUS_POWER_RESTORE)
+        extern int sdio_reset_comm(struct mmc_card *card);
+    #else
+        int sdio_reset_comm(struct mmc_card *card)
+        {
+            return 0;
+        }
+    #endif
+    
+        int sdioh_start(sdioh_info_t *sd, int stage)
+        {
+            if (sd->func[0]) {
+                if (stage == 0) {
+                    /* Since the power to the chip is killed, we will have
+                       re enumerate the device again. Set the block size
+                       and enable the fucntion 1 for in preparation for
+                       downloading the code
+                     */
+                    /* sdio_reset_comm() - has been fixed in latest kernel/msm.git for Linux
+                       2.6.27. The implementation prior to that is buggy, and needs broadcom's
+                       patch for it
+                     */
+                    if ((ret = sdio_reset_comm(sd->func[0]->card))) {
+                        sd_err(("%s Failed, error = %d\n", __FUNCTION__, ret));
+                        return ret;
+                    }
+                    else {
+                    // ...
+                    }   
+                }
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------
+wl_android.c
+->  {
+        int wl_android_init(void)
+        {
+            int ret = 0;
+
+        #ifdef ENABLE_INSMOD_NO_FW_LOAD
+            dhd_download_fw_on_driverload = FALSE;
+        #endif /* ENABLE_INSMOD_NO_FW_LOAD */
+            if (!iface_name[0]) {
+                memset(iface_name, 0, IFNAMSIZ);
+                bcm_strncpy_s(iface_name, IFNAMSIZ, "wlan", IFNAMSIZ);
+            }
+
+            wl_netlink_init();
+
+            return ret;
+        }
+    }
+----------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        /* Flag to indicate if we should download firmware on driver load */
+        uint dhd_download_fw_on_driverload = TRUE;
+
+        static int dhd_ioctl_entry(struct net_device *net, struct ifreq *ifr, int cmd)
+        {
+            /* Interface up check for built-in type */
+            if (!dhd_download_fw_on_driverload && dhd->pub.up == FALSE) {
+                DHD_ERROR(("%s: Interface is down \n", __FUNCTION__));
+                DHD_PERIM_UNLOCK(&dhd->pub);
+                DHD_OS_WAKE_UNLOCK(&dhd->pub);
+                return OSL_ERROR(BCME_NOTUP);
+            }
+        }
+
+        static int dhd_stop(struct net_device *net)
+        {
+            if (ifidx == 0) {
+                dhd_if_t *ifp;
+                wl_cfg80211_down(net);
+
+                ifp = dhd->iflist[0];
+                ASSERT(ifp && ifp->net);
+                /*
+                 * For CFG80211: Clean up all the left over virtual interfaces
+                 * when the primary Interface is brought down. [ifconfig wlan0 down]
+                 */
+                if (!dhd_download_fw_on_driverload) {
+                    if ((dhd->dhd_state & DHD_ATTACH_STATE_ADD_IF) &&
+                            (dhd->dhd_state & DHD_ATTACH_STATE_CFG80211)) {
+                        int i;
+#ifdef WL_CFG80211_P2P_DEV_IF
+                        wl_cfg80211_del_p2p_wdev(net);
+#endif /* WL_CFG80211_P2P_DEV_IF */
+
+                        dhd_net_if_lock_local(dhd);
+                        for (i = 1; i < DHD_MAX_IFS; i++)
+                            dhd_remove_if(&dhd->pub, i, FALSE);
+
+                        if (ifp && ifp->net) {
+                            dhd_if_del_sta_list(ifp);
+                        }
+#ifdef ARP_OFFLOAD_SUPPORT
+                        if (dhd_inetaddr_notifier_registered) {
+                            dhd_inetaddr_notifier_registered = FALSE;
+                            unregister_inetaddr_notifier(&dhd_inetaddr_notifier);
+                        }
+#endif /* ARP_OFFLOAD_SUPPORT */
+#if defined(CONFIG_IPV6) && defined(IPV6_NDO_SUPPORT)
+                        if (dhd_inet6addr_notifier_registered) {
+                            dhd_inet6addr_notifier_registered = FALSE;
+                            unregister_inet6addr_notifier(&dhd_inet6addr_notifier);
+                        }
+#endif /* CONFIG_IPV6 && IPV6_NDO_SUPPORT */
+                        dhd_net_if_unlock_local(dhd);
+                    }
+                }
+            }
+        }
+
+        static int dhd_open(struct net_device *net)
+        {
+            if (!dhd_download_fw_on_driverload) {
+                if (!dhd_driver_init_done) {
+                    DHD_ERROR(("%s: WLAN driver is not initialized\n", __FUNCTION__));
+                    return -1;
+                }
+            }
+
+            if (ifidx == 0) {
+                atomic_set(&dhd->pend_8021x_cnt, 0);
+                if (!dhd_download_fw_on_driverload) {
+                    DHD_ERROR(("\n%s\n", dhd_version));
+#ifdef WL_EXT_IAPSTA
+                    wl_ext_iapsta_attach_netdev(net, ifidx);
+#endif
+#if defined(USE_INITIAL_SHORT_DWELL_TIME)
+                    g_first_broadcast_scan = TRUE;
+#endif 
+#if defined(BT_OVER_SDIO)
+                    ret = dhd_bus_get(&dhd->pub, WLAN_MODULE);
+                    wl_android_set_wifi_on_flag(TRUE);
+#else
+                    ret = wl_android_wifi_on(net);
+#endif /* BT_OVER_SDIO */
+                    if (ret != 0) {
+                        DHD_ERROR(("%s : wl_android_wifi_on failed (%d)\n",
+                                    __FUNCTION__, ret));
+                        ret = -1;
+                        goto exit;
+                    }
+#if defined(WL_EXT_IAPSTA) && defined(ISAM_PREINIT)
+                    conf = dhd_get_conf(net);
+                    if (conf) {
+                        wl_android_ext_priv_cmd(net, conf->isam_init, 0, &bytes_written);
+                        wl_android_ext_priv_cmd(net, conf->isam_config, 0, &bytes_written);
+                        wl_android_ext_priv_cmd(net, conf->isam_enable, 0, &bytes_written);
+                    }
+#endif
+                }
+            }
+
+            if (dhd_download_fw_on_driverload) {
+                if (dhd->pub.conf->deepsleep)
+                    dhd_deepsleep(dhd, 0);
+            }
+
+        #if defined(WL_CFG80211)
+            if (unlikely(wl_cfg80211_up(net))) {
+                DHD_ERROR(("%s: failed to bring up cfg80211\n", __FUNCTION__));
+                ret = -1;
+                goto exit;
+            }
+            if (!dhd_download_fw_on_driverload) {
+        #ifdef ARP_OFFLOAD_SUPPORT
+                dhd->pend_ipaddr = 0;
+                if (!dhd_inetaddr_notifier_registered) {
+                    dhd_inetaddr_notifier_registered = TRUE;
+                    register_inetaddr_notifier(&dhd_inetaddr_notifier);
+                }
+        #endif /* ARP_OFFLOAD_SUPPORT */
+        #if defined(CONFIG_IPV6) && defined(IPV6_NDO_SUPPORT)
+                if (!dhd_inet6addr_notifier_registered) {
+                    dhd_inet6addr_notifier_registered = TRUE;
+                    register_inet6addr_notifier(&dhd_inet6addr_notifier);
+                }
+        #endif /* CONFIG_IPV6 && IPV6_NDO_SUPPORT */
+            }
+
+            argos_register_notifier_init(net);
+        #endif /* WL_CFG80211 */
+        }
+
+        int dhd_register_if(dhd_pub_t *dhdp, int ifidx, bool need_rtnl_lock)
+        {
+            if (ifidx == 0) {
+                if (!dhd_download_fw_on_driverload) {
+#ifdef WL_CFG80211
+                    wl_terminate_event_handler(net);
+#endif /* WL_CFG80211 */
+
+#ifdef DHDTCPACK_SUPPRESS
+                    dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_OFF);
+#endif /* DHDTCPACK_SUPPRESS */
+                    dhd_net_bus_devreset(net, TRUE);
+#ifdef BCMLXSDMMC
+                    dhd_net_bus_suspend(net);
+#endif /* BCMLXSDMMC */
+                    wifi_platform_set_power(dhdp->info->adapter, FALSE, WIFI_TURNOFF_DELAY);
+#if defined(BT_OVER_SDIO)
+                    dhd->bus_user_count--;
+#endif /* BT_OVER_SDIO */
+                }
+            }
+        }
+
+        void dhd_bus_detach(dhd_pub_t *dhdp)
+        {
+            dhd_info_t *dhd;
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+
+            if (dhdp) {
+                dhd = (dhd_info_t *)dhdp->info;
+                if (dhd) {
+
+                    /*
+                     * In case of Android cfg80211 driver, the bus is down in dhd_stop,
+                     *  calling stop again will cuase SD read/write errors.
+                     */
+                    if (dhd->pub.busstate != DHD_BUS_DOWN && dhd_download_fw_on_driverload) {
+                        /* Stop the protocol module */
+                        dhd_prot_stop(&dhd->pub);
+
+                        /* Stop the bus module */
+#ifdef BCMDBUS
+                        /* Force Dongle terminated */
+                        if (dhd_wl_ioctl_cmd(dhdp, WLC_TERMINATED, NULL, 0, TRUE, 0) < 0)
+                            DHD_ERROR(("%s Setting WLC_TERMINATED failed\n",
+                                        __FUNCTION__));
+                        dbus_stop(dhd->pub.bus);
+                        dhd->pub.busstate = DHD_BUS_DOWN;
+#else
+                        dhd_bus_stop(dhd->pub.bus, TRUE);
+#endif /* BCMDBUS */
+                    }
+
+#if defined(OOB_INTR_ONLY) || defined(BCMPCIE_OOB_HOST_WAKE)
+                    dhd_bus_oob_intr_unregister(dhdp);
+#endif 
+                }
+            }
+        }
+
+        static int __init dhd_module_init(void)
+        {
+            do {
+                err = dhd_wifi_platform_register_drv();
+                if (!err) {
+                    register_reboot_notifier(&dhd_reboot_notifier);
+                    break;
+                } else {
+                    DHD_ERROR(("%s: Failed to load the driver, try cnt %d\n",
+                                __FUNCTION__, retry));
+                    strncpy(firmware_path, fw_bak_path, MOD_PARAM_PATHLEN);
+                    firmware_path[MOD_PARAM_PATHLEN-1] = '\0';
+                    strncpy(nvram_path, nv_bak_path, MOD_PARAM_PATHLEN);
+                    nvram_path[MOD_PARAM_PATHLEN-1] = '\0';
+                }
+            } while (retry--);
+
+            dhd_create_to_notifier_skt();
+
+            if (err) {
+                DHD_ERROR(("%s: Failed to load driver max retry reached**\n", __FUNCTION__));
+            } else {
+                if (!dhd_download_fw_on_driverload) {
+                    dhd_driver_init_done = TRUE;
+                }
+            }
+        }
+    }
+----------------------------------------------------------------------------------------------------
+wl_cfg80211.c
+->  {
+        static s32 __wl_cfg80211_up(struct bcm_cfg80211 *cfg)
+        {
+            if (!dhd_download_fw_on_driverload) {
+                err = wl_create_event_handler(cfg);
+                if (err) {
+                    WL_ERR(("wl_create_event_handler failed\n"));
+                    return err;
+                }
+                wl_init_event_handler(cfg);
+            }
+        }
+
+        static s32 __wl_cfg80211_down(struct bcm_cfg80211 *cfg)
+        {
+            /* Avoid deadlock from wl_cfg80211_down */
+            if (!dhd_download_fw_on_driverload) {
+                mutex_unlock(&cfg->usr_sync);
+                wl_destroy_event_handler(cfg);
+                mutex_lock(&cfg->usr_sync);
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------
+wl_android.c
+->  {
+        int wl_android_init(void)
+        {
+            int ret = 0;
+
+        #ifdef ENABLE_INSMOD_NO_FW_LOAD
+            dhd_download_fw_on_driverload = FALSE;
+        #endif /* ENABLE_INSMOD_NO_FW_LOAD */
+            if (!iface_name[0]) {
+                memset(iface_name, 0, IFNAMSIZ);
+                bcm_strncpy_s(iface_name, IFNAMSIZ, "wlan", IFNAMSIZ);
+            }
+
+            wl_netlink_init();
+
+            return ret;
+        }
+
+        void wl_android_post_init(void)
+        {
+            if (!dhd_download_fw_on_driverload)
+                g_wifi_on = FALSE;
+        }
+    }

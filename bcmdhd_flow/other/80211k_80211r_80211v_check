@@ -1,0 +1,3 @@
+802.11K    --> wl rrm --> Read back 80.211K features enabled。
+802.11R    --> wl fbt ---> Read back or set 802.11R featues.
+802.11V    ---> wl wnm ---> Read back or set 802.11V features.

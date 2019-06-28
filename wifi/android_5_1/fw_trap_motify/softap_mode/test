@@ -1,0 +1,25 @@
+insmod /system/lib/modules/bcmdhd.ko firmware_path=/data/6212a/fw_bcm43438a1_apsta.bin nvram_path=/data/6212a/nvram_ap6212a.txt
+ifconfig wlan0 up
+
+
+hostapd_cli -p /data/misc/wifi/hostapd 
+
+hostapd_cli -p /data/misc/wifi/hostapd  -a /data/ampak.sh
+
+hostapd_cli -p /data/misc/wifi/hostapd  -a /data/ap_event.sh
+
+hostapd /data/misc/wifi/hostapd.conf &
+ifconfig wlan0 192.168.49.1 netmask 255.255.255.0
+dnsmasq --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &
+
+
+<2>ballack Event DISASSOC (1) received
+<3>AP-STA-DISCONNECTED 20:34:fb:b0:bc:f9
+<2>ballack Event INTERFACE_DISABLED (29) received
+<2>ballack Event DISASSOC (1) received
+
+
+
+
+insmod /system/lib/modules/bcmdhd.ko firmware_path=/data/6212a/fw_bcm43438a1.bin nvram_path=/data/6212a/nvram_ap6212a.txt
+ifconfig wlan0 up

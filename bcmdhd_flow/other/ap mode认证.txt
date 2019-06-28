@@ -16,3 +16,11 @@ wl nmode 1
 wl gmode 1
 wl nreqd 1
 wl up
+
+b/g mode:
+wl nmode 0
+wl gmode 1
+
+b/g/n mode:
+wl nmode 1
+wl gmode 1

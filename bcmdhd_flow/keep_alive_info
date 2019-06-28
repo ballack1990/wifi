@@ -1,0 +1,606 @@
+Makefile
+->  {
+        DHDCFLAGS += -DCUSTOM_KEEP_ALIVE_SETTING=28000
+    }
+-----------------------------------------------------------------------------
+dhd_config.c
+->  {
+        int dhd_conf_preinit(dhd_pub_t *dhd)
+        {
+        #ifdef CUSTOM_KEEP_ALIVE_SETTING
+            conf->keep_alive_period = CUSTOM_KEEP_ALIVE_SETTING;
+        #else
+            conf->keep_alive_period = 28000;
+        #endif
+
+        }        
+    }
+----------------------------------------------------------------------------------------------------------------
+/****************************************************************************************************************************************
+# mkeep_alive
+#	Send specified "mkeep-alive" packet periodically.
+#	Usage: wl mkeep_alive <index0-7> <period> <packet>
+#		index: 0 - 7.
+#		period: Re-transmission period in milli-seconds. 0 to disable packet transmits.
+#		packet: Hex packet contents to transmit. The packet contents should include the entire ethernet packet (ethernet header, IP header, UDP header, and UDP payload) specified in network byte order. If no packet is specified, a nulldata frame will be sent instead.
+
+#	e.g. Send keep alive packet every 30 seconds using id-1:
+#	wl mkeep_alive 1 30000 0x0014a54b164f000f66f45b7e08004500001e000040004011c52a0a8830700a88302513c413c4000a00000a0d
+
+# keep_alive
+#	Send specified "keep-alive" packet periodically.
+#	Usage: wl keep_alive <period> <packet>
+#		period: Re-transmission period in milli-seconds. 0 to disable packet transmits.
+#		packet: Hex packet contents to transmit. The packet contents should include the entire ethernet packet (ethernet header, IP header, UDP header, and UDP payload) specified in network byte order.
+
+#	e.g. Send keep alive packet every 30 seconds:
+#	wl keep_alive 30000 0x0014a54b164f000f66f45b7e08004500001e000040004011c52a0a8830700a88302513c413c4000a00000a0d
+****************************************************************************************************************************************/
+wl_android_ext.c
+->  {
+        #define CMD_KEEP_ALIVE			"KEEP_ALIVE"
+        
+        int wl_android_ext_priv_cmd(struct net_device *net, char *command, int total_len, int *bytes_written)
+        {
+            if (strnicmp(command, CMD_KEEP_ALIVE, strlen(CMD_KEEP_ALIVE)) == 0) {
+                *bytes_written = wl_ext_keep_alive(net, command, total_len);
+            }
+        }
+
+        int wl_ext_keep_alive(struct net_device *dev, char *command, int total_len)
+        {
+            wl_mkeep_alive_pkt_t *mkeep_alive_pktp;
+            int ret = -1, i;
+            int	id, period=-1, len_bytes=0, buf_len=0;
+            char data[200]="\0";
+            char buf[WLC_IOCTL_SMLEN]="\0", iovar_buf[WLC_IOCTL_SMLEN]="\0";
+            int bytes_written = -1;
+
+            ANDROID_TRACE(("%s: command = %s\n", __FUNCTION__, command));
+            sscanf(command, "%*s %d %d %s", &id, &period, data);
+            ANDROID_TRACE(("%s: id=%d, period=%d, data=%s\n", __FUNCTION__, id, period, data));
+
+            if (period >= 0) {
+                mkeep_alive_pktp = (wl_mkeep_alive_pkt_t *)buf;
+                mkeep_alive_pktp->version = htod16(WL_MKEEP_ALIVE_VERSION);
+                mkeep_alive_pktp->length = htod16(WL_MKEEP_ALIVE_FIXED_LEN);
+                mkeep_alive_pktp->keep_alive_id = id;
+                buf_len += WL_MKEEP_ALIVE_FIXED_LEN;
+                mkeep_alive_pktp->period_msec = period;
+                if (strlen(data)) {
+                    len_bytes = wl_ext_pattern_atoh(data, (char *) mkeep_alive_pktp->data);
+                    buf_len += len_bytes;
+                }
+                mkeep_alive_pktp->len_bytes = htod16(len_bytes);
+
+                ret = wl_ext_iovar_setbuf(dev, "mkeep_alive", buf, buf_len,
+                        iovar_buf, sizeof(iovar_buf), NULL);
+            } else {
+                if (id < 0)
+                    id = 0;
+                ret = wl_ext_iovar_getbuf(dev, "mkeep_alive", &id, sizeof(id), buf, sizeof(buf), NULL);
+                if (ret) {
+                    goto exit;
+                } else {
+                    mkeep_alive_pktp = (wl_mkeep_alive_pkt_t *) buf;
+                    printf("Id            :%d\n"
+                            "Period (msec) :%d\n"
+                            "Length        :%d\n"
+                            "Packet        :0x",
+                            mkeep_alive_pktp->keep_alive_id,
+                            dtoh32(mkeep_alive_pktp->period_msec),
+                            dtoh16(mkeep_alive_pktp->len_bytes));
+                    for (i=0; i<mkeep_alive_pktp->len_bytes; i++) {
+                        printf("%02x", mkeep_alive_pktp->data[i]);
+                    }
+                    printf("\n");
+                }
+                bytes_written = snprintf(command, total_len, "mkeep_alive_period_msec %d ", dtoh32(mkeep_alive_pktp->period_msec));
+                bytes_written += snprintf(command+bytes_written, total_len, "0x");
+                for (i=0; i<mkeep_alive_pktp->len_bytes; i++) {
+                    bytes_written += snprintf(command+bytes_written, total_len, "%x", mkeep_alive_pktp->data[i]);
+                }
+                ANDROID_TRACE(("%s: command result is %s\n", __FUNCTION__, command));
+                ret = bytes_written;
+            }
+
+exit:
+            return ret;
+        }
+    }
+--------------------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        int dhd_preinit_ioctls(dhd_pub_t *dhd)
+        {
+        #if defined(KEEP_ALIVE)
+            {
+                /* Set Keep Alive : be sure to use FW with -keepalive */
+                int res;
+
+        #if defined(SOFTAP)
+                if (ap_fw_loaded == FALSE)
+        #endif 
+                    if (!(dhd->op_mode &
+                                (DHD_FLAG_HOSTAP_MODE | DHD_FLAG_MFG_MODE))) {
+                        if ((res = dhd_keep_alive_onoff(dhd)) < 0)
+                            DHD_ERROR(("%s set keeplive failed %d\n",
+                                        __FUNCTION__, res));
+                    }
+            }
+        #endif /* defined(KEEP_ALIVE) */
+        }
+
+        int dhd_dev_get_feature_set(struct net_device *dev)
+        {
+        #ifdef KEEP_ALIVE
+            feature_set |= WIFI_FEATURE_MKEEP_ALIVE;
+        #endif /* KEEP_ALIVE */
+
+            return feature_set;
+        }
+
+        #ifdef KEEP_ALIVE
+        #define KA_TEMP_BUF_SIZE 512
+        #define KA_FRAME_SIZE 300
+
+        int dhd_dev_start_mkeep_alive(dhd_pub_t *dhd_pub, uint8 mkeep_alive_id, uint8 *ip_pkt,
+                uint16 ip_pkt_len, uint8* src_mac, uint8* dst_mac, uint32 period_msec)
+        {
+            const int		ETHERTYPE_LEN = 2;
+            char			*pbuf = NULL;
+            const char		*str;
+            wl_mkeep_alive_pkt_t	mkeep_alive_pkt;
+            wl_mkeep_alive_pkt_t	*mkeep_alive_pktp = NULL;
+            int			buf_len = 0;
+            int			str_len = 0;
+            int			res = BCME_ERROR;
+            int			len_bytes = 0;
+            int			i = 0;
+
+            /* ether frame to have both max IP pkt (256 bytes) and ether header */
+            char			*pmac_frame = NULL;
+            char			*pmac_frame_begin = NULL;
+
+            /*
+             * The mkeep_alive packet is for STA interface only; if the bss is configured as AP,
+             * dongle shall reject a mkeep_alive request.
+             */
+            if (!dhd_support_sta_mode(dhd_pub))
+                return res;
+
+            DHD_TRACE(("%s execution\n", __FUNCTION__));
+
+            if ((pbuf = kzalloc(KA_TEMP_BUF_SIZE, GFP_KERNEL)) == NULL) {
+                DHD_ERROR(("failed to allocate buf with size %d\n", KA_TEMP_BUF_SIZE));
+                res = BCME_NOMEM;
+                return res;
+            }
+
+            if ((pmac_frame = kzalloc(KA_FRAME_SIZE, GFP_KERNEL)) == NULL) {
+                DHD_ERROR(("failed to allocate mac_frame with size %d\n", KA_FRAME_SIZE));
+                res = BCME_NOMEM;
+                goto exit;
+            }
+            pmac_frame_begin = pmac_frame;
+
+            /*
+             * Get current mkeep-alive status.
+             */
+            res = dhd_iovar(dhd_pub, 0, "mkeep_alive", &mkeep_alive_id, sizeof(mkeep_alive_id), pbuf,
+                    KA_TEMP_BUF_SIZE, FALSE);
+            if (res < 0) {
+                DHD_ERROR(("%s: Get mkeep_alive failed (error=%d)\n", __FUNCTION__, res));
+                goto exit;
+            } else {
+                /* Check available ID whether it is occupied */
+                mkeep_alive_pktp = (wl_mkeep_alive_pkt_t *) pbuf;
+                if (dtoh32(mkeep_alive_pktp->period_msec != 0)) {
+                    DHD_ERROR(("%s: Get mkeep_alive failed, ID %u is in use.\n",
+                                __FUNCTION__, mkeep_alive_id));
+
+                    /* Current occupied ID info */
+                    DHD_ERROR(("%s: mkeep_alive\n", __FUNCTION__));
+                    DHD_ERROR(("   Id    : %d\n"
+                                "   Period: %d msec\n"
+                                "   Length: %d\n"
+                                "   Packet: 0x",
+                                mkeep_alive_pktp->keep_alive_id,
+                                dtoh32(mkeep_alive_pktp->period_msec),
+                                dtoh16(mkeep_alive_pktp->len_bytes)));
+
+                    for (i = 0; i < mkeep_alive_pktp->len_bytes; i++) {
+                        DHD_ERROR(("%02x", mkeep_alive_pktp->data[i]));
+                    }
+                    DHD_ERROR(("\n"));
+
+                    res = BCME_NOTFOUND;
+                    goto exit;
+                }
+            }
+
+            /* Request the specified ID */
+            memset(&mkeep_alive_pkt, 0, sizeof(wl_mkeep_alive_pkt_t));
+            memset(pbuf, 0, KA_TEMP_BUF_SIZE);
+            str = "mkeep_alive";
+            str_len = strlen(str);
+            strncpy(pbuf, str, str_len);
+            pbuf[str_len] = '\0';
+
+            mkeep_alive_pktp = (wl_mkeep_alive_pkt_t *) (pbuf + str_len + 1);
+            mkeep_alive_pkt.period_msec = htod32(period_msec);
+            buf_len = str_len + 1;
+            mkeep_alive_pkt.version = htod16(WL_MKEEP_ALIVE_VERSION);
+            mkeep_alive_pkt.length = htod16(WL_MKEEP_ALIVE_FIXED_LEN);
+
+            /* ID assigned */
+            mkeep_alive_pkt.keep_alive_id = mkeep_alive_id;
+
+            buf_len += WL_MKEEP_ALIVE_FIXED_LEN;
+
+            /*
+             * Build up Ethernet Frame
+             */
+
+            /* Mapping dest mac addr */
+            memcpy(pmac_frame, dst_mac, ETHER_ADDR_LEN);
+            pmac_frame += ETHER_ADDR_LEN;
+
+            /* Mapping src mac addr */
+            memcpy(pmac_frame, src_mac, ETHER_ADDR_LEN);
+            pmac_frame += ETHER_ADDR_LEN;
+
+            /* Mapping Ethernet type (ETHERTYPE_IP: 0x0800) */
+            *(pmac_frame++) = 0x08;
+            *(pmac_frame++) = 0x00;
+
+            /* Mapping IP pkt */
+            memcpy(pmac_frame, ip_pkt, ip_pkt_len);
+            pmac_frame += ip_pkt_len;
+
+            /*
+             * Length of ether frame (assume to be all hexa bytes)
+             *     = src mac + dst mac + ether type + ip pkt len
+             */
+            len_bytes = ETHER_ADDR_LEN*2 + ETHERTYPE_LEN + ip_pkt_len;
+            memcpy(mkeep_alive_pktp->data, pmac_frame_begin, len_bytes);
+            buf_len += len_bytes;
+            mkeep_alive_pkt.len_bytes = htod16(len_bytes);
+
+            /*
+             * Keep-alive attributes are set in local variable (mkeep_alive_pkt), and
+             * then memcpy'ed into buffer (mkeep_alive_pktp) since there is no
+             * guarantee that the buffer is properly aligned.
+             */
+            memcpy((char *)mkeep_alive_pktp, &mkeep_alive_pkt, WL_MKEEP_ALIVE_FIXED_LEN);
+
+            res = dhd_wl_ioctl_cmd(dhd_pub, WLC_SET_VAR, pbuf, buf_len, TRUE, 0);
+        exit:
+            kfree(pmac_frame_begin);
+            kfree(pbuf);
+            return res;
+        }
+
+        int dhd_dev_stop_mkeep_alive(dhd_pub_t *dhd_pub, uint8 mkeep_alive_id)
+        {
+            char			*pbuf;
+            wl_mkeep_alive_pkt_t	mkeep_alive_pkt;
+            wl_mkeep_alive_pkt_t	*mkeep_alive_pktp;
+            int			res = BCME_ERROR;
+            int			i;
+
+            /*
+             * The mkeep_alive packet is for STA interface only; if the bss is configured as AP,
+             * dongle shall reject a mkeep_alive request.
+             */
+            if (!dhd_support_sta_mode(dhd_pub))
+                return res;
+
+            DHD_TRACE(("%s execution\n", __FUNCTION__));
+
+            /*
+             * Get current mkeep-alive status. Skip ID 0 which is being used for NULL pkt.
+             */
+            if ((pbuf = kmalloc(KA_TEMP_BUF_SIZE, GFP_KERNEL)) == NULL) {
+                DHD_ERROR(("failed to allocate buf with size %d\n", KA_TEMP_BUF_SIZE));
+                return res;
+            }
+
+            res = dhd_iovar(dhd_pub, 0, "mkeep_alive", &mkeep_alive_id,
+                    sizeof(mkeep_alive_id), pbuf, KA_TEMP_BUF_SIZE, FALSE);
+            if (res < 0) {
+                DHD_ERROR(("%s: Get mkeep_alive failed (error=%d)\n", __FUNCTION__, res));
+                goto exit;
+            } else {
+                /* Check occupied ID */
+                mkeep_alive_pktp = (wl_mkeep_alive_pkt_t *) pbuf;
+                DHD_INFO(("%s: mkeep_alive\n", __FUNCTION__));
+                DHD_INFO(("   Id    : %d\n"
+                            "   Period: %d msec\n"
+                            "   Length: %d\n"
+                            "   Packet: 0x",
+                            mkeep_alive_pktp->keep_alive_id,
+                            dtoh32(mkeep_alive_pktp->period_msec),
+                            dtoh16(mkeep_alive_pktp->len_bytes)));
+
+                for (i = 0; i < mkeep_alive_pktp->len_bytes; i++) {
+                    DHD_INFO(("%02x", mkeep_alive_pktp->data[i]));
+                }
+                DHD_INFO(("\n"));
+            }
+
+            /* Make it stop if available */
+            if (dtoh32(mkeep_alive_pktp->period_msec != 0)) {
+                DHD_INFO(("stop mkeep_alive on ID %d\n", mkeep_alive_id));
+                memset(&mkeep_alive_pkt, 0, sizeof(wl_mkeep_alive_pkt_t));
+
+                mkeep_alive_pkt.period_msec = 0;
+                mkeep_alive_pkt.version = htod16(WL_MKEEP_ALIVE_VERSION);
+                mkeep_alive_pkt.length = htod16(WL_MKEEP_ALIVE_FIXED_LEN);
+                mkeep_alive_pkt.keep_alive_id = mkeep_alive_id;
+
+                res = dhd_iovar(dhd_pub, 0, "mkeep_alive",
+                        (char *)&mkeep_alive_pkt,
+                        WL_MKEEP_ALIVE_FIXED_LEN, NULL, 0, TRUE);
+            } else {
+                DHD_ERROR(("%s: ID %u does not exist.\n", __FUNCTION__, mkeep_alive_id));
+                res = BCME_NOTFOUND;
+            }
+        exit:
+            kfree(pbuf);
+            return res;
+        }
+        #endif /* KEEP_ALIVE */
+    }
+-------------------------------------------------------------------------------------------------
+dhd_common.c
+->  {
+        #if defined(KEEP_ALIVE)
+        int dhd_keep_alive_onoff(dhd_pub_t *dhd)
+        {
+            char				buf[32] = {0};
+            const char			*str;
+            wl_mkeep_alive_pkt_t	mkeep_alive_pkt = {0, 0, 0, 0, 0, {0}};
+            wl_mkeep_alive_pkt_t	*mkeep_alive_pktp;
+            int					buf_len;
+            int					str_len;
+            int res					= -1;
+
+            if (!dhd_support_sta_mode(dhd))
+                return res;
+
+            DHD_TRACE(("%s execution\n", __FUNCTION__));
+
+            str = "mkeep_alive";
+            str_len = strlen(str);
+            strncpy(buf, str, sizeof(buf) - 1);
+            buf[ sizeof(buf) - 1 ] = '\0';
+            mkeep_alive_pktp = (wl_mkeep_alive_pkt_t *) (buf + str_len + 1);
+            mkeep_alive_pkt.period_msec = dhd->conf->keep_alive_period;
+            buf_len = str_len + 1;
+            mkeep_alive_pkt.version = htod16(WL_MKEEP_ALIVE_VERSION);
+            mkeep_alive_pkt.length = htod16(WL_MKEEP_ALIVE_FIXED_LEN);
+            /* Setup keep alive zero for null packet generation */
+            mkeep_alive_pkt.keep_alive_id = 0;
+            mkeep_alive_pkt.len_bytes = 0;
+            buf_len += WL_MKEEP_ALIVE_FIXED_LEN;
+            bzero(mkeep_alive_pkt.data, sizeof(mkeep_alive_pkt.data));
+            /* Keep-alive attributes are set in local	variable (mkeep_alive_pkt), and
+             * then memcpy'ed into buffer (mkeep_alive_pktp) since there is no
+             * guarantee that the buffer is properly aligned.
+             */
+            memcpy((char *)mkeep_alive_pktp, &mkeep_alive_pkt, WL_MKEEP_ALIVE_FIXED_LEN);
+
+            res = dhd_wl_ioctl_cmd(dhd, WLC_SET_VAR, buf, buf_len, TRUE, 0);
+
+            return res;
+        }
+        #endif /* defined(KEEP_ALIVE) */
+    }
+-------------------------------------------------------------------------------------------------
+wl_android.c
+->  {
+        #define CMD_KEEP_ALIVE		"KEEPALIVE"
+        
+        int wl_keep_alive_set(struct net_device *dev, char* extra, int total_len)
+        {
+            wl_mkeep_alive_pkt_t	mkeep_alive_pkt;
+            int ret;
+            uint period_msec = 0;
+            char *buf;
+
+            if (extra == NULL) {
+                ANDROID_ERROR(("%s: extra is NULL\n", __FUNCTION__));
+                return -1;
+            }
+            if (sscanf(extra, "%d", &period_msec) != 1) {
+                ANDROID_ERROR(("%s: sscanf error. check period_msec value\n", __FUNCTION__));
+                return -EINVAL;
+            }
+            ANDROID_ERROR(("%s: period_msec is %d\n", __FUNCTION__, period_msec));
+
+            memset(&mkeep_alive_pkt, 0, sizeof(wl_mkeep_alive_pkt_t));
+
+            mkeep_alive_pkt.period_msec = period_msec;
+            mkeep_alive_pkt.version = htod16(WL_MKEEP_ALIVE_VERSION);
+            mkeep_alive_pkt.length = htod16(WL_MKEEP_ALIVE_FIXED_LEN);
+
+            /* Setup keep alive zero for null packet generation */
+            mkeep_alive_pkt.keep_alive_id = 0;
+            mkeep_alive_pkt.len_bytes = 0;
+
+            buf = kmalloc(WLC_IOCTL_SMLEN, GFP_KERNEL);
+            if (!buf) {
+                ANDROID_ERROR(("%s: buffer alloc failed\n", __FUNCTION__));
+                return BCME_NOMEM;
+            }
+            ret = wldev_iovar_setbuf(dev, "mkeep_alive", (char *)&mkeep_alive_pkt,
+                    WL_MKEEP_ALIVE_FIXED_LEN, buf, WLC_IOCTL_SMLEN, NULL);
+            if (ret < 0)
+                ANDROID_ERROR(("%s:keep_alive set failed:%d\n", __FUNCTION__, ret));
+            else
+                ANDROID_TRACE(("%s:keep_alive set ok\n", __FUNCTION__));
+            kfree(buf);
+            return ret;
+        }
+
+        int wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
+        {
+            if (strnicmp(command, CMD_KEEP_ALIVE, strlen(CMD_KEEP_ALIVE)) == 0) {
+                int skip = strlen(CMD_KEEP_ALIVE) + 1;
+                bytes_written = wl_keep_alive_set(net, command + skip, priv_cmd.total_len - skip);
+            }
+        }
+    }
+-------------------------------------------------------------------------------------------------------
+wl_cfgvendor.c
+->  {
+        #ifdef KEEP_ALIVE
+        static int wl_cfgvendor_start_mkeep_alive(struct wiphy *wiphy, struct wireless_dev *wdev,
+                const void *data, int len)
+        {
+            /* max size of IP packet for keep alive */
+            const int MKEEP_ALIVE_IP_PKT_MAX = 256;
+
+            int ret = BCME_OK, rem, type;
+            uint8 mkeep_alive_id = 0;
+            uint8 *ip_pkt = NULL;
+            uint16 ip_pkt_len = 0;
+            uint8 src_mac[ETHER_ADDR_LEN];
+            uint8 dst_mac[ETHER_ADDR_LEN];
+            uint32 period_msec = 0;
+            const struct nlattr *iter;
+            struct bcm_cfg80211 *cfg = wiphy_priv(wiphy);
+            dhd_pub_t *dhd_pub = cfg->pub;
+            gfp_t kflags = in_atomic() ? GFP_ATOMIC : GFP_KERNEL;
+
+            nla_for_each_attr(iter, data, len, rem) {
+                type = nla_type(iter);
+                switch (type) {
+                    case MKEEP_ALIVE_ATTRIBUTE_ID:
+                        mkeep_alive_id = nla_get_u8(iter);
+                        break;
+                    case MKEEP_ALIVE_ATTRIBUTE_IP_PKT_LEN:
+                        ip_pkt_len = nla_get_u16(iter);
+                        if (ip_pkt_len > MKEEP_ALIVE_IP_PKT_MAX) {
+                            ret = BCME_BADARG;
+                            goto exit;
+                        }
+                        break;
+                    case MKEEP_ALIVE_ATTRIBUTE_IP_PKT:
+                        if (!ip_pkt_len) {
+                            ret = BCME_BADARG;
+                            WL_ERR(("ip packet length is 0\n"));
+                            goto exit;
+                        }
+                        ip_pkt = (u8 *)kzalloc(ip_pkt_len, kflags);
+                        if (ip_pkt == NULL) {
+                            ret = BCME_NOMEM;
+                            WL_ERR(("Failed to allocate mem for ip packet\n"));
+                            goto exit;
+                        }
+                        memcpy(ip_pkt, (u8*)nla_data(iter), ip_pkt_len);
+                        break;
+                    case MKEEP_ALIVE_ATTRIBUTE_SRC_MAC_ADDR:
+                        memcpy(src_mac, nla_data(iter), ETHER_ADDR_LEN);
+                        break;
+                    case MKEEP_ALIVE_ATTRIBUTE_DST_MAC_ADDR:
+                        memcpy(dst_mac, nla_data(iter), ETHER_ADDR_LEN);
+                        break;
+                    case MKEEP_ALIVE_ATTRIBUTE_PERIOD_MSEC:
+                        period_msec = nla_get_u32(iter);
+                        break;
+                    default:
+                        WL_ERR(("Unknown type: %d\n", type));
+                        ret = BCME_BADARG;
+                        goto exit;
+                }
+            }
+
+            if (ip_pkt == NULL) {
+                ret = BCME_BADARG;
+                WL_ERR(("ip packet is NULL\n"));
+                goto exit;
+            }
+
+            ret = dhd_dev_start_mkeep_alive(dhd_pub, mkeep_alive_id, ip_pkt, ip_pkt_len, src_mac,
+                    dst_mac, period_msec);
+            if (ret < 0) {
+                WL_ERR(("start_mkeep_alive is failed ret: %d\n", ret));
+            }
+
+exit:
+            if (ip_pkt) {
+                kfree(ip_pkt);
+            }
+
+            return ret;
+        }
+
+        static int wl_cfgvendor_stop_mkeep_alive(struct wiphy *wiphy, struct wireless_dev *wdev,
+                const void *data, int len)
+        {
+            int ret = BCME_OK, rem, type;
+            uint8 mkeep_alive_id = 0;
+            const struct nlattr *iter;
+            struct bcm_cfg80211 *cfg = wiphy_priv(wiphy);
+            dhd_pub_t *dhd_pub = cfg->pub;
+
+            nla_for_each_attr(iter, data, len, rem) {
+                type = nla_type(iter);
+                switch (type) {
+                    case MKEEP_ALIVE_ATTRIBUTE_ID:
+                        mkeep_alive_id = nla_get_u8(iter);
+                        break;
+                    default:
+                        WL_ERR(("Unknown type: %d\n", type));
+                        ret = BCME_BADARG;
+                        break;
+                }
+            }
+
+            ret = dhd_dev_stop_mkeep_alive(dhd_pub, mkeep_alive_id);
+            if (ret < 0) {
+                WL_ERR(("stop_mkeep_alive is failed ret: %d\n", ret));
+            }
+
+            return ret;
+        }
+        #endif /* KEEP_ALIVE */
+
+        static const struct wiphy_vendor_command wl_vendor_cmds [] = {
+        #ifdef KEEP_ALIVE
+            {
+                {
+                    .vendor_id = OUI_GOOGLE,
+                    .subcmd = WIFI_OFFLOAD_SUBCMD_START_MKEEP_ALIVE
+                },
+                .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
+                .doit = wl_cfgvendor_start_mkeep_alive
+            },
+            {
+                {
+                    .vendor_id = OUI_GOOGLE,
+                    .subcmd = WIFI_OFFLOAD_SUBCMD_STOP_MKEEP_ALIVE
+                },
+                .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
+                .doit = wl_cfgvendor_stop_mkeep_alive
+            },
+        #endif /* KEEP_ALIVE */
+        }
+    }
+---------------------------------------------------------------------------------------------
+dhd.h
+->  {
+        #if defined(KEEP_ALIVE)
+        /* Default KEEP_ALIVE Period is 55 sec to prevent AP from sending Keep Alive probe frame */
+        #define KEEP_ALIVE_PERIOD 55000
+        #define NULL_PKT_STR	"null_pkt"
+        #endif /* KEEP_ALIVE */
+        
+        /* Default KEEP_ALIVE Period is 55 sec to prevent AP from sending Keep Alive probe frame */
+        #define DEFAULT_KEEP_ALIVE_VALUE 	55000 /* msec */
+        #ifndef CUSTOM_KEEP_ALIVE_SETTING
+        #define CUSTOM_KEEP_ALIVE_SETTING 	DEFAULT_KEEP_ALIVE_VALUE
+        #endif /* DEFAULT_KEEP_ALIVE_VALUE */
+    }

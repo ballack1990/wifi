@@ -1,0 +1,353 @@
+dhd_wlfc.c
+->  {
+        /**
+         * In case a packet must be dropped (because eg the queues are full), various tallies have to be
+         * be updated. Called from several other functions.
+         *     @param[in] dhdp pointer to public DHD structure
+         *     @param[in] prec precedence of the packet
+         *     @param[in] p    the packet to be dropped
+         *     @param[in] bPktInQ TRUE if packet is part of a queue
+         */
+        static int _dhd_wlfc_prec_drop(dhd_pub_t *dhdp, int prec, void* p, bool bPktInQ)
+        {
+            if (!(prec & 1)) {
+            #ifdef DHDTCPACK_SUPPRESS
+                /* pkt in delayed q, so fake push BDC header for
+                 * dhd_tcpack_check_xmit() and dhd_txcomplete().
+                 */
+                _dhd_wlfc_pushheader(ctx, &p, FALSE, 0, 0, 0, 0, TRUE);
+
+                /* This packet is about to be freed, so remove it from tcp_ack_info_tbl
+                 * This must be one of...
+                 * 1. A pkt already in delayQ is evicted by another pkt with higher precedence
+                 * in _dhd_wlfc_prec_enq_with_drop()
+                 * 2. A pkt could not be enqueued to delayQ because it is full,
+                 * in _dhd_wlfc_enque_delayq().
+                 * 3. A pkt could not be enqueued to delayQ because it is full,
+                 * in _dhd_wlfc_rollback_packet_toq().
+                 */
+                if (dhd_tcpack_check_xmit(dhdp, p) == BCME_ERROR) {
+                    DHD_ERROR(("%s %d: tcpack_suppress ERROR!!!"
+                                " Stop using it\n",
+                                __FUNCTION__, __LINE__));
+                    dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_OFF);
+                }
+            #endif /* DHDTCPACK_SUPPRESS */
+            }
+        }
+
+        static void _dhd_wlfc_pktq_flush(athost_wl_status_info_t* ctx, struct pktq *pq,
+                bool dir, f_processpkt_t fn, void *arg, q_type_t q_type)
+        {
+            for (prec = 0; prec < pq->num_prec; prec++) {
+                while (p) {
+                    if (fn == NULL || (*fn)(p, arg)) {
+                        if (q_type == Q_TYPE_PSQ) {
+                            if (!(prec & 1)) {
+                                /* pkt in delayed q, so fake push BDC header for
+                                 * dhd_tcpack_check_xmit() and dhd_txcomplete().
+                                 */
+                                _dhd_wlfc_pushheader(ctx, &p, FALSE, 0, 0,
+                                        0, 0, TRUE);
+                            #ifdef DHDTCPACK_SUPPRESS
+                                if (dhd_tcpack_check_xmit(dhdp, p) == BCME_ERROR) {
+                                    DHD_ERROR(("%s %d: tcpack_suppress ERROR!!!"
+                                                " Stop using it\n",
+                                                __FUNCTION__, __LINE__));
+                                    dhd_tcpack_suppress_set(dhdp,
+                                            TCPACK_SUP_OFF);
+                                }
+                            #endif /* DHDTCPACK_SUPPRESS */
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        static void _dhd_wlfc_cleanup_txq(dhd_pub_t *dhd, f_processpkt_t fn, void *arg)
+        {
+            for (prec = 0; prec < txq->num_prec; prec++) {
+                while ((pkt = _dhd_wlfc_pktq_pdeq_with_fn(txq, prec, fn, arg))) {
+                #ifdef DHDTCPACK_SUPPRESS
+                    if (dhd_tcpack_check_xmit(dhd, pkt) == BCME_ERROR) {
+                        DHD_ERROR(("%s %d: tcpack_suppress ERROR!!! Stop using it\n",
+                                    __FUNCTION__, __LINE__));
+                        dhd_tcpack_suppress_set(dhd, TCPACK_SUP_OFF);
+                    }
+                #endif /* DHDTCPACK_SUPPRESS */
+                    if (!head) {
+                        head = pkt;
+                    }
+                    if (tail) {
+                        PKTSETLINK(tail, pkt);
+                    }
+                    tail = pkt;
+                }
+            }
+        }  
+    }
+-------------------------------------------------------------------------------------------------
+dhd_config.c
+->  {
+        bool dhd_conf_read_others(dhd_pub_t *dhd, char *full_param, uint len_param)
+        {
+        #ifdef DHDTCPACK_SUPPRESS
+            if (!strncmp("tcpack_sup_mode=", full_param, len_param)) {
+                conf->tcpack_sup_mode = (uint)simple_strtol(data, NULL, 10);
+                printf("%s: tcpack_sup_mode = %d\n", __FUNCTION__, conf->tcpack_sup_mode);
+            }
+        #endif
+        }
+
+        int dhd_conf_preinit(dhd_pub_t *dhd)
+        {
+        #ifdef DHDTCPACK_SUPPRESS
+        #ifdef BCMPCIE
+            conf->tcpack_sup_mode = TCPACK_SUP_DEFAULT;
+        #else
+            conf->tcpack_sup_mode = TCPACK_SUP_OFF;
+        #endif
+        #endif
+
+            if (conf->chip == BCM4354_CHIP_ID || conf->chip == BCM4356_CHIP_ID ||
+                    conf->chip == BCM4371_CHIP_ID || conf->chip == BCM43569_CHIP_ID ||
+                    conf->chip == BCM4359_CHIP_ID || conf->chip == BCM4362_CHIP_ID) {
+            #ifdef DHDTCPACK_SUPPRESS
+            #ifdef BCMSDIO
+                conf->tcpack_sup_mode = TCPACK_SUP_REPLACE;
+            #endif
+            #endif
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+        /** Called when a frame is received by the dongle on interface 'ifidx' */
+        void dhd_rx_frame(dhd_pub_t *dhdp, int ifidx, void *pktbuf, int numpkt, uint8 chan)
+        {
+        #ifdef DHDTCPACK_SUPPRESS
+            dhd_tcpdata_info_get(dhdp, pktbuf);
+        #endif
+        }
+
+        static int dhd_stop(struct net_device *net)
+        {
+        #ifdef DHDTCPACK_SUPPRESS
+            dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_OFF);
+        #endif /* DHDTCPACK_SUPPRESS */
+        }
+
+        dhd_pub_t * dhd_attach(osl_t *osh, struct dhd_bus *bus, uint bus_hdrlen)
+        {
+        #ifdef DHDTCPACK_SUPPRESS
+            dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_DEFAULT);
+        #endif /* DHDTCPACK_SUPPRESS */
+        }
+
+        int dhd_preinit_ioctls(dhd_pub_t *dhd)
+        {
+        #ifdef DHDTCPACK_SUPPRESS
+            printf("%s: Set tcpack_sup_mode %d\n", __FUNCTION__, dhd->conf->tcpack_sup_mode);
+            dhd_tcpack_suppress_set(dhd, dhd->conf->tcpack_sup_mode);
+        #endif
+        }
+
+        int dhd_register_if(dhd_pub_t *dhdp, int ifidx, bool need_rtnl_lock)
+        {
+            if (ifidx == 0) {
+                if (!dhd_download_fw_on_driverload) {
+                #ifdef DHDTCPACK_SUPPRESS
+                    dhd_tcpack_suppress_set(dhdp, TCPACK_SUP_OFF);
+                #endif /* DHDTCPACK_SUPPRESS */
+                }
+            }
+        }
+
+        void dhd_detach(dhd_pub_t *dhdp)
+        {
+        #ifdef DHDTCPACK_SUPPRESS
+            /* This will free all MEM allocated for TCPACK SUPPRESS */
+            dhd_tcpack_suppress_set(&dhd->pub, TCPACK_SUP_OFF);
+        #endif /* DHDTCPACK_SUPPRESS */
+        }
+
+        #ifdef DHDTCPACK_SUPPRESS
+        int dhd_dev_set_tcpack_sup_mode_cfg(struct net_device *dev, uint8 enable)
+        {
+            int err;
+            dhd_info_t *dhd = *(dhd_info_t **)netdev_priv(dev);
+
+            err = dhd_tcpack_suppress_set(&(dhd->pub), enable);
+            if (err != BCME_OK) {
+                DHD_ERROR(("%s : Failed to execute rssi_monitor %d\n", __FUNCTION__, err));
+            }
+            return err;
+        }
+        #endif /* DHDTCPACK_SUPPRESS */
+    }
+-----------------------------------------------------------------------------------------------------
+dhd_sdio.c
+->  {
+        /* Return TRUE if there may be more frames to read */
+        static uint dhdsdio_readframes(dhd_bus_t *bus, uint maxframes, bool *finished)
+        {
+            if (TXCTLOK(bus) && bus->ctrl_frame_stat && (bus->clkstate == CLK_AVAIL)) {
+                dhdsdio_sendpendctl(bus);
+            } else if (bus->dotxinrx && (bus->clkstate == CLK_AVAIL) &&
+                    !bus->fcstate && DATAOK(bus) &&
+                    (pktq_mlen(&bus->txq, ~bus->flowcontrol) > bus->txinrx_thres) &&
+                    bus->dhd->conf->tx_in_rx) {
+                dhdsdio_sendfromq(bus, dhd_txbound);
+            #ifdef DHDTCPACK_SUPPRESS
+                /* In TCPACK_SUP_DELAYTX mode, do txinrx only if
+                 * 1. Any DATA packet to TX
+                 * 2. TCPACK to TCPDATA PSH packets.
+                 * in bus txq.
+                 */
+                bus->dotxinrx = (bus->dhd->tcpack_sup_mode == TCPACK_SUP_DELAYTX) ?
+                    FALSE : TRUE;
+            #endif
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------
+dhd_ip.h
+->  {
+    #ifdef DHDTCPACK_SUPPRESS
+        #define	TCPACKSZMIN	(ETHER_HDR_LEN + IPV4_MIN_HEADER_LEN + TCP_MIN_HEADER_LEN)
+        /* Size of MAX possible TCP ACK packet. Extra bytes for IP/TCP option fields */
+        #define	TCPACKSZMAX	(TCPACKSZMIN + 100)
+
+        /* Max number of TCP streams that have own src/dst IP addrs and TCP ports */
+        #define TCPACK_INFO_MAXNUM 4
+        #define TCPDATA_INFO_MAXNUM 4
+        #define TCPDATA_PSH_INFO_MAXNUM (8 * TCPDATA_INFO_MAXNUM)
+
+        #define TCPDATA_INFO_TIMEOUT 5000	/* Remove tcpdata_info if inactive for this time (in ms) */
+
+        #define DEFAULT_TCPACK_SUPP_RATIO 3
+        #ifndef CUSTOM_TCPACK_SUPP_RATIO
+        #define CUSTOM_TCPACK_SUPP_RATIO DEFAULT_TCPACK_SUPP_RATIO
+        #endif /* CUSTOM_TCPACK_SUPP_RATIO */
+
+        #define DEFAULT_TCPACK_DELAY_TIME 10 /* ms */
+        #ifndef CUSTOM_TCPACK_DELAY_TIME
+        #define CUSTOM_TCPACK_DELAY_TIME DEFAULT_TCPACK_DELAY_TIME
+        #endif /* CUSTOM_TCPACK_DELAY_TIME */
+
+        extern int dhd_tcpack_suppress_set(dhd_pub_t *dhdp, uint8 on);
+        extern void dhd_tcpack_info_tbl_clean(dhd_pub_t *dhdp);
+        extern int dhd_tcpack_check_xmit(dhd_pub_t *dhdp, void *pkt);
+        extern bool dhd_tcpack_suppress(dhd_pub_t *dhdp, void *pkt);
+        extern bool dhd_tcpdata_info_get(dhd_pub_t *dhdp, void *pkt);
+        extern bool dhd_tcpack_hold(dhd_pub_t *dhdp, void *pkt, int ifidx);
+    #endif /* DHDTCPACK_SUPPRESS */
+    }
+-----------------------------------------------------------------------------------------------------------
+dhd_common.c
+->  {
+        const bcm_iovar_t dhd_iovars[] = {
+        #ifdef DHDTCPACK_SUPPRESS
+            {"tcpack_suppress",	IOV_TCPACK_SUPPRESS,	0,	0, IOVT_UINT8,	0 },
+        #endif /* DHDTCPACK_SUPPRESS */
+        }
+
+        static int dhd_doiovar(dhd_pub_t *dhd_pub, const bcm_iovar_t *vi, uint32 actionid, const char *name,
+                void *params, int plen, void *arg, int len, int val_size)
+        {
+            switch (actionid) {
+        #ifdef DHDTCPACK_SUPPRESS
+            case IOV_GVAL(IOV_TCPACK_SUPPRESS): {
+                int_val = (uint32)dhd_pub->tcpack_sup_mode;
+                bcopy(&int_val, arg, val_size);
+                break;
+            }
+            case IOV_SVAL(IOV_TCPACK_SUPPRESS): {
+                bcmerror = dhd_tcpack_suppress_set(dhd_pub, (uint8)int_val);
+                break;
+            }
+        #endif /* DHDTCPACK_SUPPRESS */
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------------------
+dhd.h
+->  {
+        #ifdef DHDTCPACK_SUPPRESS
+        enum {
+            /* TCPACK suppress off */
+            TCPACK_SUP_OFF,
+            /* Replace TCPACK in txq when new coming one has higher ACK number. */
+            TCPACK_SUP_REPLACE,
+            /* TCPACK_SUP_REPLACE + delayed TCPACK TX unless ACK to PSH DATA.
+             * This will give benefits to Half-Duplex bus interface(e.g. SDIO) that
+             * 1. we are able to read TCP DATA packets first from the bus
+             * 2. TCPACKs that don't need to hurry delivered remains longer in TXQ so can be suppressed.
+             */
+            TCPACK_SUP_DELAYTX,
+            TCPACK_SUP_HOLD,
+            TCPACK_SUP_LAST_MODE
+        };
+
+        #ifdef BCMSDIO
+        #define TCPACK_SUP_DEFAULT	TCPACK_SUP_DELAYTX
+        #elif defined(BCMPCIE)
+        #define TCPACK_SUP_DEFAULT	TCPACK_SUP_HOLD
+        #else
+        #define TCPACK_SUP_DEFAULT	TCPACK_SUP_OFF
+        #endif /* BCMSDIO */
+        #endif /* DHDTCPACK_SUPPRESS */
+
+        typedef struct dhd_pub {
+        #ifdef DHDTCPACK_SUPPRESS
+            uint8 tcpack_sup_mode;		/* TCPACK suppress mode */
+            void *tcpack_sup_module;	/* TCPACK suppress module */
+            uint32 tcpack_sup_ratio;
+            uint32 tcpack_sup_delay;
+        #endif /* DHDTCPACK_SUPPRESS */
+        }
+    }
+----------------------------------------------------------------------------------------------
+wl_cfgvendor.c
+->  {
+        #ifdef DHDTCPACK_SUPPRESS
+        static int wl_cfgvendor_set_tcpack_sup_mode(struct wiphy *wiphy,
+                struct wireless_dev *wdev, const void  *data, int len)
+        {
+            int err = 0, tmp, type;
+            struct bcm_cfg80211 *cfg = wiphy_priv(wiphy);
+            struct net_device *ndev = wdev_to_wlc_ndev(wdev, cfg);
+            uint8 enable = 0;
+            const struct nlattr *iter;
+
+            nla_for_each_attr(iter, data, len, tmp) {
+                type = nla_type(iter);
+                if (type == ANDR_WIFI_ATTRIBUTE_TCPACK_SUP_VALUE) {
+                    enable = (int8)nla_get_u32(iter);
+                }
+            }
+
+            if (dhd_dev_set_tcpack_sup_mode_cfg(ndev, enable) < 0) {
+                WL_ERR(("Could not set TCP Ack Suppress mode cfg\n"));
+                err = -EINVAL;
+            }
+            return err;
+        }
+        #endif /* DHDTCPACK_SUPPRESS */
+
+        static const struct wiphy_vendor_command wl_vendor_cmds [] = {
+        #ifdef DHDTCPACK_SUPPRESS
+            {
+                {
+                    .vendor_id = OUI_GOOGLE,
+                    .subcmd = WIFI_SUBCMD_CONFIG_TCPACK_SUP
+                },
+                .flags = WIPHY_VENDOR_CMD_NEED_WDEV | WIPHY_VENDOR_CMD_NEED_NETDEV,
+                .doit = wl_cfgvendor_set_tcpack_sup_mode
+            },
+        #endif /* DHDTCPACK_SUPPRESS */
+        }
+    }
+

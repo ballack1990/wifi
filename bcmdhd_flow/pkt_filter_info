@@ -1,0 +1,767 @@
+/**************************************************************************************
+pkt_filter_add
+	Install a packet filter.
+	Usage: wl pkt_filter_add <id> <polarity> <type> <offset> <bitmask> <pattern>
+	id:       Integer. User specified id.
+	type:     0 (Pattern matching filter)
+	          1 (Magic pattern match (variable offset)
+	          2 (Extended pattern list)
+	offset:   (type 0): Integer offset in received packet to start matching.
+	          (type 1): Integer offset, match here are anywhere later.
+	          (type 2): [<base>:]<offset>. Symbolic packet loc plus relative
+	                    offset, use wl_pkt_filter_add -l for a <base> list.
+	polarity: Set to 1 to negate match result. 0 is default.
+	bitmask:  Hex bitmask that indicates which bits of 'pattern' to match.
+	          Must be same size as 'pattern'. Bit 0 of bitmask corresponds
+	          to bit 0 of pattern, etc.  If bit N of bitmask is 0, then do
+	          *not* match bit N of the pattern with the received payload. If
+	          bit N of bitmask is 1, then perform match.
+	pattern:  Hex pattern to match.  Must be same size as <bitmask>.
+	          Syntax: same as bitmask, but for type 2 (pattern list), a '!'
+	          may be used to negate that pattern match (e.g. !0xff03).
+	For type 2: [<base>:]<offset> <bitmask> [!]<pattern> triple may be
+	repeated; all sub-patterns must match for the filter to match.
+-------------------------------------------------------------------------------------
+pkt_filter_mode
+	Set packet filter match action.
+	Usage: wl pkt_filter_mode <value>
+	value: 1 - Forward packet on match, discard on non-match (default).
+	       0 - Discard packet on match, forward on non-match.
+*************************************************************************************/
+
+wl_cfg_btcoex.c
+->  {
+        int wl_cfg80211_set_btcoex_dhcp(struct net_device *dev, dhd_pub_t *dhd, char *command)
+        {
+            /* Figure out powermode 1 or o command */
+            strncpy((char *)&powermode_val, command + strlen("BTCOEXMODE") +1, 1);
+
+            if (strnicmp((char *)&powermode_val, "1", strlen("1")) == 0) {
+                WL_TRACE_HW4(("DHCP session starts\n"));
+            #ifdef PKT_FILTER_SUPPORT
+                dhd->dhcp_in_progress = 1;
+            #if defined(WL_VIRTUAL_APSTA) && defined(APSTA_BLOCK_ARP_DURING_DHCP)
+                if ((dhd->op_mode & DHD_FLAG_CONCURR_STA_HOSTAP_MODE) ==
+                        DHD_FLAG_CONCURR_STA_HOSTAP_MODE) {
+                    /* Block ARP frames while DHCP of STA interface is in
+                     * progress in case of STA/SoftAP concurrent mode
+                     */
+                    wl_cfg80211_block_arp(dev, TRUE);
+                } else
+            #endif /* WL_VIRTUAL_APSTA && APSTA_BLOCK_ARP_DURING_DHCP */
+                    if (dhd->early_suspended) {                                                 // 查一下这个early_suspended!!!
+                        WL_TRACE_HW4(("DHCP in progressing , disable packet filter!!!\n"));
+                        dhd_enable_packet_filter(0, dhd);
+                    }
+            #endif /* PKT_FILTER_SUPPORT */
+            }
+            else if (strnicmp((char *)&powermode_val, "2", strlen("2")) == 0) {
+            #ifdef PKT_FILTER_SUPPORT
+                dhd->dhcp_in_progress = 0;
+                WL_TRACE_HW4(("DHCP is complete \n"));
+
+            #if defined(WL_VIRTUAL_APSTA) && defined(APSTA_BLOCK_ARP_DURING_DHCP)
+                if ((dhd->op_mode & DHD_FLAG_CONCURR_STA_HOSTAP_MODE) ==
+                        DHD_FLAG_CONCURR_STA_HOSTAP_MODE) {
+                    /* Unblock ARP frames */
+                    wl_cfg80211_block_arp(dev, FALSE);
+                } else
+            #endif /* WL_VIRTUAL_APSTA && APSTA_BLOCK_ARP_DURING_DHCP */
+                    if (dhd->early_suspended) {
+                        /* Enable packet filtering */
+                        WL_TRACE_HW4(("DHCP is complete , enable packet filter!!!\n"));
+                        dhd_enable_packet_filter(1, dhd);
+                    }
+            #endif /* PKT_FILTER_SUPPORT */
+            }
+    }
+-----------------------------------------------------------------------------------------------------------
+dhd_config.c
+->  {
+        #ifdef PKT_FILTER_SUPPORT
+        void  dhd_conf_add_pkt_filter(dhd_pub_t *dhd)
+        {
+            int i, j;
+            char str[16];
+        #define MACS "%02x%02x%02x%02x%02x%02x"
+
+            /*
+             * Filter in less pkt: ARP(0x0806, ID is 105), BRCM(0x886C), 802.1X(0x888E)
+             *   1) dhd_master_mode=1
+             *   2) pkt_filter_del=100, 102, 103, 104, 105
+             *   3) pkt_filter_add=131 0 0 12 0xFFFF 0x886C, 132 0 0 12 0xFFFF 0x888E
+             *   4) magic_pkt_filter_add=141 0 1 12
+             */
+            for(i=0; i<dhd->conf->pkt_filter_add.count; i++) {
+                dhd->pktfilter[i+dhd->pktfilter_count] = dhd->conf->pkt_filter_add.filter[i];
+                printf("%s: %s\n", __FUNCTION__, dhd->pktfilter[i+dhd->pktfilter_count]);
+            }
+            dhd->pktfilter_count += i;
+
+            // # magic_pkt format : 连续6个FF，接着是16个MAC
+            // # 所以filter格式是 141 0 1 12 0xFFFFFFFFFFFF 连续16个0xFFFFFFFFFFFF 0xFFFFFFFFFFFF 连续16个MAC
+            if (dhd->conf->magic_pkt_filter_add) {
+                strcat(dhd->conf->magic_pkt_filter_add, " 0x");
+                strcat(dhd->conf->magic_pkt_filter_add, "FFFFFFFFFFFF");
+                for (j=0; j<16; j++)
+                    strcat(dhd->conf->magic_pkt_filter_add, "FFFFFFFFFFFF");
+                strcat(dhd->conf->magic_pkt_filter_add, " 0x");
+                strcat(dhd->conf->magic_pkt_filter_add, "FFFFFFFFFFFF");
+                sprintf(str, MACS, MAC2STRDBG(dhd->mac.octet));
+                for (j=0; j<16; j++)
+                    strncat(dhd->conf->magic_pkt_filter_add, str, 12);
+                dhd->pktfilter[dhd->pktfilter_count] = dhd->conf->magic_pkt_filter_add;
+                dhd->pktfilter_count += 1;
+            }
+        }
+
+        bool dhd_conf_del_pkt_filter(dhd_pub_t *dhd, uint32 id)
+        {
+            int i;
+
+            if (dhd && dhd->conf) {
+                for (i=0; i<dhd->conf->pkt_filter_del.count; i++) {
+                    if (id == dhd->conf->pkt_filter_del.id[i]) {
+                        printf("%s: %d\n", __FUNCTION__, dhd->conf->pkt_filter_del.id[i]);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
+
+        void dhd_conf_discard_pkt_filter(dhd_pub_t *dhd)
+        {
+            dhd->pktfilter_count = 6;
+            dhd->pktfilter[DHD_UNICAST_FILTER_NUM] = NULL;
+            dhd->pktfilter[DHD_BROADCAST_FILTER_NUM] = "101 0 0 0 0xFFFFFFFFFFFF 0xFFFFFFFFFFFF";
+            dhd->pktfilter[DHD_MULTICAST4_FILTER_NUM] = "102 0 0 0 0xFFFFFF 0x01005E";
+            dhd->pktfilter[DHD_MULTICAST6_FILTER_NUM] = "103 0 0 0 0xFFFF 0x3333";
+            dhd->pktfilter[DHD_MDNS_FILTER_NUM] = NULL;
+            /* Do not enable ARP to pkt filter if dhd_master_mode is false.*/
+            dhd->pktfilter[DHD_ARP_FILTER_NUM] = NULL;                                  // 据说这个已经被所有fw干掉了， 不起作用。
+
+            /* IPv4 broadcast address XXX.XXX.XXX.255 */
+            dhd->pktfilter[dhd->pktfilter_count] = "110 0 0 12 0xFFFF00000000000000000000000000000000000000FF 0x080000000000000000000000000000000000000000FF";
+            dhd->pktfilter_count++;
+            /* discard IPv4 multicast address 224.0.0.0/4 */
+            dhd->pktfilter[dhd->pktfilter_count] = "111 0 0 12 0xFFFF00000000000000000000000000000000F0 0x080000000000000000000000000000000000E0";
+            dhd->pktfilter_count++;
+            /* discard IPv6 multicast address FF00::/8 */
+            dhd->pktfilter[dhd->pktfilter_count] = "112 0 0 12 0xFFFF000000000000000000000000000000000000000000000000FF 0x86DD000000000000000000000000000000000000000000000000FF";
+            dhd->pktfilter_count++;
+            /* discard Netbios pkt */
+            dhd->pktfilter[dhd->pktfilter_count] = "121 0 0 12 0xFFFF000000000000000000FF000000000000000000000000FFFF 0x0800000000000000000000110000000000000000000000000089";
+            dhd->pktfilter_count++;
+
+        }
+        #endif /* PKT_FILTER_SUPPORT */
+        
+
+        #ifdef PKT_FILTER_SUPPORT
+        bool dhd_conf_read_pkt_filter(dhd_pub_t *dhd, char *full_param, uint len_param)
+        {
+            struct dhd_conf *conf = dhd->conf;
+            char *data = full_param+len_param;
+            char *pch, *pick_tmp;
+            int i;
+
+            /* Process pkt filter:
+             * 1) pkt_filter_add=99 0 0 0 0x000000000000 0x000000000000
+             * 2) pkt_filter_del=100, 102, 103, 104, 105
+             * 3) magic_pkt_filter_add=141 0 1 12
+             */
+            if (!strncmp("dhd_master_mode=", full_param, len_param)) {
+                if (!strncmp(data, "0", 1))
+                    dhd_master_mode = FALSE;
+                else
+                    dhd_master_mode = TRUE;
+                printf("%s: dhd_master_mode = %d\n", __FUNCTION__, dhd_master_mode);
+            }
+            else if (!strncmp("pkt_filter_add=", full_param, len_param)) {
+                pick_tmp = data;
+                pch = bcmstrtok(&pick_tmp, ",.-", 0);
+                i=0;
+                while (pch != NULL && i<DHD_CONF_FILTER_MAX) {
+                    strcpy(&conf->pkt_filter_add.filter[i][0], pch);
+                    printf("%s: pkt_filter_add[%d][] = %s\n", __FUNCTION__, i, &conf->pkt_filter_add.filter[i][0]);
+                    pch = bcmstrtok(&pick_tmp, ",.-", 0);
+                    i++;
+                }
+                conf->pkt_filter_add.count = i;
+            }
+            else if (!strncmp("pkt_filter_del=", full_param, len_param)) {
+                pick_tmp = data;
+                pch = bcmstrtok(&pick_tmp, " ,.-", 0);
+                i=0;
+                while (pch != NULL && i<DHD_CONF_FILTER_MAX) {
+                    conf->pkt_filter_del.id[i] = (uint32)simple_strtol(pch, NULL, 10);
+                    pch = bcmstrtok(&pick_tmp, " ,.-", 0);
+                    i++;
+                }
+                conf->pkt_filter_del.count = i;
+                printf("%s: pkt_filter_del id = ", __FUNCTION__);
+                for (i=0; i<conf->pkt_filter_del.count; i++)
+                    printf("%d ", conf->pkt_filter_del.id[i]);
+                printf("\n");
+            }
+            else if (!strncmp("magic_pkt_filter_add=", full_param, len_param)) {
+                if (!(conf->magic_pkt_filter_add = kmalloc(MAGIC_PKT_FILTER_LEN, GFP_KERNEL))) {
+                    CONFIG_ERROR(("%s: kmalloc failed\n", __FUNCTION__));
+                } else {
+                    memset(conf->magic_pkt_filter_add, 0, MAGIC_PKT_FILTER_LEN);
+                    strcpy(conf->magic_pkt_filter_add, data);
+                    printf("%s: magic_pkt_filter_add = %s\n", __FUNCTION__, conf->magic_pkt_filter_add);
+                }
+            }
+            else
+                return false;
+
+            return true;
+        }
+        #endif
+        
+        int dhd_conf_read_config(dhd_pub_t *dhd, char *conf_path)
+        {
+        #ifdef PKT_FILTER_SUPPORT
+            if (dhd_conf_read_pkt_filter(dhd, pick, len_param))
+                continue;
+        #endif /* PKT_FILTER_SUPPORT */
+        }
+    }
+------------------------------------------------------------------------------------------------------------------
+dhd_linux.c
+->  {
+    #ifdef PKT_FILTER_SUPPORT
+        /* Global Pkt filter enable control */
+        uint dhd_pkt_filter_enable = TRUE;
+        module_param(dhd_pkt_filter_enable, uint, 0);
+    #endif
+        
+        // terence 20160615: fix building error if ARP_OFFLOAD_SUPPORT removed
+        #if defined(PKT_FILTER_SUPPORT)
+        #if defined(ARP_OFFLOAD_SUPPORT) && !defined(GAN_LITE_NAT_KEEPALIVE_FILTER)
+        static bool _turn_on_arp_filter(dhd_pub_t *dhd, int op_mode_param)
+        {
+            bool _apply = FALSE;
+            /* In case of IBSS mode, apply arp pkt filter */
+            if (op_mode_param & DHD_FLAG_IBSS_MODE) {
+                _apply = TRUE;
+                goto exit;
+            }
+            /* In case of P2P GO or GC, apply pkt filter to pass arp pkt to host */
+            if (op_mode_param & (DHD_FLAG_P2P_GC_MODE | DHD_FLAG_P2P_GO_MODE)) {
+                _apply = TRUE;
+                goto exit;
+            }
+
+        exit:
+            return _apply;
+        }
+        #endif /* !GAN_LITE_NAT_KEEPALIVE_FILTER */
+
+        void dhd_set_packet_filter(dhd_pub_t *dhd)
+        {
+            int i;
+
+            DHD_TRACE(("%s: enter\n", __FUNCTION__));
+            if (dhd_pkt_filter_enable) {
+                for (i = 0; i < dhd->pktfilter_count; i++) {
+                    dhd_pktfilter_offload_set(dhd, dhd->pktfilter[i]);
+                }
+            }
+        }
+
+        void dhd_enable_packet_filter(int value, dhd_pub_t *dhd)
+        {
+            int i;
+
+            DHD_ERROR(("%s: enter, value = %d\n", __FUNCTION__, value));
+            if ((dhd->op_mode & DHD_FLAG_HOSTAP_MODE) && value) {
+                DHD_ERROR(("%s: DHD_FLAG_HOSTAP_MODE\n", __FUNCTION__));
+                return;
+            }
+            /* 1 - Enable packet filter, only allow unicast packet to send up */
+            /* 0 - Disable packet filter */
+            if (dhd_pkt_filter_enable && (!value ||
+                        (dhd_support_sta_mode(dhd) && !dhd->dhcp_in_progress)))
+            {
+                for (i = 0; i < dhd->pktfilter_count; i++) {
+                    // terence 20160615: fix building error if ARP_OFFLOAD_SUPPORT removed
+            #if defined(ARP_OFFLOAD_SUPPORT) && !defined(GAN_LITE_NAT_KEEPALIVE_FILTER)
+                    if (value && (i == DHD_ARP_FILTER_NUM) && 
+                            !_turn_on_arp_filter(dhd, dhd->op_mode)) {
+                        DHD_TRACE(("Do not turn on ARP white list pkt filter:"
+                                    "val %d, cnt %d, op_mode 0x%x\n",
+                                    value, i, dhd->op_mode));
+                        continue;
+                    }
+            #endif /* !GAN_LITE_NAT_KEEPALIVE_FILTER */
+                    dhd_pktfilter_offload_enable(dhd, dhd->pktfilter[i],
+                            value, dhd_master_mode);
+                }
+            }
+        }
+
+        int dhd_packet_filter_add_remove(dhd_pub_t *dhdp, int add_remove, int num)
+        {
+            char *filterp = NULL;
+            int filter_id = 0;
+
+            switch (num) {
+                case DHD_BROADCAST_FILTER_NUM:
+                    filterp = "101 0 0 0 0xFFFFFFFFFFFF 0xFFFFFFFFFFFF";
+                    filter_id = 101;
+                    break;
+                case DHD_MULTICAST4_FILTER_NUM:
+                    filter_id = 102;
+                    if (FW_SUPPORTED((dhdp), pf6)) {
+                        if (dhdp->pktfilter[num] != NULL) {
+                            dhd_pktfilter_offload_delete(dhdp, filter_id);
+                            dhdp->pktfilter[num] = NULL;
+                        }
+                        if (!add_remove) {
+                            filterp = DISCARD_IPV4_MCAST;
+                            add_remove = 1;
+                            break;
+                        }
+                    }
+                    filterp = "102 0 0 0 0xFFFFFF 0x01005E";
+                    break;
+                case DHD_MULTICAST6_FILTER_NUM:
+                    filter_id = 103;
+                    if (FW_SUPPORTED((dhdp), pf6)) {
+                        if (dhdp->pktfilter[num] != NULL) {
+                            dhd_pktfilter_offload_delete(dhdp, filter_id);
+                            dhdp->pktfilter[num] = NULL;
+                        }
+                        if (!add_remove) {
+                            filterp = DISCARD_IPV6_MCAST;
+                            add_remove = 1;
+                            break;
+                        }
+                    }
+                    filterp = "103 0 0 0 0xFFFF 0x3333";
+                    break;
+                case DHD_MDNS_FILTER_NUM:
+                    filterp = "104 0 0 0 0xFFFFFFFFFFFF 0x01005E0000FB";
+                    filter_id = 104;
+                    break;
+                case DHD_ARP_FILTER_NUM:
+                    filterp = "105 0 0 12 0xFFFF 0x0806";
+                    filter_id = 105;
+                    break;
+                case DHD_BROADCAST_ARP_FILTER_NUM:
+                    filterp = "106 0 0 0 0xFFFFFFFFFFFF0000000000000806"
+                        " 0xFFFFFFFFFFFF0000000000000806";
+                    filter_id = 106;
+                    break;
+                default:
+                    return -EINVAL;
+            }
+
+            /* Add filter */
+            if (add_remove) {
+                dhdp->pktfilter[num] = filterp;
+                dhd_pktfilter_offload_set(dhdp, dhdp->pktfilter[num]);
+            } else { /* Delete filter */
+                if (dhdp->pktfilter[num]) {
+                    dhd_pktfilter_offload_delete(dhdp, filter_id);
+                    dhdp->pktfilter[num] = NULL;
+                }
+            }
+
+            return 0;
+        }
+        #endif /* PKT_FILTER_SUPPORT */
+
+        static int dhd_set_suspend(int value, dhd_pub_t *dhd)
+        {
+            if (dhd->up) {
+                if (value && dhd->in_suspend) {
+            #ifdef PKT_FILTER_SUPPORT
+                    dhd->early_suspended = 1;
+            #endif
+                    /* Kernel suspended */
+                    DHD_ERROR(("%s: force extra suspend setting\n", __FUNCTION__));
+
+                    if (dhd->conf->pm_in_suspend >= 0)
+                        power_mode = dhd->conf->pm_in_suspend;
+                    dhd_wl_ioctl_cmd(dhd, WLC_SET_PM, (char *)&power_mode,
+                            sizeof(power_mode), TRUE, 0);
+
+            #ifdef PKT_FILTER_SUPPORT
+                    /* Enable packet filter,
+                     * only allow unicast packet to send up
+                     */
+                    dhd_enable_packet_filter(1, dhd);
+                #ifdef APF
+                    dhd_dev_apf_enable_filter(dhd_linux_get_primary_netdev(dhd));
+                #endif /* APF */
+            #endif /* PKT_FILTER_SUPPORT */
+                } else {
+                    dhd_conf_set_ap_in_suspend(dhd, value);
+            #ifdef PKT_FILTER_SUPPORT
+                    dhd->early_suspended = 0;
+            #endif
+            
+            #ifdef PKT_FILTER_SUPPORT
+                    /* disable pkt filter */
+                    dhd_enable_packet_filter(0, dhd);
+                #ifdef APF
+                    dhd_dev_apf_disable_filter(dhd_linux_get_primary_netdev(dhd));
+                #endif /* APF */
+            #endif /* PKT_FILTER_SUPPORT */
+                }
+            }
+        }
+
+        int dhd_deepsleep(dhd_info_t *dhd, int flag)
+        {
+            switch (flag) {
+                case 1 :  /* Deepsleep on */
+                    DHD_ERROR(("dhd_deepsleep: ON\n"));
+                    /* give some time to sysioc_work before deepsleep */
+                    OSL_SLEEP(200);
+            #ifdef PKT_FILTER_SUPPORT
+                    /* disable pkt filter */
+                    dhd_enable_packet_filter(0, dhdp);
+            #endif /* PKT_FILTER_SUPPORT */
+            }
+        }
+
+        int dhd_preinit_ioctls(dhd_pub_t *dhd)
+        {
+            if ((!op_mode && dhd_get_fw_mode(dhd->info) == DHD_FLAG_HOSTAP_MODE) ||
+                    (op_mode == DHD_FLAG_HOSTAP_MODE)) {
+        #if defined(ARP_OFFLOAD_SUPPORT)
+                arpoe = 0;
+        #endif
+        #ifdef PKT_FILTER_SUPPORT
+                dhd_pkt_filter_enable = FALSE;
+        #endif
+            }
+            else if ((!op_mode && dhd_get_fw_mode(dhd->info) == DHD_FLAG_MFG_MODE) ||
+                    (op_mode == DHD_FLAG_MFG_MODE)) {
+        #if defined(ARP_OFFLOAD_SUPPORT)
+                arpoe = 0;
+        #endif /* ARP_OFFLOAD_SUPPORT */
+        #ifdef PKT_FILTER_SUPPORT
+                dhd_pkt_filter_enable = FALSE;
+        #endif /* PKT_FILTER_SUPPORT */
+            }
+            else {
+                if ((!op_mode && dhd_get_fw_mode(dhd->info) == DHD_FLAG_P2P_MODE) ||
+                        (op_mode == DHD_FLAG_P2P_MODE)) {
+        #if defined(ARP_OFFLOAD_SUPPORT)
+                    arpoe = 0;
+        #endif
+        #ifdef PKT_FILTER_SUPPORT
+                    dhd_pkt_filter_enable = FALSE;
+        #endif
+                }
+            }
+
+        #ifdef PKT_FILTER_SUPPORT
+            /* Setup default defintions for pktfilter , enable in suspend */
+            if (dhd_master_mode) {
+                dhd->pktfilter_count = 6;
+                dhd->pktfilter[DHD_BROADCAST_FILTER_NUM] = NULL;
+                if (!FW_SUPPORTED(dhd, pf6)) {
+                    dhd->pktfilter[DHD_MULTICAST4_FILTER_NUM] = NULL;
+                    dhd->pktfilter[DHD_MULTICAST6_FILTER_NUM] = NULL;
+                } else {
+                    /* Immediately pkt filter TYPE 6 Discard IPv4/IPv6 Multicast Packet */
+                    dhd->pktfilter[DHD_MULTICAST4_FILTER_NUM] = DISCARD_IPV4_MCAST;
+                    dhd->pktfilter[DHD_MULTICAST6_FILTER_NUM] = DISCARD_IPV6_MCAST;
+                }
+                /* apply ARP pktfilter */
+                dhd->pktfilter[DHD_ARP_FILTER_NUM] = "105 0 0 12 0xFFFF 0x0806";
+
+                /* Setup filter to allow only unicast */
+                dhd->pktfilter[DHD_UNICAST_FILTER_NUM] = "100 0 0 0 0x01 0x00";
+
+                /* Add filter to pass multicastDNS packet and NOT filter out as Broadcast */
+                dhd->pktfilter[DHD_MDNS_FILTER_NUM] = NULL;
+
+                dhd->pktfilter[DHD_BROADCAST_ARP_FILTER_NUM] = NULL;
+                if (FW_SUPPORTED(dhd, pf6)) {
+                    /* Immediately pkt filter TYPE 6 Dicard Broadcast IP packet */
+                    dhd->pktfilter[DHD_IP4BCAST_DROP_FILTER_NUM] =
+                        "107 1 6 IP4_H:16 0xf0 !0xe0 IP4_H:19 0xff 0xff";
+                    dhd->pktfilter_count = 8;
+                }
+            } else
+                dhd_conf_discard_pkt_filter(dhd);
+
+            dhd_conf_add_pkt_filter(dhd);
+
+        #if defined(SOFTAP)
+            if (ap_fw_loaded) {
+                dhd_enable_packet_filter(0, dhd);
+            }
+        #endif /* defined(SOFTAP) */
+            dhd_set_packet_filter(dhd);
+        #endif /* PKT_FILTER_SUPPORT */
+        }
+
+        int dhd_os_enable_packet_filter(dhd_pub_t *dhdp, int val)
+        {
+            int ret = 0;
+
+            /* Packet filtering is set only if we still in early-suspend and
+             * we need either to turn it ON or turn it OFF
+             * We can always turn it OFF in case of early-suspend, but we turn it
+             * back ON only if suspend_disable_flag was not set
+             */
+            if (dhdp && dhdp->up) {
+                if (dhdp->in_suspend) {
+                    if (!val || (val && !dhdp->suspend_disable_flag))
+                        dhd_enable_packet_filter(val, dhdp);
+                }
+            }
+            return ret;
+        }
+
+        /* function to enable/disable packet for Network device */
+        int net_os_enable_packet_filter(struct net_device *dev, int val)
+        {
+            dhd_info_t *dhd = DHD_DEV_INFO(dev);
+
+            DHD_ERROR(("%s: val = %d\n", __FUNCTION__, val));
+            return dhd_os_enable_packet_filter(&dhd->pub, val);
+        }
+        #endif /* PKT_FILTER_SUPPORT */
+    }
+----------------------------------------------------------------------------------------------------
+wl_cfg80211.c
+->  {
+        static s32 wl_cfg80211_start_ap(
+                struct wiphy *wiphy,
+                struct net_device *dev,
+                struct cfg80211_ap_settings *info)
+        {
+            if (dev->ieee80211_ptr->iftype == NL80211_IFTYPE_AP) {
+                dev_role = NL80211_IFTYPE_AP;
+                dhd->op_mode |= DHD_FLAG_HOSTAP_MODE;
+                err = dhd_ndo_enable(dhd, FALSE);
+                WL_DBG(("%s: Disabling NDO on Hostapd mode %d\n", __FUNCTION__, err));
+                if (err) {
+                    WL_ERR(("%s: Disabling NDO Failed %d\n", __FUNCTION__, err));
+                }
+            #ifdef PKT_FILTER_SUPPORT
+                /* Disable packet filter */
+                if (dhd->early_suspended) {
+                    WL_ERR(("Disable pkt_filter\n"));
+                    dhd_enable_packet_filter(0, dhd);
+                }
+            #endif /* PKT_FILTER_SUPPORT */
+            #ifdef ARP_OFFLOAD_SUPPORT
+                /* IF SoftAP is enabled, disable arpoe */
+                if (dhd->op_mode & DHD_FLAG_STA_MODE) {
+                    dhd_arp_offload_set(dhd, 0);
+                    dhd_arp_offload_enable(dhd, FALSE);
+                }
+            #endif /* ARP_OFFLOAD_SUPPORT */
+            }
+        }
+
+        static s32 wl_cfg80211_stop_ap(
+                struct wiphy *wiphy,
+                struct net_device *dev)
+        {
+            if (dev_role == NL80211_IFTYPE_AP) {
+        #ifdef PKT_FILTER_SUPPORT
+                /* Enable packet filter */
+                if (dhd->early_suspended) {
+                    WL_ERR(("Enable pkt_filter\n"));
+                    dhd_enable_packet_filter(1, dhd);
+                }
+        #endif /* PKT_FILTER_SUPPORT */
+        #ifdef ARP_OFFLOAD_SUPPORT
+                /* IF SoftAP is disabled, enable arpoe back for STA mode. */
+                if (dhd->op_mode & DHD_FLAG_STA_MODE) {
+                    dhd_arp_offload_set(dhd, dhd_arp_mode);
+                    dhd_arp_offload_enable(dhd, TRUE);
+                }
+        #endif /* ARP_OFFLOAD_SUPPORT */
+        }
+    }
+-------------------------------------------------------------------------------------
+dhd_config.h
+->  {
+        #ifdef PKT_FILTER_SUPPORT
+        #define DHD_CONF_FILTER_MAX	8
+        #define PKT_FILTER_LEN 300
+        #define MAGIC_PKT_FILTER_LEN 450
+        typedef struct conf_pkt_filter_add {
+            uint32 count;
+            char filter[DHD_CONF_FILTER_MAX][PKT_FILTER_LEN];
+        } conf_pkt_filter_add_t;
+
+        typedef struct conf_pkt_filter_del {
+            uint32 count;
+            uint32 id[DHD_CONF_FILTER_MAX];
+        } conf_pkt_filter_del_t;
+        #endif
+    }
+--------------------------------------------------------------------------------------
+dhd_common.c
+->  {
+    #ifdef PKT_FILTER_SUPPORT
+        void dhd_pktfilter_offload_enable(dhd_pub_t * dhd, char *arg, int enable, int master_mode)
+        {
+            str = "pkt_filter_enable";
+            str_len = strlen(str);
+            bcm_strncpy_s(buf, sizeof(buf) - 1, str, sizeof(buf) - 1);
+            buf[ sizeof(buf) - 1 ] = '\0';
+            buf_len = str_len + 1;
+
+            pkt_filterp = (wl_pkt_filter_enable_t *)(buf + str_len + 1);
+
+            /* Parse packet filter id. */
+            enable_parm.id = htod32(strtoul(argv[i], NULL, 0));
+            if (dhd_conf_del_pkt_filter(dhd, enable_parm.id))
+                goto fail;
+
+            /* Parse enable/disable value. */
+            enable_parm.enable = htod32(enable);
+
+            buf_len += sizeof(enable_parm);
+            memcpy((char *)pkt_filterp,
+                    &enable_parm,
+                    sizeof(enable_parm));
+
+            /* Enable/disable the specified filter. */
+            rc = dhd_wl_ioctl_cmd(dhd, WLC_SET_VAR, buf, buf_len, TRUE, 0);
+            rc = rc >= 0 ? 0 : rc;
+            if (rc)
+                DHD_ERROR(("%s: failed to %s pktfilter %s, retcode = %d\n",
+                            __FUNCTION__, enable?"enable":"disable", arg, rc));
+            else
+                DHD_TRACE(("%s: successfully %s pktfilter %s\n",
+                            __FUNCTION__, enable?"enable":"disable", arg));
+
+            /* Contorl the master mode */
+            rc = dhd_wl_ioctl_set_intiovar(dhd, "pkt_filter_mode",
+                    master_mode, WLC_SET_VAR, TRUE, 0);
+            rc = rc >= 0 ? 0 : rc;
+            if (rc)
+                DHD_TRACE(("%s: failed to set pkt_filter_mode %d, retcode = %d\n",
+                            __FUNCTION__, master_mode, rc));
+        }
+
+        void dhd_pktfilter_offload_set(dhd_pub_t * dhd, char *arg)
+        {
+            str = "pkt_filter_add";
+            str_len = strlen(str);
+            bcm_strncpy_s(buf, BUF_SIZE, str, str_len);
+            buf[ str_len ] = '\0';
+            buf_len = str_len + 1;
+
+            pkt_filterp = (wl_pkt_filter_t *) (buf + str_len + 1);
+
+            /* Parse packet filter id. */
+            pkt_filter.id = htod32(strtoul(argv[i], NULL, 0));
+            if (dhd_conf_del_pkt_filter(dhd, pkt_filter.id))
+                goto fail;
+
+            /*
+                解析后面的type，offset, polarity,bitmask, pattern等参数
+            */
+
+            rc = dhd_wl_ioctl_cmd(dhd, WLC_SET_VAR, buf, buf_len, TRUE, 0);
+            rc = rc >= 0 ? 0 : rc;
+
+            if (rc)
+                DHD_TRACE(("%s: failed to add pktfilter %s, retcode = %d\n",
+                            __FUNCTION__, arg, rc));
+            else
+                DHD_TRACE(("%s: successfully added pktfilter %s\n",
+                            __FUNCTION__, arg));
+        }
+
+        void dhd_pktfilter_offload_delete(dhd_pub_t *dhd, int id)
+        {
+            int ret;
+
+            ret = dhd_wl_ioctl_set_intiovar(dhd, "pkt_filter_delete",
+                    id, WLC_SET_VAR, TRUE, 0);
+            if (ret < 0) {
+                DHD_ERROR(("%s: Failed to delete filter ID:%d, ret=%d\n",
+                            __FUNCTION__, id, ret));
+            }
+            else
+                DHD_TRACE(("%s: successfully deleted pktfilter %d\n",
+                            __FUNCTION__, id));
+        }
+    #endif /* PKT_FILTER_SUPPORT */
+    }
+-----------------------------------------------------------------------------------------------
+dhd.h
+->  {
+        typedef struct dhd_pub {
+        #ifdef PKT_FILTER_SUPPORT
+            int early_suspended;	/* Early suspend status */
+            int dhcp_in_progress;	/* DHCP period */
+        #endif
+        }
+
+
+        #ifdef PKT_FILTER_SUPPORT
+        #define DHD_UNICAST_FILTER_NUM		0
+        #define DHD_BROADCAST_FILTER_NUM	1
+        #define DHD_MULTICAST4_FILTER_NUM	2
+        #define DHD_MULTICAST6_FILTER_NUM	3
+        #define DHD_MDNS_FILTER_NUM		4
+        #define DHD_ARP_FILTER_NUM		5
+        #define DHD_BROADCAST_ARP_FILTER_NUM	6
+        #define DHD_IP4BCAST_DROP_FILTER_NUM	7
+        #define DISCARD_IPV4_MCAST	"102 1 6 IP4_H:16 0xf0 0xe0"
+        #define DISCARD_IPV6_MCAST	"103 1 6 IP6_H:24 0xff 0xff"
+        extern int dhd_os_enable_packet_filter(dhd_pub_t *dhdp, int val);
+        extern void dhd_enable_packet_filter(int value, dhd_pub_t *dhd);
+        extern int dhd_packet_filter_add_remove(dhd_pub_t *dhdp, int add_remove, int num);
+        extern int net_os_enable_packet_filter(struct net_device *dev, int val);
+        extern int net_os_rxfilter_add_remove(struct net_device *dev, int val, int num);
+        extern int net_os_set_suspend_bcn_li_dtim(struct net_device *dev, int val);
+        #endif /* PKT_FILTER_SUPPORT */
+    }
+----------------------------------------------------------------------------------------------------
+wl_android.c
+->  {
+        int wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
+        {
+        #ifdef PKT_FILTER_SUPPORT
+            if (strnicmp(command, CMD_RXFILTER_START, strlen(CMD_RXFILTER_START)) == 0) {
+                bytes_written = net_os_enable_packet_filter(net, 1);
+            }
+            else if (strnicmp(command, CMD_RXFILTER_STOP, strlen(CMD_RXFILTER_STOP)) == 0) {
+                bytes_written = net_os_enable_packet_filter(net, 0);
+            }
+            else if (strnicmp(command, CMD_RXFILTER_ADD, strlen(CMD_RXFILTER_ADD)) == 0) {
+                int filter_num = *(command + strlen(CMD_RXFILTER_ADD) + 1) - '0';
+                bytes_written = net_os_rxfilter_add_remove(net, TRUE, filter_num);
+            }
+            else if (strnicmp(command, CMD_RXFILTER_REMOVE, strlen(CMD_RXFILTER_REMOVE)) == 0) {
+                int filter_num = *(command + strlen(CMD_RXFILTER_REMOVE) + 1) - '0';
+                bytes_written = net_os_rxfilter_add_remove(net, FALSE, filter_num);
+            }
+        #endif /* PKT_FILTER_SUPPORT */
+            else if (strnicmp(command, CMD_BTCOEXMODE, strlen(CMD_BTCOEXMODE)) == 0) {
+        #ifdef WL_CFG80211
+                void *dhdp = wl_cfg80211_get_dhdp(net);
+                bytes_written = wl_cfg80211_set_btcoex_dhcp(net, dhdp, command);
+        #else
+        #ifdef PKT_FILTER_SUPPORT
+                uint mode = *(command + strlen(CMD_BTCOEXMODE) + 1) - '0';
+
+                if (mode == 1)
+                    net_os_enable_packet_filter(net, 0); /* DHCP starts */
+                else
+                    net_os_enable_packet_filter(net, 1); /* DHCP ends */
+        #endif /* PKT_FILTER_SUPPORT */
+        #endif /* WL_CFG80211 */
+        }
+    }

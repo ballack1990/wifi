@@ -1,0 +1,144 @@
+root@firefly-rk3288:/ # ifconfig wlan0 up
+<4>[ 1269.298694] dhd_open: Enter dd076800
+<4>[ 1269.298814] 
+<4>[ 1269.298814] Dongle Host Driver, version 1.363.59.144.14 test0620(r)
+<4>[ 1269.298884] wl_android_wifi_on in 1
+<4>[ 1269.298923] wl_android_wifi_on in 2: g_wifi_on=0
+<4>[ 1269.298962] wifi_platform_set_power = 1
+<4>[ 1269.299002] ======== PULL WL_REG_ON(-1) HIGH! ========
+<6>[ 1269.299045] [WLAN_RFKILL]: rockchip_wifi_power: 1
+<6>[ 1269.299085] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 1
+<6>[ 1269.299127] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<6>[ 1269.405121] [WLAN_RFKILL]: wifi turn on power. 156
+<4>[ 1269.710463] sdio_reset_comm():
+<6>[ 1269.713872] mmc_host mmc1: Bus speed (slot 0) = 24000000Hz (slot req 300000Hz, actual 300000HZ div = 40)
+<4>[ 1269.714055] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out 600000Hz for init[mmc1]
+<4>[ 1269.730369] mmc1: queuing unknown CIS tuple 0x80 (2 bytes)
+<4>[ 1269.732771] mmc1: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[ 1269.735109] mmc1: queuing unknown CIS tuple 0x80 (3 bytes)
+<4>[ 1269.739166] mmc1: queuing unknown CIS tuple 0x80 (7 bytes)
+<4>[ 1269.744357] mmc1: queuing unknown CIS tuple 0x81 (9 bytes)
+<6>[ 1269.867017] mmc_host mmc1: Bus speed (slot 0) = 24000000Hz (slot req 50000000Hz, actual 24000000HZ div = 0)
+<4>[ 1269.867129] rk_sdmmc: BOOT dw_mci_setup_bus: argue clk_mmc workaround out normal clock [mmc1]
+<4>[ 1269.867769] sdioh_start: set sd_f2_blocksize 256
+<4>[ 1269.869080] 
+<4>[ 1269.869080] 
+<4>[ 1269.869080] dhd_bus_devreset: == WLAN ON ==
+<4>[ 1269.869465] F1 signature read @0x18000000=0x1541a9a6
+<4>[ 1269.875125] F1 signature OK, socitype:0x1 chip:0xa9a6 rev:0x1 pkg:0x4
+<4>[ 1269.877027] DHD: dongle ram size is set to 524288(orig 524288) at 0x0
+<4>[ 1269.878202] dhd_conf_read_config: Ignore config file /data/6212a/config.txt
+<4>[ 1269.878258] Final fw_path=/data/6212a/fw_bcm43438a1_apsta.bin
+<4>[ 1269.878287] Final nv_path=/data/6212a/nvram_ap6212a.txt
+<4>[ 1269.878314] Final clm_path=/data/6212a/clm.blob
+<4>[ 1269.878339] Final conf_path=/data/6212a/config.txt
+<4>[ 1269.880068] dhd_os_open_image: /data/6212a/fw_bcm43438a1_apsta.bin (418051 bytes) open success
+<4>[ 1269.974705] dhd_os_open_image: /data/6212a/nvram_ap6212a.txt (1003 bytes) open success
+<4>[ 1269.974759] NVRAM version: AP6212A_NVRAM_V1.0.1_20160606
+<4>[ 1269.975461] dhdsdio_write_vars: Download, Upload and compare of NVRAM succeeded.
+<4>[ 1270.062363] dhd_bus_init: enable 0x06, ready 0x06 (waited 0us)
+<4>[ 1270.063853] Disable tdls_auto_op failed. -1
+<4>[ 1270.063868] dhd_preinit_ioctls: Set tcpack_sup_mode 0
+<4>[ 1270.063879] dhd_tcpack_suppress_set 347: already set to 0
+<4>[ 1270.064259] dhd_apply_default_clm: Ignore clm file /data/6212a/clm.blob
+<4>[ 1270.065747] Firmware up: op_mode=0x0002, MAC=b0:f1:ec:41:10:46
+<4>[ 1270.076452]   Driver: 1.363.59.144.14 test0620(r)
+<4>[ 1270.076452]   Firmware: wl0: Apr 26 2019 17:29:23 version 7.45.96.40 (dcb9c13@shgit) (r) FWID 01-4789d03 es7.c5.n4.a3
+<4>[ 1270.076452]   CLM: 7.11.15 
+<4>[ 1270.076809] dhd_txglom_enable: enable 1
+<4>[ 1270.076822] dhd_conf_set_txglom_params: txglom_mode=multi-desc, use_rxchain=0
+<4>[ 1270.076833] dhd_conf_set_txglom_params: txglomsize=36, deferred_tx_len=0
+<4>[ 1270.076843] dhd_conf_set_txglom_params: tx_in_rx=1, txinrx_thres=-1, dhd_txminmax=1
+<4>[ 1270.076853] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+<4>[ 1270.076866] dhd_conf_get_disable_proptx: fw_proptx=1, disable_proptx=-1
+<4>[ 1270.078569] dhd_wlfc_init(): successfully enabled bdcv2 tlv signaling, 79
+<4>[ 1270.079125] dhd_wlfc_init: query wlfc_mode succeed, fw_caps=0x1c
+<4>[ 1270.079689] dhd_wlfc_init(): wlfc_mode=0x1c, ret=0
+<4>[ 1270.080830] dhd_pno_init: Support Android Location Service
+<4>[ 1270.108450] dhd_conf_set_country: set country CN, revision 0
+<4>[ 1270.108462] dhd_wlfc_enable: ret=0
+<6>[ 1270.108487] CFG80211-ERROR) wl_cfg80211_event : Event handler is not created
+<6>[ 1270.108716] CFG80211-ERROR) wl_cfg80211_event : Event handler is not created
+<6>[ 1270.108836] CFG80211-ERROR) wl_cfg80211_event : Event handler is not created
+<4>[ 1270.112217] Country code: CN (CN/0)
+<4>[ 1270.115390] wl_android_wifi_on: Success
+<4>[ 1270.115777] wl_create_event_handler(): thread:wl_event_handler:538 started
+<4>[ 1270.115785] tsk Enter, tsk = 0xdb4414c8
+<4>[ 1270.116523] _dhd_wlfc_mac_entry_update():1853, entry(32)
+<6>[ 1270.118959] CFG80211-ERROR) wl_update_wiphybands : error reading vhtmode (-23)
+root@firefly-rk3288:/ # <4>[ 1270.130911] dhd_open: Exit ret=0
+
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # hostapd /data/misc/wifi/hostapd.conf &
+[2] 1338
+root@firefly-rk3288:/ # ifconfig wlan0 192.168.49.1 netmask 255.255.255.0
+esolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &             <
+[3] 1340
+root@firefly-rk3288:/ # dnsmasq: started, version 2.51 cachesize 150
+dnsmasq: compile time options: no-IPv6 GNU-getopt no-DBus no-I18N DHCP no-scripts no-TFTP
+dnsmasq: warning: no upstream servers configured
+dnsmasq-dhcp: DHCP, IP range 192.168.49.100 -- 192.168.49.200, lease time 4d4h
+dnsmasq: read /etc/hosts - 1 addresses
+<6>[ 1274.781287] CFG80211-ERROR) wl_cfg80211_del_station : Disconnect STA : ff:ff:ff:ff:ff:ff scb_val.val 3
+<4>[ 1274.831876] netdev_ifidx(5), chan_type(1) target channel(1) 
+<4>[ 1274.863837] _dhd_wlfc_mac_entry_update():1853, entry(32)
+<4>[ 1274.941884] wl_iw_event: Link UP with BSSID=b0:f1:00:00:10:46
+<6>[ 1274.942200] CFG80211-ERROR) wl_notify_connect_status_ap : ** AP/GO Link up event **
+<4>[ 1280.246525] wl_notify_connect_status_ap: connected device 14:a5:1a:fd:72:c0
+<6>[ 1280.248671] CFG80211-ERROR) wl_cfg80211_change_station : WLC_SCB_AUTHORIZE sta_flags_mask not set 
+dnsmasq-dhcp: DHCPREQUEST(wlan0) 192.168.49.120 14:a5:1a:fd:72:c0 
+dnsmasq-dhcp: DHCPACK(wlan0) 192.168.49.120 14:a5:1a:fd:72:c0 Honor_6X-635f5243fd11982e
+dnsmasq-dhcp: DHCPREQUEST(wlan0) 192.168.49.120 14:a5:1a:fd:72:c0 
+dnsmasq-dhcp: DHCPACK(wlan0) 192.168.49.120 14:a5:1a:fd:72:c0 Honor_6X-635f5243fd11982e
+
+[3] + Stopped (tty input)  dnsmasq --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h 
+root@firefly-rk3288:/ # 
+root@firefly-rk3288:/ # hostapd_cli -p /data/misc/wifi/hostapd 
+hostapd_cli v2.3-5.1.1
+Copyright (c) 2004-2014, Jouni Malinen <j@w1.fi> and contributors
+
+This software may be distributed under the terms of the BSD license.
+See README for more details.
+
+
+Selected interface 'wlan0'
+
+Interactive mode
+
+> level debug
+789!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1OK
+> <6>[ 1335.662937] CFG80211-ERROR) wl_notify_connect_status_ap : event WLC_E_DISASSOC_IND(12) status 0 reason 8
+<4>[ 1335.662991] wl_notify_connect_status_ap: disassociated device 14:a5:1a:fd:72:c0
+<4>[ 1335.663222] wl_iw_event: Link Down with BSSID=b0:f1:00:00:10:46
+<6>[ 1335.663674] CFG80211-ERROR) wl_notify_connect_status_ap : event WLC_E_DEAUTH(5) status 0 reason 3
+<4>[ 1335.663705] wl_notify_connect_status_ap: deauthenticated device 00:00:00:00:00:00
+<4>[ 1335.694099] _dhd_wlfc_mac_entry_update():1853, entry(32)
+<4>[ 1335.694768] dhd_stop: Enter dd076800
+<4>[ 1335.698250] wl_event_handler: was terminated
+<4>[ 1335.698293] wl_destroy_event_handler(): thread:wl_event_handler:538 terminated OK
+<4>[ 1335.699459] wl_android_wifi_off in 1
+<4>[ 1335.699473] wl_android_wifi_off in 2: g_wifi_on=1, on_failure=1
+<4>[ 1335.700266] dhd_wlfc_deinit():3729, maintain HOST RXRERODER flag in tvl
+<4>[ 1335.700964] dhd_wlfc_deinit: wlfc_mode=0x1c, tlv=64
+<4>[ 1335.701167] dhd_txglom_enable: enable 0
+<4>[ 1335.701182] dhd_conf_set_txglom_params: txglom_mode=multi-desc, use_rxchain=0
+<4>[ 1335.701195] dhd_conf_set_txglom_params: txglomsize=0, deferred_tx_len=0
+<4>[ 1335.701207] dhd_conf_set_txglom_params: tx_in_rx=1, txinrx_thres=-1, dhd_txminmax=1
+<4>[ 1335.701219] dhd_conf_set_txglom_params: tx_max_offset=0, txctl_tmo_fix=300
+<4>[ 1335.701231] dhd_bus_devreset:  WLAN OFF DONE
+<4>[ 1335.701361] wifi_platform_set_power = 0
+<4>[ 1335.701376] ======== PULL WL_REG_ON(-1) LOW! ========
+<6>[ 1335.701388] [WLAN_RFKILL]: rockchip_wifi_power: 0
+<6>[ 1335.805409] [WLAN_RFKILL]: wifi shut off power.
+<6>[ 1335.805427] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: 0
+<6>[ 1335.805634] [WLAN_RFKILL]: rockchip_wifi_ref_voltage: wifi io reference voltage control is disabled.
+<4>[ 1335.805649] wl_android_wifi_off out
+<4>[ 1336.101127] dhd_stop: Exit
+<2>ballack Event DISASSOC (1) received
+<3>AP-STA-DISCONNECTED 14:a5:1a:fd:72:c0
+<2>ballack Event INTERFACE_DISABLED (29) received
+<2>-----------ballack Event INTERFACE_DISABLED (29) received
+<3>INTERFACE_DISABLED
+<2>ballack Event DISASSOC (1) received
