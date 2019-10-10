@@ -1,0 +1,21 @@
+ diff --git a/core/java/android/net/IpReachabilityMonitor.java b/core/java/android/net/IpReachabilityMonitor.java
+index 2283004..81a70d3 100644
+--- a/core/java/android/net/IpReachabilityMonitor.java
++++ b/core/java/android/net/IpReachabilityMonitor.java
+@@ -434,7 +434,7 @@ public class IpReachabilityMonitor {
+                     continue;
+                 }
+ 
+-                evaluateRtNetlinkNeighborMessage((RtNetlinkNeighborMessage) nlMsg, whenMs);
++                //evaluateRtNetlinkNeighborMessage((RtNetlinkNeighborMessage) nlMsg, whenMs);
+             }
+         } 
+
+---------------------------------------------------------------------------------------------------------------------------------------
+07-25 19:37:48.958   417  1197 W IpReachabilityMonitor: ALERT: NeighborEvent{elapsedMs=1552980, 192.168.1.1, [(null)], RTM_NEWNEIGH, NUD_FAILED}
+07-25 19:37:48.959   417  1197 W IpReachabilityMonitor: FAILURE: LOST_PROVISIONING, NeighborEvent{elapsedMs=1552980, 192.168.1.1, [(null)], RTM_NEWNEIGH, NUD_FAILED}
+07-25 19:37:48.960   972   972 D wpa_supplicant: wlan0: Control interface command 'DISCONNECT'
+07-25 19:37:48.961   972   972 D wpa_supplicant: wlan0: Cancelling scan request
+07-25 19:37:48.961   972   972 D wpa_supplicant: wlan0: Request to deauthenticate - bssid=30:fc:68:6f:33:bd pending_bssid=00:00:00:00:00:00 reason=3 state=COMPLETED
+
+可以参考 https://blog.csdn.net/u011006622/article/details/78850097

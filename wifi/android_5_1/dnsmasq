@@ -19,7 +19,12 @@ iptables -A FORWARD -i wlap0 -o eth0 -j ACCEPT
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE 
 
 
-ifconfig wlan1 192.168.49.1 netmask 255.255.255.0
+ifconfig wlan0 192.168.49.1 netmask 255.255.255.0
+hostapd /data/misc/wifi/hostapd.conf &
+dnsmasq --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &
+
+
+dnsmasq -i wlan0 --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &
 dnsmasq -i wlan1 --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &
 
 

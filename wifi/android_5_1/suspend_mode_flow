@@ -1,0 +1,277 @@
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        void handlePreDhcpSetup() {
+            setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, false);
+            mWifiNative.setPowerSave(false);
+        }
+
+        void handlePostDhcpSetup() {
+            /* Restore power save and suspend optimizations */
+            setSuspendOptimizationsNative(SUSPEND_DUE_TO_DHCP, true);
+            mWifiNative.setPowerSave(true);
+        }
+
+        class DriverStartedState extends State {
+            public boolean processMessage(Message message) {
+                switch (message.what) {
+                    case CMD_SET_SUSPEND_OPT_ENABLED:
+                        if (message.arg1 == 1) {
+                            setSuspendOptimizationsNative(SUSPEND_DUE_TO_SCREEN, true);
+                            mSuspendWakeLock.release();
+                        } else {
+                            setSuspendOptimizationsNative(SUSPEND_DUE_TO_SCREEN, false);
+                        }
+                        break;
+                    case CMD_SET_HIGH_PERF_MODE:
+                        if (message.arg1 == 1) {
+                            setSuspendOptimizationsNative(SUSPEND_DUE_TO_HIGH_PERF, false);
+                        } else {
+                            setSuspendOptimizationsNative(SUSPEND_DUE_TO_HIGH_PERF, true);
+                        }
+                        break;
+                }
+            }
+        }
+        ->  {
+                private void setSuspendOptimizationsNative(int reason, boolean enabled) {
+                    if (enabled) {
+                        mSuspendOptNeedsDisabled &= ~reason;
+                        /* None of dhcp, screen or highperf need it disabled and user wants it enabled */
+                        if (mSuspendOptNeedsDisabled == 0 && mUserWantsSuspendOpt.get()) {
+                            if (DBG) {
+                                log("setSuspendOptimizationsNative do it " + reason + " " + enabled
+                                        + " stack:" + Thread.currentThread().getStackTrace()[2].getMethodName()
+                                        +" - "+ Thread.currentThread().getStackTrace()[3].getMethodName()
+                                        +" - "+ Thread.currentThread().getStackTrace()[4].getMethodName()
+                                        +" - "+ Thread.currentThread().getStackTrace()[5].getMethodName());
+                            }
+                            mWifiNative.setSuspendOptimizations(true);
+                        }
+                    } else {
+                        mSuspendOptNeedsDisabled |= reason;
+                        mWifiNative.setSuspendOptimizations(false);
+                    }
+                }
+            }
+    }
+---------------------------------------------------------------------------------------------------------------
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean setSuspendOptimizations(boolean enabled) {
+            // if (mSuspendOptEnabled == enabled) return true;
+            mSuspendOptEnabled = enabled;
+
+            Log.e("native", "do suspend " + enabled);
+            if (enabled) {
+                return doBooleanCommand("DRIVER SETSUSPENDMODE 1");
+            } else {
+                return doBooleanCommand("DRIVER SETSUSPENDMODE 0");
+            }
+        }
+    }
+-----------------------------------------------------------------------------------------------------------
+Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        char * wpa_supplicant_ctrl_iface_process(struct wpa_supplicant *wpa_s,
+                char *buf, size_t *resp_len)
+        {
+        #ifdef ANDROID
+            if (os_strncmp(buf, "DRIVER ", 7) == 0) {
+                reply_len = wpa_supplicant_driver_cmd(wpa_s, buf + 7, reply, reply_size);
+        #endif /* ANDROID */
+            }
+        }
+        ->  {
+            #ifdef ANDROID
+                static int wpa_supplicant_driver_cmd(struct wpa_supplicant *wpa_s, char *cmd,
+                        char *buf, size_t buflen)
+                {
+                    int ret;
+
+                    ret = wpa_drv_driver_cmd(wpa_s, cmd, buf, buflen);
+                    if (ret == 0) {
+                        if (os_strncasecmp(cmd, "COUNTRY", 7) == 0) {
+                            struct p2p_data *p2p = wpa_s->global->p2p;
+                            if (p2p) {
+                                char country[3];
+                                country[0] = cmd[8];
+                                country[1] = cmd[9];
+                                country[2] = 0x04;
+                                p2p_set_country(p2p, country);
+                            }
+                        }
+                        ret = os_snprintf(buf, buflen, "%s\n", "OK");
+                    }
+                    return ret;
+                }
+            #endif /* ANDROID */
+            }
+    }
+-------------------------------------------------------------------------------------------------
+Driver_i.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+    #ifdef ANDROID
+        static inline int wpa_drv_driver_cmd(struct wpa_supplicant *wpa_s,
+                char *cmd, char *buf, size_t buf_len)
+        {
+            if (!wpa_s->driver->driver_cmd)
+                return -1;
+            return wpa_s->driver->driver_cmd(wpa_s->drv_priv, cmd, buf, buf_len);
+        }
+    #endif /* ANDROID */
+    }
+------------------------------------------------------------------------------------------------
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        const struct wpa_driver_ops wpa_driver_nl80211_ops = {
+            .name = "nl80211",
+            .desc = "Linux nl80211/cfg80211",
+        #ifdef ANDROID
+            .driver_cmd = wpa_driver_nl80211_driver_cmd,
+        #endif /* ANDROID */
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+Driver_cmd_nl80211.c (z:\home\ballack\prj\rk3288\hardware\broadcom\wlan\bcmdhd\wpa_supplicant_8_lib)
+->  {
+        int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
+                size_t buf_len )
+        {
+            if ((ret = ioctl(drv->global->ioctl_sock, SIOCDEVPRIVATE + 1, &ifr)) < 0) {
+                wpa_printf(MSG_ERROR, "%s: failed to issue private command: %s", __func__, cmd);
+                wpa_driver_send_hang_msg(drv);
+            } 
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+Wl_android.c (drivers\net\wireless\rockchip_wlan\rkwifi\bcmdhd)
+->  {
+        int wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
+        {
+            if (strnicmp(command, CMD_SETSUSPENDMODE, strlen(CMD_SETSUSPENDMODE)) == 0) {
+                bytes_written = wl_android_set_suspendmode(net, command, priv_cmd.total_len);
+            }
+        }
+        ->  {
+                static int wl_android_set_suspendmode(struct net_device *dev, char *command, int total_len)
+                {
+                    int ret = 0;
+
+                #if !defined(CONFIG_HAS_EARLYSUSPEND) || !defined(DHD_USE_EARLYSUSPEND)
+                    int suspend_flag;
+
+                    suspend_flag = *(command + strlen(CMD_SETSUSPENDMODE) + 1) - '0';
+                    if (suspend_flag != 0)
+                        suspend_flag = 1;
+
+                    if (!(ret = net_os_set_suspend(dev, suspend_flag, 0)))
+                        ANDROID_INFO(("%s: Suspend Mode %d\n", __FUNCTION__, suspend_flag));
+                    else
+                        ANDROID_ERROR(("%s: failed %d\n", __FUNCTION__, ret));
+                #endif
+
+                    return ret;
+                }
+            }
+    }
+---------------------------------------------------------------------------------------------------------
+Dhd_linux.c (drivers\net\wireless\rockchip_wlan\rkwifi\bcmdhd)
+->  {
+        int net_os_set_suspend(struct net_device *dev, int val, int force)
+        {
+            int ret = 0;
+            dhd_info_t *dhd = DHD_DEV_INFO(dev);
+
+            if (dhd) {
+            #if defined(CONFIG_HAS_EARLYSUSPEND) && defined(DHD_USE_EARLYSUSPEND)
+                ret = dhd_set_suspend(val, &dhd->pub);
+            #else
+                ret = dhd_suspend_resume_helper(dhd, val, force);
+            #endif
+            #ifdef WL_CFG80211
+                wl_cfg80211_update_power_mode(dev);
+            #endif
+            }
+            return ret;
+        }
+        ->  {
+                static int dhd_suspend_resume_helper(struct dhd_info *dhd, int val, int force)
+                {
+                    dhd_pub_t *dhdp = &dhd->pub;
+                    int ret = 0;
+
+                    /* Set flag when early suspend was called */
+                    dhdp->in_suspend = val;
+                    if ((force || !dhdp->suspend_disable_flag) &&
+                            (dhd_support_sta_mode(dhdp) || dhd_conf_get_insuspend(dhdp, ALL_IN_SUSPEND)))
+                    {
+                        ret = dhd_set_suspend(val, dhdp);
+                    }
+                }
+            }
+            ->  {
+                    static int dhd_set_suspend(int value, dhd_pub_t *dhd)
+                    { 
+                        if (dhd->conf->pm >= 0)
+                            power_mode = dhd->conf->pm;
+                        else
+                            power_mode = PM_FAST;
+
+                        if (dhd->up) {
+                            if (value && dhd->in_suspend) {
+                            #ifdef PKT_FILTER_SUPPORT
+                                dhd->early_suspended = 1;
+                            #endif
+                                /* Kernel suspended */
+                                DHD_ERROR(("%s: force extra suspend setting\n", __FUNCTION__));
+
+                                if (dhd->conf->pm_in_suspend >= 0)
+                                    power_mode = dhd->conf->pm_in_suspend;
+                                dhd_wl_ioctl_cmd(dhd, WLC_SET_PM, (char *)&power_mode,
+                                        sizeof(power_mode), TRUE, 0);
+
+                            #ifdef PKT_FILTER_SUPPORT
+                                /* Enable packet filter,
+                                 * only allow unicast packet to send up
+                                 */
+                                dhd_enable_packet_filter(1, dhd);
+                            #ifdef APF
+                                dhd_dev_apf_enable_filter(dhd_linux_get_primary_netdev(dhd));
+                            #endif /* APF */
+                            #endif /* PKT_FILTER_SUPPORT */
+
+                                bcn_li_dtim = dhd_get_suspend_bcn_li_dtim(dhd);
+                                if (dhd_iovar(dhd, 0, "bcn_li_dtim", (char *)&bcn_li_dtim,
+                                            sizeof(bcn_li_dtim), NULL, 0, TRUE) < 0)
+                                    DHD_ERROR(("%s: set dtim failed\n", __FUNCTION__));
+                                dhd_conf_set_suspend_resume(dhd, value);
+                            } else {
+                                dhd_conf_set_suspend_resume(dhd, value);
+
+                            #ifdef PKT_FILTER_SUPPORT
+                                dhd->early_suspended = 0;
+                            #endif
+                                /* Kernel resumed  */
+                                DHD_ERROR(("%s: Remove extra suspend setting \n", __FUNCTION__));
+
+                                dhd_wl_ioctl_cmd(dhd, WLC_SET_PM, (char *)&power_mode,
+                                        sizeof(power_mode), TRUE, 0);
+                            #ifdef PKT_FILTER_SUPPORT
+                                /* disable pkt filter */
+                                dhd_enable_packet_filter(0, dhd);
+                            #ifdef APF
+                                dhd_dev_apf_disable_filter(dhd_linux_get_primary_netdev(dhd));
+                            #endif /* APF */
+                            #endif /* PKT_FILTER_SUPPORT */
+                            
+                                /* restore pre-suspend setting for dtim_skip */
+                                ret = dhd_iovar(dhd, 0, "bcn_li_dtim", (char *)&bcn_li_dtim,
+                                        sizeof(bcn_li_dtim), NULL, 0, TRUE);
+                                if (ret < 0) {
+                                    DHD_ERROR(("%s:bcn_li_ditm fail:%d\n", __FUNCTION__, ret));
+                                }
+                            }
+                    }
+                }
+    }
+
