@@ -1,0 +1,7 @@
+筛选4次握手： 输入eapol
+筛选Probe request： 输入wlan.fc.type_subtype == 0x0004
+筛选Probe response： 输入wlan.fc.type_subtype == 0x0005
+筛选Authentication： 输入wlan.fc.type_subtype == 0x000b
+筛选Association Request： 输入wlan.fc.type_subtype == 0x0000
+筛选Association Response： 输入wlan.fc.type_subtype == 0x0001
+

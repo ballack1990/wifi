@@ -1,3 +1,3 @@
-1. wpa_supplicant要开CONFIG_80211W
-2. wpa_supplicant.conf要加pmf=1
+1. wpa_supplicant要开CONFIG_IEEE80211W
+2. wpa_supplicant.conf要加pmf=1或者pmf=2
 3. driver要加-DMFP
