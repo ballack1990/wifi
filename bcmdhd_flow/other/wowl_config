@@ -1,0 +1,15 @@
+wowl Enable/disable WOWL events  
+
+0   - Clear all events
+Bit 0 - Wakeup on Magic Packet
+Bit 1 - Wakeup on NetPattern (use 'wl wowl_pattern' to configure pattern)
+Bit 2 - Wakeup on loss-of-link due to Disassociation/Deauth
+Bit 3 - Wakeup on retrograde tsf
+Bit 4 - Wakeup on loss of beacon (use 'wl wowl_bcn_loss' to configure time)
+
+之前设置的是wl wowl 0x20016, 从命令上来看，有三种情况会Wakeup主控， 但是
+我直接设置了 wl wowl 0x20000 ， 抓包发现 tcp retransmision的时候, WIFI还是会Wakeup主控， 请问是什么原因？
+
+0x20000 is bit 17, bit17 is for tcp keepalive timeout.
+
+#define BCOL_WOWL_TCPKEEP_TIME    (1 << 17)   /* Wakeup on tcpkeep alive timeout */
