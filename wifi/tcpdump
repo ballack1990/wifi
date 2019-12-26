@@ -1,0 +1,2 @@
+tcpdump -v -B 100000 -i wlan0 -s 0 -w 1.cap
+
