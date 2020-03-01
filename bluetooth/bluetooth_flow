@@ -177,7 +177,8 @@ IBluetoothManager.aidl(z:\home\ballack\prj\rk3288\frameworks\base\core\java\andr
         }
     }
 ------------------------------------------------------------------------------------------------------------------------>
-BluetoothManagerService服务是哪里启动的：
+在下面可以看到，是BluetoothManagerService服务实现的IBluetoothManager.Stub接口：
+那么BluetoothManagerService服务是哪里启动的：
 SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)
 ->  {
         private void run() {

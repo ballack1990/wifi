@@ -1,0 +1,8 @@
+BluetoothSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+BluetoothEnabler.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+LocalBluetoothManager.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+LocalBluetoothAdapter.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+BluetoothAdapter.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\bluetooth)
+LocalBluetoothAdapter.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\bluetooth)
+BluetoothAdapter.java (z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\bluetooth)
+IBluetoothManager.aidl(z:\home\ballack\prj\rk3288\frameworks\base\core\java\android\bluetooth)

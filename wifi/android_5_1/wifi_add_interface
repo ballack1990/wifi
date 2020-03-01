@@ -1,0 +1,252 @@
+Driver_i.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        #define P2P_MGMT_DEVICE_PREFIX		"p2p-dev-"
+        
+        static void wpas_p2p_get_group_ifname(struct wpa_supplicant *wpa_s,
+                char *ifname, size_t len)
+        {
+            char *ifname_ptr = wpa_s->ifname;
+
+            if (os_strncmp(wpa_s->ifname, P2P_MGMT_DEVICE_PREFIX,               // 假设wpa_s->ifname 为 p2p-dev-wlan0
+                        os_strlen(P2P_MGMT_DEVICE_PREFIX)) == 0) {
+                ifname_ptr = os_strrchr(wpa_s->ifname, '-') + 1;                // ifname_ptr 为 wlan0
+            }
+
+            os_snprintf(ifname, len, "p2p-%s-%d", ifname_ptr, wpa_s->p2p_group_idx);    // ifname 为 p2p-wlan0-0
+            if (os_strlen(ifname) >= IFNAMSIZ &&
+                    os_strlen(wpa_s->ifname) < IFNAMSIZ) {
+                /* Try to avoid going over the IFNAMSIZ length limit */
+                os_snprintf(ifname, len, "p2p-%d", wpa_s->p2p_group_idx);
+            }
+        }
+
+        static int wpas_p2p_add_group_interface(struct wpa_supplicant *wpa_s,
+                enum wpa_driver_if_type type)                                       // add_group_interface是创建类似p2p-wlan0-0这种接口
+        {
+            if (wpa_s->pending_interface_name[0]) {
+                wpa_printf(MSG_DEBUG, "P2P: Pending virtual interface exists "
+                        "- skip creation of a new one");
+                if (is_zero_ether_addr(wpa_s->pending_interface_addr)) {
+                    wpa_printf(MSG_DEBUG, "P2P: Pending virtual address "
+                            "unknown?! ifname='%s'",
+                            wpa_s->pending_interface_name);
+                    return -1;
+                }
+                return 0;
+            }
+
+            wpas_p2p_get_group_ifname(wpa_s, ifname, sizeof(ifname));
+            force_ifname[0] = '\0';
+
+            wpa_printf(MSG_DEBUG, "P2P: Create a new interface %s for the group",
+                    ifname);
+            wpa_s->p2p_group_idx++;
+
+            wpa_s->pending_interface_type = type;
+            if (wpa_drv_if_add(wpa_s, type, ifname, NULL, NULL, force_ifname,
+                        wpa_s->pending_interface_addr, NULL) < 0) {
+                wpa_printf(MSG_ERROR, "P2P: Failed to create new group "
+                        "interface");
+                return -1;
+            }
+
+            if (force_ifname[0]) {
+                wpa_printf(MSG_DEBUG, "P2P: Driver forced interface name %s",
+                        force_ifname);
+                os_strlcpy(wpa_s->pending_interface_name, force_ifname,
+                        sizeof(wpa_s->pending_interface_name));
+            } else
+                os_strlcpy(wpa_s->pending_interface_name, ifname,
+                        sizeof(wpa_s->pending_interface_name));
+            wpa_printf(MSG_DEBUG, "P2P: Created pending virtual interface %s addr "
+                    MACSTR, wpa_s->pending_interface_name,
+                    MAC2STR(wpa_s->pending_interface_addr));
+        }
+
+        int wpas_p2p_add_p2pdev_interface(struct wpa_supplicant *wpa_s,             // add_p2pdev_interface是创建类似p2p-dev-wlan0这种接口
+                const char *conf_p2p_dev)
+        {
+            os_snprintf(ifname, sizeof(ifname), P2P_MGMT_DEVICE_PREFIX "%s",
+                    wpa_s->ifname);
+            force_name[0] = '\0';
+            wpa_s->pending_interface_type = WPA_IF_P2P_DEVICE;
+            ret = wpa_drv_if_add(wpa_s, WPA_IF_P2P_DEVICE, ifname, NULL, NULL,
+                    force_name, wpa_s->pending_interface_addr, NULL);
+
+            os_strlcpy(wpa_s->pending_interface_name, ifname,
+                    sizeof(wpa_s->pending_interface_name));
+
+            os_memset(&iface, 0, sizeof(iface));
+            iface.p2p_mgmt = 1;
+            iface.ifname = wpa_s->pending_interface_name;
+            iface.driver = wpa_s->driver->name;
+            iface.driver_param = wpa_s->conf->driver_param;
+
+            /*
+             * If a P2P Device configuration file was given, use it as the interface
+             * configuration file (instead of using parent's configuration file.
+             */
+            if (conf_p2p_dev) {
+                iface.confname = conf_p2p_dev;
+                iface.ctrl_interface = NULL;
+            } else {
+                //iface.confname = wpa_s->confname;
+                iface.confname = "/data/misc/wifi/p2p_supplicant.conf";
+                iface.ctrl_interface = wpa_s->conf->ctrl_interface;
+            }
+            iface.conf_p2p_dev = NULL;
+
+            p2pdev_wpa_s = wpa_supplicant_add_iface(wpa_s->global, &iface);
+            if (!p2pdev_wpa_s) {
+                wpa_printf(MSG_DEBUG, "P2P: Failed to add P2P Device interface");
+                return -1;
+            }
+            p2pdev_wpa_s->parent = wpa_s;
+
+            wpa_s->pending_interface_name[0] = '\0';
+        }
+
+        static inline int wpa_drv_if_add(struct wpa_supplicant *wpa_s,
+                enum wpa_driver_if_type type,
+                const char *ifname, const u8 *addr,
+                void *bss_ctx, char *force_ifname,
+                u8 *if_addr, const char *bridge)
+        {
+            if (wpa_s->driver->if_add)
+                return wpa_s->driver->if_add(wpa_s->drv_priv, type, ifname,
+                        addr, bss_ctx, NULL, force_ifname,
+                        if_addr, bridge, 0);
+            return -1;
+        }
+    }
+-----------------------------------------------------------------------------------------------
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        const struct wpa_driver_ops wpa_driver_nl80211_ops = {
+            .if_add = wpa_driver_nl80211_if_add,
+        }
+
+        static int wpa_driver_nl80211_if_add(void *priv, enum wpa_driver_if_type type,
+				     const char *ifname, const u8 *addr,
+				     void *bss_ctx, void **drv_priv,
+				     char *force_ifname, u8 *if_addr,
+				     const char *bridge, int use_existing)
+        {
+            enum nl80211_iftype nlmode;
+            nlmode = wpa_driver_nl80211_if_type(type);
+            if (nlmode == NL80211_IFTYPE_P2P_DEVICE) {
+                ifidx = nl80211_create_iface(drv, ifname, nlmode, addr, 0, nl80211_wdev_handler, &p2pdev_info, use_existing);
+
+                wpa_printf(MSG_DEBUG, "nl80211: New P2P Device interface %s (0x%llx) created",
+                        ifname,
+                        (long long unsigned int) p2pdev_info.wdev_id);
+            } else {
+                ifidx = nl80211_create_iface(drv, ifname, nlmode, addr, 0, NULL, NULL, use_existing);
+            }
+        }
+
+        static int nl80211_create_iface(struct wpa_driver_nl80211_data *drv,
+                const char *ifname, enum nl80211_iftype iftype,
+                const u8 *addr, int wds,
+                int (*handler)(struct nl_msg *, void *),
+                void *arg, int use_existing)
+        {
+            ret = nl80211_create_iface_once(drv, ifname, iftype, addr, wds, handler, arg);
+
+            if (ret >= 0 && is_p2p_net_interface(iftype))
+                nl80211_disable_11b_rates(drv, ret, 1);
+        }
+
+        static int nl80211_create_iface_once(struct wpa_driver_nl80211_data *drv,
+                const char *ifname,
+                enum nl80211_iftype iftype,
+                const u8 *addr, int wds,
+                int (*handler)(struct nl_msg *, void *),
+                void *arg)
+        {   
+            nl80211_cmd(drv, msg, 0, NL80211_CMD_NEW_INTERFACE);
+
+            NLA_PUT_STRING(msg, NL80211_ATTR_IFNAME, ifname);
+            NLA_PUT_U32(msg, NL80211_ATTR_IFTYPE, iftype);
+
+            ret = send_and_recv_msgs(drv, msg, handler, arg);
+        }
+    }
+--------------------------------------------------------------------------------------------
+Nl80211.c (net\wireless)
+->  {
+        static struct genl_ops nl80211_ops[] = {
+            {
+                .cmd = NL80211_CMD_NEW_INTERFACE,
+                .doit = nl80211_new_interface,
+                .policy = nl80211_policy,
+                .flags = GENL_ADMIN_PERM,
+                .internal_flags = NL80211_FLAG_NEED_WIPHY |
+                    NL80211_FLAG_NEED_RTNL,
+            },
+        }
+
+        static int nl80211_new_interface(struct sk_buff *skb, struct genl_info *info)
+        {
+            wdev = rdev_add_virtual_intf(rdev,
+                    nla_data(info->attrs[NL80211_ATTR_IFNAME]),
+                    type, err ? NULL : &flags, &params);
+        }
+    }
+-------------------------------------------------------------------------------------------
+Rdev-ops.h (net\wireless)
+->  {
+        static inline struct wireless_dev
+            *rdev_add_virtual_intf(struct cfg80211_registered_device *rdev, char *name,
+                    enum nl80211_iftype type, u32 *flags,
+                    struct vif_params *params)
+            {
+                struct wireless_dev *ret;
+                trace_rdev_add_virtual_intf(&rdev->wiphy, name, type);
+                ret = rdev->ops->add_virtual_intf(&rdev->wiphy, name, type, flags,
+                        params);
+                trace_rdev_return_wdev(&rdev->wiphy, ret);
+                return ret;
+            }
+    }
+-----------------------------------------------------------------------------------------
+Wl_cfg80211.c (drivers\net\wireless\bcmdhd)
+->  {
+        static struct cfg80211_ops wl_cfg80211_ops = {
+            .add_virtual_intf = wl_cfg80211_add_virtual_iface,
+        }
+
+        static bcm_struct_cfgdev *
+            wl_cfg80211_add_virtual_iface(struct wiphy *wiphy,
+#if defined(WL_CFG80211_P2P_DEV_IF)
+                    const char *name,
+#else
+                    char *name,
+#endif /* WL_CFG80211_P2P_DEV_IF */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
+                    unsigned char name_assign_type,
+#endif /* (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)) */
+                    enum nl80211_iftype type,
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0))
+                    u32 *flags,
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0) */
+                    struct vif_params *params)
+            {
+                switch (type) {
+            #if defined(WL_CFG80211_P2P_DEV_IF)
+                    case NL80211_IFTYPE_P2P_DEVICE:
+                        return wl_cfgp2p_add_p2p_disc_if(cfg);
+            #endif /* WL_CFG80211_P2P_DEV_IF */
+                }
+            }
+    }
+-----------------------------------------------------------------------------------------
+Wl_cfgp2p.c (drivers\net\wireless\bcmdhd)
+->  {
+    #if defined(WL_CFG80211_P2P_DEV_IF)
+        struct wireless_dev *
+            wl_cfgp2p_add_p2p_disc_if(struct bcm_cfg80211 *cfg)
+            {
+                printf("P2P interface registered\n");
+            }
+    }
