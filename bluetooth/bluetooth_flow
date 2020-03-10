@@ -213,9 +213,153 @@ BluetoothManagerService.java (z:\home\ballack\prj\rk3288\frameworks\base\service
                         quietMode ? 1 : 0, 0));
         }
 
+        private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+
+                if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+                    synchronized(mReceiver) {
+                        if (mEnableExternal && isBluetoothPersistedStateOnBluetooth()) {
+                            //Enable
+                            if (DBG) Log.d(TAG, "Auto-enabling Bluetooth.");
+                            sendEnableMsg(mQuietEnableExternal);
+                        }
+                    }
+
+                    if (!isNameAndAddressSet()) {
+                        //Sync the Bluetooth name and address from the Bluetooth Adapter
+                        if (DBG) Log.d(TAG,"Retrieving Bluetooth Adapter name and address...");
+                        getNameAndAddress();
+                    }
+                }
+            }
+        }
+
+        public void getNameAndAddress() {
+            if (DBG) {
+                Log.d(TAG,"getNameAndAddress(): mBluetooth = " + mBluetooth +
+                        " mBinding = " + mBinding);
+            }
+            Message msg = mHandler.obtainMessage(MESSAGE_GET_NAME_AND_ADDRESS);         // 发送MESSAGE_GET_NAME_AND_ADDRESS消息！！
+            mHandler.sendMessage(msg);
+        }
+
+        private class BluetoothServiceConnection implements ServiceConnection {
+
+            /* Called when a connection to the Service has been established, with the 
+               {@link android.os.IBinder} of the communication channel to the Service. 
+            */
+            public void onServiceConnected(ComponentName className, IBinder service) {                      
+                Message msg = mHandler.obtainMessage(MESSAGE_BLUETOOTH_SERVICE_CONNECTED);  // 发送MESSAGE_BLUETOOTH_SERVICE_CONNECTED消息！！ 
+                if (className.getClassName().equals("com.android.bluetooth.btservice.AdapterService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTH;
+                } else if (className.getClassName().equals("com.android.bluetooth.gatt.GattService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTHGATT;
+                } else {
+                    Log.e(TAG, "Unknown service connected: " + className.getClassName());
+                    return;
+                }
+                msg.obj = service;
+                mHandler.sendMessage(msg);
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                Message msg = mHandler.obtainMessage(MESSAGE_BLUETOOTH_SERVICE_DISCONNECTED);
+                if (className.getClassName().equals("com.android.bluetooth.btservice.AdapterService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTH;
+                } else if (className.getClassName().equals("com.android.bluetooth.gatt.GattService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTHGATT;
+                } else {
+                    Log.e(TAG, "Unknown service disconnected: " + className.getClassName());
+                    return;
+                }
+                mHandler.sendMessage(msg);
+            }
+        }
+
+        private IBluetooth mBluetooth;
+        private BluetoothServiceConnection mConnection = new BluetoothServiceConnection();
+
         private class BluetoothHandler extends Handler {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
+                    case MESSAGE_GET_NAME_AND_ADDRESS: {
+                        if ((mBluetooth == null) && (!mBinding)) {
+                            Intent i = new Intent(IBluetooth.class.getName());
+                            if (!doBind(i, mConnection,                                     // 执行doBind的时候，就会自动调用onServiceConnected
+                                    Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT,
+                                    UserHandle.CURRENT)) {
+                                mHandler.removeMessages(MESSAGE_TIMEOUT_BIND);
+                            } else {
+                                mBinding = true;
+                            }
+                        }
+                        else {
+                            Message saveMsg= mHandler.obtainMessage(MESSAGE_SAVE_NAME_AND_ADDRESS);
+                            saveMsg.arg1 = 0;
+                            if (mBluetooth != null) {
+                                mHandler.sendMessage(saveMsg);
+                            } else {
+                                // if enable is also called to bind the service
+                                // wait for MESSAGE_BLUETOOTH_SERVICE_CONNECTED
+                                mHandler.sendMessageDelayed(saveMsg, TIMEOUT_SAVE_MS);
+                            }
+                        }
+                    }
+                    break;
+
+                    case MESSAGE_SAVE_NAME_AND_ADDRESS: {
+                        synchronized(mConnection) {
+                            if (!mEnable && mBluetooth != null) {
+                                try {
+                                    mBluetooth.enable();
+                                } catch (RemoteException e) {
+                                    Log.e(TAG,"Unable to call enable()",e);
+                                }
+                            }
+                        }
+                        if (mBluetooth != null) waitForOnOff(true, false);
+                        synchronized(mConnection) {
+                            if (mBluetooth != null) {
+                                String name =  null;
+                                String address = null;
+                                try {
+                                    name =  mBluetooth.getName();
+                                    address = mBluetooth.getAddress();
+                                } catch (RemoteException re) {
+                                    Log.e(TAG,"",re);
+                                }
+
+                                if (name != null && address != null) {
+                                    storeNameAndAddress(name,address);
+                                    if (mConnection.isGetNameAddressOnly()) {
+                                        unbind = true;
+                                    }
+                                }
+
+                                if (!mEnable) {
+                                    try {
+                                        mBluetooth.disable();
+                                    } catch (RemoteException e) {
+                                        Log.e(TAG,"Unable to call disable()",e);
+                                    }
+                                }
+                            }
+                            else {
+                                // rebind service by Request GET NAME AND ADDRESS
+                                // if service is unbinded by disable or
+                                // MESSAGE_BLUETOOTH_SERVICE_CONNECTED is not received
+                                Message getMsg = mHandler.obtainMessage(MESSAGE_GET_NAME_AND_ADDRESS);
+                                mHandler.sendMessage(getMsg);
+                            }
+                        }
+                        if (!mEnable && mBluetooth != null) waitForOnOff(false, true);
+                        if (unbind) {
+                            unbindAndFinish();
+                        }
+                        break;
+                    }
+
                     case MESSAGE_ENABLE:
                         if (DBG) {
                             Log.d(TAG, "MESSAGE_ENABLE: mBluetooth = " + mBluetooth);
@@ -232,11 +376,71 @@ BluetoothManagerService.java (z:\home\ballack\prj\rk3288\frameworks\base\service
                             Log.d(TAG,"Added callback: " +  (callback == null? "null": callback)  +":" +added );
                         }
                         break;
+
+                    case MESSAGE_BLUETOOTH_SERVICE_CONNECTED:
+                        {
+                            IBinder service = (IBinder) msg.obj;
+                            synchronized(mConnection) {
+                                if (msg.arg1 == SERVICE_IBLUETOOTHGATT) {
+                                    mBluetoothGatt = IBluetoothGatt.Stub.asInterface(service);
+                                    break;
+                                } // else must be SERVICE_IBLUETOOTH
+
+                                //Remove timeout
+                                mHandler.removeMessages(MESSAGE_TIMEOUT_BIND);
+
+                                mBinding = false;
+                                mBluetooth = IBluetooth.Stub.asInterface(service);
+
+                                try {
+                                    boolean enableHciSnoopLog = (Settings.Secure.getInt(mContentResolver,       // 查看是否打开Hci Snoop Log
+                                                Settings.Secure.BLUETOOTH_HCI_LOG, 0) == 1);
+                                    if (!mBluetooth.configHciSnoopLog(enableHciSnoopLog)) {
+                                        Log.e(TAG,"IBluetooth.configHciSnoopLog return false");
+                                    }
+                                } catch (RemoteException e) {
+                                    Log.e(TAG,"Unable to call configHciSnoopLog", e);
+                                }
+
+                                //Register callback object
+                                try {
+                                    mBluetooth.registerCallback(mBluetoothCallback);                // 注册Callback
+                                } catch (RemoteException re) {
+                                    Log.e(TAG, "Unable to register BluetoothCallback",re);
+                                }
+                                //Inform BluetoothAdapter instances that service is up
+                                sendBluetoothServiceUpCallback();
+
+                                if (mQuietEnable == false) {
+                                    if(!mBluetooth.enable()) {
+                                        Log.e(TAG,"IBluetooth.enable() returned false");
+                                    }
+                                }
+                                else
+                                {
+                                    if(!mBluetooth.enableNoAutoConnect()) {
+                                        Log.e(TAG,"IBluetooth.enableNoAutoConnect() returned false");
+                                    }
+                                }
+                            }
+
+                            if (!mEnable) {
+                                waitForOnOff(true, false);
+                                handleDisable();
+                                waitForOnOff(false, false);
+                            }
+                        }
                 }
             }
         }
 
-        private IBluetooth mBluetooth;
+        private final IBluetoothCallback mBluetoothCallback =  new IBluetoothCallback.Stub() {
+            @Override
+                public void onBluetoothStateChange(int prevState, int newState) throws RemoteException  {
+                    Message msg = mHandler.obtainMessage(MESSAGE_BLUETOOTH_STATE_CHANGE,prevState,newState); //触发MESSAGE_BLUETOOTH_STATE_CHANGE
+                    mHandler.sendMessage(msg);
+                }
+        };
 
         private void handleEnable(boolean quietMode) {
             if (!mQuietEnable) {
@@ -255,6 +459,10 @@ BluetoothManagerService.java (z:\home\ballack\prj\rk3288\frameworks\base\service
 AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
 ->  {
         public class AdapterService extends Service {
+            static {
+                classInitNative();
+            }
+
             public void onCreate() {
                 mBinder = new AdapterServiceBinder(this);
                 mAdapterProperties = new AdapterProperties(this);
@@ -271,19 +479,32 @@ AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\
 
                 registerReceiver(mAlarmBroadcastReceiver, new IntentFilter(ACTION_ALARM_WAKEUP));
             }
-        }
 
-        private static class AdapterServiceBinder extends IBluetooth.Stub {                         // AdapterServiceBinder实现了IBluetooth接口
-            public boolean enable() {
-                if ((Binder.getCallingUid() != Process.SYSTEM_UID) &&
-                        (!Utils.checkCaller())) {
-                    Log.w(TAG, "enable() - Not allowed for non-active user and non system user");
-                    return false;
+            private static class AdapterServiceBinder extends IBluetooth.Stub {               // AdapterServiceBinder实现了IBluetooth接口
+                private AdapterService mService;
+
+                public AdapterServiceBinder(AdapterService svc) {
+                    mService = svc;
                 }
 
-                AdapterService service = getService();
-                if (service == null) return false;
-                return service.enable();
+                public AdapterService getService() {
+                    if (mService  != null && mService.isAvailable()) {
+                        return mService;
+                    }
+                    return null;
+                }
+
+                public boolean enable() {
+                    if ((Binder.getCallingUid() != Process.SYSTEM_UID) &&
+                            (!Utils.checkCaller())) {
+                        Log.w(TAG, "enable() - Not allowed for non-active user and non system user");
+                        return false;
+                    }
+
+                    AdapterService service = getService();
+                    if (service == null) return false;
+                    return service.enable();
+                }
             }
         }
     }
