@@ -358,6 +358,44 @@ WifiMonitor.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jav
                     }
                 }
             }
+            ->  {
+                    private boolean dispatchEvent(String eventStr, String iface) {
+                        handleEvent(event, eventData);
+                    }
+
+                    /**
+                     * Handle all supplicant events except STATE-CHANGE
+                     * @param event the event type
+                     * @param remainder the rest of the string following the
+                     * event name and &quot;&#8195;&#8212;&#8195;&quot;
+                     */
+                    void handleEvent(int event, String remainder) {
+                        if (DBG) {
+                            logDbg("handleEvent " + Integer.toString(event) + "  " + remainder);
+                        }
+                        switch (event) {
+                            case DISCONNECTED:
+                                handleNetworkStateChange(NetworkInfo.DetailedState.DISCONNECTED, remainder);
+                                break;
+
+                            case CONNECTED:
+                                handleNetworkStateChange(NetworkInfo.DetailedState.CONNECTED, remainder);
+                                break;
+
+                            case SCAN_RESULTS:
+                                mStateMachine.sendMessage(SCAN_RESULTS_EVENT);
+                                break;
+
+                            case UNKNOWN:
+                                if (DBG) {
+                                    logDbg("handleEvent unknown: " + Integer.toString(event) + "  " + remainder);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
         }
 ------------------------------------------------------------------------------>
 Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
@@ -954,6 +992,11 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
                     }
     } 
 --------------------------------------------------------------------------------------------------------------------------->
+Wpa_ctrl.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\common)
+->  {
+        #define WPA_EVENT_SCAN_RESULTS "CTRL-EVENT-SCAN-RESULTS "
+    }
+--------------------------------------------------------------------------------------------------------------->
 events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
 ->  {
         void wpa_supplicant_event(void *ctx, enum wpa_event_type event, union wpa_event_data *data) {
@@ -1066,11 +1109,31 @@ events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
                         goto scan_work_done;
                     }
 
+                    if (own_request && wpa_s->scan_res_handler &&
+                            (wpa_s->own_scan_running || !wpa_s->external_scan_running)) {
+                        void (*scan_res_handler)(struct wpa_supplicant *wpa_s,
+                                struct wpa_scan_results *scan_res);
+
+                        scan_res_handler = wpa_s->scan_res_handler;
+                        wpa_s->scan_res_handler = NULL;
+                        scan_res_handler(wpa_s, scan_res);
+                        ret = -2;
+                        goto scan_work_done;
+                    }
+
                     wpas_notify_scan_results(wpa_s);
 
                     wpas_notify_scan_done(wpa_s, 1);
 
                     return wpas_select_network_from_last_scan(wpa_s, 1, own_request);
+
+                scan_work_done:
+                    wpa_scan_results_free(scan_res);
+                    if (wpa_s->scan_work) {
+                        struct wpa_radio_work *work = wpa_s->scan_work;
+                        wpa_s->scan_work = NULL;
+                        radio_work_done(work);
+                    }
                 }
             }
     }
@@ -1092,6 +1155,30 @@ scan.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
                         &scan_res->fetch_time);
             wpa_bss_update_end(wpa_s, info, new_scan);
         }        
+
+        /**
+         * scan_only_handler - Reports scan results
+         */
+        void scan_only_handler(struct wpa_supplicant *wpa_s,
+                struct wpa_scan_results *scan_res)
+        {
+            wpa_dbg(wpa_s, MSG_DEBUG, "Scan-only results received");
+            if (wpa_s->last_scan_req == MANUAL_SCAN_REQ &&
+                    wpa_s->manual_scan_use_id && wpa_s->own_scan_running) {
+                wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_RESULTS "id=%u",
+                        wpa_s->manual_scan_id);
+                wpa_s->manual_scan_use_id = 0;
+            } else {
+                wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_RESULTS);
+            }
+            wpas_notify_scan_results(wpa_s);
+            wpas_notify_scan_done(wpa_s, 1);
+            if (wpa_s->scan_work) {
+                struct wpa_radio_work *work = wpa_s->scan_work;
+                wpa_s->scan_work = NULL;
+                radio_work_done(work);
+            }
+        }
     }
 --------------------------------------------------------------------------------------------------------------------------->
 driver_i.h (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
@@ -1129,6 +1216,46 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
                     ret = send_and_recv_msgs(drv, msg, bss_info_handler, &arg);
                 }    
             }
+    }
+--------------------------------------------------------------------------------------------------------------------------->
+Wpa_debug.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\utils)
+->  {
+        static wpa_msg_cb_func wpa_msg_cb = NULL;
+
+        /*   Ctrl_iface_unix.c
+         *   wpa_msg_register_cb(wpa_supplicant_ctrl_iface_msg_cb); */
+
+        void wpa_msg_register_cb(wpa_msg_cb_func func)
+        {
+            wpa_msg_cb = func;
+        }
+
+        void wpa_msg_ctrl(void *ctx, int level, const char *fmt, ...)
+        {
+            va_list ap;
+            char *buf;
+            int buflen;
+            int len;
+
+            if (!wpa_msg_cb)
+                return;
+
+            va_start(ap, fmt);
+            buflen = vsnprintf(NULL, 0, fmt, ap) + 1;
+            va_end(ap);
+
+            buf = os_malloc(buflen);
+            if (buf == NULL) {
+                wpa_printf(MSG_ERROR, "wpa_msg_ctrl: Failed to allocate "
+                        "message buffer");
+                return;
+            }
+            va_start(ap, fmt);
+            len = vsnprintf(buf, buflen, fmt, ap);
+            va_end(ap);
+            wpa_msg_cb(ctx, level, 0, buf, len);
+            os_free(buf);
+        }
     }
 --------------------------------------------------------------------------------------------------------------------------->
 Bss.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)

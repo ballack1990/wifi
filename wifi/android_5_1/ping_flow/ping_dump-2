@@ -1,0 +1,127 @@
+
+<4>[ 2575.887305] net_rx_action = 1
+<4>[ 2575.887377] __netif_receive_skb_core Enter
+<4>[ 2575.887448] __netif_receive_skb_core pt_prev =  800
+<4>[ 2575.887662] ip_rcv_finish skb_dst
+<4>[ 2575.887728] ip_route_input_noref Enter
+<4>[ 2575.887785] ip_route_input_slow Enter
+<4>[ 2575.887859] ip_route_input_slow res.type = 2
+<4>[ 2575.887919] ip_route_input_slow local_input
+<4>[ 2575.887990] dst_input Enter
+<4>[ 2575.888133] raw_local_deliver Enter
+<4>[ 2575.888198] ip_local_deliver_finish protocol = 1
+<4>[ 2575.888256] icmp_rcv Enter
+<4>[ 2575.888313] icmp_rcv icmph->type = 8
+<4>[ 2575.888366] icmp_echo Enter
+<4>[ 2575.888417] icmp_reply Enter
+<4>[ 2575.888475] icmp_reply ip_route_output_key
+<4>[ 2575.888531] __ip_route_output_key Enter
+<4>[ 2575.888618] __ip_route_output_key res.type = 1
+<4>[ 2575.888677] __ip_route_output_key make_route
+<4>[ 2575.888734] __mkroute_output Enter
+<4>[ 2575.888796] __mkroute_output add
+<4>[ 2575.888852] __mkroute_output flags = 0
+<4>[ 2575.888913] icmp_reply icmpv4_xrlim_allow
+<4>[ 2575.888999] icmp_push_reply ip_push_pending_frames
+<4>[ 2575.889072] ip_push_pending_frames Enter
+<4>[ 2575.889128] ip_local_out Enter
+<4>[ 2575.889182] __ip_local_out Enter
+<4>[ 2575.889312] dst_output Enter
+<4>[ 2575.889369] ip_output Enter
+<4>[ 2575.889449] ip_finish_output Enter
+<4>[ 2575.889509] ip_finish_output ip_finish_output2
+<4>[ 2575.891988] CONSOLE: 000027.238 wl0.0: wlc_send_bar: seq 0x3 tid 0
+<4>[ 2576.033973] net_rx_action = 1, NAPI_STATE_SCHED = 0
+<4>[ 2576.033994] net_rx_action = 1
+<4>[ 2576.034002] __netif_receive_skb_core Enter
+<4>[ 2576.034012] __netif_receive_skb_core pt_prev =  806
+<4>[ 2576.794852] net_rx_action = 1, NAPI_STATE_SCHED = 0
+<4>[ 2576.794981] net_rx_action = 1
+<4>[ 2576.795048] __netif_receive_skb_core Enter
+<4>[ 2576.795116] __netif_receive_skb_core pt_prev =  800
+<4>[ 2576.795243] ip_rcv_finish skb_dst
+<4>[ 2576.795306] ip_route_input_noref Enter
+<4>[ 2576.795363] ip_route_input_slow Enter
+<4>[ 2576.795436] ip_route_input_slow res.type = 2
+<4>[ 2576.795642] ip_route_input_slow local_input
+<4>[ 2576.795711] dst_input Enter
+<4>[ 2576.795868] raw_local_deliver Enter
+<4>[ 2576.795954] ip_local_deliver_finish protocol = 1
+<4>[ 2576.796043] icmp_rcv Enter
+<4>[ 2576.796150] icmp_rcv icmph->type = 8
+<4>[ 2576.796224] icmp_echo Enter
+<4>[ 2576.796342] icmp_reply Enter
+<4>[ 2576.796449] icmp_reply ip_route_output_key
+<4>[ 2576.796525] __ip_route_output_key Enter
+<4>[ 2576.796632] __ip_route_output_key res.type = 1
+<4>[ 2576.796691] __ip_route_output_key make_route
+<4>[ 2576.796746] __mkroute_output Enter
+<4>[ 2576.796805] icmp_reply icmpv4_xrlim_allow
+<4>[ 2576.796888] icmp_push_reply ip_push_pending_frames
+<4>[ 2576.796959] ip_push_pending_frames Enter
+<4>[ 2576.797016] ip_local_out Enter
+<4>[ 2576.797135] __ip_local_out Enter
+<4>[ 2576.797298] dst_output Enter
+<4>[ 2576.797358] ip_output Enter
+<4>[ 2576.797433] ip_finish_output Enter
+<4>[ 2576.797537] ip_finish_output ip_finish_output2
+<4>[ 2577.701685] net_rx_action = 1, NAPI_STATE_SCHED = 0
+<4>[ 2577.701813] net_rx_action = 1
+<4>[ 2577.701879] __netif_receive_skb_core Enter
+<4>[ 2577.701951] __netif_receive_skb_core pt_prev =  800
+<4>[ 2577.702077] ip_rcv_finish skb_dst
+<4>[ 2577.702138] ip_route_input_noref Enter
+<4>[ 2577.702193] ip_route_input_slow Enter
+<4>[ 2577.702265] ip_route_input_slow res.type = 2
+<4>[ 2577.702324] ip_route_input_slow local_input
+<4>[ 2577.702381] dst_input Enter
+<4>[ 2577.702478] raw_local_deliver Enter
+<4>[ 2577.702540] ip_local_deliver_finish protocol = 1
+<4>[ 2577.702597] icmp_rcv Enter
+<4>[ 2577.702653] icmp_rcv icmph->type = 8
+<4>[ 2577.702707] icmp_echo Enter
+<4>[ 2577.702758] icmp_reply Enter
+<4>[ 2577.702814] icmp_reply ip_route_output_key
+<4>[ 2577.702870] __ip_route_output_key Enter
+<4>[ 2577.702949] __ip_route_output_key res.type = 1
+<4>[ 2577.703008] __ip_route_output_key make_route
+<4>[ 2577.703064] __mkroute_output Enter
+<4>[ 2577.703123] icmp_reply icmpv4_xrlim_allow
+<4>[ 2577.703204] icmp_push_reply ip_push_pending_frames
+<4>[ 2577.703273] ip_push_pending_frames Enter
+<4>[ 2577.703330] ip_local_out Enter
+<4>[ 2577.703384] __ip_local_out Enter
+<4>[ 2577.703498] dst_output Enter
+<4>[ 2577.703554] ip_output Enter
+<4>[ 2577.703628] ip_finish_output Enter
+<4>[ 2577.703685] ip_finish_output ip_finish_output2
+<4>[ 2578.608557] net_rx_action = 1, NAPI_STATE_SCHED = 0
+<4>[ 2578.608687] net_rx_action = 1
+<4>[ 2578.608753] __netif_receive_skb_core Enter
+<4>[ 2578.608821] __netif_receive_skb_core pt_prev =  800
+<4>[ 2578.608941] ip_rcv_finish skb_dst
+<4>[ 2578.609003] ip_route_input_noref Enter
+<4>[ 2578.609061] ip_route_input_slow Enter
+<4>[ 2578.609130] ip_route_input_slow res.type = 2
+<4>[ 2578.609188] ip_route_input_slow local_input
+<4>[ 2578.609247] dst_input Enter
+<4>[ 2578.609344] raw_local_deliver Enter
+<4>[ 2578.609404] ip_local_deliver_finish protocol = 1
+<4>[ 2578.609462] icmp_rcv Enter
+<4>[ 2578.609517] icmp_rcv icmph->type = 8
+<4>[ 2578.609572] icmp_echo Enter
+<4>[ 2578.609622] icmp_reply Enter
+<4>[ 2578.609678] icmp_reply ip_route_output_key
+<4>[ 2578.609734] __ip_route_output_key Enter
+<4>[ 2578.609813] __ip_route_output_key res.type = 1
+<4>[ 2578.609874] __ip_route_output_key make_route
+<4>[ 2578.609930] __mkroute_output Enter
+<4>[ 2578.609990] icmp_reply icmpv4_xrlim_allow
+<4>[ 2578.610070] icmp_push_reply ip_push_pending_frames
+<4>[ 2578.610139] ip_push_pending_frames Enter
+<4>[ 2578.610195] ip_local_out Enter
+<4>[ 2578.610248] __ip_local_out Enter
+<4>[ 2578.610361] dst_output Enter
+<4>[ 2578.610418] ip_output Enter
+<4>[ 2578.610490] ip_finish_output Enter
+<4>[ 2578.610547] ip_finish_output ip_finish_output2

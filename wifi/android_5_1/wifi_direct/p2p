@@ -17,3 +17,16 @@ wpa_cli p2p_connect 6a:df:dd:a8:79:e8 pbc
 
 如果客户要用AP6255启p2p GO给对方wifi连接应按如下命令操作
 wpa_cli p2p_group_add persistent
+----------------------------------------------------------------------
+/usr/local/share/script/wifi_start.sh
+echo "ctrl_interface=/var/run/wpa_supplicant" > /tmp/p2p.conf
+echo "device_type=6-0050F204-1" >> /tmp/p2p.conf
+echo "config_methods=display push_button keypad" >> /tmp/p2p.conf
+echo "persistent_reconnect=1" >> /tmp/p2p.conf
+echo "driver_param=use_p2p_group_interface=1p2p_device=1" >> /tmp/p2p.conf
+wpa_supplicant -Dnl80211 -i wlan0 -c /tmp/p2p.conf &
+wpa_cli p2p_find
+wpa_cli p2p_peer 22:34:fb:33:bc:f9
+wpa_cli p2p_connect 22:34:fb:33:bc:f9  pbc  go_intent=15
+ifconfig p2p-wlan0-0  192.168.49.1 netmask 255.255.255.0
+dnsmasq --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &

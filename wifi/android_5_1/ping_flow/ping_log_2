@@ -1,0 +1,84 @@
+root@firefly-rk3288:/ # <4>[ 1031.398797] net_rx_action = 1, NAPI_STATE_SCHED = 0
+<4>[ 1031.398935] net_rx_action = 1
+<4>[ 1031.399003] __netif_receive_skb_core Enter
+<4>[ 1031.399074] __netif_receive_skb_core pt_prev =  800
+<4>[ 1031.399268] ip_rcv_finish skb_dst
+<4>[ 1031.399332] ip_route_input_noref Enter
+<4>[ 1031.399390] ip_route_input_slow Enter
+<4>[ 1031.399464] ip_route_input_slow res.type = 2
+<4>[ 1031.399522] ip_route_input_slow local_input
+<4>[ 1031.399582] dst_input Enter
+<4>[ 1031.399722] raw_local_deliver Enter
+<4>[ 1031.399787] ip_local_deliver_finish protocol = 1
+<4>[ 1031.399845] icmp_rcv Enter
+<4>[ 1031.399901] icmp_rcv icmph->type = 8
+<4>[ 1031.399955] icmp_echo Enter
+<4>[ 1031.400009] icmp_reply Enter
+<4>[ 1031.400067] icmp_reply ip_route_output_key
+<4>[ 1031.400125] __ip_route_output_key Enter
+<4>[ 1031.400215] __ip_route_output_key res.type = 1
+<4>[ 1031.400272] __ip_route_output_key make_route
+<4>[ 1031.400329] __mkroute_output Enter
+<4>[ 1031.400391] icmp_reply icmpv4_xrlim_allow
+<4>[ 1031.400474] icmp_push_reply ip_push_pending_frames
+<4>[ 1031.400546] ip_push_pending_frames Enter
+<4>[ 1031.400604] ip_local_out Enter
+<4>[ 1031.400658] __ip_local_out Enter
+<4>[ 1031.400785] dst_output Enter
+<4>[ 1031.400844] ip_output Enter
+<4>[ 1031.400927] ip_finish_output Enter
+<4>[ 1031.400984] ip_finish_output ip_finish_output2
+<4>[ 1031.401045] ip_finish_output2 dst_neigh_output
+<4>[ 1031.401099] dst_neigh_output Enter
+<4>[ 1031.401154] dst_neigh_output n->output
+<4>[ 1031.401222] dev_queue_xmit Enter
+<4>[ 1031.401280] dev_queue_xmit q->enqueue
+<4>[ 1031.401334] __dev_xmit_skb Enter
+<4>[ 1031.401389] __dev_xmit_skb sch_direct_xmit
+<4>[ 1031.401444] sch_direct_xmit Enter
+<4>[ 1031.401499] sch_direct_xmit netif_xmit_frozen_or_stopped
+<4>[ 1031.401561] dev_hard_start_xmit Enter
+<4>[ 1031.401620] dev_hard_start_xmit ndo_start_xmit
+<4>[ 1031.401681] dhd_start_xmit: Enter
+<4>[ 1032.405448] net_rx_action = 1, NAPI_STATE_SCHED = 0
+<4>[ 1032.405476] net_rx_action = 1
+<4>[ 1032.405490] __netif_receive_skb_core Enter
+<4>[ 1032.405505] __netif_receive_skb_core pt_prev =  800
+<4>[ 1032.405539] ip_rcv_finish skb_dst
+<4>[ 1032.405552] ip_route_input_noref Enter
+<4>[ 1032.405565] ip_route_input_slow Enter
+<4>[ 1032.405582] ip_route_input_slow res.type = 2
+<4>[ 1032.405594] ip_route_input_slow local_input
+<4>[ 1032.405607] dst_input Enter
+<4>[ 1032.405631] raw_local_deliver Enter
+<4>[ 1032.405644] ip_local_deliver_finish protocol = 1
+<4>[ 1032.405656] icmp_rcv Enter
+<4>[ 1032.405668] icmp_rcv icmph->type = 8
+<4>[ 1032.405680] icmp_echo Enter
+<4>[ 1032.405690] icmp_reply Enter
+<4>[ 1032.405703] icmp_reply ip_route_output_key
+<4>[ 1032.405716] __ip_route_output_key Enter
+<4>[ 1032.405734] __ip_route_output_key res.type = 1
+<4>[ 1032.405747] __ip_route_output_key make_route
+<4>[ 1032.405761] __mkroute_output Enter
+<4>[ 1032.405775] icmp_reply icmpv4_xrlim_allow
+<4>[ 1032.405793] icmp_push_reply ip_push_pending_frames
+<4>[ 1032.405809] ip_push_pending_frames Enter
+<4>[ 1032.405821] ip_local_out Enter
+<4>[ 1032.405834] __ip_local_out Enter
+<4>[ 1032.405857] dst_output Enter
+<4>[ 1032.405870] ip_output Enter
+<4>[ 1032.405885] ip_finish_output Enter
+<4>[ 1032.405897] ip_finish_output ip_finish_output2
+<4>[ 1032.405910] ip_finish_output2 dst_neigh_output
+<4>[ 1032.405921] dst_neigh_output Enter
+<4>[ 1032.405934] dst_neigh_output n->output
+<4>[ 1032.405946] dev_queue_xmit Enter
+<4>[ 1032.405958] dev_queue_xmit q->enqueue
+<4>[ 1032.405969] __dev_xmit_skb Enter
+<4>[ 1032.405980] __dev_xmit_skb sch_direct_xmit
+<4>[ 1032.405993] sch_direct_xmit Enter
+<4>[ 1032.406004] sch_direct_xmit netif_xmit_frozen_or_stopped
+<4>[ 1032.406017] dev_hard_start_xmit Enter
+<4>[ 1032.406030] dev_hard_start_xmit ndo_start_xmit
+<4>[ 1032.406043] dhd_start_xmit: Enter

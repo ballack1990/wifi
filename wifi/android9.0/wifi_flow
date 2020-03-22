@@ -1,0 +1,751 @@
+WifiSettings.java (packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        public void onStart() {
+            super.onStart();
+
+            // On/off switch is hidden for Setup Wizard (returns null)
+            mWifiEnabler = createWifiEnabler();
+            onWifiStateChanged(mWifiManager.getWifiState());
+        }
+
+        private WifiEnabler createWifiEnabler() {
+            final SettingsActivity activity = (SettingsActivity) getActivity();
+            return new WifiEnabler(activity, new SwitchBarController(activity.getSwitchBar()),
+                    mMetricsFeatureProvider);
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+WifiEnabler.java (packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        WifiEnabler(Context context, SwitchWidgetController switchWidget,
+                MetricsFeatureProvider metricsFeatureProvider,
+                ConnectivityManager connectivityManager) {
+            mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        }
+        
+        public boolean onSwitchToggled(boolean isChecked) {
+            if (!mWifiManager.setWifiEnabled(isChecked)) {
+                // Error
+                mSwitchWidget.setEnabled(true);
+                Toast.makeText(mContext, R.string.wifi_error, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+WifiManager.java (frameworks\base\wifi\java\android\net\wifi)
+->  {
+        @SystemService(Context.WIFI_SERVICE)
+        public class WifiManager {
+            IWifiManager mService;
+
+            public boolean setWifiEnabled(boolean enabled) {
+                try {
+                    return mService.setWifiEnabled(mContext.getOpPackageName(), enabled);
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+SystemServer.java (frameworks\base\services\java\com\android\server)
+->  {
+        public final class SystemServer {
+            private static final String WIFI_SERVICE_CLASS =
+                "com.android.server.wifi.WifiService";
+
+            private void run() {
+                startOtherServices();
+            }
+
+            private void startOtherServices() {
+                mSystemServiceManager.startService(WIFI_SERVICE_CLASS);
+                mSystemServiceManager.startService( "com.android.server.wifi.scanner.WifiScanningService");
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------
+WifiService.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public final class WifiService extends SystemService {
+            public WifiService(Context context) {
+                super(context);
+                mImpl = new WifiServiceImpl(context, new WifiInjector(context), new WifiAsyncChannel(TAG)); // 新建WifiInjector类
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------
+WifiServiceImpl.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public class WifiServiceImpl extends IWifiManager.Stub {
+            public WifiServiceImpl(Context context, WifiInjector wifiInjector, AsyncChannel asyncChannel) {
+                mWifiInjector = wifiInjector;
+                mWifiController = mWifiInjector.getWifiController();
+            }
+
+            public synchronized boolean setWifiEnabled(String packageName, boolean enable)
+                throws RemoteException {
+                    mWifiController.sendMessage(CMD_WIFI_TOGGLED);
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------
+WifiInjector.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public class WifiInjector {
+            public WifiInjector(Context context) {
+                mWifiMonitor = new WifiMonitor(this);
+                mWificondControl = new WificondControl(this, mWifiMonitor, mCarrierNetworkConfig);
+
+                mHalDeviceManager = new HalDeviceManager(mClock);
+                mWifiVendorHal =
+                    new WifiVendorHal(mHalDeviceManager, mWifiStateMachineHandlerThread.getLooper());
+
+                mWifiNative = new WifiNative(
+                        mWifiVendorHal, mSupplicantStaIfaceHal, mHostapdHal, mWificondControl,
+                        mWifiMonitor, mNwManagementService, mPropertyService, mWifiMetrics);
+
+                mWifiStateMachine = new WifiStateMachine(mContext, mFrameworkFacade,
+                        wifiStateMachineLooper, UserManager.get(mContext),
+                        this, mBackupManagerProxy, mCountryCode, mWifiNative,
+                        new WrongPasswordNotifier(mContext, mFrameworkFacade),
+                        mSarManager);
+                mWifiStateMachinePrime = new WifiStateMachinePrime(this, mContext, wifiStateMachineLooper,
+                        mWifiNative, new DefaultModeManager(mContext, wifiStateMachineLooper),
+                        mBatteryStats);
+
+                mWifiController = new WifiController(mContext, mWifiStateMachine, wifiStateMachineLooper,
+                        mSettingsStore, mWifiServiceHandlerThread.getLooper(), mFrameworkFacade,
+                        mWifiStateMachinePrime);
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------------
+WifiController.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public class WifiController extends StateMachine {
+            WifiController(Context context, WifiStateMachine wsm, Looper wifiStateMachineLooper,
+                    WifiSettingsStore wss, Looper wifiServiceLooper, FrameworkFacade f,
+                    WifiStateMachinePrime wsmp) {
+
+                addState(mDefaultState);
+                addState(mStaDisabledState, mDefaultState);
+                addState(mStaEnabledState, mDefaultState);
+                addState(mDeviceActiveState, mStaEnabledState);
+                addState(mStaDisabledWithScanState, mDefaultState);
+                addState(mEcmState, mDefaultState);
+
+                if (checkScanOnlyModeAvailable()) {
+                    setInitialState(mStaDisabledWithScanState);
+                } else {
+                    setInitialState(mStaDisabledState);
+                }
+            }
+
+            class StaDisabledState extends State {
+                public void enter() {
+                    mWifiStateMachinePrime.disableWifi();
+                    // Supplicant can't restart right away, so note the time we switched off
+                    mDisabledTimestamp = SystemClock.elapsedRealtime();
+                    mDeferredEnableSerialNumber++;
+                    mHaveDeferredEnable = false;
+                    mWifiStateMachine.clearANQPCache();
+                }
+
+                public boolean processMessage(Message msg) {
+                    switch (msg.what) {
+                        case CMD_WIFI_TOGGLED:
+                            if (mSettingsStore.isWifiToggleEnabled()) {
+                                if (doDeferEnable(msg)) {
+                                    if (mHaveDeferredEnable) {
+                                        //  have 2 toggles now, inc serial number and ignore both
+                                        mDeferredEnableSerialNumber++;
+                                    }
+                                    mHaveDeferredEnable = !mHaveDeferredEnable;
+                                    break;
+                                }
+                                transitionTo(mDeviceActiveState);
+                            } else if (checkScanOnlyModeAvailable()) {
+                                // only go to scan mode if we aren't in airplane mode
+                                if (mSettingsStore.isAirplaneModeOn()) {
+                                    transitionTo(mStaDisabledWithScanState);
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+
+            class DeviceActiveState extends State {
+                public void enter() {
+                    mWifiStateMachinePrime.enterClientMode();
+                    mWifiStateMachine.setHighPerfModeEnabled(false);
+                }
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------->
+WifiStateMachinePrime.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public class WifiStateMachinePrime {
+            WifiStateMachinePrime(WifiInjector wifiInjector,
+                    Context context,
+                    Looper looper,
+                    WifiNative wifiNative,
+                    DefaultModeManager defaultModeManager,
+                    IBatteryStats batteryStats) {
+                mModeStateMachine = new ModeStateMachine();
+            }
+
+            private class ModeStateMachine extends StateMachine {
+                ModeStateMachine() {
+                    super(TAG, mLooper);
+
+                    addState(mClientModeActiveState);
+                    addState(mScanOnlyModeActiveState);
+                    addState(mWifiDisabledState);
+
+                    Log.d(TAG, "Starting Wifi in WifiDisabledState");
+                    setInitialState(mWifiDisabledState);
+                    start();
+                }
+
+                
+                class WifiDisabledState extends ModeActiveState {
+                    public void enter() {
+                        Log.d(TAG, "Entering WifiDisabledState");
+                        mDefaultModeManager.sendScanAvailableBroadcast(mContext, false);
+                        mScanRequestProxy.enableScanningForHiddenNetworks(false);
+                        mScanRequestProxy.clearScanResults();
+                    }
+
+                    public boolean processMessage(Message message) {
+                        Log.d(TAG, "received a message in WifiDisabledState: " + message);
+                        if (checkForAndHandleModeChange(message)) {
+                            return HANDLED;
+                        }
+                        return NOT_HANDLED;
+                    }
+                }
+
+                private boolean checkForAndHandleModeChange(Message message) {
+                    switch(message.what) {
+                        case ModeStateMachine.CMD_START_CLIENT_MODE:
+                            Log.d(TAG, "Switching from " + getCurrentMode() + " to ClientMode");
+                            mModeStateMachine.transitionTo(mClientModeActiveState);
+                            break;
+                        case ModeStateMachine.CMD_START_SCAN_ONLY_MODE:
+                            Log.d(TAG, "Switching from " + getCurrentMode() + " to ScanOnlyMode");
+                            mModeStateMachine.transitionTo(mScanOnlyModeActiveState);
+                            break;
+                        case ModeStateMachine.CMD_DISABLE_WIFI:
+                            Log.d(TAG, "Switching from " + getCurrentMode() + " to WifiDisabled");
+                            mModeStateMachine.transitionTo(mWifiDisabledState);
+                            break;
+                        default:
+                            return NOT_HANDLED;
+                    }
+                    return HANDLED;
+                }
+
+                class ClientModeActiveState extends ModeActiveState {
+                    ClientListener mListener;
+                    private class ClientListener implements ClientModeManager.Listener {
+                        public void onStateChanged(int state) {
+                            // make sure this listener is still active
+                            if (this != mListener) {
+                                Log.d(TAG, "Client mode state change from previous manager");
+                                return;
+                            }
+
+                            Log.d(TAG, "State changed from client mode. state = " + state);
+
+                            if (state == WifiManager.WIFI_STATE_UNKNOWN) {
+                                // error while setting up client mode or an unexpected failure.
+                                mModeStateMachine.sendMessage(CMD_CLIENT_MODE_FAILED, this);
+                            } else if (state == WifiManager.WIFI_STATE_DISABLED) {
+                                // client mode stopped
+                                mModeStateMachine.sendMessage(CMD_CLIENT_MODE_STOPPED, this);
+                            } else if (state == WifiManager.WIFI_STATE_ENABLED) {
+                                // client mode is ready to go
+                                Log.d(TAG, "client mode active");
+                            } else {
+                                // only care if client mode stopped or started, dropping
+                            }
+                        }
+                    }
+
+                    public void enter() {
+                        Log.d(TAG, "Entering ClientModeActiveState");
+
+                        mListener = new ClientListener();
+                        mManager = mWifiInjector.makeClientModeManager(mListener);
+                        mManager.start();
+                        mActiveModeManagers.add(mManager);
+
+                        updateBatteryStatsWifiState(true);
+                    }
+                }
+            }
+
+            public void enterClientMode() {
+                changeMode(ModeStateMachine.CMD_START_CLIENT_MODE);
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------
+WifiInjector.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public ClientModeManager makeClientModeManager(ClientModeManager.Listener listener) {
+            return new ClientModeManager(mContext, mWifiStateMachineHandlerThread.getLooper(),
+                    mWifiNative, listener, mWifiMetrics, mScanRequestProxy, mWifiStateMachine);
+        }
+    }
+-------------------------------------------------------------------------------------------------------
+ClientModeManager.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public class ClientModeManager implements ActiveModeManager {
+            ClientModeManager(Context context, @NonNull Looper looper, WifiNative wifiNative,
+                    Listener listener, WifiMetrics wifiMetrics, ScanRequestProxy scanRequestProxy,
+                    WifiStateMachine wifiStateMachine) {
+                mContext = context;
+                mWifiNative = wifiNative;
+                mListener = listener;
+                mWifiMetrics = wifiMetrics;
+                mScanRequestProxy = scanRequestProxy;
+                mWifiStateMachine = wifiStateMachine;
+                mStateMachine = new ClientModeStateMachine(looper);
+            }
+
+            public void start() {
+                mStateMachine.sendMessage(ClientModeStateMachine.CMD_START);
+            }
+
+            private class ClientModeStateMachine extends StateMachine {
+                ClientModeStateMachine(Looper looper) {
+                    super(TAG, looper);
+
+                    addState(mIdleState);
+                    addState(mStartedState);
+
+                    setInitialState(mIdleState);
+                    start();
+                }
+
+                private class IdleState extends State {
+                    public boolean processMessage(Message message) {
+                        switch (message.what) {
+                            case CMD_START:
+                                updateWifiState(WifiManager.WIFI_STATE_ENABLING,
+                                        WifiManager.WIFI_STATE_DISABLED);
+
+                                mClientInterfaceName = mWifiNative.setupInterfaceForClientMode(
+                                        false /* not low priority */, mWifiNativeInterfaceCallback);
+                                if (TextUtils.isEmpty(mClientInterfaceName)) {
+                                    Log.e(TAG, "Failed to create ClientInterface. Sit in Idle");
+                                    updateWifiState(WifiManager.WIFI_STATE_UNKNOWN,
+                                            WifiManager.WIFI_STATE_ENABLING);
+                                    updateWifiState(WifiManager.WIFI_STATE_DISABLED,
+                                            WifiManager.WIFI_STATE_UNKNOWN);
+                                    break;
+                                }
+                                sendScanAvailableBroadcast(false);
+                                mScanRequestProxy.enableScanningForHiddenNetworks(false);
+                                mScanRequestProxy.clearScanResults();
+                                transitionTo(mStartedState);
+                                break;
+                        }
+                    }
+                }
+
+                private class StartedState extends State {
+                    private void onUpChanged(boolean isUp) {
+                        if (isUp == mIfaceIsUp) {
+                            return;  // no change
+                        }
+                        mIfaceIsUp = isUp;
+                        if (isUp) {
+                            Log.d(TAG, "Wifi is ready to use for client mode");
+                            sendScanAvailableBroadcast(true);
+                            mWifiStateMachine.setOperationalMode(WifiStateMachine.CONNECT_MODE,
+                                    mClientInterfaceName);
+                            updateWifiState(WifiManager.WIFI_STATE_ENABLED,
+                                    WifiManager.WIFI_STATE_ENABLING);
+                        } else {
+                            if (mWifiStateMachine.isConnectedMacRandomizationEnabled()) {
+                                // Handle the error case where our underlying interface went down if we
+                                // do not have mac randomization enabled (b/72459123).
+                                return;
+                            }
+                            // if the interface goes down we should exit and go back to idle state.
+                            Log.d(TAG, "interface down!");
+                            updateWifiState(WifiManager.WIFI_STATE_UNKNOWN,
+                                    WifiManager.WIFI_STATE_ENABLED);
+                            mStateMachine.sendMessage(CMD_INTERFACE_DOWN);
+                        }
+                    }
+
+                    public void enter() {
+                        Log.d(TAG, "entering StartedState");
+                        mIfaceIsUp = false;
+                        onUpChanged(mWifiNative.isInterfaceUp(mClientInterfaceName));
+                        mScanRequestProxy.enableScanningForHiddenNetworks(true);
+                    }
+                }
+            }
+        }
+    }
+-----------------------------------------------------------------------------------------------------
+WifiNative.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public WifiNative(WifiVendorHal vendorHal,
+                SupplicantStaIfaceHal staIfaceHal, HostapdHal hostapdHal,
+                WificondControl condControl, WifiMonitor wifiMonitor,
+                INetworkManagementService nwService,
+                PropertyService propertyService, WifiMetrics wifiMetrics) {
+            mWifiVendorHal = vendorHal;
+            mSupplicantStaIfaceHal = staIfaceHal;
+            mHostapdHal = hostapdHal;
+            mWificondControl = condControl;
+            mWifiMonitor = wifiMonitor;
+            mNwManagementService = nwService;
+            mPropertyService = propertyService;
+            mWifiMetrics = wifiMetrics;
+        }
+
+        public String setupInterfaceForClientMode(boolean lowPrioritySta,
+                @NonNull InterfaceCallback interfaceCallback) {
+            startHal();
+            startSupplicant();
+
+            Iface iface = mIfaceMgr.allocateIface(Iface.IFACE_TYPE_STA);
+            iface.externalListener = interfaceCallback;
+            iface.name = createStaIface(iface, lowPrioritySta);
+
+            mWificondControl.setupInterfaceForClientMode(iface.name);
+
+            mSupplicantStaIfaceHal.setupIface(iface.name);
+
+            iface.networkObserver = new NetworkObserverInternal(iface.id);
+            registerNetworkObserver(iface.networkObserver);
+
+            mWifiMonitor.startMonitoring(iface.name);
+            // Just to avoid any race conditions with interface state change callbacks,
+            // update the interface state before we exit.
+            onInterfaceStateChanged(iface, isInterfaceUp(iface.name));
+            initializeNwParamsForClientInterface(iface.name);
+            Log.i(TAG, "Successfully setup " + iface);
+            return iface.name;
+        }
+
+        /** Helper method invoked to start supplicant if there were no ifaces */
+        private boolean startHal() {
+            synchronized (mLock) {
+                if (!mIfaceMgr.hasAnyIface()) {
+                    if (mWifiVendorHal.isVendorHalSupported()) {
+                        if (!mWifiVendorHal.startVendorHal()) {
+                            Log.e(TAG, "Failed to start vendor HAL");
+                            return false;
+                        }
+                    } else {
+                        Log.i(TAG, "Vendor Hal not supported, ignoring start.");
+                    }
+                }
+                return true;
+            }
+        }
+
+        private boolean startSupplicant() {
+            synchronized (mLock) {
+                if (!mIfaceMgr.hasAnyStaIface()) {
+                    if (!mWificondControl.enableSupplicant()) {
+                        Log.e(TAG, "Failed to enable supplicant");
+                        return false;
+                    }
+                    if (!waitForSupplicantConnection()) {
+                        Log.e(TAG, "Failed to connect to supplicant");
+                        return false;
+                    }
+                    if (!mSupplicantStaIfaceHal.registerDeathHandler(
+                                new SupplicantDeathHandlerInternal())) {
+                        Log.e(TAG, "Failed to register supplicant death handler");
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------
+WifiVendorHal.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean startVendorHal() {
+            synchronized (sLock) {
+                if (!mHalDeviceManager.start()) {
+                    mLog.err("Failed to start vendor HAL").flush();
+                    return false;
+                }
+                mLog.info("Vendor Hal started successfully").flush();
+                return true;
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------
+HalDeviceManager.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean start() {
+            return startWifi();
+        }
+
+        private boolean startWifi() {
+            WifiStatus status = mWifi.start();
+            if (status.code == WifiStatusCode.SUCCESS) {
+                initIWifiChipDebugListeners();
+                managerStatusListenerDispatch();
+                if (triedCount != 0) {
+                    Log.d(TAG, "start IWifi succeeded after trying "
+                            + triedCount + " times");
+                }
+                return true;
+            }
+        }
+    }
+----------------------------------------------------------------------------------------------
+Wifi.h (hardware\interfaces\wifi\1.2\default)
+->  {
+        class Wifi : public V1_2::IWifi {
+            Return<void> start(start_cb hidl_status_cb) override;
+        }
+    }
+----------------------------------------------------------------------------------------------
+Wifi.cpp (hardware\interfaces\wifi\1.2\default)
+->  {
+        Wifi::Wifi(
+                const std::shared_ptr<legacy_hal::WifiLegacyHal> legacy_hal,                    // 可以看到legacy_hal就是WifiLegacyHal 
+                const std::shared_ptr<mode_controller::WifiModeController> mode_controller,
+                const std::shared_ptr<feature_flags::WifiFeatureFlags> feature_flags)
+            : legacy_hal_(legacy_hal),                                                          // 用legacy_hal初始化legacy_hal_
+            mode_controller_(mode_controller),
+            feature_flags_(feature_flags),
+            run_state_(RunState::STOPPED) {}
+
+        Return<void> Wifi::start(start_cb hidl_status_cb) {
+            return validateAndCall(this, WifiStatusCode::ERROR_UNKNOWN,
+                    &Wifi::startInternal, hidl_status_cb);
+        }
+
+        WifiStatus Wifi::startInternal() {
+            WifiStatus wifi_status = initializeModeControllerAndLegacyHal();
+            if (wifi_status.code == WifiStatusCode::SUCCESS) {
+                // Create the chip instance once the HAL is started.
+                chip_ = new WifiChip(kChipId, legacy_hal_, mode_controller_,
+                        feature_flags_);
+                run_state_ = RunState::STARTED;
+                for (const auto& callback : event_cb_handler_.getCallbacks()) {
+                    if (!callback->onStart().isOk()) {
+                        LOG(ERROR) << "Failed to invoke onStart callback";
+                    };
+                }
+                LOG(INFO) << "Wifi HAL started";
+            } 
+
+            return wifi_status;
+        }
+
+        WifiStatus Wifi::initializeModeControllerAndLegacyHal() {
+            if (!mode_controller_->initialize()) {
+                LOG(ERROR) << "Failed to initialize firmware mode controller";
+                return createWifiStatus(WifiStatusCode::ERROR_UNKNOWN);
+            }
+            legacy_hal::wifi_error legacy_status = legacy_hal_->initialize();
+            if (legacy_status != legacy_hal::WIFI_SUCCESS) {
+                LOG(ERROR) << "Failed to initialize legacy HAL: "
+                    << legacyErrorToString(legacy_status);
+                return createWifiStatusFromLegacyError(legacy_status);
+            }
+            return createWifiStatus(WifiStatusCode::SUCCESS);
+        }
+    }
+----------------------------------------------------------------------------------------------
+Wifi_mode_controller.cpp (hardware\interfaces\wifi\1.2\default)
+->  {
+        WifiModeController::WifiModeController() : driver_tool_(new DriverTool) {}
+
+        bool WifiModeController::initialize() {
+            if (!driver_tool_->LoadDriver()) {
+                LOG(ERROR) << "Failed to load WiFi driver";
+                return false;
+            }
+            return true;
+        }
+    }
+----------------------------------------------------------------------------------------------
+Driver_tool.cpp (frameworks\opt\net\wifi\libwifi_hal)
+->  {
+        bool DriverTool::LoadDriver() {
+            return ::wifi_load_driver() == 0;
+        }
+    }
+----------------------------------------------------------------------------------------------
+Wifi_hal_common.cpp (frameworks\opt\net\wifi\libwifi_hal)
+->  {
+        int wifi_load_driver() {
+        #ifdef WIFI_DRIVER_MODULE_PATH
+            char* wifi_ko_path = NULL ;
+            char* wifi_ko_arg =NULL;
+            int i = 0;
+            int count = 100;
+            if (is_wifi_driver_loaded()) {
+                return 0;
+            }
+            if (wifi_type[0] == 0) {
+                check_wifi_chip_type_string(wifi_type);
+                save_wifi_chip_type(wifi_type);
+            }
+            for (i=0; i< (int)(sizeof(module_list) / sizeof(module_list[0])); i++) {
+                if (!strcmp(wifi_type , module_list[i].wifi_name)) {
+                    wifi_ko_path = module_list[i].wifi_module_path;
+                    wifi_ko_arg = module_list[i].wifi_module_arg;
+                    PLOG(ERROR) << "matched ko file path " << wifi_ko_path;
+                    break;
+                }
+            }
+            if (wifi_ko_path == NULL) {
+                PLOG(ERROR) << "falied to find wifi driver for type=" << wifi_type;
+                return -1;
+            }
+
+            if (strstr(wifi_ko_path, MVL_DRIVER_MODULE_NAME)) {
+                insmod(MLAN_DRIVER_MODULE_PATH, "");
+            }
+
+            if (insmod(wifi_ko_path, wifi_ko_arg) < 0) {
+                return -1;
+            }
+        #endif
+
+            while (count-- > 0) {
+                if (is_wifi_driver_loaded()) {
+                    property_set(DRIVER_PROP_NAME, "ok");
+                    return 0;
+                }
+                usleep(200000);
+            }
+            property_set(DRIVER_PROP_NAME, "timeout");
+        }
+    }
+----------------------------------------------------------------------------------------------
+Wifi_legacy_hal.cpp (hardware\interfaces\wifi\1.2\default)
+->  {
+        wifi_error WifiLegacyHal::initialize() {
+            LOG(DEBUG) << "Initialize legacy HAL";
+            // TODO: Add back the HAL Tool if we need to. All we need from the HAL tool
+            // for now is this function call which we can directly call.
+            if (!initHalFuncTableWithStubs(&global_func_table_)) {
+                LOG(ERROR)
+                    << "Failed to initialize legacy hal function table with stubs";
+                return WIFI_ERROR_UNKNOWN;
+            }
+            wifi_error status = init_wifi_vendor_hal_func_table(&global_func_table_);
+            if (status != WIFI_SUCCESS) {
+                LOG(ERROR) << "Failed to initialize legacy hal function table";
+            }
+            return status;
+        }
+    }
+
+
+WificondControl.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public class WificondControl implements IBinder.DeathRecipient {
+            /**
+             * Enable wpa_supplicant via wificond.
+             * @return Returns true on success.
+             */
+            public boolean enableSupplicant() {
+                if (!retrieveWificondAndRegisterForDeath()) {
+                    return false;
+                }
+                try {
+                    return mWificond.enableSupplicant();
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Failed to enable supplicant due to remote exception");
+                }
+                return false;
+            }
+        }
+
+        /**
+         * Helper method to retrieve the global wificond handle and register for
+         * death notifications.
+         */
+        private boolean retrieveWificondAndRegisterForDeath() {
+            if (mWificond != null) {
+                if (mVerboseLoggingEnabled) {
+                    Log.d(TAG, "Wificond handle already retrieved");
+                }
+                // We already have a wificond handle.
+                return true;
+            }
+            mWificond = mWifiInjector.makeWificond();
+            if (mWificond == null) {
+                Log.e(TAG, "Failed to get reference to wificond");
+                return false;
+            }
+            try {
+                mWificond.asBinder().linkToDeath(this, 0);
+            } catch (RemoteException e) {
+                Log.e(TAG, "Failed to register death notification for wificond");
+                // The remote has already died.
+                return false;
+            }
+            return true;
+        }
+    }
+--------------------------------------------------------------------------------------------
+WifiInjector.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public IWificond makeWificond() {
+            // We depend on being able to refresh our binder in WifiStateMachine, so don't cache it.
+            IBinder binder = ServiceManager.getService(WIFICOND_SERVICE_NAME);
+            return IWificond.Stub.asInterface(binder);
+        }
+    }
+---------------------------------------------------------------------------------------------
+Server.cpp (system\connectivity\wificond)
+->  {
+        Status Server::enableSupplicant(bool* success) {
+            *success = supplicant_manager_->StartSupplicant();
+            return Status::ok();
+        }
+    }
+---------------------------------------------------------------------------------------------
+Supplicant_manager.cpp (frameworks\opt\net\wifi\libwifi_system)
+->  {
+        const char kSupplicantInitProperty[] = "init.svc.wpa_supplicant";
+        const char kSupplicantServiceName[] = "wpa_supplicant";
+
+        bool SupplicantManager::StartSupplicant() {
+            /* Check whether already running */
+            if (property_get(kSupplicantInitProperty, supp_status, NULL) &&
+                    strcmp(supp_status, "running") == 0) {
+                return true;
+            }
+
+            /*
+             * Get a reference to the status property, so we can distinguish
+             * the case where it goes stopped => running => stopped (i.e.,
+             * it start up, but fails right away) from the case in which
+             * it starts in the stopped state and never manages to start
+             * running at all.
+             */
+            pi = __system_property_find(kSupplicantInitProperty);
+            if (pi != NULL) {
+                serial = __system_property_serial(pi);
+            }
+
+            property_set("ctl.start", kSupplicantServiceName);
+            sched_yield();
+        }
+    }
+
