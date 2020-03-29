@@ -653,8 +653,7 @@ Wifi_legacy_hal.cpp (hardware\interfaces\wifi\1.2\default)
             return status;
         }
     }
-
-
+-----------------------------------------------------------------------------------------------
 WificondControl.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
 ->  {
         public class WificondControl implements IBinder.DeathRecipient {

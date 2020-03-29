@@ -11,8 +11,7 @@ WifiSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\and
             mWifiEnabler = createWifiEnabler();
         }
     }
-
-
+--------------------------------------------------------------------------------------------------------
 WifiEnabler.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi)
 ->  {
         private final WifiManager mWifiManager;
@@ -28,8 +27,7 @@ WifiEnabler.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\andr
             }
         }
     }
-
-
+-------------------------------------------------------------------------------------------------------
 WifiManager.java (base\wifi\java\android\net\wifi)
 ->  {
         IWifiManager mService;
@@ -38,8 +36,7 @@ WifiManager.java (base\wifi\java\android\net\wifi)
             return mService.setWifiEnabled(enabled);
         }      
     }
-
-
+-------------------------------------------------------------------------------------------------------
 WifiServiceImpl.java (opt\net\wifi\service\java\com\android\server\wifi)
 ->  {
         public final class WifiServiceImpl extends IWifiManager.Stub {
@@ -58,7 +55,7 @@ WifiController(Context context, WifiServiceImpl service, Looper looper) {
     }
 }
 
-故上面发送的CMD_WIFI_TOGGLED应该由mApStaDisabledState类来接收！！
+故上面发送的CMD_WIFI_TOGGLED应该由mApStaDisabledState类来处理！！
 
 WifiController.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
 ->  {
@@ -153,7 +150,7 @@ Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
                 return -1;
         }
     }
---------------------------------------------->
+-------------------------------------------------------------------------------->
 Rk_wifi_ctrl.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
 ->  {
         #define WIFI_DRIVER_INF         "/sys/class/rkwifi/driver"
@@ -268,6 +265,18 @@ com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\op
 ---------------------------------------------------------------------------------------------------------
 继续来看上面执行loadDriver之后的动作：
 mWifiNative.startSupplicant(mP2pSupported)
+-------------------------------------------------------------------------------------------------------------
+com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jni)
+->  {
+        static JNINativeMethod gWifiMethods[] = {
+            { "startSupplicant", "(Z)Z",  (void *)android_net_wifi_startSupplicant },
+        }
+
+        static jboolean android_net_wifi_startSupplicant(JNIEnv* env, jobject, jboolean p2pSupported)
+        {
+            return (::wifi_start_supplicant(p2pSupported) == 0);
+        }
+    }
 ---------------------------------------------------------------------->
 Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
 ->  {
@@ -358,46 +367,28 @@ WifiMonitor.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jav
                     }
                 }
             }
-            ->  {
-                    private boolean dispatchEvent(String eventStr, String iface) {
-                        handleEvent(event, eventData);
-                    }
 
-                    /**
-                     * Handle all supplicant events except STATE-CHANGE
-                     * @param event the event type
-                     * @param remainder the rest of the string following the
-                     * event name and &quot;&#8195;&#8212;&#8195;&quot;
-                     */
-                    void handleEvent(int event, String remainder) {
-                        if (DBG) {
-                            logDbg("handleEvent " + Integer.toString(event) + "  " + remainder);
-                        }
-                        switch (event) {
-                            case DISCONNECTED:
-                                handleNetworkStateChange(NetworkInfo.DetailedState.DISCONNECTED, remainder);
-                                break;
-
-                            case CONNECTED:
-                                handleNetworkStateChange(NetworkInfo.DetailedState.CONNECTED, remainder);
-                                break;
-
-                            case SCAN_RESULTS:
-                                mStateMachine.sendMessage(SCAN_RESULTS_EVENT);
-                                break;
-
-                            case UNKNOWN:
-                                if (DBG) {
-                                    logDbg("handleEvent unknown: " + Integer.toString(event) + "  " + remainder);
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
         }
------------------------------------------------------------------------------->
+------------------------------------------------------------------------------------------------------------->
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean connectToSupplicant() {
+            return connectToSupplicantNative();
+        }
+    }
+-------------------------------------------------------------------------------------------------------------
+com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jni)
+->  {
+        static JNINativeMethod gWifiMethods[] = {
+            { "connectToSupplicantNative", "()Z", (void *)android_net_wifi_connectToSupplicant },
+        }
+
+        static jboolean android_net_wifi_connectToSupplicant(JNIEnv* env, jobject)
+        {
+            return (::wifi_connect_to_supplicant() == 0);
+        }
+    }
+-----------------------------------------------------------------------------------
 Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
 ->  {
         int wifi_connect_to_supplicant()
@@ -540,55 +531,6 @@ WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\servic
                             mWifiNative.scan(type, freqs);
                         }
                     }
-
-startScanNative会向wpa_supplicant发送SCAN的命令，当wpa_suppliant执行完SCAN并成功找到一些AP后，
-就会给WifiMonitor发送CTRL-EVENT-SCAN-RESULTS的event，WifiMonitor会parse出这个event，
-并向WifiStateMachine发送SCAN_RESULTS_EVENT消息，由于DisconnectedState类不处理， 一直往上抛到父类，
-WifiStateMachine的SupplicantStartedState会处理这个消息，如下：
-class SupplicantStartedState extends State {
-    public boolean processMessage(Message message) {
-        switch(message.what) {
-            // 这里主要做了两件事，一是去获取scanResults，另外会发送一个广播信息出去，
-            // 如果有检测这个广播的receive收到这个广播后，就可以调用函数去获取到scanResults并显示到listview上面，例如WifiSettings
-            case WifiMonitor.SCAN_RESULTS_EVENT:
-                setScanResults();
-                sendScanResultsAvailableBroadcast();
-        }
-    }
-}
-->  {
-        private void setScanResults() {
-            /*
-            这个函数看起来比较复杂，其实仔细分析，它只是循环的parse从WifiNative获取到AP列表信息，
-            WifiNative.scanResult的返回结果如下，每个AP之间用"===="分割，末尾以“####”来表示结束。
-
-                id=1
-                bssid=68:7f:76:d7:1a:6e
-                freq=2412
-                level=-44
-                tsf=1344626243700342
-                flags=[WPA2-PSK-CCMP][WPS][ESS]
-                ssid=zfdy
-                ====
-                id=2
-                bssid=68:5f:74:d7:1a:6f
-                req=5180
-                level=-73
-                tsf=1344626243700373
-                flags=[WPA2-PSK-CCMP][WPS][ESS]
-                ssid=zuby
-                ####
-
-            当所有的结果都被parse出来后，会被存到mScanResults这个ArrayList当中，
-            另外会用bssid+ssid做key值，将这个scanResult存到mScanResultCache这个LRU（最近最少使用） cache当中。
-            当然随着wifi driver不断的scan，发现新的AP，mScanResults和mScanResultCache中的数据也在不断的变化。
-
-            当应用程序收到sendScanResultsAvailableBroadcast发送的WifiManager.SCAN_RESULTS_AVAILABLE_ACTION这个broadcast后，
-            就可以去获取上面提供的mScanResults信息了，获取过程很简单，直接复制mScanResults这个ArrayList里面的成员，然后返回。
-            值得注意的是！！！sendScanResultsAvailableBroadcast设置了Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT这个属性，
-            所以只有动态注册的broadcastReceive才会收到这个broadcast。
-            */
-        }
     }
 -------------------------------------------------------------------------------------------------------------------------------->
 WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
@@ -831,7 +773,7 @@ Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplican
             static void wpas_ctrl_scan(struct wpa_supplicant *wpa_s, char *params, char *reply, int reply_size, int *reply_len) {
                 if (params) {
                     if (os_strncasecmp(params, "TYPE=ONLY", 9) == 0)
-                        wpa_s->scan_res_handler = scan_only_handler;
+                        wpa_s->scan_res_handler = scan_only_handler;        // 下面会调用到scan_res_handler
                 }
 
                 if (!wpa_s->sched_scanning && !wpa_s->scanning &&           // 当前是空闲状态
@@ -866,6 +808,7 @@ Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplican
                     *reply_len = os_snprintf(reply, reply_size, "FAIL-BUSY\n");
                 }
             }
+
         }
 -------------------------------------------------------------------------------------------------------------->
 Scan.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
@@ -972,7 +915,7 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
                                     wpa_printf(MSG_DEBUG, "nl80211: Do not indicate scan-start event due to internal scan_for_auth");
                                     break;
                                 }
-                                wpa_supplicant_event(drv->ctx, EVENT_SCAN_STARTED, NULL);       // 基本没做什么事
+                                wpa_supplicant_event(drv->ctx, EVENT_SCAN_STARTED, NULL);   //  往monitor发送WPA_EVENT_SCAN_STARTED
                                 break;
                         }
                     }
@@ -992,11 +935,6 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
                     }
     } 
 --------------------------------------------------------------------------------------------------------------------------->
-Wpa_ctrl.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\common)
-->  {
-        #define WPA_EVENT_SCAN_RESULTS "CTRL-EVENT-SCAN-RESULTS "
-    }
---------------------------------------------------------------------------------------------------------------->
 events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
 ->  {
         void wpa_supplicant_event(void *ctx, enum wpa_event_type event, union wpa_event_data *data) {
@@ -1034,7 +972,7 @@ events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
                                     wpa_s->manual_scan_id);
                         } else {
                             wpa_msg_ctrl(wpa_s, MSG_INFO,
-                                    WPA_EVENT_SCAN_STARTED);
+                                    WPA_EVENT_SCAN_STARTED);                        // 往monitor发送WPA_EVENT_SCAN_STARTED
                         }
                     } else {
                         wpa_dbg(wpa_s, MSG_DEBUG, "External program started a scan");
@@ -1042,7 +980,7 @@ events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
                         wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_STARTED);
                     }
                     break;
-                case EVENT_SCAN_RESULTS:
+                case EVENT_SCAN_RESULTS:                                            // 这里只是更新scan_results的结果, 并不会传给上层
                     if (os_reltime_initialized(&wpa_s->scan_start_time)) {
                         struct os_reltime now, diff;
                         os_get_reltime(&now);
@@ -1110,7 +1048,7 @@ events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
                     }
 
                     if (own_request && wpa_s->scan_res_handler &&
-                            (wpa_s->own_scan_running || !wpa_s->external_scan_running)) {
+                            (wpa_s->own_scan_running || !wpa_s->external_scan_running)) {   // 正常会走这里
                         void (*scan_res_handler)(struct wpa_supplicant *wpa_s,
                                 struct wpa_scan_results *scan_res);
 
@@ -1151,34 +1089,10 @@ scan.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
 
             wpa_bss_update_start(wpa_s);
             for (i = 0; i < scan_res->num; i++)
-                wpa_bss_update_scan_res(wpa_s, scan_res->res[i],
+                wpa_bss_update_scan_res(wpa_s, scan_res->res[i],                // Update a BSS table entry based on a scan result
                         &scan_res->fetch_time);
             wpa_bss_update_end(wpa_s, info, new_scan);
         }        
-
-        /**
-         * scan_only_handler - Reports scan results
-         */
-        void scan_only_handler(struct wpa_supplicant *wpa_s,
-                struct wpa_scan_results *scan_res)
-        {
-            wpa_dbg(wpa_s, MSG_DEBUG, "Scan-only results received");
-            if (wpa_s->last_scan_req == MANUAL_SCAN_REQ &&
-                    wpa_s->manual_scan_use_id && wpa_s->own_scan_running) {
-                wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_RESULTS "id=%u",
-                        wpa_s->manual_scan_id);
-                wpa_s->manual_scan_use_id = 0;
-            } else {
-                wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_RESULTS);
-            }
-            wpas_notify_scan_results(wpa_s);
-            wpas_notify_scan_done(wpa_s, 1);
-            if (wpa_s->scan_work) {
-                struct wpa_radio_work *work = wpa_s->scan_work;
-                wpa_s->scan_work = NULL;
-                radio_work_done(work);
-            }
-        }
     }
 --------------------------------------------------------------------------------------------------------------------------->
 driver_i.h (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
@@ -1206,18 +1120,194 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
         }
         ->  {
                 static struct wpa_scan_results * nl80211_get_scan_results(struct wpa_driver_nl80211_data *drv) {
+                    struct wpa_scan_results *res;
+
                     msg = nlmsg_alloc();
-                    nl80211_cmd(drv, msg, NLM_F_DUMP, NL80211_CMD_GET_SCAN);
+                    nl80211_cmd(drv, msg, NLM_F_DUMP, NL80211_CMD_GET_SCAN);        // 往nl80211.c发送NL80211_CMD_GET_SCAN命令
                     if (nl80211_set_iface_id(msg, drv->first_bss) < 0)
                         goto nla_put_failure;
 
                     arg.drv = drv;
                     arg.res = res;
-                    ret = send_and_recv_msgs(drv, msg, bss_info_handler, &arg);
+                    ret = send_and_recv_msgs(drv, msg, bss_info_handler, &arg);     // 这里会用bss_info_handler处理NL80211_CMD_GET_SCAN返回的参数
+                    msg = NULL;                                                     // 并更新到arg.res，即res
+                    if (ret == 0) {
+                        wpa_printf(MSG_DEBUG, "nl80211: Received scan results (%lu "
+                                "BSSes)", (unsigned long) res->num);
+                        nl80211_get_noise_for_scan_results(drv, res);
+                        return res;                                                 // 将res返回！！
+                    }
+                    wpa_printf(MSG_DEBUG, "nl80211: Scan result fetch failed: ret=%d "
+                            "(%s)", ret, strerror(-ret));
                 }    
             }
     }
 --------------------------------------------------------------------------------------------------------------------------->
+Nl80211.c (net\wireless)
+->  {
+        static struct genl_ops nl80211_ops[] = {
+        {
+            {
+                .cmd = NL80211_CMD_GET_SCAN,
+                .policy = nl80211_policy,
+                .dumpit = nl80211_dump_scan,
+            },
+        }
+
+        static int nl80211_dump_scan(struct sk_buff *skb, struct netlink_callback *cb)
+        {
+            nl80211_prepare_wdev_dump(skb, cb, &rdev, &wdev);
+
+            cfg80211_bss_expire(rdev);
+
+            list_for_each_entry(scan, &rdev->bss_list, list) {
+                if (++idx <= start)
+                    continue;
+                if (nl80211_send_bss(skb, cb,
+                            cb->nlh->nlmsg_seq, NLM_F_MULTI,
+                            rdev, wdev, scan) < 0) {
+                    idx--;
+                    break;
+                }
+            }
+
+            cb->args[2] = idx;
+            nl80211_finish_wdev_dump(rdev);
+
+            return skb->len;
+        }
+
+        /* the netlink family */
+        static struct genl_family nl80211_fam = {
+            .id = GENL_ID_GENERATE,	/* don't bother with a hardcoded ID */
+            .name = "nl80211",	/* have users key off the name instead */
+            .hdrsize = 0,		/* no private header */
+            .version = 1,		/* no particular meaning now */
+            .maxattr = NL80211_ATTR_MAX,
+            .netnsok = true,
+            .pre_doit = nl80211_pre_doit,
+            .post_doit = nl80211_post_doit,
+        };
+
+        static int nl80211_send_bss(struct sk_buff *msg, struct netlink_callback *cb,   // 这里就会将bss返回到nl80211_get_scan_results中
+			    u32 seq, int flags,
+			    struct cfg80211_registered_device *rdev,
+			    struct wireless_dev *wdev,
+			    struct cfg80211_internal_bss *intbss)
+        {
+            hdr = nl80211hdr_put(msg, NETLINK_CB(cb->skb).portid, seq, flags,
+                    NL80211_CMD_NEW_SCAN_RESULTS);
+
+            genl_dump_check_consistent(cb, hdr, &nl80211_fam);
+
+            if (nla_put_u32(msg, NL80211_ATTR_GENERATION, rdev->bss_generation))
+                goto nla_put_failure;
+            if (wdev->netdev &&
+                    nla_put_u32(msg, NL80211_ATTR_IFINDEX, wdev->netdev->ifindex))
+                goto nla_put_failure;
+            if (nla_put_u64(msg, NL80211_ATTR_WDEV, wdev_id(wdev)))
+                goto nla_put_failure;
+
+            bss = nla_nest_start(msg, NL80211_ATTR_BSS);
+
+            rcu_read_lock();
+            ies = rcu_dereference(res->ies);
+            if (ies) {
+                if (nla_put_u64(msg, NL80211_BSS_TSF, ies->tsf))
+                    goto fail_unlock_rcu;
+                tsf = true;
+                if (ies->len && nla_put(msg, NL80211_BSS_INFORMATION_ELEMENTS,
+                            ies->len, ies->data))
+                    goto fail_unlock_rcu;
+            }
+            ies = rcu_dereference(res->beacon_ies);
+            if (ies) {
+                if (!tsf && nla_put_u64(msg, NL80211_BSS_TSF, ies->tsf))
+                    goto fail_unlock_rcu;
+                if (ies->len && nla_put(msg, NL80211_BSS_BEACON_IES,
+                            ies->len, ies->data))
+                    goto fail_unlock_rcu;
+            }
+            rcu_read_unlock();
+
+            if (res->beacon_interval &&
+                    nla_put_u16(msg, NL80211_BSS_BEACON_INTERVAL, res->beacon_interval))
+                goto nla_put_failure;
+            if (nla_put_u16(msg, NL80211_BSS_CAPABILITY, res->capability) ||
+                    nla_put_u32(msg, NL80211_BSS_FREQUENCY, res->channel->center_freq) ||
+                    nla_put_u32(msg, NL80211_BSS_SEEN_MS_AGO,
+                        jiffies_to_msecs(jiffies - intbss->ts)))
+                goto nla_put_failure;
+
+            switch (rdev->wiphy.signal_type) {
+                case CFG80211_SIGNAL_TYPE_MBM:
+                    if (nla_put_u32(msg, NL80211_BSS_SIGNAL_MBM, res->signal))
+                        goto nla_put_failure;
+                    break;
+                case CFG80211_SIGNAL_TYPE_UNSPEC:
+                    if (nla_put_u8(msg, NL80211_BSS_SIGNAL_UNSPEC, res->signal))
+                        goto nla_put_failure;
+                    break;
+                default:
+                    break;
+            }
+
+            switch (wdev->iftype) {
+                case NL80211_IFTYPE_P2P_CLIENT:
+                case NL80211_IFTYPE_STATION:
+                    if (intbss == wdev->current_bss &&
+                            nla_put_u32(msg, NL80211_BSS_STATUS,
+                                NL80211_BSS_STATUS_ASSOCIATED))
+                        goto nla_put_failure;
+                    break;
+                case NL80211_IFTYPE_ADHOC:
+                    if (intbss == wdev->current_bss &&
+                            nla_put_u32(msg, NL80211_BSS_STATUS,
+                                NL80211_BSS_STATUS_IBSS_JOINED))
+                        goto nla_put_failure;
+                    break;
+                default:
+                    break;
+            }
+
+            nla_nest_end(msg, bss);
+
+            return genlmsg_end(msg, hdr);
+        }
+    }
+---------------------------------------------------------------------------------------------------------------
+Wpa_ctrl.h (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\common)
+->  {
+        #define WPA_EVENT_SCAN_RESULTS "CTRL-EVENT-SCAN-RESULTS "
+    }
+--------------------------------------------------------------------------------------------------------------->
+scan.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
+->  {
+        /**
+         * scan_only_handler - Reports scan results
+         */
+        void scan_only_handler(struct wpa_supplicant *wpa_s,
+                struct wpa_scan_results *scan_res)
+        {
+            wpa_dbg(wpa_s, MSG_DEBUG, "Scan-only results received");
+            if (wpa_s->last_scan_req == MANUAL_SCAN_REQ &&
+                    wpa_s->manual_scan_use_id && wpa_s->own_scan_running) {
+                wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_RESULTS "id=%u",
+                        wpa_s->manual_scan_id);
+                wpa_s->manual_scan_use_id = 0;
+            } else {
+                wpa_msg_ctrl(wpa_s, MSG_INFO, WPA_EVENT_SCAN_RESULTS);              // 往monitor发送WPA_EVENT_SCAN_RESULTS
+            }
+            wpas_notify_scan_results(wpa_s);
+            wpas_notify_scan_done(wpa_s, 1);
+            if (wpa_s->scan_work) {
+                struct wpa_radio_work *work = wpa_s->scan_work;
+                wpa_s->scan_work = NULL;
+                radio_work_done(work);
+            }
+        }
+    }
+---------------------------------------------------------------------------------------------------
 Wpa_debug.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\utils)
 ->  {
         static wpa_msg_cb_func wpa_msg_cb = NULL;
@@ -1257,12 +1347,155 @@ Wpa_debug.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant
             os_free(buf);
         }
     }
---------------------------------------------------------------------------------------------------------------------------->
-Bss.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+-------------------------------------------------------------------------------------------------
+Ctrl_iface_unix.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
 ->  {
+        static int wpas_ctrl_iface_open_sock(struct wpa_supplicant *wpa_s,
+				     struct ctrl_iface_priv *priv)
+        {
+            wpa_msg_register_cb(wpa_supplicant_ctrl_iface_msg_cb);
+        }
+        
+        struct ctrl_iface_global_priv * wpa_supplicant_global_ctrl_iface_init(struct wpa_global *global)
+        {
+            if (wpas_global_ctrl_iface_open_sock(global, priv) < 0) {
+                os_free(priv);
+                return NULL;
+            }
 
+            wpa_msg_register_cb(wpa_supplicant_ctrl_iface_msg_cb);
+        }
+
+        static void wpa_supplicant_ctrl_iface_msg_cb(void *ctx, int level, int global,
+                const char *txt, size_t len)
+        {
+            struct wpa_supplicant *wpa_s = ctx;
+
+            if (wpa_s == NULL)
+                return;
+
+            if (global != 2 && wpa_s->global->ctrl_iface) {
+                struct ctrl_iface_global_priv *priv = wpa_s->global->ctrl_iface;
+                if (!dl_list_empty(&priv->ctrl_dst)) {
+                    wpa_supplicant_ctrl_iface_send(wpa_s, global ? NULL :
+                            wpa_s->ifname,
+                            priv->sock,
+                            &priv->ctrl_dst,
+                            level, txt, len, NULL,
+                            priv);
+                }
+            }
+
+            if (wpa_s->ctrl_iface == NULL)
+                return;
+            wpa_supplicant_ctrl_iface_send(wpa_s, NULL, wpa_s->ctrl_iface->sock,
+                    &wpa_s->ctrl_iface->ctrl_dst,
+                    level, txt, len, wpa_s->ctrl_iface,
+                    NULL);
+        }
+
+        /**
+         * wpa_supplicant_ctrl_iface_send - Send a control interface packet to monitors
+         * @ifname: Interface name for global control socket or %NULL
+         * @sock: Local socket fd
+         * @ctrl_dst: List of attached listeners
+         * @level: Priority level of the message
+         * @buf: Message data
+         * @len: Message length
+         *
+         * Send a packet to all monitor programs attached to the control interface.
+         */
+        static void wpa_supplicant_ctrl_iface_send(struct wpa_supplicant *wpa_s,
+                const char *ifname, int sock,
+                struct dl_list *ctrl_dst,
+                int level, const char *buf,
+                size_t len,
+                struct ctrl_iface_priv *priv,
+                struct ctrl_iface_global_priv *gp)
+        {
+            res = os_snprintf(levelstr, sizeof(levelstr), "<%d>", level);
+            if (res < 0 || (size_t) res >= sizeof(levelstr))
+                return;
+            idx = 0;
+            if (ifname) {
+                io[idx].iov_base = "IFNAME=";
+                io[idx].iov_len = 7;
+                idx++;
+                io[idx].iov_base = (char *) ifname;
+                io[idx].iov_len = os_strlen(ifname);
+                idx++;
+                io[idx].iov_base = " ";
+                io[idx].iov_len = 1;
+                idx++;
+            }
+            io[idx].iov_base = levelstr;
+            io[idx].iov_len = os_strlen(levelstr);
+            idx++;
+            io[idx].iov_base = (char *) buf;
+            io[idx].iov_len = len;
+            idx++;
+            os_memset(&msg, 0, sizeof(msg));
+            msg.msg_iov = io;
+            msg.msg_iovlen = idx;
+
+            dl_list_for_each_safe(dst, next, ctrl_dst, struct wpa_ctrl_dst, list) {
+                int _errno;
+                char addr_txt[200];
+
+                if (level < dst->debug_level)
+                    continue;
+
+                printf_encode(addr_txt, sizeof(addr_txt),
+                        (u8 *) dst->addr.sun_path, dst->addrlen -
+                        offsetof(struct sockaddr_un, sun_path));
+                msg.msg_name = (void *) &dst->addr;
+                msg.msg_namelen = dst->addrlen;
+                if (sendmsg(sock, &msg, MSG_DONTWAIT) >= 0) {                               // 往monitor发送消息！！！
+                    wpa_printf(MSG_DEBUG, "CTRL_IFACE monitor sent successfully to %s",
+                            addr_txt);
+                    dst->errors = 0;
+                    continue;
+                }
+
+                _errno = errno;
+                wpa_printf(MSG_DEBUG, "CTRL_IFACE monitor[%s]: %d - %s",
+                        addr_txt, errno, strerror(errno));
+                dst->errors++;
+
+                if (dst->errors > 10 || _errno == ENOENT || _errno == EPERM) {
+                    wpa_printf(MSG_INFO, "CTRL_IFACE: Detach monitor %s that cannot receive messages",
+                            addr_txt);
+                    wpa_supplicant_ctrl_iface_detach(ctrl_dst, &dst->addr,
+                            dst->addrlen);
+                }
+
+                if (_errno == ENOBUFS || _errno == EAGAIN) {
+                    /*
+                     * The socket send buffer could be full. This may happen
+                     * if client programs are not receiving their pending
+                     * messages. Close and reopen the socket as a workaround
+                     * to avoid getting stuck being unable to send any new
+                     * responses.
+                     */
+                    if (priv)
+                        sock = wpas_ctrl_iface_reinit(wpa_s, priv);
+                    else if (gp)
+                        sock = wpas_ctrl_iface_global_reinit(
+                                wpa_s->global, gp);
+                    else
+                        break;
+                    if (sock < 0) {
+                        wpa_dbg(wpa_s, MSG_DEBUG,
+                                "Failed to reinitialize ctrl_iface socket");
+                        break;
+                    }
+                }
+            }
+        }
     }
 --------------------------------------------------------------------------------------------------------------------------->
+回到上层waitForEvent的处理： 
+
 WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
 ->  {
         public String waitForEvent() {
@@ -1302,7 +1535,7 @@ Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
                     int result;
                     char *match, *match2;
 
-                    result = wifi_ctrl_recv(buf, &nread);
+                    result = wifi_ctrl_recv(buf, &nread);               // 这里就会收到wpa_msg_ctrl发出来的消息，并通过buf返回给上层
 
                     /*
                      * Events strings are in the format
@@ -1345,54 +1578,270 @@ Wifi.c (z:\home\ballack\prj\rk3288\hardware\libhardware_legacy\wifi)
                 }
             }
     }
-
 -------------------------------------------------------------------------------------------------------------------------->
-Drivers.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+上层收到"CTRL-EVENT-"的消息后，会调用dispatchEvent函数来处理event：
+
+WifiMonitor.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
 ->  {
-        struct wpa_driver_ops *wpa_drivers[] =
-        {
-#ifdef CONFIG_DRIVER_NL80211
-            &wpa_driver_nl80211_ops,
-#endif /* CONFIG_DRIVER_NL80211 */
-#ifdef CONFIG_DRIVER_WEXT
-            &wpa_driver_wext_ops,
-#endif /* CONFIG_DRIVER_WEXT */
-#ifdef CONFIG_DRIVER_HOSTAP
-            &wpa_driver_hostap_ops,
-#endif /* CONFIG_DRIVER_HOSTAP */
-#ifdef CONFIG_DRIVER_MADWIFI
-            &wpa_driver_madwifi_ops,
-#endif /* CONFIG_DRIVER_MADWIFI */
-#ifdef CONFIG_DRIVER_BSD
-            &wpa_driver_bsd_ops,
-#endif /* CONFIG_DRIVER_BSD */
-#ifdef CONFIG_DRIVER_OPENBSD
-            &wpa_driver_openbsd_ops,
-#endif /* CONFIG_DRIVER_OPENBSD */
-#ifdef CONFIG_DRIVER_NDIS
-            &wpa_driver_ndis_ops,
-#endif /* CONFIG_DRIVER_NDIS */
-#ifdef CONFIG_DRIVER_WIRED
-            &wpa_driver_wired_ops,
-#endif /* CONFIG_DRIVER_WIRED */
-#ifdef CONFIG_DRIVER_MACSEC_QCA
-            &wpa_driver_macsec_qca_ops,
-#endif /* CONFIG_DRIVER_MACSEC_QCA */
-#ifdef CONFIG_DRIVER_TEST
-            &wpa_driver_test_ops,
-#endif /* CONFIG_DRIVER_TEST */
-#ifdef CONFIG_DRIVER_ROBOSWITCH
-            &wpa_driver_roboswitch_ops,
-#endif /* CONFIG_DRIVER_ROBOSWITCH */
-#ifdef CONFIG_DRIVER_ATHEROS
-            &wpa_driver_atheros_ops,
-#endif /* CONFIG_DRIVER_ATHEROS */
-#ifdef CONFIG_DRIVER_NONE
-            &wpa_driver_none_ops,
-#endif /* CONFIG_DRIVER_NONE */
-            NULL
-        };
+        /** All events coming from the supplicant start with this prefix */
+        private static final String EVENT_PREFIX_STR = "CTRL-EVENT-";
+        private static final int EVENT_PREFIX_LEN_STR = EVENT_PREFIX_STR.length();
+
+        private static final String SCAN_RESULTS_STR =  "SCAN-RESULTS";
+
+        private boolean dispatchEvent(String eventStr, String iface) {
+            String eventName = eventStr.substring(EVENT_PREFIX_LEN_STR);
+            int nameEnd = eventName.indexOf(' ');
+            if (nameEnd != -1)
+                eventName = eventName.substring(0, nameEnd);                // 这里会把CTRL-EVENT-前缀去掉！！！
+
+            if (eventName.equals(SCAN_RESULTS_STR))
+                event = SCAN_RESULTS;
+
+            handleEvent(event, eventData);
+        }
+
+        /**
+         * Handle all supplicant events except STATE-CHANGE
+         * @param event the event type
+         * @param remainder the rest of the string following the
+         * event name and &quot;&#8195;&#8212;&#8195;&quot;
+         */
+        void handleEvent(int event, String remainder) {
+            if (DBG) {
+                logDbg("handleEvent " + Integer.toString(event) + "  " + remainder);
+            }
+            switch (event) {
+                case DISCONNECTED:
+                    handleNetworkStateChange(NetworkInfo.DetailedState.DISCONNECTED, remainder);
+                    break;
+
+                case CONNECTED:
+                    handleNetworkStateChange(NetworkInfo.DetailedState.CONNECTED, remainder);
+                    break;
+
+                case SCAN_RESULTS:
+                    mStateMachine.sendMessage(SCAN_RESULTS_EVENT);
+                    break;
+
+                case UNKNOWN:
+                    if (DBG) {
+                        logDbg("handleEvent unknown: " + Integer.toString(event) + "  " + remainder);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
+------------------------------------------------------------------------------------------------------------------------------
+WifiStateMachine.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)	
+->  {
+        /* startScanNative会向wpa_supplicant发送SCAN的命令，当wpa_suppliant执行完SCAN并成功找到一些AP后，
+           就会给WifiMonitor发送CTRL-EVENT-SCAN-RESULTS的event，WifiMonitor会parse出这个event，dispatchEvent会分发这些event，
+           并向WifiStateMachine发送SCAN_RESULTS_EVENT消息，由于DisconnectedState类不处理， 一直往上抛到父类，
+           WifiStateMachine的SupplicantStartedState会处理这个消息，如下:
+        */
+        class SupplicantStartedState extends State {
+            public boolean processMessage(Message message) {
+                switch(message.what) {
+                    // 这里主要做了两件事，一是去获取scanResults，另外会发送一个广播信息出去，
+                    // 如果有检测这个广播的receive收到这个广播后，就可以调用函数去获取到scanResults并显示到listview上面，例如WifiSettings
+                    case WifiMonitor.SCAN_RESULTS_EVENT:
+                        setScanResults();
+                        if (mIsFullScanOngoing || mSendScanResultsBroadcast) {
+                            /* Just updated results from full scan, let apps know about this */
+                            sendScanResultsAvailableBroadcast();
+                        }
+                }
+            }
+        }
 
+        /*
+           这个函数看起来比较复杂，其实仔细分析，它只是循环的parse从WifiNative获取到AP列表信息，
+           WifiNative.scanResult的返回结果如下，每个AP之间用"===="分割，末尾以“####”来表示结束。
 
+           id=1
+           bssid=68:7f:76:d7:1a:6e
+           freq=2412
+           level=-44
+           tsf=1344626243700342
+           flags=[WPA2-PSK-CCMP][WPS][ESS]
+           ssid=zfdy
+           ====
+           id=2
+           bssid=68:5f:74:d7:1a:6f
+           req=5180
+           level=-73
+           tsf=1344626243700373
+           flags=[WPA2-PSK-CCMP][WPS][ESS]
+           ssid=zuby
+            ####
 
+            当所有的结果都被parse出来后，会被存到mScanResults这个ArrayList当中，
+            另外会用bssid+ssid做key值，将这个scanResult存到mScanResultCache这个LRU（最近最少使用） cache当中。
+            当然随着wifi driver不断的scan，发现新的AP，mScanResults和mScanResultCache中的数据也在不断的变化。
+
+            当应用程序收到sendScanResultsAvailableBroadcast发送的WifiManager.SCAN_RESULTS_AVAILABLE_ACTION这个broadcast后，
+            就可以去获取上面提供的mScanResults信息了，获取过程很简单，直接复制mScanResults这个ArrayList里面的成员，然后返回。
+            值得注意的是！！！sendScanResultsAvailableBroadcast设置了Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT这个属性，
+            所以只有动态注册的broadcastReceive才会收到这个broadcast。
+         */
+        private void setScanResults() {
+            int sid = 0;
+
+            while (true) {
+                tmpResults = mWifiNative.scanResults(sid);      // 这里才是真正的从底层拿scan_results的结果！！！！
+            }
+        }
+    }
+----------------------------------------------------------------------------------------------------------------------
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        /**
+         * Format of results:
+         * =================
+         * id=1
+         * bssid=68:7f:74:d7:1b:6e
+         * freq=2412
+         * level=-43
+         * tsf=1344621975160944
+         * age=2623
+         * flags=[WPA2-PSK-CCMP][WPS][ESS]
+         * ssid=zubyb
+         * ====
+         *
+         * RANGE=ALL gets all scan results
+         * RANGE=ID- gets results from ID
+         * MASK=<N> see wpa_supplicant/src/common/wpa_ctrl.h for details
+         */
+        public String scanResults(int sid) {
+            return doStringCommandWithoutLogging("BSS RANGE=" + sid + "- MASK=0x21987");    // 下发BSS开头的命令！！！
+        }
+
+        private String doStringCommandWithoutLogging(String command) {
+            if (DBG) {
+                //GET_NETWORK commands flood the logs
+                if (!command.startsWith("GET_NETWORK")) {
+                    Log.d(mTAG, "doString: [" + command + "]");
+                }
+            }
+            synchronized (mLock) {
+                return doStringCommandNative(mInterfacePrefix + command);
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------------------------------
+com_android_server_wifi_WifiNative.cpp (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\jni)
+->  {
+        static JNINativeMethod gWifiMethods[] = {
+            { "doStringCommandNative", "(Ljava/lang/String;)Ljava/lang/String;", (void*) android_net_wifi_doStringCommand },
+        }
+
+        static jstring android_net_wifi_doStringCommand(JNIEnv* env, jobject, jstring javaCommand) {
+            return doStringCommand(env,javaCommand);
+        }
+
+        // Send a command to the supplicant, and return the reply as a String.
+        static jstring doStringCommand(JNIEnv* env, jstring javaCommand) {
+            char reply[REPLY_BUF_SIZE];
+            if (!doCommand(env, javaCommand, reply, sizeof(reply))) {
+                return NULL;
+            }
+            return env->NewStringUTF(reply);
+        }
+    }
+-----------------------------------------------------------------------------------------------------------------------
+Ctrl_iface.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        char * wpa_supplicant_ctrl_iface_process(struct wpa_supplicant *wpa_s, char *buf, size_t *resp_len) {
+            if (os_strncmp(buf, "BSS ", 4) == 0) {                                                              // 在这里处理上面BSS命令
+                reply_len = wpa_supplicant_ctrl_iface_bss( wpa_s, buf + 4, reply, reply_size);
+            }
+        }
+
+        static int wpa_supplicant_ctrl_iface_bss(struct wpa_supplicant *wpa_s,
+                const char *cmd, char *buf,
+                size_t buflen)
+        {
+            unsigned long mask = WPA_BSS_MASK_ALL;
+
+            if (os_strncmp(cmd, "RANGE=", 6) == 0) {
+                if (os_strncmp(cmd + 6, "ALL", 3) == 0) {
+                    bss = dl_list_first(&wpa_s->bss_id, struct wpa_bss,
+                            list_id);
+                    bsslast = dl_list_last(&wpa_s->bss_id, struct wpa_bss,
+                            list_id);
+                } else { /* N1-N2 */
+                    unsigned int id1, id2;
+
+                    if ((ctmp = os_strchr(cmd + 6, '-')) == NULL) {
+                        wpa_printf(MSG_INFO, "Wrong BSS range "
+                                "format");
+                        return 0;
+                    }
+
+                    if (*(cmd + 6) == '-')
+                        id1 = 0;
+                    else
+                        id1 = atoi(cmd + 6);
+                    ctmp++;
+                    if (*ctmp >= '0' && *ctmp <= '9')
+                        id2 = atoi(ctmp);
+                    else
+                        id2 = (unsigned int) -1;
+                    bss = wpa_bss_get_id_range(wpa_s, id1, id2);
+                    if (id2 == (unsigned int) -1)
+                        bsslast = dl_list_last(&wpa_s->bss_id,
+                                struct wpa_bss,
+                                list_id);
+                    else {
+                        bsslast = wpa_bss_get_id(wpa_s, id2);
+                        if (bsslast == NULL && bss && id2 > id1) {
+                            struct wpa_bss *tmp = bss;
+                            for (;;) {
+                                next = tmp->list_id.next;
+                                if (next == &wpa_s->bss_id)
+                                    break;
+                                tmp = dl_list_entry(
+                                        next, struct wpa_bss,
+                                        list_id);
+                                if (tmp->id > id2)
+                                    break;
+                                bsslast = tmp;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ((ctmp = os_strstr(cmd, "MASK=")) != NULL) {
+                mask = strtoul(ctmp + 5, NULL, 0x10);
+                if (mask == 0)
+                    mask = WPA_BSS_MASK_ALL;
+            }
+
+            if (bss == NULL)
+                return 0;
+
+            if (bsslast == NULL)
+                bsslast = bss;
+            do {
+                len = print_bss_info(wpa_s, bss, mask, buf, buflen);            // 这里会给buf赋值，返回给reply, 从而返回给上层
+                ret += len;
+                buf += len;
+                buflen -= len;
+                if (bss == bsslast) {
+                    if ((mask & WPA_BSS_MASK_DELIM) && len &&
+                            (bss == dl_list_last(&wpa_s->bss_id,
+                                                 struct wpa_bss, list_id)))
+                        os_snprintf(buf - 5, 5, "####\n");
+                    break;
+                }
+                next = bss->list_id.next;
+                if (next == &wpa_s->bss_id)
+                    break;
+                bss = dl_list_entry(next, struct wpa_bss, list_id);
+            } while (bss && len);
+        }
+    }

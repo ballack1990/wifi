@@ -1,0 +1,18 @@
+WifiScanningServiceImpl.java (z:\home\ballack\prj\firefly-rk3399\frameworks\opt\net\wifi\service\java\com\android\server\wifi\scanner)
+->  {
+        class StartedState extends State {
+            public boolean processMessage(Message msg) {
+                case WifiScanner.CMD_GET_SCAN_RESULTS:
+                    reportScanResults(mScannerImpl.getLatestBatchedScanResults(true));
+                    replySucceeded(msg);
+                    break;
+                case CMD_SCAN_RESULTS_AVAILABLE:
+                    reportScanResults(mScannerImpl.getLatestBatchedScanResults(true));
+                    break;
+            }
+        }
+
+        private void reportScanResults(ScanData[] results) {
+
+        }
+    }
