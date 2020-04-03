@@ -1,0 +1,535 @@
+
+# 
+# /usr/sbin/wpa_supplicant -Dnl80211 -iwlan0 -c /etc/wpa_supplicant.conf -dddd&
+# wpa_supplicant v2.6
+random: Trying to read entropy from /dev/random
+Successfully initialized wpa_supplicant
+Initializing interface 'wlan0' conf '/etc/wpa_supplicant.conf' driver 'nl80211' ctrl_interface 'N/A' bridge 'N/A'
+Configuration file '/etc/wpa_supplicant.conf' -> '/etc/wpa_supplicant.conf'
+Reading configuration file '/etc/wpa_supplicant.conf'
+ctrl_interface='/var/run/wpa_supplicant'
+ap_scan=1
+update_config=1
+pmf=2
+Line: 6 - start of a new network block
+ssid - hexdump_ascii(len=13):
+     41 53 55 53 5f 38 38 55 5f 32 2e 34 47            ASUS_88U_2.4G   
+PSK (ASCII passphrase) - hexdump_ascii(len=8): [REMOVED]
+key_mgmt: 0x100
+PSK (from passphrase) - hexdump(len=32): [REMOVED]
+Priority group 0
+   id=0 ssid='ASUS_88U_2.4G'
+nl80211: Using driver-based roaming
+nl80211: TDLS supported
+nl80211: Supported cipher 00-0f-ac:1
+nl80211: Supported cipher 00-0f-ac:5
+nl80211: Supported cipher 00-0f-ac:2
+nl80211: Supported cipher 00-0f-ac:4
+nl80211: Supported cipher 00-0f-ac:6
+nl80211: Supported cipher 00-0f-ac:12
+nl80211: Supported cipher 00-0f-ac:11
+nl80211: Supported cipher 00-0f-ac:13
+nl80211: Supported cipher 00-90-4c:0
+nl80211: Supported cipher 00-0f-ac:8
+nl80211: Supported cipher 00-0f-ac:9
+nl80211: Supported cipher 00-0f-ac:11
+nl80211: Supported cipher 00-0f-ac:12
+nl80211: Using driver-based off-channel TX
+nl80211: Supported vendor command: vendor_id=0x1018 subcmd=1
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=4106
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=4107
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=4108
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=4110
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=5123
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=5126
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=5632
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=5633
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=4120
+nl80211: Supported vendor command: vendor_id=0x1018 subcmd=4
+nl80211: Supported vendor command: vendor_id=0x1018 subcmd=5
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=5136
+nl80211: Supported vendor command: vendor_id=0x1a11 subcmd=5137
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=0
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=1
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=2
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=3
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=4
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=5
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=6
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=7
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=8
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=9
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=10
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=11
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=12
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=13
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=14
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=15
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=16
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=17
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=18
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=19
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=20
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=21
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=22
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=23
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=24
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=25
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=26
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=27
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=28
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=29
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=30
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=31
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=32
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=33
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=34
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=35
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=36
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=37
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=38
+nl80211: Supported vendor event: vendor_id=0x1018 subcmd=39
+nl80211: Supported vendor event: vendor_id=0x1a11 subcmd=40
+nl80211: Use separate P2P group interface (driver advertised support)
+nl80211: Enable multi-channel concurrent (driver advertised support)
+nl80211: use P2P_DEVICE support
+nl80211: interface wlan0 in phy phy0
+nl80211: Set mode ifindex 6 iftype 2 (STATION)
+nl80211: Subscribe to mgmt frames with non-AP handle 0x9db90
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0801
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=06
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0a07
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0a11
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=1101
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=1102
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0505
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0500
+rfkill: initial event: idx=1 type=1 op=0 soft=0 hard=0
+netlink: Operstate: ifindex=6 linkmode=1 (userspace-control), operstate=5 (IF_OPER_DORMANT)
+Add interface wlan0 to a new radio phy0
+nl80211: Regulatory information - country=00
+nl8021[ 3495.213595@0] [dhd-wlan0] wl_run_escan : LEGACY_SCAN sync ID: 269, bssidx: 0
+1: 2402-2472 @ 40 MHz 20 mBm
+nl80211: 2457-2482 @ 20 MHz 20 mBm (no IR)
+nl80211: 2474-2494 @ 20 MHz 20 mBm (no OFDM) (no IR)
+nl80211: 5170-5250 @ 80 MHz 20 mBm (no IR)
+nl80211: 5250-5330 @ 80 MHz 20 mBm (DFS) (no IR)
+nl80211: 5490-5730 @ 160 MHz 20 mBm (DFS) (no IR)
+nl80211: 5735-5835 @ 80 MHz 20 mBm (no IR)
+nl80211: 57240-63720 @ 2160 MHz 0 mBm
+nl80211: Added 802.11b mode based on 802.11g information
+wlan0: Own MAC address: 28:ed:e0:e6:bb:0a
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=0 addr=(nil) key_idx=0 set_tx=0 seq_len=0 key_len=0
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=0 addr=(nil) key_idx=1 set_tx=0 seq_len=0 key_len=0
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=0 addr=(nil) key_idx=2 set_tx=0 seq_len=0 key_len=0
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=0 addr=(nil) key_idx=3 set_tx=0 seq_len=0 key_len=0
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=0 addr=(nil) key_idx=4 set_tx=0 seq_len=0 key_len=0
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=0 addr=(nil) key_idx=5 set_tx=0 seq_len=0 key_len=0
+wlan0: RSN: flushing PMKID list in the driver
+nl80211: Flush PMKIDs
+wlan0: Setting scan request: 0.100000 sec
+EAPOL: SUPP_PAE entering state DISCONNECTED
+EAPOL: Supplicant port status: Unauthorized
+nl80211: Skip set_supp_port(unauthorized) while not associated
+EAPOL: KEY_RX entering state NO_KEY_RECEIVE
+EAPOL: SUPP_BE entering state INITIALIZE
+EAP: EAP entering state DISABLED
+wlan0: Added interface wlan0
+wlan0: State: DISCONNECTED -> DISCONNECTED
+nl80211: Set wlan0 operstate 0->0 (DORMANT)
+netlink: Operstate: ifindex=6 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+random: Got 20/20 bytes from /dev/random
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 operstate=5 linkmode=0 ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 operstate=5 linkmode=1 ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+wlan0: State: DISCONNECTED -> SCANNING
+wlan0: Starting AP scan for wildcard SSID
+wlan0: Add radio work 'scan'@0x9f458
+wlan0: First radio work item in the queue - schedule start immediately
+wlan0: Starting radio work 'scan'@0x9f458 after 0.000059 second wait
+wlan0: nl80211: scan request
+nl80211: Scan SSID - hexdump_ascii(len=0): [NULL]
+Scan requested (ret=0) - scan timeout 10 seconds
+nl80211: Event message available
+nl80211: Drv Event 33 (NL80211_CMD_TRIGGER_SCAN) received for wlan0
+wlan0: nl80211: Scan trigger
+wlan0: Event SCAN_STARTED (47) received
+wlan0: Own scan request started a scan in 0.000210 seconds
+EAPOL: disable timer tick
+nl80211: Event message available
+nl80211: Drv Event 34 (NL80211_CMD_NEW_SCAN_RESULTS) received for wlan0
+wlan0: nl80211: New scan results available
+nl80211: Scan probed for SSID ''
+nl80211: Scan included frequencies: 2412 2417 2422 2427 2432 2437 2442 2447 2452 2457 2462 2467 2472 5180 5200 5220 5240 5260 5280 5300 5320 5745 5765 5785 5805 5825
+wlan0: Event SCAN_RESULTS (3) received
+wlan0: Scan completed in 1.243668 seconds
+nl80211: Received scan results (24 BSSes)
+Sorted scan results
+d8:15:0d:6d:29:1e freq=2437 qual=0 noise=-89~ level=-49 snr=40* flags=0xb age=4 est=135000
+IEs - hexdump(len=303): 00 04 31 30 30 38 01 08 82 84 8b 96 0c 12 18 24 03 01 06 2a 01 00 32 04 30 48 60 6c 2d 1a 6e 10 03 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 06 07 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00 dd 16 00 50 f2 01 01 00 00 50 f2 04 01 00 00 50 f2 04 01 00 00 50 f2 02 dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 05 00 0a eb 01 00 dd 8e 00 50 f2 04 10 4a 00 01 10 10 44 00 01 02 10 3b 00 01 03 10 47 00 10 00 00 00 00 00 00 10 00 00 00 d8 15 0d 6d 29 1e 10 21 00 07 54 50 2d 4c 49 4e 4b 10 23 00 09 54 4c 2d 57 52 38 34 32 4e 10 24 00 03 34 2e 30 10 42 00 07 31 2e 31 2e 31 2e 33 10 54 00 08 00 06 00 50 f2 04 00 01 10 11 00 18 57 69 72 65 6c 65 73 73 20 4e 20 52 6f 75 74 65 72 20 57 52 38 34 32 4e 10 08 00 02 22 88 10 3c 00 01 01 10 49 00 06 00 37 2a 00 01 20
+78:44:fd:fd:a0:dd freq=2462 qual=0 noise=-89~ level=-50 snr=39* flags=0xb age=4 est=135000
+IEs - hexdump(len=155): 00 06 78 69 61 6f 6c 75 01 08 82 84 8b 96 0c 12 18 24 03 01 0b 2a 01 00 32 04 30 48 60 6c 2d 1a ee 11 1b ff ff ff 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 3d 16 0b 0f 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 00 00 00 00 00 00 00 40 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f 30 18 01 00 00 0f ac 02 02 00 00 0f ac 04 00 0f ac 02 01 00 00 0f ac 02 00 00
+50:64:2b:43:fd:7e freq=2462 qual=0 noise=-89~ level=-54 snr=35* flags=0xb age=4 est=135000
+IEs - hexdump(len=356): 00 08 78 69 61 6f 6c 75 77 70 01 08 82 84 8b 96 12 24 48 6c 03 01 0b 2a 01 04 32 04 0c 18 30 60 2d 1a 6e 10 17 ff ff 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 0b 07 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 02 00 50 f2 04 01 00 00 50 f2 02 30 18 01 00 00 0f ac 02 02 00 00 0f ac 02 00 0f ac 04 01 00 00 0f ac 02 00 00 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 0b 05 01 00 5b 12 7a 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00 dd 18 8c be be 01 01 01 02 02 0c 58 69 61 6f 4d 69 52 6f 75 74 65 72 03 01 05 dd 07 00 0c 43 00 00 00 00 07 06 43 4e 20 01 0d 10 dd 7c 00 50 f2 04 10 4a 00 01 10 10 44 00 01 02 10 3b 00 01 03 10 47 00 10 28 80 28 80 28 80 18 80 a8 80 50 64 2b 43 fd 7e 10 21 00 06 78 69 61 6f 6d 69 10 23 00 02 52 33 10 24 00 04 30 30 30 32 10 42 00 08 31 32 33 34 35 36 37 38 10 54 00 08 00 06 00 50 f2 04 00 01 10 11 00 0c 58 69 61 6f 4d 69 52 6f 75 74 65 72 10 08 00 02 21 0c 10 3c 00 01 01 10 49 00 06 00 37 2a 00 01 20
+cc:08:fb:95:60:38 freq=2442 qual=0 noise=-89~ level=-63 snr=26 flags=0xb age=4 est=135000
+IEs - hexdump(len=196): 00 02 4d 5a 01 08 82 84 8b 96 0c 12 18 24 03 01 07 05 04 00 01 00 00 2a 01 00 32 04 30 48 60 6c 2d 1a ee 11 1b ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 3d 16 07 0f 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 00 02 00 00 00 40 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 04 00 50 f2 02 01 00 00 50 f2 02 30 18 01 00 00 0f ac 02 02 00 00 0f ac 04 00 0f ac 02 01 00 00 0f ac 02 00 00 dd 09 8c fd f0 00 00 01 01 00 00
+a8:5e:45:ad:06:60 freq=2462 qual=0 noise=-89~ level=-34 snr=55* flags=0xb age=4 est=65001
+IEs - hexdump(len=461): 00 0d 41 53 55 53 5f 38 38 55 5f 32 2e 34 47 01 08 82 84 8b 96 24 30 48 6c 03 01 0b 07 06 43 4e 04 01 0d 14 23 02 12 00 2a 01 00 32 04 0c 12 18 60 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 cc 00 0b 05 00 00 50 00 00 42 01 00 2d 1a ad 01 17 ff ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 0b 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 08 00 00 00 00 40 bf 0c b1 69 83 0f aa ff 00 00 aa ff 00 00 c0 05 00 0b 00 00 00 dd b2 00 50 f2 04 10 4a 00 01 10 10 44 00 01 02 10 3b 00 01 03 10 47 00 10 da 75 e3 30 7f 62 e0 a5 dc 6f 64 ba 87 14 4a 81 10 21 00 15 41 53 55 53 54 65 4b 20 43 6f 6d 70 75 74 65 72 20 49 6e 63 2e 10 23 00 1c 57 69 2d 46 69 20 50 72 6f 74 65 63 74 65 64 20 53 65 74 75 70 20 52 6f 75 74 65 72 10 24 00 08 52 54 2d 41 58 38 38 55 10 42 00 11 61 38 3a 35 65 3a 34 35 3a 61 64 3a 30 36 3a 36 30 10 54 00 08 00 06 00 50 f2 04 00 01 10 11 00 08 52 54 2d 41 58 38 38 55 10 08 00 02 01 04 10 3c 00 01 03 10 49 00 0a 00 37 2a 00 01 20 05 02 07 84 dd 25 f8 32 e4 01 01 01 02 01 00 03 14 c1 c9 07 8a dd 1d 83 fb f1 ad 59 df 77 05 4c ca 5a ed 3b 85 07 04 5a ed 3b 85 dd 1e 00 90 4c 04 18 bf 0c b1 69 83 0f aa ff 00 00 aa ff 00 00 c0 05 00 0b 00 00 00 c3 02 00 02 dd 09 00 10 18 02 00 00 9c 00 00 dd 18 00 50 f2 02 01 01 8c 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 07 50 6f 9a 16 01 01 00
+12:89:53:cf:21:a6 freq=2412 qual=0 noise=-89~ level=-60 snr=29 flags=0xb age=4 est=65001
+IEs - hexdump(len=189): 00 07 57 65 69 53 68 6f 77 01 08 82 84 8b 0c 12 96 18 24 03 01 01 05 04 01 02 00 00 07 06 43 4e 20 01 0d 1b 2a 01 03 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00 dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 32 04 30 48 60 6c 0b 05 01 00 00 00 00 2d 1a ad 11 17 ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 3d 16 01 00 15 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 00 00 00 00 00 00 00 40 bf 0c 91 71 81 02 fa ff d8 00 fa ff d8 20 c0 05 00 00 00 fa ff dd 04 ac 85 3d bd
+08:9b:4b:9d:04:a5 freq=2412 qual=0 noise=-89~ level=-34 snr=55* flags=0xb age=4 est=65000
+IEs - hexdump(len=195): 00 12 41 4d 50 41 4b 5f 57 49 46 49 5f 32 2e 34 47 2d 30 31 01 08 82 84 8b 96 0c 12 18 24 03 01 01 07 06 43 4e 20 01 0d 14 2a 01 02 32 04 30 48 60 6c 2d 1a ad 01 1b ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 04 06 e6 a7 0c 00 3d 16 01 08 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 00 02 00 00 00 40 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 16 00 50 f2 01 01 00 00 50 f2 04 01 00 00 50 f2 04 01 00 00 50 f2 02 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00
+b2:f1:ec:3e:e0:6a freq=2437 qual=0 noise=-89~ level=-38 snr=51* flags=0xb age=4 est=65000
+IEs - hexdump(len=187): 00 1a 61 6d 6c 6f 67 69 63 2d 61 75 64 69 6f 2d 62 32 66 31 65 63 33 65 65 30 36 61 01 08 82 84 8b 96 24 30 48 6c 03 01 06 07 06 43 4e 20 01 0d 14 20 01 00 23 02 11 00 2a 01 00 32 04 0c 12 18 60 2d 1a 2d 00 17 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 06 08 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 03 04 00 08 dd 09 00 10 18 02 00 00 1c 00 00 dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 04 00 50 f2 02 01 00 00 50 f2 02 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00
+2c:ab:25:f8:a4:ac freq=2412 qual=0 noise=-89~ level=-43 snr=46* flags=0xb age=4 est=65000
+IEs - hexdump(len=350): 00 0d 43 68 69 6e 61 4e 65 74 2d 34 30 34 71 01 08 82 84 8b 96 12 24 48 6c 03 01 01 2a 01 06 32 04 0c 18 30 60 2d 1a 0c 00 17 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3e 01 00 dd 16 00 50 f2 01 01 00 00 50 f2 04 01 00 00 50 f2 04 01 00 00 50 f2 02 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00 dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 0b 05 00 00 af 12 7a 7f 01 01 dd 07 00 0c 43 00 00 00 00 07 06 43 4e 20 01 0d 10 dd 9d 00 50 f2 04 10 4a 00 01 10 10 44 00 01 02 10 3b 00 01 03 10 47 00 10 bc 32 9e 00 1d d8 11 b2 86 01 2c ab 25 f8 a4 ac 10 21 00 18 52 61 6c 69 6e 6b 20 54 65 63 68 6e 6f 6c 6f 67 79 2c 20 43 6f 72 70 2e 10 23 00 1c 52 61 6c 69 6e 6b 20 57 69 72 65 6c 65 73 73 20 41 63 63 65 73 73 20 50 6f 69 6e 74 10 24 00 06 52 54 32 38 36 30 10 42 00 08 31 32 33 34 35 36 37 38 10 54 00 08 00 06 00 50 f2 04 00 01 10 11 00 09 52 61 6c 69 6e 6b 41 50 53 10 08 00 02 00 84 10 3c 00 01 00
+20:6b:e7:61:01:b4 freq=2462 qual=0 noise=-89~ level=-45 snr=44* flags=0xb age=4 est=65000
+IEs - hexdump(len=186): 00 09 4a 49 4e 47 53 48 45 4c 4c 01 08 82 84 8b 96 0c 12 18 24 03 01 0b 2a 01 00 32 04 30 48 60 6c 2d 1a ee 11 1b ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 3d 16 0b 0c 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 00 00 00 00 00 00 00 40 dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f 30 18 01 00 00 0f ac 02 02 00 00 0f ac 04 00 0f ac 02 01 00 00 0f ac 02 00 00 dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 04 00 50 f2 02 01 00 00 50 f2 02
+54:13:79:0d:82:08 freq=2437 qual=0 noise=-89~ level=-46 snr=43* flags=0xb age=4 est=65000
+IEs - hexdump(len=312): 00 1c 48 50 2d 50 72 69 6e 74 2d 30 38 2d 4c 61 73 65 72 4a 65 74 20 50 72 6f 20 4d 46 50 01 08 82 84 8b 96 0c 12 18 24 03 01 06 2a 01 00 2d 1a 1c 11 03 ff 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 30 18 01 00 00 0f ac 02 02 00 00 0f ac 02 00 0f ac 04 01 00 00 0f ac 02 00 00 32 04 30 48 60 6c 3d 16 06 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 02 00 50 f2 04 01 00 00 50 f2 02 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 39 08 00 09 00 04 00 00 00 03 01 02 01 03 06 10 48 50 20 4c 61 73 65 72 4a 65 74 20 50 72 6f 20 07 04 00 00 00 00 08 02 00 80 09 02 00 08 0a 04 00 00 00 01 0b 04 00 00 00 00 dd 06 08 00 09 02 01 78 dd 3b 08 00 09 03 1b 48 50 20 4c 61 73 65 72 4a 65 74 20 50 72 6f 20 4d 46 50 20 4d 31 32 36 6e 77 00 04 0c 53 74 61 72 73 33 4e 57 5f 30 31 00 05 0b 43 4e 42 4b 4b 36 47 47 57 52 00
+20:28:3e:a5:24:b4 freq=2422 qual=0 noise=-89~ level=-55 snr=34* flags=0xb age=4 est=65000
+IEs - hexdump(len=242): 00 0b 57 69 72 65 6c 65 73 73 4e 65 74 01 08 82 84 8b 0c 12 96 18 24 03 01 03 23 02 14 00 46 05 00 00 00 00 00 2a 01 03 30 18 01 00 00 0f ac 02 02 00 00 0f ac 04 00 0f ac 02 01 00 00 0f ac 02 00 00 dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 04 00 50 f2 02 01 00 00 50 f2 02 dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 32 04 30 48 60 6c 0b 05 00 00 4e 00 00 2d 1a ed 11 17 ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 3d 16 03 00 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00 7f 08 01 00 08 00 00 00 00 00 dd 08 ac 85 3d 82 01 00 00 00 dd 13 00 e0 fc a0 00 00 00 01 00 03 01 01 01 01 00 02 02 00 5a
+20:76:93:4f:9c:12 freq=2452 qual=0 noise=-89~ level=-59 snr=30* flags=0xb age=4 est=65000
+IEs - hexdump(len=219): 00 0a 78 69 61 6f 6c 75 2d 6e 65 77 01 08 82 84 8b 96 12 24 48 6c 03 01 09 32 04 0c 18 30 60 07 06 43 4e 20 01 0d 14 33 08 20 01 02 03 04 05 06 07 33 08 21 05 06 07 08 09 0a 0b 05 04 00 01 00 04 dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 02 00 50 f2 04 01 00 00 50 f2 02 30 18 01 00 00 0f ac 02 02 00 00 0f ac 02 00 0f ac 04 01 00 00 0f ac 02 00 00 2a 01 04 2d 1a ac 01 17 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 09 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 01 00 00 00 00 00 00 00 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 07 00 0c 43 03 00 00 00
+08:9b:4b:9d:04:a7 freq=5745 qual=0 noise=-92~ level=-75 snr=17 flags=0xb age=4 est=263301
+IEs - hexdump(len=249): 00 12 41 4d 50 41 4b 5f 57 49 46 49 5f 35 2e 38 47 2d 30 31 01 08 8c 12 98 24 b0 48 60 6c 03 01 95 07 2a 43 4e 20 24 01 17 28 01 17 2c 01 17 30 01 17 34 01 17 38 01 17 3c 01 17 40 01 17 95 01 1b 99 01 1b 9d 01 1b a1 01 1b a5 01 1b 2d 1a 6f 09 1b ff 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 3d 16 95 05 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 0f 02 00 00 00 40 bf 0c 32 01 80 33 fe ff 00 00 fe ff 00 00 c0 05 01 9b 00 fc ff c3 04 02 ca ca ca dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 16 00 50 f2 01 01 00 00 50 f2 04 01 00 00 50 f2 04 01 00 00 50 f2 02 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00
+06:69:6c:0b:10:52 freq=2437 qual=0 noise=-89~ level=-71 snr=18 flags=0xb age=4 est=48000
+IEs - hexdump(len=171): 00 07 58 4d 2d 66 72 65 65 01 08 82 84 8b 0c 12 96 18 24 03 01 06 05 04 00 01 00 00 07 06 43 4e 49 01 0d 1e 2a 01 00 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00 32 04 30 48 60 6c 2d 1a ed 01 03 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 06 00 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 dd 18 00 50 f2 02 01 01 07 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 0d 00 1a a9 58 69 6c 0b 10 50 01 64 fc 18
+08:9b:4b:9d:00:fd freq=2462 qual=0 noise=-89~ level=-75 snr=14 flags=0xb age=4 est=36000
+IEs - hexdump(len=196): 00 0d 74 69 61 6e 79 69 6e 67 73 68 69 79 65 01 08 82 84 8b 96 0c 12 18 24 03 01 0b 05 04 00 01 00 00 07 06 43 4e 20 01 0d 14 2a 01 00 32 04 30 48 60 6c 2d 1a ad 01 1b ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 04 06 e6 a7 0c 00 3d 16 0b 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 00 02 00 00 00 40 dd 18 00 50 f2 02 01 01 80 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 16 00 50 f2 01 01 00 00 50 f2 04 01 00 00 50 f2 04 01 00 00 50 f2 02 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 00 00
+d6:3b:04:cc:56:7d freq=5745 qual=0 noise=-92~ level=-89 snr=3 flags=0xb age=4 est=58501
+IEs - hexdump(len=355): 00 1c 44 49 52 45 43 54 2d 54 6e 44 45 53 4b 54 4f 50 2d 4b 53 43 52 36 33 51 6d 73 68 58 01 08 8c 12 98 24 b0 48 60 6c 05 04 00 03 00 00 07 06 58 58 58 95 01 0f 2d 1a e7 09 17 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 02 0c 00 3b 02 80 80 3d 16 95 0d 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 0a 04 00 80 00 00 00 00 c0 00 00 bf 0c b2 79 91 03 fa ff 00 00 fa ff 00 00 c0 05 01 9b 00 fa ff dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 67 00 50 f2 04 10 4a 00 01 10 10 44 00 01 02 10 49 00 06 00 37 2a 00 01 20 10 54 00 08 00 07 00 50 f2 00 00 00 10 11 00 0f 44 45 53 4b 54 4f 50 2d 4b 53 43 52 36 33 51 10 49 00 2c 00 01 37 20 01 00 01 07 20 02 00 0f 44 45 53 4b 54 4f 50 2d 4b 53 43 52 36 33 51 20 05 00 0d 31 39 32 2e 31 36 38 2e 32 2e 31 33 30 dd 0d 50 6f 9a 0a 00 00 06 00 11 1c 44 00 06 dd 12 50 6f 9a 09 02 02 00 25 8b 03 06 00 d4 3b 04 cc 56 7e dd 16 50 6f 9a 09 0c 0f 00 f0 09 01 00 c0 01 00 00 c0 01 00 9e 20 20 03
+80:69:33:51:ac:90 freq=2447 qual=0 noise=-89~ level=-82 snr=7 flags=0xb age=4 est=18000
+IEs - hexdump(len=248): 00 0b 57 69 72 65 6c 65 73 73 4e 65 74 01 08 82 84 8b 0c 12 96 18 24 03 01 08 05 04 00 01 00 00 23 02 14 00 46 05 00 00 00 00 00 2a 01 03 30 18 01 00 00 0f ac 02 02 00 00 0f ac 04 00 0f ac 02 01 00 00 0f ac 02 00 00 dd 1a 00 50 f2 01 01 00 00 50 f2 02 02 00 00 50 f2 04 00 50 f2 02 01 00 00 50 f2 02 dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 32 04 30 48 60 6c 0b 05 00 00 3d 00 00 2d 1a ed 51 17 ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 3d 16 08 00 15 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00 7f 08 01 00 08 00 00 00 00 00 dd 08 ac 85 3d 82 01 00 00 00 dd 13 00 e0 fc a0 00 00 00 01 00 03 01 01 01 01 00 02 02 00 5a
+a8:0c:ca:01:5a:f9 freq=2472 qual=0 noise=-89~ level=-83 snr=6 flags=0xb age=4 est=13000
+IEs - hexdump(len=298): 00 10 43 43 20 55 6e 69 76 65 72 73 65 20 57 69 66 69 01 08 82 84 8b 96 0c 12 18 24 03 01 0d 05 04 00 01 00 00 07 06 43 4e 20 01 0d 1e 2a 01 00 32 04 30 48 60 6c 46 05 73 c0 00 00 00 2d 1a ad 01 03 ff ff 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 04 06 e6 a7 0c 00 3d 16 0d 08 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00 7f 08 01 00 08 00 00 00 00 40 dd 18 00 50 f2 02 01 01 00 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 0a 02 11 5a 01 02 01 00 00 00 01 dd 0e 02 11 5a 01 01 01 a8 0c ca 01 5a f9 00 00 dd 0a 02 11 5a 01 03 01 00 00 00 6a dd 0a 02 11 5a 01 04 01 00 00 00 00 dd 0a 02 11 5a 01 05 01 00 00 00 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 0a 00 03 7f 04 01 00 08 00 0a 00 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 01 00 00 dd 16 00 50 f2 01 01 00 00 50 f2 04 01 00 00 50 f2 04 01 00 00 50 f2 01
+ac:9e:17:7c:af:dc freq=5745 qual=0 noise=-92~ level=-62 snr=30* flags=0xb age=4 est=390001
+IEs - hexdump(len=163): 00 0b 41 53 55 53 5f 36 38 55 5f 35 47 01 08 8c 12 98 24 b0 48 60 6c 0b 05 00 00 13 00 00 2d 1a ef 09 17 ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 95 0d 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 08 00 00 00 00 40 bf 0c b2 59 82 0f ea ff 00 00 ea ff 00 00 c0 05 01 9b 00 00 00 c3 04 02 02 02 02 dd 09 00 10 18 02 00 00 1c 00 00 dd 18 00 50 f2 02 01 01 84 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 46 05 72 08 01 00 00
+a8:5e:45:ad:06:64 freq=5745 qual=0 noise=-92~ level=-66 snr=26 flags=0xb age=4 est=390001
+IEs - hexdump(len=462): 00 08 54 45 53 54 5f 31 34 39 01 08 8c 12 98 24 b0 48 60 6c 07 2a 43 4e 20 24 01 17 28 01 17 2c 01 17 30 01 17 34 01 17 38 01 17 3c 01 17 40 01 17 95 01 1b 99 01 1b 9d 01 1b a1 01 1b a5 01 1b 20 01 00 23 02 1a 00 0b 05 01 00 11 00 00 42 01 00 2d 1a ef 01 17 ff ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 95 05 15 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 08 00 00 00 00 40 bf 0c b5 69 83 0f aa ff 00 00 aa ff 00 20 c0 05 01 9b 00 00 00 c3 04 02 02 02 02 ff 20 23 09 00 00 10 00 00 04 20 02 c0 6d 5b 83 18 00 00 00 aa ff aa ff 1b 1c c7 71 1c c7 71 1c c7 71 ff 07 24 04 00 00 3d fc ff ff 0e 26 00 03 a4 ff 27 a4 ff 42 43 ff 62 32 ff dd b2 00 50 f2 04 10 4a 00 01 10 10 44 00 01 02 10 3b 00 01 03 10 47 00 10 da 75 e3 30 7f 62 e0 a5 dc 6f 64 ba 87 14 4a 81 10 21 00 15 41 53 55 53 54 65 4b 20 43 6f 6d 70 75 74 65 72 20 49 6e 63 2e 10 23 00 1c 57 69 2d 46 69 20 50 72 6f 74 65 63 74 65 64 20 53 65 74 75 70 20 52 6f 75 74 65 72 10 24 00 08 52 54 2d 41 58 38 38 55 10 42 00 11 61 38 3a 35 65 3a 34 35 3a 61 64 3a 30 36 3a 36 30 10 54 00 08 00 06 00 50 f2 04 00 01 10 11 00 08 52 54 2d 41 58 38 38 55 10 08 00 02 01 04 10 3c 00 01 03 10 49 00 0a 00 37 2a 00 01 20 05 02 07 84 dd 05 00 90 4c 04 17 dd 09 00 10 18 02 01 00 9c 00 00 dd 18 00 50 f2 02 01 01 8c 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 07 50 6f 9a 16 01 01 00
+ac:9e:17:7c:af:d8 freq=2462 qual=0 noise=-89~ level=-37 snr=52* flags=0xb age=4 est=65000
+IEs - hexdump(len=377): 00 0d 41 53 55 53 5f 36 38 55 5f 32 2e 34 47 01 08 82 84 8b 96 24 30 48 6c 03 01 0b 2a 01 00 2f 01 00 32 04 0c 12 18 60 0b 05 00 00 34 00 00 2d 1a ad 19 17 ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 0b 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4a 0e 14 00 0a 00 2c 01 c8 00 14 00 05 00 19 00 7f 08 05 00 08 00 00 00 00 40 dd ae 00 50 f2 04 10 4a 00 01 10 10 44 00 01 02 10 3b 00 01 03 10 47 00 10 d0 72 1d bb ed 86 db e8 a6 4b 89 22 6d 00 d5 bd 10 21 00 15 41 53 55 53 54 65 4b 20 43 6f 6d 70 75 74 65 72 20 49 6e 63 2e 10 23 00 1c 57 69 2d 46 69 20 50 72 6f 74 65 63 74 65 64 20 53 65 74 75 70 20 52 6f 75 74 65 72 10 24 00 08 52 54 2d 41 43 36 38 55 10 42 00 11 61 63 3a 39 65 3a 31 37 3a 37 63 3a 61 66 3a 64 38 10 54 00 08 00 06 00 50 f2 04 00 01 10 11 00 08 52 54 2d 41 43 36 38 55 10 08 00 02 20 08 10 3c 00 01 01 10 49 00 06 00 37 2a 00 01 20 dd 09 00 10 18 02 00 00 1c 00 00 dd 18 00 50 f2 02 01 01 84 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 46 05 72 08 01 00 00 dd 1e 00 90 4c 04 08 bf 0c b2 59 82 0f ea ff 00 00 ea ff 00 00 c0 05 00 0b 00 00 00 c3 02 00 02
+0a:69:6c:0b:10:52 freq=2437 qual=0 noise=-89~ level=-68 snr=21 flags=0xb age=4 est=54000
+IEs - hexdump(len=148): 00 06 58 4d 2d 57 65 62 01 08 82 84 8b 0c 12 96 18 24 03 01 06 05 04 00 01 00 00 07 06 43 4e 49 01 0d 1e 2a 01 00 32 04 30 48 60 6c 2d 1a ed 01 03 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 06 00 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 dd 18 00 50 f2 02 01 01 07 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 0d 00 1a a9 58 69 6c 0b 10 50 01 64 fc 18
+0e:69:6c:0b:10:52 freq=2437 qual=0 noise=-89~ level=-69 snr=20 flags=0xb age=4 est=54000
+IEs - hexdump(len=150): 00 08 58 4d 2d 47 75 65 73 74 01 08 82 84 8b 0c 12 96 18 24 03 01 06 05 04 00 01 00 00 07 06 43 4e 49 01 0d 1e 2a 01 00 32 04 30 48 60 6c 2d 1a ed 01 03 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 06 00 05 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 dd 18 00 50 f2 02 01 01 07 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 09 00 03 7f 01 01 00 00 ff 7f dd 0d 00 1a a9 58 69 6c 0b 10 50 01 64 fc 18
+wlan0: BSS: Start scan result update 1
+wlan0: BSS: Add new id 0 BSSID d8:15:0d:6d:29:1e SSID '1008' freq 2437
+wlan0: BSS: Add new id 1 BSSID 78:44:fd:fd:a0:dd SSID 'xiaolu' freq 2462
+wlan0: BSS: Add new id 2 BSSID 50:64:2b:43:fd:7e SSID 'xiaoluwp' freq 2462
+wlan0: BSS: Add new id 3 BSSID cc:08:fb:95:60:38 SSID 'MZ' freq 2442
+wlan0: BSS: Add new id 4 BSSID a8:5e:45:ad:06:60 SSID 'ASUS_88U_2.4G' freq 2462
+wlan0: BSS: Add new id 5 BSSID 12:89:53:cf:21:a6 SSID 'WeiShow' freq 2412
+wlan0: BSS: Add new id 6 BSSID 08:9b:4b:9d:04:a5 SSID 'AMPAK_WIFI_2.4G-01' freq 2412
+wlan0: BSS: Add new id 7 BSSID b2:f1:ec:3e:e0:6a SSID 'amlogic-audio-b2f1ec3ee06a' freq 2437
+wlan0: BSS: Add new id 8 BSSID 2c:ab:25:f8:a4:ac SSID 'ChinaNet-404q' freq 2412
+wlan0: BSS: Add new id 9 BSSID 20:6b:e7:61:01:b4 SSID 'JINGSHELL' freq 2462
+wlan0: BSS: Add new id 10 BSSID 54:13:79:0d:82:08 SSID 'HP-Print-08-LaserJet Pro MFP' freq 2437
+wlan0: BSS: Add new id 11 BSSID 20:28:3e:a5:24:b4 SSID 'WirelessNet' freq 2422
+wlan0: BSS: Add new id 12 BSSID 20:76:93:4f:9c:12 SSID 'xiaolu-new' freq 2452
+wlan0: BSS: Add new id 13 BSSID 08:9b:4b:9d:04:a7 SSID 'AMPAK_WIFI_5.8G-01' freq 5745
+wlan0: BSS: Add new id 14 BSSID 06:69:6c:0b:10:52 SSID 'XM-free' freq 2437
+wlan0: BSS: Add new id 15 BSSID 08:9b:4b:9d:00:fd SSID 'tianyingshiye' freq 2462
+wlan0: BSS: Add new id 16 BSSID d6:3b:04:cc:56:7d SSID 'DIRECT-TnDESKTOP-KSCR63QmshX' freq 5745
+wlan0: BSS: Add new id 17 BSSID 80:69:33:51:ac:90 SSID 'WirelessNet' freq 2447
+wlan0: BSS: Add new id 18 BSSID a8:0c:ca:01:5a:f9 SSID 'CC Universe Wifi' freq 2472
+wlan0: BSS: Add new id 19 BSSID ac:9e:17:7c:af:dc SSID 'ASUS_68U_5G' freq 5745
+wlan0: BSS: Add new id 20 BSSID a8:5e:45:ad:06:64 SSID 'TEST_149' freq 5745
+wlan0: BSS: Add new id 21 BSSID ac:9e:17:7c:af:d8 SSID 'ASUS_68U_2.4G' freq 2462
+wlan0: BSS: Add new id 22 BSSID 0a:69:6c:0b:10:52 SSID 'XM-Web' freq 2437
+wlan0: BSS: Add new id 23 BSSID 0e:69:6c:0b:10:52 SSID 'XM-Guest' freq 2437
+BSS: last_scan_res_used=24/32
+Add randomness: count=1 entropy=0
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=2 entropy=1
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=3 entropy=2
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=4 entropy=3
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=5 entropy=4
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=6 entropy=5
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=7 entropy=6
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=8 entropy=7
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=9 entropy=8
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+Add randomness: count=10 entropy=9
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=5): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+wlan0: New scan results available (own=1 ext=0)
+wlan0: Radio work 'scan'@0x9f458 done in 3.354675 seconds
+wlan0: radio_work_free('scan'@0x9f458: num_active_works --> 0
+wlan0: Selecting BSS from priority group 0
+wlan0: 0: d8:15:0d:6d:29:1e ssid='1008' wpa_ie_len=22 rsn_ie_len=20 caps=0x431 level=-49 freq=2437  wps
+wlan0:    skip - SSID mismatch
+wlan0: 1: 78:44:fd:fd:a0:dd ssid='xiaolu' wpa_ie_len=0 rsn_ie_len=24 caps=0x431 level=-50 freq=2462 
+wlan0:    skip - SSID mismatch
+wlan0: 2: 50:64:2b:43:fd:7e ssid='xiaoluwp' wpa_ie_len=26 rsn_ie_len=24 caps=0xc11 level=-54 freq=2462  wps
+wlan0:    skip - SSID mismatch
+wlan0: 3: cc:08:fb:95:60:38 ssid='MZ' wpa_ie_len=26 rsn_ie_len=24 caps=0x431 level=-63 freq=2442 
+wlan0:    skip - SSID mismatch
+wlan0: 4: a8:5e:45:ad:06:60 ssid='ASUS_88U_2.4G' wpa_ie_len=0 rsn_ie_len=20 caps=0x411 level=-34 freq=2462  wps
+wlan0:    selected based on RSN IE
+wlan0:    selected BSS a8:5e:45:ad:06:60 ssid='ASUS_88U_2.4G'
+wlan0: Considering connect request: reassociate: 0  selected: a8:5e:45:ad:06:60  bssid: 00:00:00:00:00:00  pending: 00:00:00:00:00:00  wpa_state: SCANNING  ssid=0x9ebb0  current_ssid=(nil)
+wlan0: Request association with a8:5e:45:ad:06:60
+wlan0: Add radio work 'connect'@0x9f458
+wlan0: First radio work item in the queue - schedule start immediately
+wlan0: Starting radio work 'connect'@0x9f458 after 0.000420 second wait
+wlan0: Trying to associate with SSID 'ASUS_88U_2.4G'
+wlan0: Cancelling scan request
+wlan0: WPA: clearing own WPA/RSN IE
+wlan0: Automatic auth_alg selection: 0x1
+RSN: PMKSA cache search - network_ctx=0x9ebb0 try_opportunistic=0
+RSN: Search for BSSID a8:5e:45:ad:06:60
+RSN: No PMKSA cache entry found
+wlan0: RSN: using IEEE 802.11i/D9.0
+wlan0: WPA: Selected cipher suites: group 16 pairwise 16 key_mgmt 256 proto 2
+wlan0: WPA: Selected mgmt group cipher 32
+wlan0: WPA: clearing AP WPA IE
+WPA: set AP RSN IE - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 cc 00
+wlan0: WPA: using GTK CCMP
+wlan0: WPA: using PTK CCMP
+wlan0: WPA: using KEY_MGMT PSK with SHA256
+wlan0: WPA: using MGMT group cipher AES-128-CMAC
+WPA: Set own WPA IE default - hexdump(len=28): 30 1a 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 c0 00 00 00 00 0f ac 06
+wlan0: State: SCANNING -> ASSOCIATING
+nl80211: Set wlan0 operstate 0->0 (DORMANT)
+netlink: Operstate: ifindex=6 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+wlan0: WPA: Selected AP supports MFP: require MFP
+nl80211: Set mode ifindex 6 iftype 2 (STATION)
+nl80211: Unsubscribe mgmt [ 3498.936860@0] [dhd] CFG80211-ERROR) wl_set_wsec_info_algos : wsec_info error (-23)
+[ 3498.944147@0] [dhd] CFG80211-ERROR) wl_set_set_cipher : set wsec_info error (0)
+frames handle 0x88815319 (mode c[ 3498.955646@0] [dhd-wlan0] wl_cfg80211_connect : Connecting with a8:5e:45:ad:06:60 ssid "ASUS_88U_2.4G", len (13), sec=(0/32768)/aes, channel=11
+[ 3498.955646@0] 
+hange)
+nl80211: Subscribe to mgmt frames with non-AP handle 0x9db90
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0801
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=06
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0a07
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0a11
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=1101
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=1102
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0505
+nl80211: Register frame type=0xd0 (WLAN_FC_STYPE_ACTION) nl_handle=0x9db90 match=0500
+nl80211: Connect (ifindex=6)
+  * bssid_hint=a8:5e:45:ad:06:60
+  * freq_hint=2462
+  * SSID - hexdump_ascii(len=13):
+     41 53 55 53 5f 38 38 55 5f 32 2e 34 47            ASUS_88U_2.4G   
+  * IEs - hexdump(len=28): 30 1a 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 c0 00 00 00 00 0f ac 06
+  * WPA[ 3499.062494@1] [dhd-wlan0] wl_iw_event : Link UP with a8:5e:45:ad:06:60
+[ 3499.067354@1] [dhd-wlan0] wl_ext_iapsta_event : [S] Link UP with a8:5e:45:ad:06:60
+ Versions 0x2
+  *[ 3499.078790@0] [dhd-wlan0] wl_bss_connect_done : Report connect result - connection succeeded
+pairwise=0xfac04
+  * group=0xfac04
+  * akm=0xfac06
+  * Auth Type 0
+nl80211: Connect request send successfully
+wlan0: Setting authentication timeout: 10 sec 0 usec
+EAPOL: External notification - EAP success=0
+EAPOL: External notification - EAP fail=0
+EAPOL: External notification - portControl=Auto
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+l2_packet_receive: src=a8:5e:45:ad:06:60 len=99
+wlan0: RX EAPOL from a8:5e:45:ad:06:60
+RX EAPOL - hexdump(len=99): 02 03 00 5f 02 00 8b 00 10 00 00 00 00 00 00 00 00 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+wlan0: Not associated - Delay processing of received EAPOL frame (state=ASSOCIATING bssid=00:00:00:00:00:00)
+nl80211: Event message available
+nl80211: Drv Event 46 (NL80211_CMD_CONNECT) received for wlan0
+nl80211: Connect event (status=0 ignore_next_local_disconnect=0)
+nl80211: Associated on 2462 MHz
+nl80211: Associated with a8:5e:45:ad:06:60
+nl80211: Operating frequency for the associated BSS from scan results: 2462 MHz
+wlan0: Event ASSOC (0) received
+wlan0: Association info event
+req_ies - hexdump(len=152): 00 0d 41 53 55 53 5f 38 38 55 5f 32 2e 34 47 01 08 82 84 8b 96 24 30 48 6c 32 04 0c 12 18 60 21 02 04 14 24 02 01 0d 30 1a 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 c0 00 00 00 00 0f ac 06 2d 1a ad 01 17 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 03 00 00 08 dd 1e 00 90 4c 33 ad 01 17 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 dd 09 00 10 18 02 00 00 12 00 00 dd 07 00 50 f2 02 00 01 00
+resp_ies - hexdump(len=150): 01 08 82 84 8b 96 24 30 48 6c 32 04 0c 12 18 60 2d 1a ad 01 17 ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 3d 16 0b 08 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 7f 08 04 00 08 00 00 00 00 40 dd 18 00 50 f2 04 10 4a 00 01 10 10 3b 00 01 03 10 49 00 06 00 37 2a 00 01 20 dd 09 00 10 18 02 00 00 9c 00 00 dd 18 00 50 f2 02 01 01 8c 00 03 a4 00 00 27 a4 00 00 42 43 5e 00 62 32 2f 00 dd 07 50 6f 9a 16 01 01 00
+wlan0: freq=2462 MHz
+WPA: set own WPA/RSN IE - hexdump(len=28): 30 1a 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 c0 00 00 00 00 0f ac 06
+wlan0: RSN: PMKID from assoc IE not found from PMKSA cache
+FT: Stored MDIE and FTIE from (Re)Association Response - hexdump(len=0):
+wlan0: State: ASSOCIATING -> ASSOCIATED
+nl80211: Set wlan0 operstate 0->0 (DORMANT)
+netlink: Operstate: ifindex=6 linkmode=-1 (no change), operstate=5 (IF_OPER_DORMANT)
+wlan0: Associated to a new BSS: BSSID=a8:5e:45:ad:06:60
+Add randomness: count=11 entropy=10
+random pool - hexdump(len=128): [REMOVED]
+random_mix_pool - hexdump(len=8): [REMOVED]
+random_mix_pool - hexdump(len=6): [REMOVED]
+random pool - hexdump(len=128): [REMOVED]
+wlan0: WPA: clearing AP WPA IE
+WPA: set AP RSN IE - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 cc 00
+wlan0: Associated with a8:5e:45:ad:06:60
+wlan0: WPA: Association event - clear replay counter
+wlan0: WPA: Clear old PTK
+EAPOL: External notification - portEnabled=0
+EAPOL: External notification - portValid=0
+EAPOL: External notification - EAP success=0
+EAPOL: External notification - portEnabled=1
+EAPOL: SUPP_PAE entering state CONNECTING
+EAPOL: enable timer tick
+EAPOL: SUPP_BE entering state IDLE
+wlan0: Setting authentication timeout: 10 sec 0 usec
+wlan0: Cancelling scan request
+wlan0: Process pending EAPOL frame that was received just before association notification
+wlan0: RX EAPOL from a8:5e:45:ad:06:60
+RX EAPOL - hexdump(len=99): 02 03 00 5f 02 00 8b 00 10 00 00 00 00 00 00 00 00 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+wlan0: Setting authentication timeout: 10 sec 0 usec
+wlan0: IEEE 802.1X RX: version=2 type=3 length=95
+WPA: RX EAPOL-Key - hexdump(len=99): 02 03 00 5f 02 00 8b 00 10 00 00 00 00 00 00 00 00 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+wlan0:   EAPOL-Key type=2
+wlan0:   key_info 0x8b (ver=3 keyidx=0 rsvd=0 Pairwise Ack)
+wlan0:   key_length=16 key_data_length=0
+  replay_counter - hexdump(len=8): 00 00 00 00 00 00 00 00
+  key_nonce - hexdump(len=32): 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b
+  key_iv - hexdump(len=16): 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  key_rsc - hexdump(len=8): 00 00 00 00 00 00 00 00
+  key_id (reserved) - hexdump(len=8): 00 00 00 00 00 00 00 00
+  key_mic - hexdump(len=16): 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+wlan0: State: ASSOCIATED -> 4WAY_HANDSHAKE
+wlan0: WPA: RX message 1 of 4-Way Handshake from a8:5e:45:ad:06:60 (ver=3)
+RSN: msg 1/4 key data - hexdump(len=0):
+Get randomness: len=32 entropy=11
+random from os_get_random - hexdump(len=32): [REMOVED]
+random_mix_pool - hexdump(len=20): [REMOVED]
+random from internal pool - hexdump(len=16): [REMOVED]
+random_mix_pool - hexdump(len=20): [REMOVED]
+random from internal pool - hexdump(len=16): [REMOVED]
+mixed random - hexdump(len=32): [REMOVED]
+WPA: Renewed SNonce - hexdump(len=32): 86 bb 41 e4 f6 c5 7e 0a 25 10 80 2c 52 ab 54 7f 7b 38 22 a7 1d 44 b1 42 47 87 7a f8 50 86 b5 e1
+WPA: PTK derivation - A1=28:ed:e0:e6:bb:0a A2=a8:5e:45:ad:06:60
+WPA: Nonce1 - hexdump(len=32): 86 bb 41 e4 f6 c5 7e 0a 25 10 80 2c 52 ab 54 7f 7b 38 22 a7 1d 44 b1 42 47 87 7a f8 50 86 b5 e1
+WPA: Nonce2 - hexdump(len=32): 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b
+WPA: PMK - hexdump(len=32): [REMOVED]
+WPA: PTK - hexdump(len=48): [REMOVED]
+WPA: KCK - hexdump(len=16): [REMOVED]
+WPA: KEK - hexdump(len=16): [REMOVED]
+WPA: TK - hexdump(len=16): [REMOVED]
+WPA: WPA IE for msg 2/4 - hexdump(len=28): 30 1a 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 c0 00 00 00 00 0f ac 06
+WPA: Replay Counter - hexdump(len=8): 00 00 00 00 00 00 00 00
+wlan0: WPA: Sending EAPOL-Key 2/4
+WPA: KCK - hexdump(len=16): [REMOVED]
+WPA: Derived Key MIC - hexdump(len=16): c4 e1 f4 8d 8d d0 97 e7 74 aa cc e5 da a3 5e 0b
+WPA: TX EAPOL-Key - hexdump(len=127): 01 03 00 7b 02 01 0b 00 00 00 00 00 00 00 00 00 00 86 bb 41 e4 f6 c5 7e 0a 25 10 80 2c 52 ab 54 7f 7b 38 22 a7 1d 44 b1 42 47 87 7a f8 50 86 b5 e1 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 c4 e1 f4 8d 8d d0 97 e7 74 aa cc e5 da a3 5e 0b 00 1c 30 1a 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 c0 00 00 00 00 0f ac 06
+WMM AC: Missing U-APSD configuration
+wlan0: CTRL-EVENT-SUBNET-STATUS-UPDATE status=0
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 wext ifi_family=0 ifi_flags=0x11003 ([UP][LOWER_UP])
+l2_packet_receive: src=a8:5e:45:ad:06:60 len=187
+wlan0: RX EAPOL from a8:5e:45:ad:06:60
+RX EAPOL - hexdump(len=187): 02 03 00 b7 02 13 cb 00 10 00 00 00 00 00 00 00 01 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b 29 5d df 59 50 af 1f 8b fb 86 a0 88 75 5a e8 e8 83 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 1e [ 3499.795314@0] [dhd-wlan0] wl_add_keyext : key index (0)
+c4 96 9a 44 9e d2 87 75 94 ad ea 29 be 59 00 58 32 61 0c 05 e3 7[ 3499.805751@2] [dhd] CFG80211-ERROR) wl_set_wsec_info_algos : wsec_info error (-23)
+0 2b 62 27 [ 3499.815682@2] [dhd] CFG80211-ERROR) wl_set_wsec_info_algos : wsec_info error (-23)
+1f 0c d3 0d 56 04 4d 36 cf a8 28 65 47 06 08 1f 6a e4 a9 e4 29 76 29 29 75 b6 2a c0 1b 3a 85 38 05 66 c0 ea 33 33 f3 33 24 f0 1b a2 59 89 49 11 6a ca 09 fd c2 1c 5d 20 44 0f 2e 1d 05 82 69 58 df bb f5 04 ae 46 2d d9 55 05 e2 66 4d 8f 63
+wlan0: IEEE 802.1X RX: version=2 type=3 length=183
+WPA: RX EAPOL-Key - hexdump(len=187): 02 03 00 b7 02 13 cb 00 10 00 00 00 00 00 00 00 01 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b 29 5d df 59 50 af 1f 8b fb 86 a0 88 75 5a e8 e8 83 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 83 1e c4 96 9a 44 9e d2 87 75 94 ad ea 29 be 59 00 58 32 61 0c 05 e3 70 2b 62 27 1f 0c d3 0d 56 04 4d 36 cf a8 28 65 47 06 08 1f 6a e4 a9 e4 29 76 29 29 75 b6 2a c0 1b 3a 85 38 05 66 c0 ea 33 33 f3 33 24 f0 1b a2 59 89 49 11 6a ca 09 fd c2 1c 5d 20 44 0f 2e 1d 05 82 69 58 df bb f5 04 ae 46 2d d9 55 05 e2 66 4d 8f 63
+wlan0:   EAPOL-Key type=2
+wlan0:   key_info 0x13cb (ver=3 keyidx=0 rsvd=0 Pairwise Install Ack MIC Secure Encr)
+wlan0:   key_length=16 key_data_length=88
+  replay_counter - hexdump(len=8): 00 00 00 00 00 00 00 01
+  key_nonce - hexdump(len=32): 10 23 4b 4e 7c 67 7f f1 fc 6c 9c ab cc e5 68 e3 cb 51 96 33 d4 ad 24 dd 9e c0 fb 41 33 1e bb 1b
+  key_iv - hexdump(len=16): 29 5d df 59 50 af 1f 8b fb 86 a0 88 75 5a e8 e8
+  key_rsc - hexdump(len=8): 83 04 00 00 00 00 00 00
+  key_id (reserved) - hexdump(len=8): 00 00 00 00 00 00 00 00
+  key_mic - hexdump(len=16): 83 1e c4 96 9a 44 9e d2 87 75 94 ad ea 29 be 59
+RSN: encrypted key data - hexdump(len=88): 32 61 0c 05 e3 70 2b 62 27 1f 0c d3 0d 56 04 4d 36 cf a8 28 65 47 06 08 1f 6a e4 a9 e4 29 76 29 29 75 b6 2a c0 1b 3a 85 38 05 66 c0 ea 33 33 f3 33 24 f0 1b a2 59 89 49 11 6a ca 09 fd c2 1c 5d 20 44 0f 2e 1d 05 82 69 58 df bb f5 04 ae 46 2d d9 55 05 e2 66 4d 8f 63
+WPA: decrypted EAPOL-Key key data - hexdump(len=80): [REMOVED]
+wlan0: State: 4WAY_HANDSHAKE -> 4WAY_HANDSHAKE
+wlan0: WPA: RX message 3 of 4-Way Handshake from a8:5e:45:ad:06:60 (ver=3)
+WPA: IE KeyData - hexdump(len=80): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 cc 00 dd 16 00 0f ac 01 01 00 f1 75 ba 1d ca 57 de 0a 02 64 e3 a4 5e c0 de 1b dd 1c 00 0f ac 09 05 00 fe ba 73 8f 1b b6 1e 94 d4 ae a5 59 5f 09 bb 9e 69 ab 0d d2 a9 53 dd 00 00 00
+WPA: RSN IE in EAPOL-Key - hexdump(len=22): 30 14 01 00 00 0f ac 04 01 00 00 0f ac 04 01 00 00 0f ac 06 cc 00
+WPA: GTK in EAPOL-Key - hexdump(len=24): [REMOVED]
+WPA: IGTK in EAPOL-Key - hexdump(len=30): [REMOVED]
+wlan0: WPA: Sending EAPOL-Key 4/4
+WPA: KCK - hexdump(len=16): [REMOVED]
+WPA: Derived Key MIC - hexdump(len=16): 41 6e 28 0a f1 4d 4b 27 1f a1 e8 05 34 5e 98 46
+WPA: TX EAPOL-Key - hexdump(len=99): 01 03 00 5f 02 03 0b 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 41 6e 28 0a f1 4d 4b 27 1f a1 e8 05 34 5e 98 46 00 00
+wlan0: WPA: Installing PTK to the driver
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=3 addr=0x9e4a8 key_idx=0 set_tx=1 seq_len=6 key_len=16
+nl80211: KEY_DATA - hexdump(len=16): [REMOVED]
+nl80211: KEY_SEQ - hexdump(len=6): 00 00 00 00 00 00
+   addr=a8:5e:45:ad:06:60
+EAPOL: External notification - portValid=1
+wlan0: State: 4WAY_HANDSHAKE -> GROUP_HANDSHAKE
+RSN: received GTK in pairwise handshake - hexdump(len=18): [REMOVED]
+WPA: Group Key - hexdump(len=16): [REMOVED]
+wlan0: WPA: Installing GTK to the driver (keyidx=1 tx=0 len=16)
+WPA: RSC - hexdump(len=6): 83 04 00 00 00 00
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=3 addr=0x70718 key_idx=1 set_tx=0 seq_len=6 key_len=16
+nl80211: KEY_DATA - hexdump(len=16): [REMOVED]
+nl80211: KEY_SEQ - hexdump(len=6): 83 04 00 00 00 00
+   broadcast key
+wlan0: WPA: Key negotiation completed with a8:5e:45:ad:06:60 [PTK=CCMP GTK=CCMP]
+wlan0: Cancelling authentication timeout
+wlan0: State: GROUP_HANDSHAKE -> COMPLETED
+wlan0: Radio work 'connect'@0x9f458 done in 1.251032 seconds
+wlan0: radio_work_free('connect'@0x9f458: num_active_works --> 0
+wlan0: CTRL[ 3500.177092@3] [dhd] CFG80211-ERROR) wl_set_wsec_info_algos : wsec_info error (-23)
+-EVENT-CONNECTED - Connection to a8:5e:45:ad:06:60 completed [id=0 id_str=]
+nl80211: Set wlan0 operstate 0->1 (UP)
+netlink: Operstate: ifindex=6 linkmode=-1 (no change), operstate=6 (IF_OPER_UP)
+EAPOL: External notification - portValid=1
+EAPOL: External notification - EAP success=1
+EAPOL: SUPP_PAE entering state AUTHENTICATING
+EAPOL: SUPP_BE entering state SUCCESS
+EAP: EAP entering state DISABLED
+EAPOL: SUPP_PAE entering state AUTHENTICATED
+EAPOL: Supplicant port status: Authorized
+nl80211: Set supplicant port authorized for a8:5e:45:ad:06:60
+EAPOL: SUPP_BE entering state IDLE
+EAPOL authentication completed - result=SUCCESS
+wlan0: WPA: IGTK keyid 5 pn feba738f1bb6
+WPA: IGTK - hexdump(len=16): [REMOVED]
+wpa_driver_nl80211_set_key: ifindex=6 (wlan0) alg=4 addr=0x70718 key_idx=5 set_tx=0 seq_len=6 key_len=16
+nl80211: KEY_DATA - hexdump(len=16): [REMOVED]
+nl80211: KEY_SEQ - hexdump(len=6): fe ba 73 8f 1b b6
+   broadcast key
+nl80211: Set rekey offload
+nl80211: Driver does not support rekey offload
+RTM_NEWLINK: ifi_index=6 ifname=wlan0 operstate=6 linkmode=1 ifi_family=0 ifi_flags=0x11043 ([UP][RUNNING][LOWER_UP])
+EAPOL: startWhen --> 0
+EAPOL: disable timer tick
+
+# 
+# 
+# 

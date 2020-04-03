@@ -895,49 +895,381 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drive
                     }
 
                     eloop_cancel_timeout(wpa_driver_nl80211_scan_timeout, drv, drv->ctx);
-                    eloop_register_timeout(timeout, 0, wpa_driver_nl80211_scan_timeout,         //最终会调用wpa_driver_nl80211_scan_timeout
+                    eloop_register_timeout(timeout, 0, wpa_driver_nl80211_scan_timeout,     // 如果scan超时会调用wpa_driver_nl80211_scan_timeout
                             drv, drv->ctx);
+                }
+
+            }
+
+    } 
+--------------------------------------------------------------------------------------------------------------------------->
+Nl80211.c (net\wireless)
+->  {
+        static struct genl_ops nl80211_ops[] = {
+            {
+                {
+                    .cmd = NL80211_CMD_TRIGGER_SCAN,
+                    .doit = nl80211_trigger_scan,
+                    .policy = nl80211_policy,
+                    .flags = GENL_ADMIN_PERM,
+                    .internal_flags = NL80211_FLAG_NEED_WDEV_UP |
+                        NL80211_FLAG_NEED_RTNL,
+                },
+            }
+
+            static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+            {
+                request->no_cck =
+                    nla_get_flag(info->attrs[NL80211_ATTR_TX_NO_CCK_RATE]);
+
+                request->wdev = wdev;
+                request->wiphy = &rdev->wiphy;
+                request->scan_start = jiffies;
+
+                rdev->scan_req = request;
+                err = rdev_scan(rdev, request);
+
+                if (!err) {
+                    nl80211_send_scan_start(rdev, wdev);
+                    if (wdev->netdev)
+                        dev_hold(wdev->netdev);
                 }
             }
             ->  {
-                    static void do_process_drv_event(struct i802_bss *bss, int cmd, struct nlattr **tb) {
-                        switch (cmd) {
-                            case NL80211_CMD_TRIGGER_SCAN:
-                                wpa_dbg(drv->ctx, MSG_DEBUG, "nl80211: Scan trigger");
-                                drv->scan_state = SCAN_STARTED;
-                                if (drv->scan_for_auth) {
-                                    /*
-                                     * Cannot indicate EVENT_SCAN_STARTED here since we skip
-                                     * EVENT_SCAN_RESULTS in scan_for_auth case and the
-                                     * upper layer implementation could get confused about
-                                     * scanning state.
-                                     */
-                                    wpa_printf(MSG_DEBUG, "nl80211: Do not indicate scan-start event due to internal scan_for_auth");
-                                    break;
-                                }
-                                wpa_supplicant_event(drv->ctx, EVENT_SCAN_STARTED, NULL);   //  往monitor发送WPA_EVENT_SCAN_STARTED
-                                break;
-                        }
+                void nl80211_send_scan_start(struct cfg80211_registered_device *rdev,
+                        struct wireless_dev *wdev)
+                {
+                    struct sk_buff *msg;
+
+                    msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+                    if (!msg)
+                        return;
+
+                    if (nl80211_send_scan_msg(msg, rdev, wdev, 0, 0, 0,
+                                NL80211_CMD_TRIGGER_SCAN) < 0) {        // 这里往wpa_supplicant的do_process_drv_event回调NL80211_CMD_TRIGGER_SCAN
+                        nlmsg_free(msg);
+                        return;
+                    }
+
+                    genlmsg_multicast_netns(wiphy_net(&rdev->wiphy), msg, 0,
+                            nl80211_scan_mcgrp.id, GFP_KERNEL);
+                }
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------->
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\src\drivers)
+->  {
+        /* 
+         * 上面wpa_driver_nl80211_scan先发NL80211_CMD_TRIGGER_SCAN给到nl80211.c，然后这里收到nl80211.c的nl80211_trigger_scan反调用。
+         */
+        static void do_process_drv_event(struct i802_bss *bss, int cmd, struct nlattr **tb) {
+            switch (cmd) {
+                case NL80211_CMD_TRIGGER_SCAN:
+                    wpa_dbg(drv->ctx, MSG_DEBUG, "nl80211: Scan trigger");
+                    drv->scan_state = SCAN_STARTED;
+                    if (drv->scan_for_auth) {
+                        /*
+                         * Cannot indicate EVENT_SCAN_STARTED here since we skip
+                         * EVENT_SCAN_RESULTS in scan_for_auth case and the
+                         * upper layer implementation could get confused about
+                         * scanning state.
+                         */
+                        wpa_printf(MSG_DEBUG, "nl80211: Do not indicate scan-start event due to internal scan_for_auth");
+                        break;
+                    }
+                    wpa_supplicant_event(drv->ctx, EVENT_SCAN_STARTED, NULL);   //  往monitor发送WPA_EVENT_SCAN_STARTED
+                    break;
+            }
+        }
+        ->  {
+            static void wpa_driver_nl80211_scan_timeout(void *eloop_ctx, void *timeout_ctx)
+            {
+                struct wpa_driver_nl80211_data *drv = eloop_ctx;
+                if (drv->ap_scan_as_station != NL80211_IFTYPE_UNSPECIFIED) {
+                    wpa_driver_nl80211_set_mode(drv->first_bss,
+                            drv->ap_scan_as_station);
+                    drv->ap_scan_as_station = NL80211_IFTYPE_UNSPECIFIED;
+                }
+                wpa_printf(MSG_DEBUG, "Scan timeout - try to get results");
+                wpa_supplicant_event(timeout_ctx, EVENT_SCAN_RESULTS, NULL);
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------->
+Rdev-ops.h (net\wireless)
+->  {
+        static inline int rdev_scan(struct cfg80211_registered_device *rdev,
+                struct cfg80211_scan_request *request)
+        {
+            int ret;
+            trace_rdev_scan(&rdev->wiphy, request);
+            ret = rdev->ops->scan(&rdev->wiphy, request);
+            trace_rdev_return_int(&rdev->wiphy, ret);
+            return ret;
+        }
+    }
+-------------------------------------------------------------------------------------------->
+wifi驱动中的wl_cfg80211.c
+->  {
+        static struct cfg80211_ops wl_cfg80211_ops = {
+            .scan = wl_cfg80211_scan,
+        }
+
+        static s32
+        #if defined(WL_CFG80211_P2P_DEV_IF)
+            wl_cfg80211_scan(struct wiphy *wiphy, struct cfg80211_scan_request *request)
+        #else
+            wl_cfg80211_scan(struct wiphy *wiphy, struct net_device *ndev,
+                    struct cfg80211_scan_request *request)
+        #endif /* WL_CFG80211_P2P_DEV_IF */
+            {
+                s32 err = 0;
+                struct bcm_cfg80211 *cfg = wiphy_priv(wiphy);
+        #if defined(WL_CFG80211_P2P_DEV_IF)
+                struct net_device *ndev = wdev_to_wlc_ndev(request->wdev, cfg);
+        #endif /* WL_CFG80211_P2P_DEV_IF */
+
+                WL_DBG(("Enter\n"));
+                RETURN_EIO_IF_NOT_UP(cfg);
+
+                if (ndev == bcmcfg_to_prmry_ndev(cfg)) {
+                    if (wl_cfg_multip2p_operational(cfg)) {
+                        WL_ERR(("wlan0 scan failed, p2p devices are operational"));
+                        return -ENODEV;
                     }
                 }
-                ->  {
-                        static void wpa_driver_nl80211_scan_timeout(void *eloop_ctx, void *timeout_ctx)
+
+                mutex_lock(&cfg->usr_sync);
+                err = __wl_cfg80211_scan(wiphy, ndev, request, NULL);
+                if (unlikely(err)) {
+                    WL_ERR(("scan error (%d)\n", err));
+                }
+                mutex_unlock(&cfg->usr_sync);
+
+                return err;
+            }
+            ->  {
+                    static s32 __wl_cfg80211_scan(struct wiphy *wiphy, struct net_device *ndev,
+                                struct cfg80211_scan_request *request,
+                                struct cfg80211_ssid *this_ssid)
                         {
-                            struct wpa_driver_nl80211_data *drv = eloop_ctx;
-                            if (drv->ap_scan_as_station != NL80211_IFTYPE_UNSPECIFIED) {
-                                wpa_driver_nl80211_set_mode(drv->first_bss,
-                                        drv->ap_scan_as_station);
-                                drv->ap_scan_as_station = NL80211_IFTYPE_UNSPECIFIED;
+                            /*
+                             * Hostapd triggers scan before starting automatic channel selection
+                             * to collect channel characteristics. However firmware scan engine
+                             * doesn't support any channel characteristics collection along with
+                             * scan. Hence return scan success.
+                             */
+                            if (request && (scan_req_iftype(request) == NL80211_IFTYPE_AP)) {
+                                WL_INFORM(("Scan Command on SoftAP Interface. Ignoring...\n"));
+                                // terence 20161023: let it scan in SoftAP mode
+                                //		return 0;
                             }
-                            wpa_printf(MSG_DEBUG, "Scan timeout - try to get results");
-                            wpa_supplicant_event(timeout_ctx, EVENT_SCAN_RESULTS, NULL);
+
+                            WL_DBG(("Enter wiphy (%p)\n", wiphy));
+                            if (wl_get_drv_status_all(cfg, SCANNING)) {
+                                if (cfg->scan_request == NULL) {
+                                    wl_clr_drv_status_all(cfg, SCANNING);
+                                    WL_DBG(("<<<<<<<<<<<Force Clear Scanning Status>>>>>>>>>>>\n"));
+                                } else {
+                                    WL_ERR(("Scanning already\n"));
+                                    return -EAGAIN;
+                                }
+                            }
+                            if (wl_get_drv_status(cfg, SCAN_ABORTING, ndev)) {
+                                WL_ERR(("Scanning being aborted\n"));
+                                return -EAGAIN;
+                            }
+                            if (request && request->n_ssids > WL_SCAN_PARAMS_SSID_MAX) {            // WL_SCAN_PARAMS_SSID_MAX = 10
+                                WL_ERR(("request null or n_ssids > WL_SCAN_PARAMS_SSID_MAX\n"));
+                                return -EOPNOTSUPP;
+                            }
+
+                            err = wl_do_escan(cfg, wiphy, ndev, request);               // 调用wl_do_escan函数
                         }
+                }
+                ->  {
+                        static s32 wl_do_escan(struct bcm_cfg80211 *cfg, struct wiphy *wiphy, struct net_device *ndev,
+                                    struct cfg80211_scan_request *request)
+                        {
+                            cfg->escan_info.ndev = ndev;
+                            cfg->escan_info.wiphy = wiphy;
+                            cfg->escan_info.escan_state = WL_ESCAN_STATE_SCANING;
+                            passive_scan = cfg->active_scan ? 0 : 1;
+                            err = wldev_ioctl_set(ndev, WLC_SET_PASSIVE_SCAN, &passive_scan, sizeof(passive_scan));
+
+                            if (passive_channel_skip) {
+
+                                err = wldev_ioctl_get(ndev, WLC_GET_SCAN_PASSIVE_TIME,
+                                        &passive_scan_time_org, sizeof(passive_scan_time_org));
+                                if (unlikely(err)) {
+                                    WL_ERR(("== error (%d)\n", err));
+                                    goto exit;
+                                }
+
+                                WL_SCAN(("PASSIVE SCAN time : %d \n", passive_scan_time_org));
+
+                                passive_scan_time = 0;
+                                err = wldev_ioctl_set(ndev, WLC_SET_SCAN_PASSIVE_TIME,
+                                        &passive_scan_time, sizeof(passive_scan_time));
+                                if (unlikely(err)) {
+                                    WL_ERR(("== error (%d)\n", err));
+                                    goto exit;
+                                }
+
+                                WL_SCAN(("PASSIVE SCAN SKIPED!! (passive_channel_skip:%d) \n",
+                                            passive_channel_skip));
+                            }
+
+                            err = wl_run_escan(cfg, ndev, request, WL_SCAN_ACTION_START);           // 调用wl_run_escan函数
+
+                            if (passive_channel_skip) {
+                                err = wldev_ioctl_set(ndev, WLC_SET_SCAN_PASSIVE_TIME,
+                                        &passive_scan_time_org, sizeof(passive_scan_time_org));
+                                if (unlikely(err)) {
+                                    WL_ERR(("== error (%d)\n", err));
+                                    goto exit;
+                                }
+
+                                WL_SCAN(("PASSIVE SCAN RECOVERED!! (passive_scan_time_org:%d) \n",
+                                            passive_scan_time_org));
+                            }
+                        }
+                        ->  {
+                                static s32 wl_run_escan(struct bcm_cfg80211 *cfg, struct net_device *ndev,
+                                        struct cfg80211_scan_request *request, uint16 action)
+                                {
+                                    params = (wl_escan_params_t *) kzalloc(params_size, GFP_KERNEL);
+                                    if (params == NULL) {
+                                        err = -ENOMEM;
+                                        goto exit;
+                                    }
+                                    wl_scan_prep(cfg, &params->params, request);                    // prepare scan
+
+                                    if (cfg->active_scan == PASSIVE_SCAN) {
+                                        params->params.scan_type = DOT11_SCANTYPE_PASSIVE;
+                                        WL_DBG(("Passive scan_type %d \n", params->params.scan_type));
+                                    }
+                                
+                                    bssidx = wl_get_bssidx_by_wdev(cfg, ndev->ieee80211_ptr);
+
+                                    err = wldev_iovar_setbuf(ndev, "escan", params, params_size,
+                                            cfg->escan_ioctl_buf, WLC_IOCTL_MEDLEN, NULL);
+                                    printf("%s: LEGACY_SCAN sync ID: %d, bssidx: %d\n", __FUNCTION__, params->sync_id, bssidx);
+                                }
+                            }
+
                     }
-    } 
---------------------------------------------------------------------------------------------------------------------------->
+    }
+
+接下来的详细见dhd_scan_flow！！！！ 
+下发escan命令后，wifi驱动会收到WLC_E_ESCAN_RESULT消息！！
+大概流程如下：
+dhd_rx_frame
+->  dhd_wl_host_event
+    ->  wl_cfg80211_event
+        ->  wl_event_handler
+            ->  wl_escan_handler
+                ->  wl_notify_escan_complete
+                        Scan.c (net\wireless)
+                    ->  cfg80211_scan_done
+                        ->  __cfg80211_scan_done
+                            ->  ___cfg80211_scan_done
+                                    Nl80211.c (net\wireless)
+                                ->  nl80211_send_scan_done
+
+nl80211_send_scan_done会向wpa_supplicant的Driver_nl80211.c发送NL80211_CMD_NEW_SCAN_RESULTS:
+-----------------------------------------------------------------------------------------------------------------
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\drivers)
+->  {
+        static void do_process_drv_event(struct i802_bss *bss, int cmd,
+				 struct nlattr **tb)
+        {
+            wpa_printf(MSG_DEBUG, "nl80211: Drv Event %d (%s) received for %s",
+                    cmd, nl80211_command_to_string(cmd), bss->ifname);
+
+            if (drv->ap_scan_as_station != NL80211_IFTYPE_UNSPECIFIED &&
+                    (cmd == NL80211_CMD_NEW_SCAN_RESULTS ||
+                     cmd == NL80211_CMD_SCAN_ABORTED)) {
+                wpa_driver_nl80211_set_mode(drv->first_bss,
+                        drv->ap_scan_as_station);
+                drv->ap_scan_as_station = NL80211_IFTYPE_UNSPECIFIED;
+            }
+
+            switch (cmd) {
+                case NL80211_CMD_NEW_SCAN_RESULTS:
+                    wpa_dbg(drv->ctx, MSG_DEBUG,
+                            "nl80211: New scan results available");
+                    drv->scan_state = SCAN_COMPLETED;
+                    drv->scan_complete_events = 1;
+                    eloop_cancel_timeout(wpa_driver_nl80211_scan_timeout, drv,
+                            drv->ctx);
+                    send_scan_event(drv, 0, tb);
+                    break;
+            }
+        }
+        
+        static void send_scan_event(struct wpa_driver_nl80211_data *drv, int aborted,
+			    struct nlattr *tb[])
+        {
+            if (drv->scan_for_auth) {
+                drv->scan_for_auth = 0;
+                wpa_printf(MSG_DEBUG, "nl80211: Scan results for missing "
+                        "cfg80211 BSS entry");
+                wpa_driver_nl80211_authenticate_retry(drv);
+                return;
+            }
+
+            os_memset(&event, 0, sizeof(event));
+            info = &event.scan_info;
+            info->aborted = aborted;
+
+            if (tb[NL80211_ATTR_SCAN_SSIDS]) {
+                nla_for_each_nested(nl, tb[NL80211_ATTR_SCAN_SSIDS], rem) {
+                    struct wpa_driver_scan_ssid *s =
+                        &info->ssids[info->num_ssids];
+                    s->ssid = nla_data(nl);
+                    s->ssid_len = nla_len(nl);
+                    wpa_printf(MSG_DEBUG, "nl80211: Scan probed for SSID '%s'",
+                            wpa_ssid_txt(s->ssid, s->ssid_len));
+                    info->num_ssids++;
+                    if (info->num_ssids == WPAS_MAX_SCAN_SSIDS)
+                        break;
+                }
+            }
+            if (tb[NL80211_ATTR_SCAN_FREQUENCIES]) {
+                char msg[200], *pos, *end;
+                int res;
+
+                pos = msg;
+                end = pos + sizeof(msg);
+                *pos = '\0';
+
+                nla_for_each_nested(nl, tb[NL80211_ATTR_SCAN_FREQUENCIES], rem)
+                {
+                    freqs[num_freqs] = nla_get_u32(nl);
+                    res = os_snprintf(pos, end - pos, " %d",
+                            freqs[num_freqs]);
+                    if (res > 0 && end - pos > res)
+                        pos += res;
+                    num_freqs++;
+                    if (num_freqs == MAX_REPORT_FREQS - 1)
+                        break;
+                }
+                info->freqs = freqs;
+                info->num_freqs = num_freqs;
+                wpa_printf(MSG_DEBUG, "nl80211: Scan included frequencies:%s",
+                        msg);
+            }
+            wpa_supplicant_event(drv->ctx, EVENT_SCAN_RESULTS, &event);                 // 触发EVENT_SCAN_RESULTS
+        }
+    }
+----------------------------------------------------------------------------------------------------------------------------
 events.c (/home/ballack/prj/rk3288/external/wpa_supplicant_8/wpa_supplicant)
 ->  {
         void wpa_supplicant_event(void *ctx, enum wpa_event_type event, union wpa_event_data *data) {
+            wpa_dbg(wpa_s, level, "Event %s (%d) received", event_to_string(event), event);     // 比如wlan0: Event SCAN_STARTED (49) received
+
             switch (event) {
                 case EVENT_AUTH:
                     sme_event_auth(wpa_s, data);

@@ -1,0 +1,260 @@
+
+root@firefly-rk3288:/system/etc/firmware # 
+root@firefly-rk3288:/system/etc/firmware # 
+root@firefly-rk3288:/system/etc/firmware # 
+root@firefly-rk3288:/system/etc/firmware # 
+root@firefly-rk3288:/system/etc/firmware # 
+root@firefly-rk3288:/system/etc/firmware # <6>[ 1776.100649] [dhd] CFG80211-DEBUG) wl_cfg80211_scan :Enter
+<6>[ 1776.100693] [dhd] CFG80211-DEBUG) wl_cfg80211_check_in4way :status=2, action=0x1, in4way=0x9
+<6>[ 1776.105280] [dhd] CFG80211-DEBUG) __wl_cfg80211_scan :Enter wiphy (db4c0180)
+<6>[ 1776.105321] [dhd] CFGP2P-DEBUG) wl_cfgp2p_discover_enable_search : Enter
+<6>[ 1776.105339] [dhd] CFGP2P-DEBUG) wl_cfgp2p_discover_enable_search :already : 0
+<6>[ 1776.105360] [dhd] CFG80211-DEBUG) wl_cfg80211_set_mgmt_vndr_ies :Enter. pktflag:0x10 bssidx:0 vnd_ie_len:172 
+<6>[ 1776.105381] [dhd] CFG80211-DEBUG) wl_cfg80211_parse_vndr_ies :---> len 172
+<6>[ 1776.105400] [dhd] CFG80211-DEBUG) wl_cfg80211_parse_vndr_ies :	 ** OUI 00 50 f2, type 0x04 len:153
+<6>[ 1776.105420] [dhd] CFG80211-DEBUG) wl_cfg80211_parse_vndr_ies :	 ** OUI 50 6f 9a, type 0x09 len:19
+<6>[ 1776.105441] [dhd] CFG80211-INFO) wl_cfg80211_set_mgmt_vndr_ies : Previous mgmt IE is equals to current IE
+<6>[ 1776.105741] [dhd] CFG80211-DEBUG) wl_run_escan :Enter 
+<3>[ 1776.105784] [dhd-wlan0] wl_run_escan : LEGACY_SCAN sync ID: 233, bssidx: 0
+<6>[ 1776.195408] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.195483] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.195502] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.195511] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.195524] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac) RSSI -78 flags 0x5 length 384
+<6>[ 1776.197642] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.197675] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.197697] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.197714] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.197731] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60) RSSI -67 flags 0x1 length 524
+<6>[ 1776.197745] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 1
+<6>[ 1776.202063] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.202099] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.202125] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.202144] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.202163] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5) RSSI -67 flags 0x5 length 332
+<6>[ 1776.202177] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 2
+<6>[ 1776.202189] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 2
+<6>[ 1776.217345] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.217379] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.217403] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.217422] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.217439] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7) RSSI -83 flags 0x5 length 312
+<6>[ 1776.217452] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 3
+<6>[ 1776.217464] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 3
+<6>[ 1776.217476] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 3
+<6>[ 1776.220582] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.220614] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.220636] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.220656] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.220675] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60) RSSI -67 flags 0x4 length 640
+<6>[ 1776.220687] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 4
+<6>[ 1776.220700] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 4
+<6>[ 1776.220715] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 prev: RSSI -67 flags 0x1, new: RSSI -67 flags 0x4
+<6>[ 1776.220725] [dhd] CFG80211-DEBUG) wl_escan_handler :bss info replacement is occured(bcast:393->probresp512)
+<6>[ 1776.220736] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), replacement!(524 -> 640)
+<6>[ 1776.259712] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.259767] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.259785] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.259794] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.259806] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60) RSSI -67 flags 0x4 length 640
+<6>[ 1776.259819] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 4
+<6>[ 1776.259832] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 4
+<6>[ 1776.259844] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 prev: RSSI -67 flags 0x4, new: RSSI -67 flags 0x4
+<6>[ 1776.259856] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), same onchan, RSSI: prev -67 new -67
+<6>[ 1776.470616] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.470641] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.470668] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.470675] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.470684] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64) RSSI -54 flags 0x4 length 592
+<6>[ 1776.470692] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 4
+<6>[ 1776.470700] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 4
+<6>[ 1776.470708] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 4
+<6>[ 1776.470716] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 4
+<6>[ 1776.470822] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.470834] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.470857] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.470874] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.470886] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.470894] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d) RSSI -82 flags 0x4 length 588
+<6>[ 1776.470910] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 5
+<6>[ 1776.470919] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 5
+<6>[ 1776.470927] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 5
+<6>[ 1776.470935] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 5
+<6>[ 1776.470943] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 5
+<6>[ 1776.470950] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.470956] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.470961] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.470969] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7) RSSI -66 flags 0x4 length 380
+<6>[ 1776.470977] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 6
+<6>[ 1776.470986] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 6
+<6>[ 1776.470993] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 6
+<6>[ 1776.471001] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 6
+<6>[ 1776.471008] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 6
+<6>[ 1776.471015] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 6
+<6>[ 1776.506492] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.506519] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.506558] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.506571] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.506579] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64) RSSI -54 flags 0x4 length 592
+<6>[ 1776.506593] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 7
+<6>[ 1776.506603] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 7
+<6>[ 1776.506611] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 7
+<6>[ 1776.506620] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 7
+<6>[ 1776.506627] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 7
+<6>[ 1776.506635] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 prev: RSSI -54 flags 0x4, new: RSSI -54 flags 0x4
+<6>[ 1776.506643] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), same onchan, RSSI: prev -54 new -54
+<6>[ 1776.506998] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.507021] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.507037] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.507049] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.507062] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7) RSSI -67 flags 0x4 length 380
+<6>[ 1776.507071] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 7
+<6>[ 1776.507079] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 7
+<6>[ 1776.507087] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 7
+<6>[ 1776.507095] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 7
+<6>[ 1776.507102] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 7
+<6>[ 1776.507110] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 7
+<6>[ 1776.507117] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 bss: RSSI -66 list->count 7
+<6>[ 1776.507126] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 prev: RSSI -66 flags 0x4, new: RSSI -67 flags 0x4
+<6>[ 1776.507134] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), same onchan, RSSI: prev -66 new -67
+<6>[ 1776.507909] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.507931] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.507947] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.507959] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.507967] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d) RSSI -82 flags 0x5 length 484
+<6>[ 1776.507981] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 7
+<6>[ 1776.507989] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 7
+<6>[ 1776.507999] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 7
+<6>[ 1776.508006] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 7
+<6>[ 1776.508014] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 7
+<6>[ 1776.508021] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 7
+<6>[ 1776.510451] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.510462] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.510485] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.510500] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.510513] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.510521] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a) RSSI -78 flags 0x1 length 324
+<6>[ 1776.510535] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 7
+<6>[ 1776.510544] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 7
+<6>[ 1776.510551] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 7
+<6>[ 1776.510559] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 7
+<6>[ 1776.510568] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 7
+<6>[ 1776.510575] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 7
+<6>[ 1776.510585] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 bss: RSSI -66 list->count 7
+<6>[ 1776.510592] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.510598] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.510603] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.510610] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d) RSSI -82 flags 0x4 length 588
+<6>[ 1776.510618] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 8
+<6>[ 1776.510626] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 8
+<6>[ 1776.510633] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 8
+<6>[ 1776.510643] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 8
+<6>[ 1776.510650] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 8
+<6>[ 1776.510658] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 8
+<6>[ 1776.510666] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 prev: RSSI -82 flags 0x4, new: RSSI -82 flags 0x4
+<6>[ 1776.510674] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), same onchan, RSSI: prev -82 new -82
+<6>[ 1776.534215] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.534240] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.534257] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.534269] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.534277] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64) RSSI -54 flags 0x5 length 472
+<6>[ 1776.534290] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 8
+<6>[ 1776.534298] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 8
+<6>[ 1776.534306] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 8
+<6>[ 1776.534315] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 8
+<6>[ 1776.534322] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 8
+<6>[ 1776.591607] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.591632] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.591648] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.591661] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.591669] [dhd] CFG80211-DEBUG) wl_escan_handler :1008(d8:15:0d:6d:29:1e) RSSI -88 flags 0x5 length 348
+<6>[ 1776.591684] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 8
+<6>[ 1776.591692] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 8
+<6>[ 1776.591700] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 8
+<6>[ 1776.591711] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 8
+<6>[ 1776.591718] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 8
+<6>[ 1776.591726] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 8
+<6>[ 1776.591734] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 bss: RSSI -66 list->count 8
+<6>[ 1776.591742] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a), i=7 bss: RSSI -78 list->count 8
+<6>[ 1776.608921] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.608946] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.608964] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.608977] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.608985] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a) RSSI -81 flags 0x5 length 324
+<6>[ 1776.608998] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 9
+<6>[ 1776.609007] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 9
+<6>[ 1776.609015] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 9
+<6>[ 1776.609023] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 9
+<6>[ 1776.609031] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 9
+<6>[ 1776.609039] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 9
+<6>[ 1776.609047] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 bss: RSSI -66 list->count 9
+<6>[ 1776.609056] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a), i=7 bss: RSSI -78 list->count 9
+<6>[ 1776.609064] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a), i=7 prev: RSSI -78 flags 0x1, new: RSSI -81 flags 0x5
+<6>[ 1776.855210] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1776.855235] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1776.855254] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1776.855268] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1776.855281] [dhd] CFG80211-DEBUG) wl_escan_handler :xiaolu-new(20:76:93:4f:9c:12) RSSI -85 flags 0x5 length 348
+<6>[ 1776.855291] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 9
+<6>[ 1776.855300] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 9
+<6>[ 1776.855308] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 9
+<6>[ 1776.855315] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 9
+<6>[ 1776.855323] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 9
+<6>[ 1776.855331] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 9
+<6>[ 1776.855339] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 bss: RSSI -66 list->count 9
+<6>[ 1776.855347] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a), i=7 bss: RSSI -81 list->count 9
+<6>[ 1776.855355] [dhd] CFG80211-DEBUG) wl_escan_handler :1008(d8:15:0d:6d:29:1e), i=8 bss: RSSI -88 list->count 9
+<6>[ 1777.029833] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1777.029856] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1777.029872] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1777.029884] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1777.029896] [dhd] CFG80211-DEBUG) wl_escan_handler :xiaoluwp(50:64:2b:43:fd:7e) RSSI -84 flags 0x5 length 460
+<6>[ 1777.029905] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 10
+<6>[ 1777.029913] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 10
+<6>[ 1777.029920] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 10
+<6>[ 1777.029928] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 10
+<6>[ 1777.029936] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 10
+<6>[ 1777.029943] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 10
+<6>[ 1777.029951] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 bss: RSSI -66 list->count 10
+<6>[ 1777.029959] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a), i=7 bss: RSSI -81 list->count 10
+<6>[ 1777.029967] [dhd] CFG80211-DEBUG) wl_escan_handler :1008(d8:15:0d:6d:29:1e), i=8 bss: RSSI -88 list->count 10
+<6>[ 1777.029976] [dhd] CFG80211-DEBUG) wl_escan_handler :xiaolu-new(20:76:93:4f:9c:12), i=9 bss: RSSI -85 list->count 10
+<6>[ 1777.044455] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1777.044478] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1777.044493] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 8 
+<6>[ 1777.044504] [dhd] CFG80211-INFO) wl_escan_handler : WLC_E_STATUS_PARTIAL 
+<6>[ 1777.044512] [dhd] CFG80211-DEBUG) wl_escan_handler :xiaolu(78:44:fd:fd:a0:dd) RSSI -81 flags 0x1 length 292
+<6>[ 1777.044524] [dhd] CFG80211-DEBUG) wl_escan_handler :ChinaNet-404q(2c:ab:25:f8:a4:ac), i=0 bss: RSSI -78 list->count 11
+<6>[ 1777.044534] [dhd] CFG80211-DEBUG) wl_escan_handler :ASUS_AX_88U(a8:5e:45:ad:06:60), i=1 bss: RSSI -67 list->count 11
+<6>[ 1777.044542] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_2.4G-01(08:9b:4b:9d:04:a5), i=2 bss: RSSI -67 list->count 11
+<6>[ 1777.044550] [dhd] CFG80211-DEBUG) wl_escan_handler :WXwuyou(88:25:93:a8:a7:f7), i=3 bss: RSSI -83 list->count 11
+<6>[ 1777.044557] [dhd] CFG80211-DEBUG) wl_escan_handler :TEST_149(a8:5e:45:ad:06:64), i=4 bss: RSSI -54 list->count 11
+<6>[ 1777.044565] [dhd] CFG80211-DEBUG) wl_escan_handler :DIRECT-TnDESKTOP-KSCR63QmshX(d6:3b:04:cc:56:7d), i=5 bss: RSSI -82 list->count 11
+<6>[ 1777.044573] [dhd] CFG80211-DEBUG) wl_escan_handler :AMPAK_WIFI_5.8G-01(08:9b:4b:9d:04:a7), i=6 bss: RSSI -66 list->count 11
+<6>[ 1777.044581] [dhd] CFG80211-DEBUG) wl_escan_handler :amlogic-audio-b2f1ec3ee06a(b2:f1:ec:3e:e0:6a), i=7 bss: RSSI -81 list->count 11
+<6>[ 1777.044589] [dhd] CFG80211-DEBUG) wl_escan_handler :1008(d8:15:0d:6d:29:1e), i=8 bss: RSSI -88 list->count 11
+<6>[ 1777.044598] [dhd] CFG80211-DEBUG) wl_escan_handler :xiaolu-new(20:76:93:4f:9c:12), i=9 bss: RSSI -85 list->count 11
+<6>[ 1777.044606] [dhd] CFG80211-DEBUG) wl_escan_handler :xiaoluwp(50:64:2b:43:fd:7e), i=10 bss: RSSI -84 list->count 11
+<6>[ 1777.345979] [dhd] CFG80211-DEBUG) wl_cfg80211_event :event_type (69): WLC_E_ESCAN_RESULT
+<6>[ 1777.346006] [dhd] CFG80211-DEBUG) wl_event_handler :event type (69), ifidx: 0 bssidx: 0 
+<6>[ 1777.346024] [dhd] CFG80211-DEBUG) wl_escan_handler : enter event type : 69, status : 0 
+<6>[ 1777.346038] [dhd] CFG80211-INFO) wl_escan_handler : ESCAN COMPLETED
+<6>[ 1777.346043] [dhd] CFG80211-DEBUG) wl_escan_handler :SCAN COMPLETED: scanned AP count=12
+<6>[ 1777.346099] [dhd] CFG80211-DEBUG) wl_notify_escan_complete :Enter 
+<4>[ 1777.346134] cfg80211_scan_done Enter
+<4>[ 1777.346152] nl80211_send_scan_done Enter
+<4>[ 1777.346298] nl80211_send_bss Enter
+<4>[ 1777.346309] nl80211_send_bss Enter
+<4>[ 1777.346314] nl80211_send_bss Enter
+<4>[ 1777.346320] nl80211_send_bss Enter
+<4>[ 1777.346326] nl80211_send_bss Enter
+<4>[ 1777.346342] nl80211_send_bss Enter
+<4>[ 1777.346348] nl80211_send_bss Enter
+<4>[ 1777.346353] nl80211_send_bss Enter
+<4>[ 1777.346357] nl80211_send_bss Enter
+<4>[ 1777.346362] nl80211_send_bss Enter
+<4>[ 1777.346368] nl80211_send_bss Enter
+<4>[ 1777.346398] nl80211_send_bss Enter
+<4>[ 1777.346405] nl80211_send_bss Enter
+<4>[ 1777.346411] nl80211_send_bss Enter
+
