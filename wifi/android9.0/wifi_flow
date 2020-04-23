@@ -475,6 +475,23 @@ WifiNative.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
                 return true;
             }
         }
+
+        /**
+         * Helper function to handle creation of STA iface.
+         * For devices which do not the support the HAL, this will bypass HalDeviceManager &
+         * teardown any existing iface.
+         */
+        private String createStaIface(@NonNull Iface iface, boolean lowPrioritySta) {
+            synchronized (mLock) {
+                if (mWifiVendorHal.isVendorHalSupported()) {
+                    return mWifiVendorHal.createStaIface(lowPrioritySta,
+                            new InterfaceDestoyedListenerInternal(iface.id));
+                } else {
+                    Log.i(TAG, "Vendor Hal not supported, ignoring createStaIface.");
+                    return handleIfaceCreationWhenVendorHalNotSupported(iface);
+                }
+            }
+        }
     }
 ---------------------------------------------------------------------------------------------
 WifiVendorHal.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
@@ -745,6 +762,342 @@ Supplicant_manager.cpp (frameworks\opt\net\wifi\libwifi_system)
 
             property_set("ctl.start", kSupplicantServiceName);
             sched_yield();
+        }
+    }
+----------------------------------------------------------------------------------------
+WifiVendorHal.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        /**
+         * Create a STA iface using {@link HalDeviceManager}.
+         *
+         * @param lowPrioritySta The requested STA has a low request priority (lower probability of
+         *                       getting created, higher probability of getting destroyed).
+         * @param destroyedListener Listener to be invoked when the interface is destroyed.
+         * @return iface name on success, null otherwise.
+         */
+        public String createStaIface(boolean lowPrioritySta, InterfaceDestroyedListener destroyedListener) {
+            IWifiStaIface iface = mHalDeviceManager.createStaIface(lowPrioritySta,
+                    new StaInterfaceDestroyedListenerInternal(destroyedListener), null);
+            if (iface == null) {
+                mLog.err("Failed to create STA iface").flush();
+                return stringResult(null);
+            }
+            String ifaceName = mHalDeviceManager.getName((IWifiIface) iface);
+            if (TextUtils.isEmpty(ifaceName)) {
+                mLog.err("Failed to get iface name").flush();
+                return stringResult(null);
+            }
+            if (!registerStaIfaceCallback(iface)) {
+                mLog.err("Failed to register STA iface callback").flush();
+                return stringResult(null);
+            }
+            mIWifiRttController = mHalDeviceManager.createRttController();
+            if (mIWifiRttController == null) {
+                mLog.err("Failed to create RTT controller").flush();
+                return stringResult(null);
+            }
+            if (!registerRttEventCallback()) {
+                mLog.err("Failed to register RTT controller callback").flush();
+                return stringResult(null);
+            }
+            if (!retrieveWifiChip((IWifiIface) iface)) {
+                mLog.err("Failed to get wifi chip").flush();
+                return stringResult(null);
+            }
+            enableLinkLayerStats(iface);
+            mIWifiStaIfaces.put(ifaceName, iface);
+            return ifaceName;
+        }
+    }
+----------------------------------------------------------------------------------------------
+HalDeviceManager.java (frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        /**
+         * Create a STA interface if possible. Changes chip mode and removes conflicting interfaces if
+         * needed and permitted by priority.
+         *
+         * @param lowPrioritySta Indicates whether the requested STA is a low priority STA. The priority
+         *                       and preemption rules for low priority STA are:
+         *                       - Do not destroy any interface for it (even another low priority STA)
+         *                       - Destroy it for any other request
+         * @param destroyedListener Optional (nullable) listener to call when the allocated interface
+         *                          is removed. Will only be registered and used if an interface is
+         *                          created successfully.
+         * @param handler Handler on which to dispatch listener. Null implies the listener will be
+         *                invoked synchronously from the context of the client which triggered the
+         *                iface destruction.
+         * @return A newly created interface - or null if the interface could not be created.
+         */
+        public IWifiStaIface createStaIface(boolean lowPrioritySta,
+                @Nullable InterfaceDestroyedListener destroyedListener, @Nullable Handler handler) {
+            return (IWifiStaIface) createIface(IfaceType.STA, lowPrioritySta, destroyedListener,
+                    handler);
+        }
+
+        private IWifiIface createIface(int ifaceType, boolean lowPriority, InterfaceDestroyedListener destroyedListener, Handler handler) {
+            if (mDbg) {
+                Log.d(TAG, "createIface: ifaceType=" + ifaceType + ", lowPriority=" + lowPriority);
+            }
+
+            synchronized (mLock) {
+                WifiChipInfo[] chipInfos = getAllChipInfo();
+                if (chipInfos == null) {
+                    Log.e(TAG, "createIface: no chip info found");
+                    stopWifi(); // major error: shutting down
+                    return null;
+                }
+
+                if (!validateInterfaceCache(chipInfos)) {
+                    Log.e(TAG, "createIface: local cache is invalid!");
+                    stopWifi(); // major error: shutting down
+                    return null;
+                }
+
+                IWifiIface iface = createIfaceIfPossible(chipInfos, ifaceType, lowPriority,
+                        destroyedListener, handler);
+                if (iface != null) { // means that some configuration has changed
+                    if (!dispatchAvailableForRequestListeners()) {
+                        return null; // catastrophic failure - shut down
+                    }
+                }
+
+                return iface;
+            }
+        }
+
+        private IWifiIface createIfaceIfPossible(WifiChipInfo[] chipInfos, int ifaceType,
+                boolean lowPriority, InterfaceDestroyedListener destroyedListener, Handler handler) {
+            if (VDBG) {
+                Log.d(TAG, "createIfaceIfPossible: chipInfos=" + Arrays.deepToString(chipInfos)
+                        + ", ifaceType=" + ifaceType + ", lowPriority=" + lowPriority);
+            }
+
+            IWifiIface iface = executeChipReconfiguration(bestIfaceCreationProposal, ifaceType);
+        }
+
+        /**
+         * Performs chip reconfiguration per the input:
+         * - Removes the specified interfaces
+         * - Reconfigures the chip to the new chip mode (if necessary)
+         * - Creates the new interface
+         *
+         * Returns the newly created interface or a null on any error.
+         */
+        private IWifiIface executeChipReconfiguration(IfaceCreationData ifaceCreationData, int ifaceType) {
+            if (mDbg) {
+                Log.d(TAG, "executeChipReconfiguration: ifaceCreationData=" + ifaceCreationData
+                        + ", ifaceType=" + ifaceType);
+            }
+
+            // is this a mode change?
+            boolean isModeConfigNeeded = !ifaceCreationData.chipInfo.currentModeIdValid
+                || ifaceCreationData.chipInfo.currentModeId != ifaceCreationData.chipModeId;
+            if (mDbg) Log.d(TAG, "isModeConfigNeeded=" + isModeConfigNeeded);
+
+            // first delete interfaces/change modes
+            if (isModeConfigNeeded) {
+                // remove all interfaces pre mode-change
+                // TODO: is this necessary? note that even if we don't want to explicitly
+                // remove the interfaces we do need to call the onDeleted callbacks - which
+                // this does
+                for (WifiIfaceInfo[] ifaceInfos: ifaceCreationData.chipInfo.ifaces) {
+                    for (WifiIfaceInfo ifaceInfo: ifaceInfos) {
+                        removeIfaceInternal(ifaceInfo.iface); // ignore return value
+                    }
+                }
+
+                WifiStatus status = ifaceCreationData.chipInfo.chip.configureChip(
+                        ifaceCreationData.chipModeId);
+                if (status.code != WifiStatusCode.SUCCESS) {
+                    Log.e(TAG, "executeChipReconfiguration: configureChip error: "
+                            + statusString(status));
+                    return null;
+                }
+            } else {
+                // remove all interfaces on the delete list
+                for (WifiIfaceInfo ifaceInfo: ifaceCreationData.interfacesToBeRemovedFirst) {
+                    removeIfaceInternal(ifaceInfo.iface); // ignore return value
+                }
+            }
+
+            // create new interface
+            Mutable<WifiStatus> statusResp = new Mutable<>();
+            Mutable<IWifiIface> ifaceResp = new Mutable<>();
+            switch (ifaceType) {
+                case IfaceType.STA:
+                    ifaceCreationData.chipInfo.chip.createStaIface(
+                            (WifiStatus status, IWifiStaIface iface) -> {
+                            statusResp.value = status;
+                            ifaceResp.value = iface;
+                            });
+                    break;
+                case IfaceType.AP:
+                    ifaceCreationData.chipInfo.chip.createApIface(
+                            (WifiStatus status, IWifiApIface iface) -> {
+                            statusResp.value = status;
+                            ifaceResp.value = iface;
+                            });
+                    break;
+                case IfaceType.P2P:
+                    ifaceCreationData.chipInfo.chip.createP2pIface(
+                            (WifiStatus status, IWifiP2pIface iface) -> {
+                            statusResp.value = status;
+                            ifaceResp.value = iface;
+                            });
+                    break;
+                case IfaceType.NAN:
+                    ifaceCreationData.chipInfo.chip.createNanIface(
+                            (WifiStatus status, IWifiNanIface iface) -> {
+                            statusResp.value = status;
+                            ifaceResp.value = iface;
+                            });
+                    break;
+            }
+
+            if (statusResp.value.code != WifiStatusCode.SUCCESS) {
+                Log.e(TAG, "executeChipReconfiguration: failed to create interface ifaceType="
+                        + ifaceType + ": " + statusString(statusResp.value));
+                return null;
+            }
+
+            return ifaceResp.value;
+        }
+    }
+-------------------------------------------------------------------------------------------------------
+Wifi_chip.cpp (hardware\interfaces\wifi\1.2\default)
+->  {
+        Return<void> WifiChip::configureChip(ChipModeId mode_id,
+                configureChip_cb hidl_status_cb) {
+            return validateAndCallWithLock(
+                    this, WifiStatusCode::ERROR_WIFI_CHIP_INVALID,
+                    &WifiChip::configureChipInternal, hidl_status_cb, mode_id);
+        }
+
+        WifiStatus WifiChip::configureChipInternal(
+                /* NONNULL */ std::unique_lock<std::recursive_mutex>* lock,
+                ChipModeId mode_id) {
+            if (!isValidModeId(mode_id)) {
+                return createWifiStatus(WifiStatusCode::ERROR_INVALID_ARGS);
+            }
+            if (mode_id == current_mode_id_) {
+                LOG(DEBUG) << "Already in the specified mode " << mode_id;
+                return createWifiStatus(WifiStatusCode::SUCCESS);
+            }
+            WifiStatus status = handleChipConfiguration(lock, mode_id);
+            if (status.code != WifiStatusCode::SUCCESS) {
+                for (const auto& callback : event_cb_handler_.getCallbacks()) {
+                    if (!callback->onChipReconfigureFailure(status).isOk()) {
+                        LOG(ERROR)
+                            << "Failed to invoke onChipReconfigureFailure callback";
+                    }
+                }
+                return status;
+            }
+            for (const auto& callback : event_cb_handler_.getCallbacks()) {
+                if (!callback->onChipReconfigured(mode_id).isOk()) {
+                    LOG(ERROR) << "Failed to invoke onChipReconfigured callback";
+                }
+            }
+            current_mode_id_ = mode_id;
+            LOG(INFO) << "Configured chip in mode " << mode_id;
+            return status;
+        }
+
+        WifiStatus WifiChip::handleChipConfiguration(
+                /* NONNULL */ std::unique_lock<std::recursive_mutex>* lock,
+                ChipModeId mode_id) {
+            // If the chip is already configured in a different mode, stop
+            // the legacy HAL and then start it after firmware mode change.
+            if (isValidModeId(current_mode_id_)) {
+                LOG(INFO) << "Reconfiguring chip from mode " << current_mode_id_
+                    << " to mode " << mode_id;
+                invalidateAndRemoveAllIfaces();
+                legacy_hal::wifi_error legacy_status =
+                    legacy_hal_.lock()->stop(lock, []() {});
+                if (legacy_status != legacy_hal::WIFI_SUCCESS) {
+                    LOG(ERROR) << "Failed to stop legacy HAL: "
+                        << legacyErrorToString(legacy_status);
+                    return createWifiStatusFromLegacyError(legacy_status);
+                }
+            }
+            // Firmware mode change not needed for V2 devices.
+            bool success = true;
+            if (mode_id == kV1StaChipModeId) {
+                success = mode_controller_.lock()->changeFirmwareMode(IfaceType::STA);
+            } else if (mode_id == kV1ApChipModeId) {
+                success = mode_controller_.lock()->changeFirmwareMode(IfaceType::AP);
+            }
+            if (!success) {
+                return createWifiStatus(WifiStatusCode::ERROR_UNKNOWN);
+            }
+            legacy_hal::wifi_error legacy_status = legacy_hal_.lock()->start();
+            if (legacy_status != legacy_hal::WIFI_SUCCESS) {
+                LOG(ERROR) << "Failed to start legacy HAL: "
+                    << legacyErrorToString(legacy_status);
+                return createWifiStatusFromLegacyError(legacy_status);
+            }
+            // Every time the HAL is restarted, we need to register the
+            // radio mode change callback.
+            WifiStatus status = registerRadioModeChangeCallback();
+            if (status.code != WifiStatusCode::SUCCESS) {
+                // This probably is not a critical failure?
+                LOG(ERROR) << "Failed to register radio mode change callback";
+            }
+            return createWifiStatus(WifiStatusCode::SUCCESS);
+        }
+    }
+--------------------------------------------------------------------------------------
+Wifi_mode_controller.cpp (hardware\interfaces\wifi\1.2\default)
+->  {
+        bool WifiModeController::changeFirmwareMode(IfaceType type) {
+            if (!driver_tool_->ChangeFirmwareMode(
+                        convertIfaceTypeToFirmwareMode(type))) {
+                LOG(ERROR) << "Failed to change firmware mode";
+                return false;
+            }
+            return true;
+        }
+    }
+-------------------------------------------------------------------------------------
+Driver_tool.cpp (frameworks\opt\net\wifi\libwifi_hal)
+->  {
+        bool DriverTool::ChangeFirmwareMode(int mode) {
+            const char* fwpath = wifi_get_fw_path(mode);
+            if (!fwpath) {
+                return true;  // HAL doesn't think we need to load firmware for this mode.
+            }
+            if (wifi_change_fw_path(fwpath) != 0) {
+                // Not all devices actually require firmware reloads, but
+                // failure to change the firmware path when it is defined is an error.
+                return false;
+            }
+            return true;
+        }
+    }
+--------------------------------------------------------------------------------------
+Wifi_hal_common.cpp (frameworks\opt\net\wifi\libwifi_hal)
+->  {
+        int wifi_change_fw_path(const char *fwpath) {
+            int len;
+            int fd;
+            int ret = 0;
+
+            if (wifi_type[0] == 0)
+                check_wifi_chip_type_string(wifi_type);
+            if (0 != strncmp(wifi_type, "AP", 2)) return ret;
+            if (!fwpath) return ret;
+            fd = TEMP_FAILURE_RETRY(open(WIFI_DRIVER_FW_PATH_PARAM, O_WRONLY));
+            if (fd < 0) {
+                PLOG(ERROR) << "Failed to open wlan fw path param";
+                return -1;
+            }
+            len = strlen(fwpath) + 1;
+            if (TEMP_FAILURE_RETRY(write(fd, fwpath, len)) != len) {
+                PLOG(ERROR) << "Failed to write wlan fw path param";
+                ret = -1;
+            }
+            close(fd);
+            return ret;
         }
     }
 

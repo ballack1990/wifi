@@ -811,3 +811,358 @@ Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_suppl
             wpa_supplicant_event(drv->ctx, EVENT_SCAN_RESULTS, &event);
         }
     }
+--------------------------------------------------------------------------------------------------------------
+下面来展开上面的escan扫描命令： 
+err = wldev_iovar_setbuf(ndev, "escan", params, params_size, cfg->escan_ioctl_buf, WLC_IOCTL_MEDLEN, NULL);
+
+Wldev_common.c (drivers\net\wireless\bcmdhd)
+->  {
+        s32 wldev_iovar_setbuf(
+                struct net_device *dev, s8 *iovar_name,
+                void *param, s32 paramlen, void *buf, s32 buflen, struct mutex* buf_sync)
+        {
+            s32 ret = 0;
+            s32 iovar_len;
+            if (buf_sync) {
+                mutex_lock(buf_sync);
+            }
+            iovar_len = wldev_mkiovar(iovar_name, param, paramlen, buf, buflen);
+            if (iovar_len > 0)
+                ret = wldev_ioctl_set(dev, WLC_SET_VAR, buf, iovar_len);
+            else
+                ret = BCME_BUFTOOSHORT;
+
+            if (buf_sync)
+                mutex_unlock(buf_sync);
+            return ret;
+        }
+
+        /*
+           SET commands :
+           cast buffer to non-const  and call the GET function
+         */
+        s32 wldev_ioctl_set( struct net_device *dev, u32 cmd, const void *arg, u32 len)
+        {
+            return wldev_ioctl(dev, cmd, (void *)arg, len, 1);
+        }
+
+        s32 wldev_ioctl( struct net_device *dev, u32 cmd, void *arg, u32 len, u32 set)
+        {
+            s32 ret = 0;
+            struct wl_ioctl ioc;
+
+
+            memset(&ioc, 0, sizeof(ioc));
+            ioc.cmd = cmd;
+            ioc.buf = arg;
+            ioc.len = len;
+            ioc.set = set;                                      // 这里ioc.set = 1
+
+            ret = dhd_ioctl_entry_local(dev, &ioc, cmd);
+
+            return ret;
+        }
+    }
+---------------------------------------------------------------------------------------
+Dhd_linux.c (drivers\net\wireless\bcmdhd)
+->  {
+        int dhd_ioctl_entry_local(struct net_device *net, wl_ioctl_t *ioc, int cmd)
+        {
+            ret = dhd_wl_ioctl(&dhd->pub, ifidx, ioc, ioc->buf, ioc->len);
+        }
+    }
+---------------------------------------------------------------------------------------
+Dhd_common.c (drivers\net\wireless\bcmdhd)
+->  {
+        ret = dhd_prot_ioctl(dhd_pub, ifidx, ioc, buf, len);
+    }
+---------------------------------------------------------------------------------------
+Dhd_cdc.c (drivers\net\wireless\bcmdhd)
+->  {
+        int dhd_prot_ioctl(dhd_pub_t *dhd, int ifidx, wl_ioctl_t * ioc, void * buf, int len)
+        {
+            dhd_prot_t *prot = dhd->prot;
+            int ret = -1;
+            uint8 action;
+
+            prot->pending = TRUE;
+            prot->lastcmd = ioc->cmd;
+            action = ioc->set;                                                      // 上面可以知道，ioc->set = 1, 所以action = 1
+            if (action & WL_IOCTL_ACTION_SET)                                       // #define WL_IOCTL_ACTION_SET  0x1
+                ret = dhdcdc_set_ioctl(dhd, ifidx, ioc->cmd, buf, len, action);
+            else {
+                ret = dhdcdc_query_ioctl(dhd, ifidx, ioc->cmd, buf, len, action);
+                if (ret > 0)
+                    ioc->used = ret - sizeof(cdc_ioctl_t);
+            }
+        }
+
+        static int dhdcdc_set_ioctl(dhd_pub_t *dhd, int ifidx, uint cmd, void *buf, uint len, uint8 action)
+        {
+            dhd_prot_t *prot = dhd->prot;
+            cdc_ioctl_t *msg = &prot->msg;
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+            DHD_CTL(("%s: cmd %d len %d\n", __FUNCTION__, cmd, len));
+
+            memset(msg, 0, sizeof(cdc_ioctl_t));
+
+            msg->cmd = htol32(cmd);
+            msg->len = htol32(len);
+            msg->flags = (++prot->reqid << CDCF_IOC_ID_SHIFT);
+            CDC_SET_IF_IDX(msg, ifidx);
+            /* add additional action bits */
+            action &= WL_IOCTL_ACTION_MASK;
+            msg->flags |= (action << CDCF_IOC_ACTION_SHIFT) | CDCF_IOC_SET;
+            msg->flags = htol32(msg->flags);
+
+            if (buf)
+                memcpy(prot->buf, buf, len);
+
+            if ((ret = dhdcdc_msg(dhd)) < 0) {
+                DHD_ERROR(("%s: dhdcdc_msg failed w/status %d\n", __FUNCTION__, ret));
+                goto done;
+            }
+
+            if ((ret = dhdcdc_cmplt(dhd, prot->reqid, len)) < 0)
+                goto done;
+        }
+
+        static int dhdcdc_msg(dhd_pub_t *dhd)
+        {
+            dhd_prot_t *prot = dhd->prot;
+            int len = ltoh32(prot->msg.len) + sizeof(cdc_ioctl_t);
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+
+            err = dhd_bus_txctl(dhd->bus, (uchar*)&prot->msg, len); 
+        }
+    }
+--------------------------------------------------------------------------------------------------
+Dhd_sdio.c (drivers\net\wireless\bcmdhd)
+->  {
+        int dhd_bus_txctl(struct dhd_bus *bus, uchar *msg, uint msglen)
+        {
+            uint8 sdpcm_hdrlen = bus->txglom_enable ? SDPCM_HDRLEN_TXGLOM : SDPCM_HDRLEN;
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+
+            if (!TXCTLOK(bus)) {
+                DHD_CTL(("%s: No bus credit bus->tx_max %d, bus->tx_seq %d\n",
+                            __FUNCTION__, bus->tx_max, bus->tx_seq));
+                bus->ctrl_frame_stat = TRUE;
+                /* Send from dpc */
+                bus->ctrl_frame_buf = frame;
+                bus->ctrl_frame_len = len;
+
+                if (!bus->dpc_sched) {
+                    bus->dpc_sched = TRUE;
+                    dhd_sched_dpc(bus->dhd);                            // dhd_sched_dpc的流程查看dhd_dpc_flow！！！
+                }
+                if (bus->ctrl_frame_stat) {
+                    dhd_wait_for_event(bus->dhd, &bus->ctrl_frame_stat);
+                }
+            }
+
+            bus->dhd->txcnt_timeout = 0;
+            bus->ctrl_frame_stat = TRUE;
+
+            if (ret == -1) {
+        #ifdef DHD_DEBUG
+                if (DHD_BYTES_ON() && DHD_CTL_ON()) {
+                    prhex("Tx Frame", frame, len);
+                } else if (DHD_HDRS_ON()) {
+                    prhex("TxHdr", frame, MIN(len, 16));
+                }
+        #endif
+        #ifdef PKT_STATICS
+                tx_statics.ctrl_count++;
+                tx_statics.ctrl_size += len;
+        #endif
+                ret = dhd_bcmsdh_send_buffer(bus, frame, len);
+            }
+            bus->ctrl_frame_stat = FALSE;
+        }
+
+        static int dhd_bcmsdh_send_buffer(void *bus, uint8 *frame, uint16 len)
+        {
+            int ret = -1;
+
+            ret = dhd_bcmsdh_send_buf(bus, bcmsdh_cur_sbwad(((dhd_bus_t*)bus)->sdh),
+                    SDIO_FUNC_2, F2SYNC, frame, len, NULL, NULL, NULL, TXRETRIES);
+
+            if (ret == BCME_OK)
+                ((dhd_bus_t*)bus)->tx_seq = (((dhd_bus_t*)bus)->tx_seq + 1) % SDPCM_SEQUENCE_WRAP;
+
+            return ret;
+        }
+
+        dhd_bcmsdh_send_buf(dhd_bus_t *bus, uint32 addr, uint fn, uint flags, uint8 *buf, uint nbytes,
+                void *pkt, bcmsdh_cmplt_fn_t complete_fn, void *handle, int max_retry)
+        {
+            int ret;
+            int i = 0;
+            int retries = 0;
+            bcmsdh_info_t *sdh;
+
+            if (!KSO_ENAB(bus)) {
+                DHD_ERROR(("%s: Device asleep\n", __FUNCTION__));
+                return BCME_NODEVICE;
+            }
+
+            sdh = bus->sdh;
+            do {
+                ret = bcmsdh_send_buf(bus->sdh, addr, fn, flags, buf, nbytes,
+                        pkt, complete_fn, handle);
+
+                bus->f2txdata++;
+                ASSERT(ret != BCME_PENDING);
+
+                if (ret == BCME_NODEVICE) {
+                    DHD_ERROR(("%s: Device asleep already\n", __FUNCTION__));
+                } else if (ret < 0) {
+                    /* On failure, abort the command and terminate the frame */
+                    DHD_ERROR(("%s: sdio error %d, abort command and terminate frame.\n",
+                                __FUNCTION__, ret));
+                    bus->tx_sderrs++;
+                    bus->f1regdata++;
+                    bus->dhd->tx_errors++;
+                    bcmsdh_abort(sdh, SDIO_FUNC_2);
+                    bcmsdh_cfg_write(sdh, SDIO_FUNC_1, SBSDIO_FUNC1_FRAMECTRL,
+                            SFC_WF_TERM, NULL);
+                    for (i = 0; i < READ_FRM_CNT_RETRIES; i++) {
+                        uint8 hi, lo;
+                        hi = bcmsdh_cfg_read(sdh, SDIO_FUNC_1, SBSDIO_FUNC1_WFRAMEBCHI,
+                                NULL);
+                        lo = bcmsdh_cfg_read(sdh, SDIO_FUNC_1, SBSDIO_FUNC1_WFRAMEBCLO,
+                                NULL);
+                        bus->f1regdata += 2;
+                        if ((hi == 0) && (lo == 0))
+                            break;
+                    }
+                }
+            } while ((ret < 0) && retrydata && ++retries < max_retry);
+
+            return ret;
+        }
+    }
+-------------------------------------------------------------------------------------------------------
+Bcmsdh.c (drivers\net\wireless\bcmdhd)
+->  {
+        int bcmsdh_send_buf(void *sdh, uint32 addr, uint fn, uint flags,
+                uint8 *buf, uint nbytes, void *pkt,
+                bcmsdh_cmplt_fn_t complete_fn, void *handle)
+        {
+            bcmsdh_info_t *bcmsdh = (bcmsdh_info_t *)sdh;
+            SDIOH_API_RC status;
+            uint incr_fix;
+            uint width;
+            int err = 0;
+
+            ASSERT(bcmsdh);
+            ASSERT(bcmsdh->init_success);
+
+            BCMSDH_INFO(("%s:fun = %d, addr = 0x%x, size = %d\n",
+                        __FUNCTION__, fn, addr, nbytes));
+
+            /* Async not implemented yet */
+            ASSERT(!(flags & SDIO_REQ_ASYNC));
+            if (flags & SDIO_REQ_ASYNC)
+                return BCME_UNSUPPORTED;
+
+            if ((err = bcmsdhsdio_set_sbaddr_window(bcmsdh, addr, FALSE)))
+                return err;
+
+            addr &= SBSDIO_SB_OFT_ADDR_MASK;
+
+            incr_fix = (flags & SDIO_REQ_FIXED) ? SDIOH_DATA_FIX : SDIOH_DATA_INC;
+            width = (flags & SDIO_REQ_4BYTE) ? 4 : 2;
+            if (width == 4)
+                addr |= SBSDIO_SB_ACCESS_2_4B_FLAG;
+
+            status = sdioh_request_buffer(bcmsdh->sdioh, SDIOH_DATA_PIO, incr_fix,
+                    SDIOH_WRITE, fn, addr, width, nbytes, buf, pkt);
+
+            return (SDIOH_API_SUCCESS(status) ? 0 : BCME_ERROR);
+        }
+    }
+------------------------------------------------------------------------------------------
+Bcmsdh_sdmmc.c (drivers\net\wireless\bcmdhd)
+->  {
+        /*
+         * This function takes a buffer or packet, and fixes everything up so that in the
+         * end, a DMA-able packet is created.
+         *
+         * A buffer does not have an associated packet pointer, and may or may not be aligned.
+         * A packet may consist of a single packet, or a packet chain.  If it is a packet chain,
+         * then all the packets in the chain must be properly aligned.  If the packet data is not
+         * aligned, then there may only be one packet, and in this case, it is copied to a new
+         * aligned packet.
+         *
+         */
+        extern SDIOH_API_RC sdioh_request_buffer(sdioh_info_t *sd, uint pio_dma, uint fix_inc, uint write, uint func,
+                uint addr, uint reg_width, uint buf_len, uint8 *buffer, void *pkt)
+        {
+            SDIOH_API_RC status;
+            void *tmppkt;
+            struct osl_timespec now, before;
+
+            sd_trace(("%s: Enter\n", __FUNCTION__));
+            DHD_PM_RESUME_WAIT(sdioh_request_buffer_wait);
+            DHD_PM_RESUME_RETURN_ERROR(SDIOH_API_RC_FAIL);
+
+            if (sd_msglevel & SDH_COST_VAL)
+                osl_do_gettimeofday(&before);
+
+            if (pkt) {
+            #ifdef BCMSDIOH_TXGLOM
+                /* packet chain, only used for tx/rx glom, all packets length
+                 * are aligned, total length is a block multiple
+                 */
+                if (PKTNEXT(sd->osh, pkt))
+                    return sdioh_request_packet_chain(sd, fix_inc, write, func, addr, pkt);
+            #endif /* BCMSDIOH_TXGLOM */
+                /* non-glom mode, ignore the buffer parameter and use the packet pointer
+                 * (this shouldn't happen)
+                 */
+                buffer = PKTDATA(sd->osh, pkt);
+                buf_len = PKTLEN(sd->osh, pkt);
+            }
+
+            ASSERT(buffer);
+
+            /* buffer and length are aligned, use it directly so we can avoid memory copy */
+            if (((ulong)buffer & DMA_ALIGN_MASK) == 0 && (buf_len & DMA_ALIGN_MASK) == 0)
+                return sdioh_buffer_tofrom_bus(sd, fix_inc, write, func, addr, buffer, buf_len);
+
+            sd_trace(("%s: [%d] doing memory copy buf=%p, len=%d\n",
+                        __FUNCTION__, write, buffer, buf_len));
+
+            /* otherwise, a memory copy is needed as the input buffer is not aligned */
+            tmppkt = PKTGET_STATIC(sd->osh, buf_len + DEFAULT_SDIO_F2_BLKSIZE, write ? TRUE : FALSE);
+            if (tmppkt == NULL) {
+                sd_err(("%s: PKTGET failed: len %d\n", __FUNCTION__, buf_len));
+                return SDIOH_API_RC_FAIL;
+            }
+
+            if (write)
+                bcopy(buffer, PKTDATA(sd->osh, tmppkt), buf_len);
+
+            status = sdioh_buffer_tofrom_bus(sd, fix_inc, write, func, addr,
+                    PKTDATA(sd->osh, tmppkt), ROUNDUP(buf_len, (DMA_ALIGN_MASK+1)));
+
+            if (!write)
+                bcopy(PKTDATA(sd->osh, tmppkt), buffer, buf_len);
+
+            PKTFREE_STATIC(sd->osh, tmppkt, write ? TRUE : FALSE);
+
+            if (sd_msglevel & SDH_COST_VAL) {
+                osl_do_gettimeofday(&now);
+                sd_cost(("%s: len=%d cost=%lds %luus\n", __FUNCTION__,
+                            buf_len, now.tv_sec-before.tv_sec, now.tv_nsec/1000 - before.tv_nsec/1000));
+            }
+
+            return status;
+        }
+    }
+

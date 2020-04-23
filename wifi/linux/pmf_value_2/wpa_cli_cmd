@@ -1,0 +1,5 @@
+add_network 
+set_network 0 ssid "ASUS_88U_2.4G"
+set_network 0 psk "12345678"
+set_network 0 key_mgmt WPA-PSK-SHA256
+enable_network 0
