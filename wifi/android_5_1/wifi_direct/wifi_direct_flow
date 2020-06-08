@@ -62,6 +62,30 @@ class P2pDisabledState extends State {
 ------------------------------------------------------------------------------------------------------------>
 WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
 ->  {
+        public void onActivityCreated(Bundle savedInstanceState) {
+            addPreferencesFromResource(R.xml.wifi_p2p_settings);
+
+            mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+            mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+            mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+            mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+            mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_DISCOVERY_CHANGED_ACTION);
+            mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PERSISTENT_GROUPS_CHANGED_ACTION);
+
+            final Activity activity = getActivity();
+            mWifiP2pManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+            if (mWifiP2pManager != null) {
+                mChannel = mWifiP2pManager.initialize(activity, getActivity().getMainLooper(), null);
+                if (mChannel == null) {
+                    //Failure to set up connection
+                    Log.e(TAG, "Failed to set up connection with wifi p2p service");
+                    mWifiP2pManager = null;
+                }
+            } else {
+                Log.e(TAG, "mWifiP2pManager is null !");
+            }
+        }
+
         public boolean onOptionsItemSelected(MenuItem item) {
             switch (item.getItemId()) {
                 case MENU_ID_SEARCH:
@@ -91,6 +115,32 @@ WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\
 ---------------------------------------------------------------------------------------------------->
 WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\android\net\wifi\p2p)	
 ->  {
+        /**
+         * Registers the application with the Wi-Fi framework. This function
+         * must be the first to be called before any p2p operations are performed.
+         *
+         * @param srcContext is the context of the source
+         * @param srcLooper is the Looper on which the callbacks are receivied
+         * @param listener for callback at loss of framework communication. Can be null.
+         * @return Channel instance that is necessary for performing any further p2p operations
+         */
+        public Channel initialize(Context srcContext, Looper srcLooper, ChannelListener listener) {
+            return initalizeChannel(srcContext, srcLooper, listener, getMessenger());
+        }
+
+        private Channel initalizeChannel(Context srcContext, Looper srcLooper, ChannelListener listener,
+                Messenger messenger) {
+            if (messenger == null) return null;
+
+            Channel c = new Channel(srcContext, srcLooper, listener);
+            if (c.mAsyncChannel.connectSync(srcContext, c.mHandler, messenger)
+                    == AsyncChannel.STATUS_SUCCESSFUL) {
+                return c;
+            } else {
+                return null;
+            }
+        }
+
         public void discoverPeers(Channel c, ActionListener listener) {
             checkChannel(c);
             c.mAsyncChannel.sendMessage(DISCOVER_PEERS, 0, c.putListener(listener));
@@ -135,7 +185,7 @@ WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java
             if (timeout <= 0) {
                 return p2pFind();
             }
-            return doBooleanCommand("P2P_FIND " + timeout);
+            return doBooleanCommand("P2P_FIND " + timeout);             // P2P_FIND 120
         }
     }
 -------------------------------------------------------------------------------------------------->
@@ -204,7 +254,9 @@ WifiP2pManager.java (z:\home\ballack\prj\rk3288\frameworks\base\wifi\java\androi
             c.mAsyncChannel.sendMessage(CONNECT, 0, c.putListener(listener), config);
         }
     }
---------------------------------------------------------------------------------------------------->
+----------------------------------------------------------------------------------------------------------------------->
+WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi\p2p)
+
 由上面可知道，mP2pStateMachine当前处在mInactiveState状态：
 class InactiveState extends State {
     public boolean processMessage(Message message) {
@@ -221,7 +273,101 @@ class InactiveState extends State {
             }
     }
 }
------------------------------------------------------------------------------------------------------>
+
+/**
+ * Reinvoke a persistent group.
+ *
+ * @param config for the peer
+ * @return true on success, false on failure
+ */
+private boolean reinvokePersistentGroup(WifiP2pConfig config) {
+    WifiP2pDevice dev = fetchCurrentDeviceDetails(config);
+
+    boolean join = dev.isGroupOwner();
+    String ssid = mWifiNative.p2pGetSsid(dev.deviceAddress);
+    if (DBG) logd("target ssid is " + ssid + " join:" + join);
+
+    if (join && dev.isGroupLimit()) {
+        if (DBG) logd("target device reaches group limit.");
+
+        // if the target group has reached the limit,
+        // try group formation.
+        join = false;
+    } else if (join) {
+        int netId = mGroups.getNetworkId(dev.deviceAddress, ssid);
+        if (netId >= 0) {
+            // Skip WPS and start 4way handshake immediately.
+            if (!mWifiNative.p2pGroupAdd(netId)) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    if (!join && dev.isDeviceLimit()) {
+        loge("target device reaches the device limit.");
+        return false;
+    }
+
+    if (!join && dev.isInvitationCapable()) {
+        int netId = WifiP2pGroup.PERSISTENT_NET_ID;
+        if (config.netId >= 0) {
+            if (config.deviceAddress.equals(mGroups.getOwnerAddr(config.netId))) {
+                netId = config.netId;
+            }
+        } else {
+            netId = mGroups.getNetworkId(dev.deviceAddress);
+        }
+        if (netId < 0) {
+            netId = getNetworkIdFromClientList(dev.deviceAddress);
+        }
+        if (DBG) logd("netId related with " + dev.deviceAddress + " = " + netId);
+        if (netId >= 0) {
+            // Invoke the persistent group.
+            if (mWifiNative.p2pReinvoke(netId, dev.deviceAddress)) {
+                // Save network id. It'll be used when an invitation result event is received.
+                config.netId = netId;
+                return true;
+            } else {
+                loge("p2pReinvoke() failed, update networks");
+                updatePersistentNetworks(RELOAD);
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+-------------------------------------------------------------------------------------------------------------->
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public String p2pGetSsid(String deviceAddress) {
+            return p2pGetParam(deviceAddress, "oper_ssid");
+        }
+
+        private String p2pGetParam(String deviceAddress, String key) {
+            if (deviceAddress == null) return null;
+
+            String peerInfo = p2pPeer(deviceAddress);
+            if (peerInfo == null) return null;
+            String[] tokens= peerInfo.split("\n");
+
+            key += "=";
+            for (String token : tokens) {
+                if (token.startsWith(key)) {
+                    String[] nameValue = token.split("=");
+                    if (nameValue.length != 2) break;
+                    return nameValue[1];
+                }
+            }
+            return null;
+        }
+
+        public String p2pPeer(String deviceAddress) {
+            return doStringCommand("P2P_PEER " + deviceAddress);
+        }
+    }
+---------------------------------------------------------------------------------------------------------------
 WifiP2pSettings.java (z:\home\ballack\prj\rk3288\packages\apps\settings\src\com\android\settings\wifi\p2p)
 ->  {
         private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -251,14 +397,44 @@ WifiP2pServiceImpl.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\serv
         //    然后选择 Wi-Fi Direct 的手机，输入安全密码，两者即可开始连接。
         // 5. 然后利用可以支持 Wi-Fi Direct 的软件，如三星的 AllShare，摩托罗拉的媒体中心，或者 iMediaShare 软件。
         //    一般都是在软件中，先选择需要传送的设备，然后再选择需要传送的文件即可。
-        public boolean processMessage(Message message) {
-            switch (message.what) {
-                case WifiMonitor.P2P_PROV_DISC_PBC_RSP_EVENT:
-                case WifiMonitor.P2P_PROV_DISC_ENTER_PIN_EVENT:
-                case WifiMonitor.P2P_PROV_DISC_SHOW_PIN_EVENT:
-                case WifiMonitor.P2P_PROV_DISC_FAILURE_EVENT:
-                    // 各种处理！！！！
+        class ProvisionDiscoveryState extends State {
+            @Override
+                public void enter() {
+                    if (DBG) logd(getName());
+                    mWifiNative.p2pProvisionDiscovery(mSavedPeerConfig);
+                }
+
+            public boolean processMessage(Message message) {
+                switch (message.what) {
+                    case WifiMonitor.P2P_PROV_DISC_PBC_RSP_EVENT:
+                    case WifiMonitor.P2P_PROV_DISC_ENTER_PIN_EVENT:
+                    case WifiMonitor.P2P_PROV_DISC_SHOW_PIN_EVENT:
+                    case WifiMonitor.P2P_PROV_DISC_FAILURE_EVENT:
+                        // 各种处理！！！！
+                        break;
+                }
+            }
+        }
+    }
+-------------------------------------------------------------------------------------------------------------------------
+WifiNative.java (z:\home\ballack\prj\rk3288\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean p2pProvisionDiscovery(WifiP2pConfig config) {
+            if (config == null) return false;
+
+            switch (config.wps.setup) {
+                case WpsInfo.PBC:
+                    return doBooleanCommand("P2P_PROV_DISC " + config.deviceAddress + " pbc");
+                case WpsInfo.DISPLAY:
+                    //We are doing display, so provision discovery is keypad
+                    return doBooleanCommand("P2P_PROV_DISC " + config.deviceAddress + " keypad");
+                case WpsInfo.KEYPAD:
+                    //We are doing keypad, so provision discovery is display
+                    return doBooleanCommand("P2P_PROV_DISC " + config.deviceAddress + " display");
+                default:
                     break;
+            }
+            return false;
         }
     }
 -------------------------------------------------------------------------------------------------------------------------
