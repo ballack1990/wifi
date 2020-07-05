@@ -16,3 +16,13 @@ AP6212是單根天線，並且是11b/g/n的模塊，不支持5G，也不支持11
 如果滿足條件1，打開屏蔽房時卻可以正常配置，有可能因為環境干擾造成手機發出來的包已經不是MCS8~15(兩根天線的調變)，而是 MCS0~MCS7(單根天線的調變)，
 因此這時後AP6212可以解調出MCS~MCS7的包。
 如果要確認是否為2根天線造成，不仿可以把AP的11n關掉，看一下在屏蔽房裡面是否就可以收到了。
+
+smartconfig 软件：
+链接：https://pan.baidu.com/s/1Roo_MvlcMJbGjNO_8hG3Sw 
+提取码：tpd6 
+
+手机发送端的软件包：EasySetupAndroid-v2.2.0.zip和EasySetupIOS-v2.1.0.zip，把里面的APK安装到手机，手机连上AP后，打开APK点Start就持续发送AP的SSID和password
+AP6356S接收端软件：EasySetupTrget-v4.2.0.zip，编译后参考里面的readme.txt操作。
+
+使用smartconfig的时候请先加载附件中的fw_bcm40181a2_es.bin 固件， wlan0 up再直接执行setup -p 7（参考readme.txt）即可启动，不要运行wpa_supplicant。 
+收到ssid和password后， 请将wlan0 down掉， 然后加载附件中的fw_bcm40181a2.bin， 再wlan0 up，再启动wpa_supplicant去连接路由即可。

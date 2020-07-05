@@ -208,6 +208,20 @@ dhd_linux.c
 ->  {
         void dhd_rx_frame(dhd_pub_t *dhdp, int ifidx, void *pktbuf, int numpkt, uint8 chan)
         {
+            /* Get the protocol, maintain skb around eth_type_trans()
+             * The main reason for this hack is for the limitation of
+             * Linux 2.4 where 'eth_type_trans' uses the 'net->hard_header_len'
+             * to perform skb_pull inside vs ETH_HLEN. Since to avoid
+             * coping of the packet coming from the network stack to add
+             * BDC, Hardware header etc, during network interface registration
+             * we set the 'net->hard_header_len' to ETH_HLEN + extra space required
+             * for BDC, Hardware header etc. and not just the ETH_HLEN
+             */
+            eth = skb->data;
+            len = skb->len;
+            dump_data = skb->data;
+            protocol = (skb->data[12] << 8) | skb->data[13];
+
             if (dhd->rxthread_enabled && skbhead)
                 dhd_sched_rxf(dhdp, skbhead);
         }

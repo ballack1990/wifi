@@ -1,0 +1,101 @@
+WifiSettings.java (z:\home\ballack\prj\firefly-rk3399\packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        private void updateAccessPointPreferences() {
+            final List<AccessPoint> accessPoints = mWifiTracker.getAccessPoints();
+        }
+    }
+---------------------------------------------------------------------------------------------------------------------------------
+WifiTracker.java (z:\home\ballack\prj\firefly-rk3399\frameworks\base\packages\settingslib\src\com\android\settingslib\wifi)
+->  {
+        final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
+                    mWorkHandler
+                        .obtainMessage(
+                                WorkHandler.MSG_UPDATE_ACCESS_POINTS,
+                                WorkHandler.CLEAR_STALE_SCAN_RESULTS,
+                                0)
+                        .sendToTarget();
+                }
+            }
+        }
+
+        private void processMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_UPDATE_ACCESS_POINTS:
+                    if (msg.arg1 == CLEAR_STALE_SCAN_RESULTS) {
+                        mStaleScanResults = false;
+                    }
+                    updateAccessPoints();
+                    break;
+                }
+        }
+
+        /**
+         * Safely modify {@link #mInternalAccessPoints} by acquiring {@link #mLock} first.
+         *
+         * <p>Will not perform the update if {@link #mStaleScanResults} is true
+         */
+        private void updateAccessPoints() {
+            List<WifiConfiguration> configs = mWifiManager.getConfiguredNetworks();
+            final List<ScanResult> newScanResults = mWifiManager.getScanResults();
+            if (sVerboseLogging) {
+                Log.i(TAG, "Fetched scan results: " + newScanResults);
+            }
+
+            synchronized (mLock) {
+                if(!mStaleScanResults) {
+                    updateAccessPointsLocked(newScanResults, configs);
+                }
+            }
+        }
+
+        /**
+         * Update the internal list of access points.
+         *
+         * <p>Do not called directly (except for forceUpdate), use {@link #updateAccessPoints()} which
+         * respects {@link #mStaleScanResults}.
+         */
+        @GuardedBy("mLock")
+        private void updateAccessPointsLocked(final List<ScanResult> newScanResults,
+                List<WifiConfiguration> configs) {
+            mMainHandler.sendEmptyMessage(MainHandler.MSG_ACCESS_POINT_CHANGED);
+        }
+
+        final class MainHandler extends Handler {
+            public void handleMessage(Message msg) {
+                case MSG_ACCESS_POINT_CHANGED:
+                    // Only notify listeners of changes if we have fresh scan results, otherwise the
+                    // UI will be updated with stale results. We want to copy the APs regardless,
+                    // for instances where forceUpdate was invoked by the caller.
+                    if (mStaleScanResults) {
+                        copyAndNotifyListeners(false /*notifyListeners*/);
+                    } else {
+                        copyAndNotifyListeners(true /*notifyListeners*/);
+                        mListener.onAccessPointsChanged();
+                    }
+                    break;
+            }
+        }
+
+        /**
+         * Responsible for copying access points from {@link #mInternalAccessPoints} and notifying
+         * accesspoint listeners.
+         *
+         * @param notifyListeners if true, accesspoint listeners are notified, otherwise notifications
+         *                        dropped.
+         */
+        @MainThread
+        private void copyAndNotifyListeners(boolean notifyListeners) {
+            mAccessPoints.addAll(updatedAccessPoints);
+        }
+
+        /**
+         * Gets the current list of access points. Should be called from main thread, otherwise
+         * expect inconsistencies
+         */
+        @MainThread
+        public List<AccessPoint> getAccessPoints() {
+            return new ArrayList<>(mAccessPoints);
+        }
+    }

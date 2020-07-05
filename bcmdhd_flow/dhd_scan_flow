@@ -145,4 +145,1024 @@ wl_cfg80211.c
 
                     }
     }
+----------------------------------------------------------------------------------------------------------------------------------
+scan之后就会收到WLC_E_ESCAN_RESULT消息！！
+在dhd_rx_frame中处理：
+
+dhd_linux.c
+->  {
+        /** Called when a frame is received by the dongle on interface 'ifidx' */
+        void dhd_rx_frame(dhd_pub_t *dhdp, int ifidx, void *pktbuf, int numpkt, uint8 chan)
+        {
+            if (ntoh16(skb->protocol) == ETHER_TYPE_BRCM) {
+                bcm_event_msg_u_t evu;
+                int ret_event;
+                int event_type;
+
+                ret_event = wl_host_event_get_data(
+            #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22)
+                        skb_mac_header(skb),
+            #else
+                        skb->mac.raw,
+            #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22) */
+                        len, &evu);
+
+                memcpy(&event, &evu.event, sizeof(wl_event_msg_t));
+                event_type = ntoh32_ua((void *)&event.event_type);
+
+                ret_event = dhd_wl_host_event(dhd, ifidx,
+            #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22)
+                        skb_mac_header(skb),
+            #else
+                        skb->mac.raw,
+            #endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22) */
+                        len, &event, &data);
+
+                wl_event_to_host_order(&event);
+            }
+        }
+
+        static int dhd_wl_host_event(dhd_info_t *dhd, int ifidx, void *pktdata, uint16 pktlen,
+                wl_event_msg_t *event, void **data)
+        {
+            int bcmerror = 0;
+
+            bcmerror = wl_process_host_event(&dhd->pub, &ifidx, pktdata, pktlen, event, data, NULL);
+
+            if (bcmerror != BCME_OK)
+                return (bcmerror);
+
+        #if defined(WL_EXT_IAPSTA) || defined(USE_IW)
+            wl_ext_event_send(dhd->pub.event_params, event, *data);
+        #endif
+        
+        #ifdef WL_CFG80211
+            ASSERT(dhd->iflist[ifidx] != NULL);
+            ASSERT(dhd->iflist[ifidx]->net != NULL);
+            if (dhd->iflist[ifidx]->net) {
+                spin_lock_irqsave(&dhd->pub.up_lock, flags);
+                if (dhd->pub.up) {
+                    wl_cfg80211_event(dhd->iflist[ifidx]->net, event, *data);
+                }
+                spin_unlock_irqrestore(&dhd->pub.up_lock, flags);
+            }
+        #endif /* defined(WL_CFG80211) */
+
+            return (bcmerror);
+        }
+    }
+--------------------------------------------------------------------------------------------------------
+wl_cfg80211.c
+->  {
+        void wl_cfg80211_event(struct net_device *ndev, const wl_event_msg_t * e, void *data)
+        {
+            u32 event_type = ntoh32(e->event_type);
+            struct bcm_cfg80211 *cfg = wl_get_cfg(ndev);
+            struct net_info *netinfo;
+
+            WL_DBG(("event_type (%d): %s\n", event_type, bcmevent_get_name(event_type)));
+
+            netinfo = wl_get_netinfo_by_bssidx(cfg, e->bsscfgidx);
+
+            if (likely(!wl_enq_event(cfg, ndev, event_type, e, data))) {
+                queue_work(cfg->event_workq, &cfg->event_work);             // 下面会介绍到，这里其实是调用wl_event_handler
+            }
+        }   
+    }
+---------------------------------------------------------------------------------------------------------
+下面来看如何调用到wl_event_handler：
+
+dhd_linux.c
+->  {
+        static int dhd_open(struct net_device *net)
+        {
+        #if defined(WL_CFG80211)
+            if (unlikely(wl_cfg80211_up(NULL))) {
+                DHD_ERROR(("%s: failed to bring up cfg80211\n", __FUNCTION__));
+                ret = -1;
+                goto exit;
+            }
+        #enfif
+        }
+    }
+-----------------------------------------------------------------------------------
+wl_cfg80211.c
+->  {
+        s32 wl_cfg80211_up(void *para)
+        {
+            err = __wl_cfg80211_up(cfg);
+        }
+
+        static s32 __wl_cfg80211_up(struct bcm_cfg80211 *cfg)
+        {
+            WL_DBG(("In\n"));
+
+            err = wl_create_event_handler(cfg);
+            if (err) {
+                WL_ERR(("wl_create_event_handler failed\n"));
+                return err;
+            }
+            wl_init_event_handler(cfg);
+
+            dhd_config_dongle(cfg);
+
+            wl_config_ifmode(cfg, ndev, wdev->iftype);
+
+            wl_init_scan(cfg);
+
+            __wl_update_wiphybands(cfg, true);
+
+            dhd_monitor_init(cfg->pub);
+
+            INIT_DELAYED_WORK(&cfg->pm_enable_work, wl_cfg80211_work_handler);
+            wl_set_drv_status(cfg, READY, ndev);
+        }
+
+        static s32 wl_create_event_handler(struct bcm_cfg80211 *cfg)
+        {
+            int ret = 0;
+            WL_DBG(("Enter \n"));
+
+            /* Allocate workqueue for event */
+            if (!cfg->event_workq) {
+                cfg->event_workq = alloc_workqueue("dhd_eventd", WQ_MEM_RECLAIM | WQ_HIGHPRI, 0);
+            }
+
+            if (!cfg->event_workq) {
+                WL_ERR(("event_workq alloc_workqueue failed\n"));
+                ret = -ENOMEM;
+            } else {
+                INIT_WORK(&cfg->event_work, wl_event_handler);          // 这里将cfg->event_work和wl_event_handler关联起来
+            }
+            return ret;
+        }
+
+        static void wl_init_event_handler(struct bcm_cfg80211 *cfg)
+        {
+            memset(cfg->evt_handler, 0, sizeof(cfg->evt_handler));
+
+            cfg->evt_handler[WLC_E_SCAN_COMPLETE] = wl_notify_scan_status;
+            cfg->evt_handler[WLC_E_AUTH] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_ASSOC] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_LINK] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_DEAUTH_IND] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_DEAUTH] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_DISASSOC_IND] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_ASSOC_IND] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_REASSOC_IND] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_ROAM] = wl_notify_roaming_status;
+            cfg->evt_handler[WLC_E_MIC_ERROR] = wl_notify_mic_status;
+            cfg->evt_handler[WLC_E_SET_SSID] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_ACTION_FRAME_RX] = wl_notify_rx_mgmt_frame;
+            cfg->evt_handler[WLC_E_PROBREQ_MSG] = wl_notify_rx_mgmt_frame;
+            cfg->evt_handler[WLC_E_P2P_PROBREQ_MSG] = wl_notify_rx_mgmt_frame;
+            cfg->evt_handler[WLC_E_P2P_DISC_LISTEN_COMPLETE] = wl_cfgp2p_listen_complete;
+            cfg->evt_handler[WLC_E_ACTION_FRAME_COMPLETE] = wl_cfgp2p_action_tx_complete;
+            cfg->evt_handler[WLC_E_ACTION_FRAME_OFF_CHAN_COMPLETE] = wl_cfgp2p_action_tx_complete;
+            cfg->evt_handler[WLC_E_JOIN] = wl_notify_connect_status;
+            cfg->evt_handler[WLC_E_START] = wl_notify_connect_status;
+#ifdef PNO_SUPPORT
+            cfg->evt_handler[WLC_E_PFN_NET_FOUND] = wl_notify_pfn_status;
+#endif /* PNO_SUPPORT */
+#ifdef GSCAN_SUPPORT
+            cfg->evt_handler[WLC_E_PFN_BEST_BATCHING] = wl_notify_gscan_event;
+            cfg->evt_handler[WLC_E_PFN_SCAN_COMPLETE] = wl_notify_gscan_event;
+            cfg->evt_handler[WLC_E_PFN_GSCAN_FULL_RESULT] = wl_notify_gscan_event;
+            cfg->evt_handler[WLC_E_PFN_BSSID_NET_FOUND] = wl_notify_gscan_event;
+            cfg->evt_handler[WLC_E_PFN_BSSID_NET_LOST] = wl_notify_gscan_event;
+            cfg->evt_handler[WLC_E_PFN_SSID_EXT] = wl_notify_gscan_event;
+            cfg->evt_handler[WLC_E_GAS_FRAGMENT_RX] = wl_notify_gscan_event;
+            cfg->evt_handler[WLC_E_ROAM_EXP_EVENT] = wl_handle_roam_exp_event;
+#endif /* GSCAN_SUPPORT */
+#ifdef RSSI_MONITOR_SUPPORT
+            cfg->evt_handler[WLC_E_RSSI_LQM] = wl_handle_rssi_monitor_event;
+#endif /* RSSI_MONITOR_SUPPORT */
+#ifdef WLTDLS
+            cfg->evt_handler[WLC_E_TDLS_PEER_EVENT] = wl_tdls_event_handler;
+#endif /* WLTDLS */
+            cfg->evt_handler[WLC_E_BSSID] = wl_notify_roaming_status;
+#ifdef	WL_RELMCAST
+            cfg->evt_handler[WLC_E_RMC_EVENT] = wl_notify_rmc_status;
+#endif /* WL_RELMCAST */
+#ifdef BT_WIFI_HANDOVER
+            cfg->evt_handler[WLC_E_BT_WIFI_HANDOVER_REQ] = wl_notify_bt_wifi_handover_req;
+#endif
+            cfg->evt_handler[WLC_E_CSA_COMPLETE_IND] = wl_csa_complete_ind;
+            cfg->evt_handler[WLC_E_AP_STARTED] = wl_ap_start_ind;
+#ifdef CUSTOM_EVENT_PM_WAKE
+            cfg->evt_handler[WLC_E_EXCESS_PM_WAKE_EVENT] = wl_check_pmstatus;
+#endif	/* CUSTOM_EVENT_PM_WAKE */
+#if defined(DHD_LOSSLESS_ROAMING) || defined(DBG_PKT_MON)
+            cfg->evt_handler[WLC_E_ROAM_PREP] = wl_notify_roam_prep_status;
+#endif /* DHD_LOSSLESS_ROAMING || DBG_PKT_MON  */
+#ifdef ENABLE_TEMP_THROTTLING
+            cfg->evt_handler[WLC_E_TEMP_THROTTLE] = wl_check_rx_throttle_status;
+#endif /* ENABLE_TEMP_THROTTLING */
+#ifdef WL_SAE
+            cfg->evt_handler[WLC_E_AUTH_IND] = wl_notify_connect_status;
+#endif /* WL_SAE */
+        }
+
+        static s32 wl_init_scan(struct bcm_cfg80211 *cfg)
+        {
+            int err = 0;
+
+            cfg->evt_handler[WLC_E_ESCAN_RESULT] = wl_escan_handler;        // 所以WLC_E_ESCAN_RESULT对应的处理函数就是wl_escan_handler
+            cfg->escan_info.escan_state = WL_ESCAN_STATE_IDLE;
+            wl_escan_init_sync_id(cfg);
+
+            /* Init scan_timeout timer */
+            init_timer_compat(&cfg->scan_timeout, wl_scan_timeout, cfg);
+
+            return err;
+        }
+
+        static void wl_event_handler(struct work_struct *work_data)
+        {
+            struct bcm_cfg80211 *cfg = NULL;
+            struct wl_event_q *e;
+            struct wireless_dev *wdev = NULL;
+
+            BCM_SET_CONTAINER_OF(cfg, work_data, struct bcm_cfg80211, event_work);
+            DHD_EVENT_WAKE_LOCK(cfg->pub);
+            while ((e = wl_deq_event(cfg))) {
+                WL_DBG(("event type (%d), ifidx: %d bssidx: %d \n",
+                            e->etype, e->emsg.ifidx, e->emsg.bsscfgidx));
+
+                if (e->emsg.ifidx > WL_MAX_IFS) {
+                    WL_ERR((" Event ifidx not in range. val:%d \n", e->emsg.ifidx));
+                    goto fail;
+                }
+
+                /* Make sure iface operations, don't creat race conditions */
+                mutex_lock(&cfg->if_sync);
+                if (!(wdev = wl_get_wdev_by_bssidx(cfg, e->emsg.bsscfgidx))) {
+                    /* For WLC_E_IF would be handled by wl_host_event */
+                    if (e->etype != WLC_E_IF)
+                        WL_ERR(("No wdev corresponding to bssidx: 0x%x found!"
+                                    " Ignoring event.\n", e->emsg.bsscfgidx));
+                } else if (e->etype < WLC_E_LAST && cfg->evt_handler[e->etype]) {
+                    dhd_pub_t *dhd = (struct dhd_pub *)(cfg->pub);
+                    if (dhd->busstate == DHD_BUS_DOWN) {
+                        WL_ERR((": BUS is DOWN.\n"));
+                    } else
+                        cfg->evt_handler[e->etype](cfg, wdev_to_cfgdev(wdev),           // 这里就会调用对应的evt_handler
+                                &e->emsg, e->edata);
+                } else {
+                    WL_DBG(("Unknown Event (%d): ignoring\n", e->etype));
+                }
+                mutex_unlock(&cfg->if_sync);
+fail:
+                wl_put_event(e);
+            }
+            DHD_EVENT_WAKE_UNLOCK(cfg->pub);
+        }
+
+        static s32 wl_escan_handler(struct bcm_cfg80211 *cfg, bcm_struct_cfgdev *cfgdev,
+                const wl_event_msg_t *e, void *data)
+        {
+            s32 status = ntoh32(e->status);
+            wl_escan_result_t *escan_result;
+            struct net_device *ndev = NULL;
+
+            WL_DBG((" enter event type : %d, status : %d \n",
+                        ntoh32(e->event_type), ntoh32(e->status)));
+
+            ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
+
+            mutex_lock(&cfg->usr_sync);
+            /* P2P SCAN is coming from primary interface */
+            if (wl_get_p2p_status(cfg, SCANNING)) {
+                if (wl_get_drv_status_all(cfg, SENDING_ACT_FRM))
+                    ndev = cfg->afx_hdl->dev;
+                else
+                    ndev = cfg->escan_info.ndev;
+
+            }
+            if (!ndev || (!wl_get_drv_status(cfg, SCANNING, ndev) && !cfg->sched_scan_running)) {
+                WL_ERR_RLMT(("escan is not ready. drv_scan_status 0x%x"
+                            " e_type %d e_states %d\n",
+                            wl_get_drv_status(cfg, SCANNING, ndev),
+                            ntoh32(e->event_type), ntoh32(e->status)));
+                goto exit;
+            }
+            escan_result = (wl_escan_result_t *)data;
+
+            if (status == WLC_E_STATUS_PARTIAL) {
+                WL_INFORM(("WLC_E_STATUS_PARTIAL \n"));
+
+                bi = escan_result->bss_info;
+                bi_length = dtoh32(bi->length);
+
+                /* +++++ terence 20130524: skip invalid bss */
+                channel =
+                    bi->ctl_ch ? bi->ctl_ch : CHSPEC_CHANNEL(wl_chspec_driver_to_host(bi->chanspec));
+                if (channel <= CH_MAX_2G_CHANNEL)
+                    band = bcmcfg_to_wiphy(cfg)->bands[IEEE80211_BAND_2GHZ];
+                else
+                    band = bcmcfg_to_wiphy(cfg)->bands[IEEE80211_BAND_5GHZ];
+                if (!band) {
+                    WL_ERR(("No valid band\n"));
+                    goto exit;
+                }
+                if (!dhd_conf_match_channel(cfg->pub, channel))             // 这里就是在config.txt中配置需要返回的信道列表
+                    goto exit;
+                /* ----- terence 20130524: skip invalid bss */
+
+                if (wl_get_drv_status_all(cfg, FINDING_COMMON_CHANNEL)) {
+                    // ...
+                } else {
+                    list = wl_escan_get_buf(cfg, FALSE);
+                    
+                    if (scan_req_match(cfg)) {
+                        /* p2p scan && allow only probe response */
+                        if ((cfg->p2p->search_state != WL_P2P_DISC_ST_SCAN) &&
+                                (bi->flags & WL_BSS_FLAGS_FROM_BEACON))
+                            goto exit;
+                        if ((p2p_ie = wl_cfgp2p_find_p2pie(((u8 *) bi) + bi->ie_offset,
+                                        bi->ie_length)) == NULL) {
+                            WL_ERR(("Couldn't find P2PIE in probe"
+                                        " response/beacon\n"));
+                            goto exit;
+                        }
+                    }
+
+                    WL_DBG(("%s("MACDBG") RSSI %d flags 0x%x length %d\n", bi->SSID,
+                                MAC2STRDBG(bi->BSSID.octet), bi->RSSI, bi->flags, bi->length));
+
+                    for (i = 0; i < list->count; i++) {
+                        bss = bss ? (wl_bss_info_t *)((uintptr)bss + dtoh32(bss->length)) : list->bss_info;
+
+                    #ifdef ESCAN_BUF_OVERFLOW_MGMT
+                        WL_DBG(("%s("MACDBG"), i=%d bss: RSSI %d list->count %d\n",
+                                    bss->SSID, MAC2STRDBG(bss->BSSID.octet),
+                                    i, bss->RSSI, list->count));
+
+                        if (remove_lower_rssi)
+                            wl_cfg80211_find_removal_candidate(bss, candidate);
+                    #endif /* ESCAN_BUF_OVERFLOW_MGMT */
+                    }
+
+                    memcpy(&(((char *)list)[list->buflen]), bi, bi_length);
+                    list->version = dtoh32(bi->version);
+                    list->buflen += bi_length;
+                    list->count++;
+
+                    /*
+                     * !Broadcast && number of ssid = 1 && number of channels =1
+                     * means specific scan to association
+                     */
+                    if (wl_cfgp2p_is_p2p_specific_scan(cfg->scan_request)) {
+                        WL_ERR(("P2P assoc scan fast aborted.\n"));
+                        wl_notify_escan_complete(cfg, cfg->escan_info.ndev, false, true);
+                        goto exit;
+                    }
+                }
+            }
+            else if (status == WLC_E_STATUS_SUCCESS) {
+                cfg->escan_info.escan_state = WL_ESCAN_STATE_IDLE;
+                wl_escan_print_sync_id(status, cfg->escan_info.cur_sync_id,
+                        escan_result->sync_id);
+
+                if (wl_get_drv_status_all(cfg, FINDING_COMMON_CHANNEL)) {
+                    WL_INFORM(("ACTION FRAME SCAN DONE\n"));
+                    wl_clr_p2p_status(cfg, SCANNING);
+                    wl_clr_drv_status(cfg, SCANNING, cfg->afx_hdl->dev);
+                    if (cfg->afx_hdl->peer_chan == WL_INVALID)
+                        complete(&cfg->act_frm_scan);
+                } else if ((likely(cfg->scan_request)) || (cfg->sched_scan_running)) {
+                    WL_INFORM(("ESCAN COMPLETED\n"));
+                    DBG_EVENT_LOG((dhd_pub_t *)cfg->pub, WIFI_EVENT_DRIVER_SCAN_COMPLETE);
+                    cfg->bss_list = wl_escan_get_buf(cfg, FALSE);
+                    if (!scan_req_match(cfg)) {
+                        WL_DBG(("SCAN COMPLETED: scanned AP count=%d\n",
+                                    cfg->bss_list->count));
+                    }
+                    wl_inform_bss(cfg);
+                    wl_notify_escan_complete(cfg, ndev, false, false);
+                }
+                wl_escan_increment_sync_id(cfg, SCAN_BUF_NEXT);
+            }
+        }
+        
+        static s32 wl_notify_escan_complete(struct bcm_cfg80211 *cfg,
+                struct net_device *ndev,
+                bool aborted, bool fw_abort)
+        {
+            WL_DBG(("Enter \n"));
+
+            if (likely(cfg->scan_request)) {
+        #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0))
+                cfg80211_scan_done(cfg->scan_request, &info);
+        #else
+                cfg80211_scan_done(cfg->scan_request, aborted);
+        #endif
+                cfg->scan_request = NULL;
+                DHD_OS_SCAN_WAKE_UNLOCK((dhd_pub_t *)(cfg->pub));
+                DHD_ENABLE_RUNTIME_PM((dhd_pub_t *)(cfg->pub));
+            }
+        }
+    }
+-----------------------------------------------------------------------------------------------------
+Scan.c (net\wireless)
+->  {
+        void cfg80211_scan_done(struct cfg80211_scan_request *request, bool aborted)
+        {
+            printk("cfg80211_scan_done Enter\n");
+            queue_work(cfg80211_wq, &wiphy_to_dev(request->wiphy)->scan_done_wk);       // 下面可以看到就是调用__cfg80211_scan_done
+        }
+    }
+----------------------------------------------------------------------------------------------------
+Core.c (net\wireless)
+->  {
+        struct wiphy *wiphy_new(const struct cfg80211_ops *ops, int sizeof_priv)
+        {
+            static int wiphy_counter;
+
+            struct cfg80211_registered_device *rdev;
+            int alloc_size;
+
+            alloc_size = sizeof(*rdev) + sizeof_priv;
+
+            rdev = kzalloc(alloc_size, GFP_KERNEL);
+            if (!rdev)
+                return NULL;
+
+            rdev->ops = ops;
+
+            rdev->wiphy_idx = wiphy_counter++;
+
+            /* give it a proper name */
+            dev_set_name(&rdev->wiphy.dev, PHY_NAME "%d", rdev->wiphy_idx);
+
+            mutex_init(&rdev->mtx);
+            mutex_init(&rdev->devlist_mtx);
+            mutex_init(&rdev->sched_scan_mtx);
+            INIT_LIST_HEAD(&rdev->wdev_list);
+            INIT_LIST_HEAD(&rdev->beacon_registrations);
+            spin_lock_init(&rdev->beacon_registrations_lock);
+            spin_lock_init(&rdev->bss_lock);
+            INIT_LIST_HEAD(&rdev->bss_list);
+            INIT_WORK(&rdev->scan_done_wk, __cfg80211_scan_done);
+            INIT_WORK(&rdev->sched_scan_results_wk, __cfg80211_sched_scan_results);
+            INIT_DELAYED_WORK(&rdev->dfs_update_channels_wk,
+                    cfg80211_dfs_channels_update_work);
+        #ifdef CONFIG_CFG80211_WEXT
+            rdev->wiphy.wext = &cfg80211_wext_handler;
+        #endif
+
+            device_initialize(&rdev->wiphy.dev);
+            rdev->wiphy.dev.class = &ieee80211_class;
+            rdev->wiphy.dev.platform_data = rdev;
+
+        #ifdef CONFIG_CFG80211_DEFAULT_PS
+            rdev->wiphy.flags |= WIPHY_FLAG_PS_ON_BY_DEFAULT;
+        #endif
+
+            wiphy_net_set(&rdev->wiphy, &init_net);
+
+            rdev->rfkill_ops.set_block = cfg80211_rfkill_set_block;
+            rdev->rfkill = rfkill_alloc(dev_name(&rdev->wiphy.dev),
+                    &rdev->wiphy.dev, RFKILL_TYPE_WLAN,
+                    &rdev->rfkill_ops, rdev);
+
+            INIT_WORK(&rdev->rfkill_sync, cfg80211_rfkill_sync_work);
+            INIT_WORK(&rdev->conn_work, cfg80211_conn_work);
+            INIT_WORK(&rdev->event_work, cfg80211_event_work);
+
+            init_waitqueue_head(&rdev->dev_wait);
+
+            /*
+             * Initialize wiphy parameters to IEEE 802.11 MIB default values.
+             * Fragmentation and RTS threshold are disabled by default with the
+             * special -1 value.
+             */
+            rdev->wiphy.retry_short = 7;
+            rdev->wiphy.retry_long = 4;
+            rdev->wiphy.frag_threshold = (u32) -1;
+            rdev->wiphy.rts_threshold = (u32) -1;
+            rdev->wiphy.coverage_class = 0;
+
+            rdev->wiphy.features = NL80211_FEATURE_SCAN_FLUSH;
+
+            return &rdev->wiphy;
+        }
+    }
+-----------------------------------------------------------------------------------------------------
+Scan.c (net\wireless)
+->  {
+        void __cfg80211_scan_done(struct work_struct *wk)
+        {
+            struct cfg80211_registered_device *rdev;
+
+            rdev = container_of(wk, struct cfg80211_registered_device,
+                    scan_done_wk);
+
+            mutex_lock(&rdev->sched_scan_mtx);
+            ___cfg80211_scan_done(rdev, false);
+            mutex_unlock(&rdev->sched_scan_mtx);
+        }
+
+        void ___cfg80211_scan_done(struct cfg80211_registered_device *rdev, bool leak)
+        {
+            request = rdev->scan_req;
+
+            wdev = request->wdev;
+
+            /*
+             * This must be before sending the other events!
+             * Otherwise, wpa_supplicant gets completely confused with
+             * wext events.
+             */
+            if (wdev->netdev)
+                cfg80211_sme_scan_done(wdev->netdev);
+
+            if (request->aborted) {
+                nl80211_send_scan_aborted(rdev, wdev);
+            } else {
+                if (request->flags & NL80211_SCAN_FLAG_FLUSH) {
+                    /* flush entries from previous scans */
+                    spin_lock_bh(&rdev->bss_lock);
+                    __cfg80211_bss_expire(rdev, request->scan_start);
+                    spin_unlock_bh(&rdev->bss_lock);
+                }
+                nl80211_send_scan_done(rdev, wdev);
+            }
+
+        #ifdef CONFIG_CFG80211_WEXT
+            if (wdev->netdev && !request->aborted) {
+                memset(&wrqu, 0, sizeof(wrqu));
+
+                wireless_send_event(wdev->netdev, SIOCGIWSCAN, &wrqu, NULL);
+            }
+        #endif
+
+            if (wdev->netdev)
+                dev_put(wdev->netdev);
+
+            rdev->scan_req = NULL;
+        }
+    }
+--------------------------------------------------------------------------------
+Nl80211.c (net\wireless)
+->  {
+        void nl80211_send_scan_done(struct cfg80211_registered_device *rdev,
+			    struct wireless_dev *wdev)
+        {
+            struct sk_buff *msg;
+
+            printk("nl80211_send_scan_done Enter\n");
+            msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+            if (!msg)
+                return;
+
+            if (nl80211_send_scan_msg(msg, rdev, wdev, 0, 0, 0,
+                        NL80211_CMD_NEW_SCAN_RESULTS) < 0) {
+                nlmsg_free(msg);
+                return;
+            }
+
+            genlmsg_multicast_netns(wiphy_net(&rdev->wiphy), msg, 0,
+                    nl80211_scan_mcgrp.id, GFP_KERNEL);
+        }
+    }
+-----------------------------------------------------------------------------------------------------------------
+Driver_nl80211.c (z:\home\ballack\prj\rk3288\external\wpa_supplicant_8\wpa_supplicant\src\drivers)
+->  {
+        static void do_process_drv_event(struct i802_bss *bss, int cmd,
+				 struct nlattr **tb)
+        {
+            wpa_printf(MSG_DEBUG, "nl80211: Drv Event %d (%s) received for %s",
+                    cmd, nl80211_command_to_string(cmd), bss->ifname);
+
+            if (drv->ap_scan_as_station != NL80211_IFTYPE_UNSPECIFIED &&
+                    (cmd == NL80211_CMD_NEW_SCAN_RESULTS ||
+                     cmd == NL80211_CMD_SCAN_ABORTED)) {
+                wpa_driver_nl80211_set_mode(drv->first_bss,
+                        drv->ap_scan_as_station);
+                drv->ap_scan_as_station = NL80211_IFTYPE_UNSPECIFIED;
+            }
+
+            switch (cmd) {
+                case NL80211_CMD_NEW_SCAN_RESULTS:
+                    wpa_dbg(drv->ctx, MSG_DEBUG,
+                            "nl80211: New scan results available");
+                    drv->scan_state = SCAN_COMPLETED;
+                    drv->scan_complete_events = 1;
+                    eloop_cancel_timeout(wpa_driver_nl80211_scan_timeout, drv,
+                            drv->ctx);
+                    send_scan_event(drv, 0, tb);
+                    break;
+            }
+        }
+        
+        static void send_scan_event(struct wpa_driver_nl80211_data *drv, int aborted,
+			    struct nlattr *tb[])
+        {
+            if (drv->scan_for_auth) {
+                drv->scan_for_auth = 0;
+                wpa_printf(MSG_DEBUG, "nl80211: Scan results for missing "
+                        "cfg80211 BSS entry");
+                wpa_driver_nl80211_authenticate_retry(drv);
+                return;
+            }
+
+            os_memset(&event, 0, sizeof(event));
+            info = &event.scan_info;
+            info->aborted = aborted;
+
+            if (tb[NL80211_ATTR_SCAN_SSIDS]) {
+                nla_for_each_nested(nl, tb[NL80211_ATTR_SCAN_SSIDS], rem) {
+                    struct wpa_driver_scan_ssid *s =
+                        &info->ssids[info->num_ssids];
+                    s->ssid = nla_data(nl);
+                    s->ssid_len = nla_len(nl);
+                    wpa_printf(MSG_DEBUG, "nl80211: Scan probed for SSID '%s'",
+                            wpa_ssid_txt(s->ssid, s->ssid_len));
+                    info->num_ssids++;
+                    if (info->num_ssids == WPAS_MAX_SCAN_SSIDS)
+                        break;
+                }
+            }
+            if (tb[NL80211_ATTR_SCAN_FREQUENCIES]) {
+                char msg[200], *pos, *end;
+                int res;
+
+                pos = msg;
+                end = pos + sizeof(msg);
+                *pos = '\0';
+
+                nla_for_each_nested(nl, tb[NL80211_ATTR_SCAN_FREQUENCIES], rem)
+                {
+                    freqs[num_freqs] = nla_get_u32(nl);
+                    res = os_snprintf(pos, end - pos, " %d",
+                            freqs[num_freqs]);
+                    if (res > 0 && end - pos > res)
+                        pos += res;
+                    num_freqs++;
+                    if (num_freqs == MAX_REPORT_FREQS - 1)
+                        break;
+                }
+                info->freqs = freqs;
+                info->num_freqs = num_freqs;
+                wpa_printf(MSG_DEBUG, "nl80211: Scan included frequencies:%s",
+                        msg);
+            }
+            wpa_supplicant_event(drv->ctx, EVENT_SCAN_RESULTS, &event);
+        }
+    }
+--------------------------------------------------------------------------------------------------------------
+下面来展开上面的escan扫描命令： 
+err = wldev_iovar_setbuf(ndev, "escan", params, params_size, cfg->escan_ioctl_buf, WLC_IOCTL_MEDLEN, NULL);
+
+Wldev_common.c (drivers\net\wireless\bcmdhd)
+->  {
+        s32 wldev_iovar_setbuf(
+                struct net_device *dev, s8 *iovar_name,
+                void *param, s32 paramlen, void *buf, s32 buflen, struct mutex* buf_sync)
+        {
+            s32 ret = 0;
+            s32 iovar_len;
+            if (buf_sync) {
+                mutex_lock(buf_sync);
+            }
+            iovar_len = wldev_mkiovar(iovar_name, param, paramlen, buf, buflen);
+            if (iovar_len > 0)
+                ret = wldev_ioctl_set(dev, WLC_SET_VAR, buf, iovar_len);
+            else
+                ret = BCME_BUFTOOSHORT;
+
+            if (buf_sync)
+                mutex_unlock(buf_sync);
+            return ret;
+        }
+
+        /*
+           SET commands :
+           cast buffer to non-const  and call the GET function
+         */
+        s32 wldev_ioctl_set( struct net_device *dev, u32 cmd, const void *arg, u32 len)
+        {
+            return wldev_ioctl(dev, cmd, (void *)arg, len, 1);
+        }
+
+        s32 wldev_ioctl( struct net_device *dev, u32 cmd, void *arg, u32 len, u32 set)
+        {
+            s32 ret = 0;
+            struct wl_ioctl ioc;
+
+
+            memset(&ioc, 0, sizeof(ioc));
+            ioc.cmd = cmd;
+            ioc.buf = arg;
+            ioc.len = len;
+            ioc.set = set;                                      // 这里ioc.set = 1
+
+            ret = dhd_ioctl_entry_local(dev, &ioc, cmd);
+
+            return ret;
+        }
+    }
+---------------------------------------------------------------------------------------
+Dhd_linux.c (drivers\net\wireless\bcmdhd)
+->  {
+        int dhd_ioctl_entry_local(struct net_device *net, wl_ioctl_t *ioc, int cmd)
+        {
+            ret = dhd_wl_ioctl(&dhd->pub, ifidx, ioc, ioc->buf, ioc->len);
+        }
+    }
+---------------------------------------------------------------------------------------
+Dhd_common.c (drivers\net\wireless\bcmdhd)
+->  {
+        ret = dhd_prot_ioctl(dhd_pub, ifidx, ioc, buf, len);
+    }
+---------------------------------------------------------------------------------------
+Dhd_cdc.c (drivers\net\wireless\bcmdhd)
+->  {
+        int dhd_prot_ioctl(dhd_pub_t *dhd, int ifidx, wl_ioctl_t * ioc, void * buf, int len)
+        {
+            dhd_prot_t *prot = dhd->prot;
+            int ret = -1;
+            uint8 action;
+
+            prot->pending = TRUE;
+            prot->lastcmd = ioc->cmd;
+            action = ioc->set;                                                      // 上面可以知道，ioc->set = 1, 所以action = 1
+            if (action & WL_IOCTL_ACTION_SET)                                       // #define WL_IOCTL_ACTION_SET  0x1
+                ret = dhdcdc_set_ioctl(dhd, ifidx, ioc->cmd, buf, len, action);
+            else {
+                ret = dhdcdc_query_ioctl(dhd, ifidx, ioc->cmd, buf, len, action);
+                if (ret > 0)
+                    ioc->used = ret - sizeof(cdc_ioctl_t);
+            }
+        }
+
+        static int dhdcdc_set_ioctl(dhd_pub_t *dhd, int ifidx, uint cmd, void *buf, uint len, uint8 action)
+        {
+            dhd_prot_t *prot = dhd->prot;
+            cdc_ioctl_t *msg = &prot->msg;
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+            DHD_CTL(("%s: cmd %d len %d\n", __FUNCTION__, cmd, len));
+
+            memset(msg, 0, sizeof(cdc_ioctl_t));
+
+            msg->cmd = htol32(cmd);
+            msg->len = htol32(len);
+            msg->flags = (++prot->reqid << CDCF_IOC_ID_SHIFT);
+            CDC_SET_IF_IDX(msg, ifidx);
+            /* add additional action bits */
+            action &= WL_IOCTL_ACTION_MASK;
+            msg->flags |= (action << CDCF_IOC_ACTION_SHIFT) | CDCF_IOC_SET;
+            msg->flags = htol32(msg->flags);
+
+            if (buf)
+                memcpy(prot->buf, buf, len);
+
+            if ((ret = dhdcdc_msg(dhd)) < 0) {
+                DHD_ERROR(("%s: dhdcdc_msg failed w/status %d\n", __FUNCTION__, ret));
+                goto done;
+            }
+
+            if ((ret = dhdcdc_cmplt(dhd, prot->reqid, len)) < 0)
+                goto done;
+        }
+
+        static int dhdcdc_msg(dhd_pub_t *dhd)
+        {
+            dhd_prot_t *prot = dhd->prot;
+            int len = ltoh32(prot->msg.len) + sizeof(cdc_ioctl_t);
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+
+            err = dhd_bus_txctl(dhd->bus, (uchar*)&prot->msg, len); 
+        }
+    }
+--------------------------------------------------------------------------------------------------
+Dhd_sdio.c (drivers\net\wireless\bcmdhd)
+->  {
+        int dhd_bus_txctl(struct dhd_bus *bus, uchar *msg, uint msglen)
+        {
+            uint8 sdpcm_hdrlen = bus->txglom_enable ? SDPCM_HDRLEN_TXGLOM : SDPCM_HDRLEN;
+
+            DHD_TRACE(("%s: Enter\n", __FUNCTION__));
+
+            if (!TXCTLOK(bus)) {
+                DHD_CTL(("%s: No bus credit bus->tx_max %d, bus->tx_seq %d\n",
+                            __FUNCTION__, bus->tx_max, bus->tx_seq));
+                bus->ctrl_frame_stat = TRUE;
+                /* Send from dpc */
+                bus->ctrl_frame_buf = frame;
+                bus->ctrl_frame_len = len;
+
+                if (!bus->dpc_sched) {
+                    bus->dpc_sched = TRUE;
+                    dhd_sched_dpc(bus->dhd);                            // dhd_sched_dpc的流程查看dhd_dpc_flow！！！
+                }
+                if (bus->ctrl_frame_stat) {
+                    dhd_wait_for_event(bus->dhd, &bus->ctrl_frame_stat);
+                }
+            }
+
+            bus->dhd->txcnt_timeout = 0;
+            bus->ctrl_frame_stat = TRUE;
+
+            if (ret == -1) {
+        #ifdef DHD_DEBUG
+                if (DHD_BYTES_ON() && DHD_CTL_ON()) {
+                    prhex("Tx Frame", frame, len);
+                } else if (DHD_HDRS_ON()) {
+                    prhex("TxHdr", frame, MIN(len, 16));
+                }
+        #endif
+        #ifdef PKT_STATICS
+                tx_statics.ctrl_count++;
+                tx_statics.ctrl_size += len;
+        #endif
+                ret = dhd_bcmsdh_send_buffer(bus, frame, len);
+            }
+            bus->ctrl_frame_stat = FALSE;
+        }
+
+        static int dhd_bcmsdh_send_buffer(void *bus, uint8 *frame, uint16 len)
+        {
+            int ret = -1;
+
+            ret = dhd_bcmsdh_send_buf(bus, bcmsdh_cur_sbwad(((dhd_bus_t*)bus)->sdh),
+                    SDIO_FUNC_2, F2SYNC, frame, len, NULL, NULL, NULL, TXRETRIES);
+
+            if (ret == BCME_OK)
+                ((dhd_bus_t*)bus)->tx_seq = (((dhd_bus_t*)bus)->tx_seq + 1) % SDPCM_SEQUENCE_WRAP;
+
+            return ret;
+        }
+
+        dhd_bcmsdh_send_buf(dhd_bus_t *bus, uint32 addr, uint fn, uint flags, uint8 *buf, uint nbytes,
+                void *pkt, bcmsdh_cmplt_fn_t complete_fn, void *handle, int max_retry)
+        {
+            int ret;
+            int i = 0;
+            int retries = 0;
+            bcmsdh_info_t *sdh;
+
+            if (!KSO_ENAB(bus)) {
+                DHD_ERROR(("%s: Device asleep\n", __FUNCTION__));
+                return BCME_NODEVICE;
+            }
+
+            sdh = bus->sdh;
+            do {
+                ret = bcmsdh_send_buf(bus->sdh, addr, fn, flags, buf, nbytes,
+                        pkt, complete_fn, handle);
+
+                bus->f2txdata++;
+                ASSERT(ret != BCME_PENDING);
+
+                if (ret == BCME_NODEVICE) {
+                    DHD_ERROR(("%s: Device asleep already\n", __FUNCTION__));
+                } else if (ret < 0) {
+                    /* On failure, abort the command and terminate the frame */
+                    DHD_ERROR(("%s: sdio error %d, abort command and terminate frame.\n",
+                                __FUNCTION__, ret));
+                    bus->tx_sderrs++;
+                    bus->f1regdata++;
+                    bus->dhd->tx_errors++;
+                    bcmsdh_abort(sdh, SDIO_FUNC_2);
+                    bcmsdh_cfg_write(sdh, SDIO_FUNC_1, SBSDIO_FUNC1_FRAMECTRL,
+                            SFC_WF_TERM, NULL);
+                    for (i = 0; i < READ_FRM_CNT_RETRIES; i++) {
+                        uint8 hi, lo;
+                        hi = bcmsdh_cfg_read(sdh, SDIO_FUNC_1, SBSDIO_FUNC1_WFRAMEBCHI,
+                                NULL);
+                        lo = bcmsdh_cfg_read(sdh, SDIO_FUNC_1, SBSDIO_FUNC1_WFRAMEBCLO,
+                                NULL);
+                        bus->f1regdata += 2;
+                        if ((hi == 0) && (lo == 0))
+                            break;
+                    }
+                }
+            } while ((ret < 0) && retrydata && ++retries < max_retry);
+
+            return ret;
+        }
+    }
+-------------------------------------------------------------------------------------------------------
+Bcmsdh.c (drivers\net\wireless\bcmdhd)
+->  {
+        int bcmsdh_send_buf(void *sdh, uint32 addr, uint fn, uint flags,
+                uint8 *buf, uint nbytes, void *pkt,
+                bcmsdh_cmplt_fn_t complete_fn, void *handle)
+        {
+            bcmsdh_info_t *bcmsdh = (bcmsdh_info_t *)sdh;
+            SDIOH_API_RC status;
+            uint incr_fix;
+            uint width;
+            int err = 0;
+
+            ASSERT(bcmsdh);
+            ASSERT(bcmsdh->init_success);
+
+            BCMSDH_INFO(("%s:fun = %d, addr = 0x%x, size = %d\n",
+                        __FUNCTION__, fn, addr, nbytes));
+
+            /* Async not implemented yet */
+            ASSERT(!(flags & SDIO_REQ_ASYNC));
+            if (flags & SDIO_REQ_ASYNC)
+                return BCME_UNSUPPORTED;
+
+            if ((err = bcmsdhsdio_set_sbaddr_window(bcmsdh, addr, FALSE)))
+                return err;
+
+            addr &= SBSDIO_SB_OFT_ADDR_MASK;
+
+            incr_fix = (flags & SDIO_REQ_FIXED) ? SDIOH_DATA_FIX : SDIOH_DATA_INC;
+            width = (flags & SDIO_REQ_4BYTE) ? 4 : 2;
+            if (width == 4)
+                addr |= SBSDIO_SB_ACCESS_2_4B_FLAG;
+
+            status = sdioh_request_buffer(bcmsdh->sdioh, SDIOH_DATA_PIO, incr_fix,
+                    SDIOH_WRITE, fn, addr, width, nbytes, buf, pkt);
+
+            return (SDIOH_API_SUCCESS(status) ? 0 : BCME_ERROR);
+        }
+    }
+------------------------------------------------------------------------------------------
+Bcmsdh_sdmmc.c (drivers\net\wireless\bcmdhd)
+->  {
+        /*
+         * This function takes a buffer or packet, and fixes everything up so that in the
+         * end, a DMA-able packet is created.
+         *
+         * A buffer does not have an associated packet pointer, and may or may not be aligned.
+         * A packet may consist of a single packet, or a packet chain.  If it is a packet chain,
+         * then all the packets in the chain must be properly aligned.  If the packet data is not
+         * aligned, then there may only be one packet, and in this case, it is copied to a new
+         * aligned packet.
+         *
+         */
+        extern SDIOH_API_RC sdioh_request_buffer(sdioh_info_t *sd, uint pio_dma, uint fix_inc, uint write, uint func,
+                uint addr, uint reg_width, uint buf_len, uint8 *buffer, void *pkt)
+        {
+            SDIOH_API_RC status;
+            void *tmppkt;
+            struct osl_timespec now, before;
+
+            sd_trace(("%s: Enter\n", __FUNCTION__));
+            DHD_PM_RESUME_WAIT(sdioh_request_buffer_wait);
+            DHD_PM_RESUME_RETURN_ERROR(SDIOH_API_RC_FAIL);
+
+            if (sd_msglevel & SDH_COST_VAL)
+                osl_do_gettimeofday(&before);
+
+            if (pkt) {
+            #ifdef BCMSDIOH_TXGLOM
+                /* packet chain, only used for tx/rx glom, all packets length
+                 * are aligned, total length is a block multiple
+                 */
+                if (PKTNEXT(sd->osh, pkt))
+                    return sdioh_request_packet_chain(sd, fix_inc, write, func, addr, pkt);
+            #endif /* BCMSDIOH_TXGLOM */
+                /* non-glom mode, ignore the buffer parameter and use the packet pointer
+                 * (this shouldn't happen)
+                 */
+                buffer = PKTDATA(sd->osh, pkt);
+                buf_len = PKTLEN(sd->osh, pkt);
+            }
+
+            ASSERT(buffer);
+
+            /* buffer and length are aligned, use it directly so we can avoid memory copy */
+            if (((ulong)buffer & DMA_ALIGN_MASK) == 0 && (buf_len & DMA_ALIGN_MASK) == 0)
+                return sdioh_buffer_tofrom_bus(sd, fix_inc, write, func, addr, buffer, buf_len);
+
+            sd_trace(("%s: [%d] doing memory copy buf=%p, len=%d\n",
+                        __FUNCTION__, write, buffer, buf_len));
+
+            /* otherwise, a memory copy is needed as the input buffer is not aligned */
+            tmppkt = PKTGET_STATIC(sd->osh, buf_len + DEFAULT_SDIO_F2_BLKSIZE, write ? TRUE : FALSE);
+            if (tmppkt == NULL) {
+                sd_err(("%s: PKTGET failed: len %d\n", __FUNCTION__, buf_len));
+                return SDIOH_API_RC_FAIL;
+            }
+
+            if (write)
+                bcopy(buffer, PKTDATA(sd->osh, tmppkt), buf_len);
+
+            status = sdioh_buffer_tofrom_bus(sd, fix_inc, write, func, addr,
+                    PKTDATA(sd->osh, tmppkt), ROUNDUP(buf_len, (DMA_ALIGN_MASK+1)));
+
+            if (!write)
+                bcopy(PKTDATA(sd->osh, tmppkt), buffer, buf_len);
+
+            PKTFREE_STATIC(sd->osh, tmppkt, write ? TRUE : FALSE);
+
+            if (sd_msglevel & SDH_COST_VAL) {
+                osl_do_gettimeofday(&now);
+                sd_cost(("%s: len=%d cost=%lds %luus\n", __FUNCTION__,
+                            buf_len, now.tv_sec-before.tv_sec, now.tv_nsec/1000 - before.tv_nsec/1000));
+            }
+
+            return status;
+        }
+    }
 

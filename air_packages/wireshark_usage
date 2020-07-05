@@ -1,0 +1,17 @@
+筛选4次握手： 输入eapol
+筛选Probe request： 输入wlan.fc.type_subtype == 0x0004
+筛选Probe response： 输入wlan.fc.type_subtype == 0x0005
+筛选Authentication： 输入wlan.fc.type_subtype == 0x000b
+筛选Association Request： 输入wlan.fc.type_subtype == 0x0000
+筛选Association Response： 输入wlan.fc.type_subtype == 0x0001
+
+筛选EAP Packet, WSC Start : 输入eap.wps.code == 1
+筛选Response WPS M1： 输入wps.message_type == 0x04
+筛选Request WPS M2： 输入wps.message_type == 0x05
+筛选Response WPS M3： 输入wps.message_type == 0x07
+筛选Request WPS M4： 输入wps.message_type == 0x08
+筛选Response WPS M5： 输入wps.message_type == 0x09
+筛选Request WPS M6： 输入wps.message_type == 0x0a
+筛选Response WPS M7： 输入wps.message_type == 0x0b
+筛选Request WPS M8： 输入wps.message_type == 0x0c
+筛选EAP Packet, WSC Done： 输入wps.message_type == 0x0f

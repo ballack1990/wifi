@@ -1,0 +1,403 @@
+WifiSettings.java (z:\home\ballack\prj\firefly-rk3399\packages\apps\settings\src\com\android\settings\wifi)
+->  {
+        public boolean onContextItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+                case MENU_ID_CONNECT: {
+                    boolean isSavedNetwork = mSelectedAccessPoint.isSaved();
+                    if (isSavedNetwork) {
+                        connect(mSelectedAccessPoint.getConfig(), isSavedNetwork);
+                    } else if (mSelectedAccessPoint.getSecurity() == AccessPoint.SECURITY_NONE) {
+                        /** Bypass dialog for unsecured networks */
+                        mSelectedAccessPoint.generateOpenNetworkConfig();
+                        connect(mSelectedAccessPoint.getConfig(), isSavedNetwork);
+                    } else {
+                        showDialog(mSelectedAccessPoint, WifiConfigUiBase.MODE_CONNECT);
+                    }
+                    return true;
+                }
+            }
+        }
+
+        void submit(WifiConfigController configController) {
+
+            final WifiConfiguration config = configController.getConfig();
+
+            if (config == null) {
+                if (mSelectedAccessPoint != null
+                        && mSelectedAccessPoint.isSaved()) {
+                    connect(mSelectedAccessPoint.getConfig(), true /* isSavedNetwork */);
+                }
+            } else if (configController.getMode() == WifiConfigUiBase.MODE_MODIFY) {
+                //mWifiManager.save(config, mSaveListener);
+                mWifiManager.disconnect();
+                mWifiManager.connect(config, mSaveListener);
+            } else {
+                mWifiManager.save(config, mSaveListener);
+                if (mSelectedAccessPoint != null) { // Not an "Add network"
+                    connect(config, false /* isSavedNetwork */);
+                }
+            }
+
+            mWifiTracker.resumeScanning();
+        }
+
+        protected void connect(final WifiConfiguration config, boolean isSavedNetwork) {
+            // Log subtype if configuration is a saved network.
+            mMetricsFeatureProvider.action(getActivity(), MetricsEvent.ACTION_WIFI_CONNECT,
+                    isSavedNetwork);
+            mWifiManager.connect(config, mConnectListener);
+            mClickedConnect = true;
+        }
+
+        protected void connect(final int networkId, boolean isSavedNetwork) {
+            // Log subtype if configuration is a saved network.
+            mMetricsFeatureProvider.action(getActivity(), MetricsEvent.ACTION_WIFI_CONNECT,
+                    isSavedNetwork);
+            mWifiManager.connect(networkId, mConnectListener);
+        }
+    }
+-----------------------------------------------------------------------------------------------------
+WifiManager.java (z:\home\ballack\prj\firefly-rk3399\frameworks\base\wifi\java\android\net\wifi)
+->  {
+        public void connect(WifiConfiguration config, ActionListener listener) {
+            if (config == null) throw new IllegalArgumentException("config cannot be null");
+            // Use INVALID_NETWORK_ID for arg1 when passing a config object
+            // arg1 is used to pass network id when the network already exists
+            getChannel().sendMessage(CONNECT_NETWORK, WifiConfiguration.INVALID_NETWORK_ID,
+                    putListener(listener), config);
+        }
+
+        public void connect(int networkId, ActionListener listener) {
+            if (networkId < 0) throw new IllegalArgumentException("Network id cannot be negative");
+            getChannel().sendMessage(CONNECT_NETWORK, networkId, putListener(listener));
+        }
+
+        private synchronized AsyncChannel getChannel() {
+            if (mAsyncChannel == null) {
+                Messenger messenger = getWifiServiceMessenger();
+                if (messenger == null) {
+                    throw new IllegalStateException(
+                            "getWifiServiceMessenger() returned null!  This is invalid.");
+                }
+
+                mAsyncChannel = new AsyncChannel();
+                mConnected = new CountDownLatch(1);
+
+                Handler handler = new ServiceHandler(mLooper);
+                mAsyncChannel.connect(mContext, handler, messenger);
+                try {
+                    mConnected.await();
+                } catch (InterruptedException e) {
+                    Log.e(TAG, "interrupted wait at init");
+                }
+            }
+            return mAsyncChannel;
+        }
+
+        IWifiManager mService;
+        public Messenger getWifiServiceMessenger() {
+            try {
+                return mService.getWifiServiceMessenger();
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------
+WifiServiceImpl.java (z:\home\ballack\prj\firefly-rk3399\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        private class ClientHandler extends WifiHandler {
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                switch (msg.what) {
+                    case WifiManager.CONNECT_NETWORK: {
+                        WifiConfiguration config = (WifiConfiguration) msg.obj;
+                        int networkId = msg.arg1;
+                        Slog.d(TAG, "CONNECT "
+                                + " nid=" + Integer.toString(networkId)
+                                + " uid=" + msg.sendingUid
+                                + " name="
+                                + mContext.getPackageManager().getNameForUid(msg.sendingUid));
+                        if (config != null) {
+                            if (DBG) Slog.d(TAG, "Connect with config " + config);
+                            /* Command is forwarded to state machine */
+                            mWifiStateMachine.sendMessage(Message.obtain(msg));
+                        } else if (config == null
+                                && networkId != WifiConfiguration.INVALID_NETWORK_ID) {
+                            if (DBG) Slog.d(TAG, "Connect with networkId " + networkId);
+                            mWifiStateMachine.sendMessage(Message.obtain(msg));
+                        }
+                    }
+                }
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------
+WifiStateMachine.java (z:\home\ballack\prj\firefly-rk3399\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        class ConnectModeState extends State {
+            public void enter() {
+                if (!mWifiNative.removeAllNetworks()) {
+                    loge("Failed to remove networks on entering connect mode");
+                }
+                mWifiInfo.reset();
+                mWifiInfo.setSupplicantState(SupplicantState.DISCONNECTED);
+                // Let the system know that wifi is available in client mode.
+                setWifiState(WIFI_STATE_ENABLED);
+
+                mNetworkInfo.setIsAvailable(true);
+                if (mNetworkAgent != null) mNetworkAgent.sendNetworkInfo(mNetworkInfo);
+
+                // initialize network state
+                setNetworkDetailedState(DetailedState.DISCONNECTED);
+
+                // Inform WifiConnectivityManager that Wifi is enabled
+                mWifiConnectivityManager.setWifiEnabled(true);
+                // Inform metrics that Wifi is Enabled (but not yet connected)
+                mWifiMetrics.setWifiState(WifiMetricsProto.WifiLog.WIFI_DISCONNECTED);
+                // Inform p2p service that wifi is up and ready when applicable
+                p2pSendMessage(WifiStateMachine.CMD_ENABLE_P2P);
+            }
+
+            public boolean processMessage(Message message) {
+                switch (message.what) {
+                    case WifiManager.CONNECT_NETWORK:
+                        /**
+                         * The connect message can contain a network id passed as arg1 on message or
+                         * or a config passed as obj on message.
+                         * For a new network, a config is passed to create and connect.
+                         * For an existing network, a network id is passed
+                         */
+                        netId = message.arg1;
+                        config = (WifiConfiguration) message.obj;
+                        mWifiConnectionStatistics.numWifiManagerJoinAttempt++;
+                        boolean hasCredentialChanged = false;
+                        // New network addition.
+                        if (config != null) {
+                            result = mWifiConfigManager.addOrUpdateNetwork(config, message.sendingUid);
+                            if (!result.isSuccess()) {
+                                loge("CONNECT_NETWORK adding/updating config=" + config + " failed");
+                                messageHandlingStatus = MESSAGE_HANDLING_STATUS_FAIL;
+                                replyToMessage(message, WifiManager.CONNECT_NETWORK_FAILED,
+                                        WifiManager.ERROR);
+                                break;
+                            }
+                            netId = result.getNetworkId();
+                            hasCredentialChanged = result.hasCredentialChanged();
+                        }
+                        if (!connectToUserSelectNetwork(
+                                    netId, message.sendingUid, hasCredentialChanged)) {
+                            messageHandlingStatus = MESSAGE_HANDLING_STATUS_FAIL;
+                            replyToMessage(message, WifiManager.CONNECT_NETWORK_FAILED,
+                                    WifiManager.NOT_AUTHORIZED);
+                            break;
+                        }
+                        mWifiMetrics.logStaEvent(StaEvent.TYPE_CONNECT_NETWORK, config);
+                        broadcastWifiCredentialChanged(WifiManager.WIFI_CREDENTIAL_SAVED, config);
+                        replyToMessage(message, WifiManager.CONNECT_NETWORK_SUCCEEDED);
+                        break;
+
+                    case CMD_START_CONNECT:
+                        /* connect command coming from auto-join */
+                        netId = message.arg1;
+                        int uid = message.arg2;
+                        bssid = (String) message.obj;
+
+                        config = mWifiConfigManager.getConfiguredNetworkWithPassword(netId);
+                        logd("CMD_START_CONNECT sup state "
+                                + mSupplicantStateTracker.getSupplicantStateName()
+                                + " my state " + getCurrentState().getName()
+                                + " nid=" + Integer.toString(netId)
+                                + " roam=" + Boolean.toString(mIsAutoRoaming));
+
+                        mTargetNetworkId = netId;
+                        setTargetBssid(config, bssid);
+
+                        if (mWifiNative.connectToNetwork(config)) {
+                            mWifiMetrics.logStaEvent(StaEvent.TYPE_CMD_START_CONNECT, config);
+                            lastConnectAttemptTimestamp = mClock.getWallClockMillis();
+                            targetWificonfiguration = config;
+                            mIsAutoRoaming = false;
+                            if (isLinkDebouncing()) {
+                                transitionTo(mRoamingState);
+                            } else if (getCurrentState() != mDisconnectedState) {
+                                transitionTo(mDisconnectingState);
+                            }
+                        }
+
+                }
+            }
+
+            /**
+             * Initiates connection to a network specified by the user/app. This method checks if the
+             * requesting app holds the NETWORK_SETTINGS permission.
+             *
+             * @param netId Id network to initiate connection.
+             * @param uid UID of the app requesting the connection.
+             * @param forceReconnect Whether to force a connection even if we're connected to the same
+             *                       network currently.
+             */
+            private boolean connectToUserSelectNetwork(int netId, int uid, boolean forceReconnect) {
+                // Enable a network using the public {@link WifiManager#enableNetwork(int, boolean)} API.
+                if (!mWifiConfigManager.enableNetwork(netId, true, uid)
+                        || !mWifiConfigManager.checkAndUpdateLastConnectUid(netId, uid)) {
+                    logi("connectToUserSelectNetwork Allowing uid " + uid
+                            + " with insufficient permissions to connect=" + netId);
+                } else {
+                    // Note user connect choice here, so that it will be considered in the next network
+                    // selection.
+                    mWifiConnectivityManager.setUserConnectChoice(netId);
+                }
+
+                if (!forceReconnect && mWifiInfo.getNetworkId() == netId) {
+                    // We're already connected to the user specified network, don't trigger a
+                    // reconnection unless it was forced.
+                    logi("connectToUserSelectNetwork already connecting/connected=" + netId);
+                } else {
+                    mWifiConnectivityManager.prepareForForcedConnection(netId);
+                    startConnectToNetwork(netId, uid, SUPPLICANT_BSSID_ANY);
+                }
+                return true;
+            }
+
+            public void startConnectToNetwork(int networkId, int uid, String bssid) {
+                sendMessage(CMD_START_CONNECT, networkId, uid, bssid);
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------
+WifiNative.java (z:\home\ballack\prj\firefly-rk3399\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        public boolean connectToNetwork(WifiConfiguration configuration) {
+            // Abort ongoing scan before connect() to unblock connection request.
+            mWificondControl.abortScan();
+            return mSupplicantStaIfaceHal.connectToNetwork(configuration);
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------------------
+SupplicantStaIfaceHal.java (z:\home\ballack\prj\firefly-rk3399\frameworks\opt\net\wifi\service\java\com\android\server\wifi)
+->  {
+        /**
+         * Add the provided network configuration to wpa_supplicant and initiate connection to it.
+         * This method does the following:
+         * 1. If |config| is different to the current supplicant network, removes all supplicant
+         * networks and saves |config|.
+         * 2. Select the new network in wpa_supplicant.
+         *
+         * @param config WifiConfiguration parameters for the provided network.
+         * @return {@code true} if it succeeds, {@code false} otherwise
+         */
+        public boolean connectToNetwork(@NonNull WifiConfiguration config) {
+            logd("connectToNetwork " + config.configKey());
+            if (WifiConfigurationUtil.isSameNetwork(config, mCurrentNetworkLocalConfig)) {
+                logd("Network is already saved, will not trigger remove and add operation.");
+            } else {
+                mCurrentNetworkRemoteHandle = null;
+                mCurrentNetworkLocalConfig = null;
+                if (!removeAllNetworks()) {
+                    loge("Failed to remove existing networks");
+                    return false;
+                }
+                Pair<SupplicantStaNetworkHal, WifiConfiguration> pair =
+                    addNetworkAndSaveConfig(config);
+                if (pair == null) {
+                    loge("Failed to add/save network configuration: " + config.configKey());
+                    return false;
+                }
+                mCurrentNetworkRemoteHandle = pair.first;
+                mCurrentNetworkLocalConfig = pair.second;
+            }
+
+            if (!mCurrentNetworkRemoteHandle.select()) {
+                loge("Failed to select network configuration: " + config.configKey());
+                return false;
+            }
+            return true;
+        }
+
+        addNetworkAndSaveConfig(WifiConfiguration config) {
+            SupplicantStaNetworkHal network = addNetwork();
+        
+            saveSuccess = network.saveWifiConfiguration(config);
+
+            return new Pair(network, new WifiConfiguration(config));
+        }
+
+        private SupplicantStaNetworkHal addNetwork() {
+            mISupplicantStaIface.addNetwork((SupplicantStatus status,
+                        ISupplicantNetwork network) -> {
+                    if (checkStatusAndLogFailure(status, methodStr)) {
+                    newNetwork.value = network;
+                    }
+                    });
+
+            if (newNetwork.value != null) {
+                return getStaNetworkMockable(
+                        ISupplicantStaNetwork.asInterface(newNetwork.value.asBinder()));
+            }
+        }
+    }
+--------------------------------------------------------------------------------------------------------------------
+Sta_iface.cpp (z:\home\ballack\prj\firefly-rk3399\external\wpa_supplicant_8\wpa_supplicant\hidl\1.0)
+->  {
+        Return<void> StaIface::addNetwork(addNetwork_cb _hidl_cb)
+        {
+            return validateAndCall(
+                    this, SupplicantStatusCode::FAILURE_IFACE_INVALID,
+                    &StaIface::addNetworkInternal, _hidl_cb);
+        }
+
+        std::pair<SupplicantStatus, sp<ISupplicantNetwork>>
+        StaIface::addNetworkInternal()
+        {
+            struct wpa_supplicant *wpa_s = retrieveIfacePtr();
+            struct wpa_ssid *ssid = wpa_supplicant_add_network(wpa_s);
+            wpa_printf(MSG_INFO, "addNetworkInternal ssid=%s, ieee80211w=%d\n", ssid->ssid, ssid->ieee80211w);
+        }
+    }
+-----------------------------------------------------------------------------------------------------------------------
+Wpa_supplicant.c (z:\home\ballack\prj\firefly-rk3399\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        struct wpa_ssid * wpa_supplicant_add_network(struct wpa_supplicant *wpa_s)
+        {
+            struct wpa_ssid *ssid;
+
+            ssid = wpa_config_add_network(wpa_s->conf);
+            if (!ssid) {
+                return NULL;
+            }
+            wpas_notify_network_added(wpa_s, ssid);
+            ssid->disabled = 1;
+            wpa_config_set_network_defaults(ssid);
+
+            return ssid;
+        }
+    }
+---------------------------------------------------------------------------------------------------------------------
+Config.c (z:\home\ballack\prj\firefly-rk3399\external\wpa_supplicant_8\wpa_supplicant)
+->  {
+        void wpa_config_set_network_defaults(struct wpa_ssid *ssid)
+        {
+            ssid->proto = DEFAULT_PROTO;
+            ssid->pairwise_cipher = DEFAULT_PAIRWISE;
+            ssid->group_cipher = DEFAULT_GROUP;
+            ssid->key_mgmt = DEFAULT_KEY_MGMT;
+            ssid->bg_scan_period = DEFAULT_BG_SCAN_PERIOD;
+        #ifdef IEEE8021X_EAPOL
+            ssid->eapol_flags = DEFAULT_EAPOL_FLAGS;
+            ssid->eap_workaround = DEFAULT_EAP_WORKAROUND;
+            ssid->eap.fragment_size = DEFAULT_FRAGMENT_SIZE;
+            ssid->eap.sim_num = DEFAULT_USER_SELECTED_SIM;
+        #endif /* IEEE8021X_EAPOL */
+            ssid->proactive_key_caching = -1;
+        #ifdef CONFIG_IEEE80211W
+            wpa_printf(MSG_ERROR, "wpa_config_set_network_defaults1: ssid->ieee80211w = %d\n", 
+                    ssid->ieee80211w);	
+            ssid->ieee80211w = MGMT_FRAME_PROTECTION_DEFAULT;
+            wpa_printf(MSG_ERROR, "wpa_config_set_network_defaults2: ssid->ieee80211w = %d\n", 
+                    ssid->ieee80211w);	
+        #endif /* CONFIG_IEEE80211W */
+        	ssid->mac_addr = -1;
+        }
+    
+

@@ -54,6 +54,15 @@ dhd_priv isam_status
 ifconfig wlan0 192.168.2.1
 dhd_priv wl mesh_peer_status
 
+
+insmod /lib/modules/4.9.54/kernel/broadcom/wifi/dhd.ko firmware_path=/etc/wifi/4359/fw_bcm4359c0_ag_mesh.bin nvram_path=/etc/wifi/4359/nvram.txt
+ifconfig wlan0 up
+dhd_priv isam_init mode mesh
+dhd_priv isam_config ifname wlan0 ssid ttt_mesh chan 1 amode sae key 12345678
+dhd_priv isam_enable ifname wlan0
+dhd_priv isam_status
+ifconfig wlan0 192.168.2.2
+dhd_priv wl mesh_peer_status
 ===========================================================================================
 External AP:
 Setup an external AP with IP address 192.168.31.1
@@ -105,15 +114,22 @@ brctl addif br0 wlan1
 brctl addif br0 wlan2
 ifconfig br0 192.168.3.1
 
+ifconfig wlan2 up
+
 dnsmasq -ibr0 --dhcp-option=3,192.168.3.1 --dhcp-range=192.168.3.4,192.168.3.50,12h
 
 iptables -F
 iptables -F -t nat
 iptables --table nat --append POSTROUTING --out-interface wlan0 -j MASQUERADE
-iptables -A FORWARD -i br0 -o wlan0 -j ACCEPT
+iptables -I FORWARD -i br0 -o wlan0 -j ACCEPT
+iptables -I FORWARD -i wlan0 -o br0 -j ACCEPT
 echo 1 > /proc/sys/net/ipv4/ip_forward
+echo "1">/proc/sys/net/ipv4/conf/wlan0/proxy_arp
+echo "1">/proc/sys/net/ipv4/conf/br0/proxy_arp
 ip rule add from all lookup main
 
+wpa_supplicant -i wlan0 -Dnl80211 -c /etc/wpa_supplicant.conf &
+dhcpcd wlan0
 wpa_supplicant -i wlan0 -Dnl80211 -c /etc/wifi/4359/wpa_supplicant.conf &
 dhcpcd wlan0
 
@@ -122,6 +138,12 @@ dhd_priv isam_enable ifname wlan1
 
 dhd_priv isam_config ifname wlan2 ssid ttt_mesh chan 36 amode open emode none
 dhd_priv isam_enable ifname wlan2
+
+dhd_priv isam_status
+dhd_priv wl mesh_peer_status
+
+
+ip route add default dev wlan2
 -----------------------------------------------------------------------------------
 TB1 and TB2:
 1. Initialize, configure and enable mesh

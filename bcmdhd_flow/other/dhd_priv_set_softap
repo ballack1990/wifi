@@ -15,3 +15,10 @@ dhd_priv iapsta_init mode ap
 dhd_priv iapsta_config ifname wlan0 ssid tttv_ap chan 6 amode [open|wpa2psk] emode [none|aes] key [xxxxx]
 dhd_priv iapsta_enable ifname wlan0
 ifconfig wlan0 192.168.2.1
+
+
+dhd_priv isam_init mode apsta
+dhd_priv isam_config ifname wlan1 ssid ttt_ap chan 36 amode open emode none
+dhd_priv isam_enable ifname wlan1
+ifconfig wlan1 192.168.49.1 netmask 255.255.255.0
+dnsmasq -i wlan1 --no-daemon --no-resolv --no-poll --dhcp-range=192.168.49.100,192.168.49.200,100h &

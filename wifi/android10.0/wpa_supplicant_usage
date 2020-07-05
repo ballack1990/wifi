@@ -1,0 +1,2 @@
+/vendor/bin/hw/wpa_supplicant -Dnl80211 -i wlan0 -C/data/vendor/wifi/wpa/sockets -c/vendor/etc/wifi/wpa_supplicant.conf -dd -B
+wpa_cli log_level DEBUG

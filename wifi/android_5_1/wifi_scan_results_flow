@@ -1,0 +1,132 @@
+Nl80211.c (net\wireless)
+->  {
+        static struct genl_ops nl80211_ops[] = {
+        {
+            {
+                .cmd = NL80211_CMD_GET_SCAN,
+                .policy = nl80211_policy,
+                .dumpit = nl80211_dump_scan,
+            },
+        }
+
+        static int nl80211_dump_scan(struct sk_buff *skb, struct netlink_callback *cb)
+        {
+            nl80211_prepare_wdev_dump(skb, cb, &rdev, &wdev);
+
+            cfg80211_bss_expire(rdev);
+
+            list_for_each_entry(scan, &rdev->bss_list, list) {
+                if (++idx <= start)
+                    continue;
+                if (nl80211_send_bss(skb, cb,
+                            cb->nlh->nlmsg_seq, NLM_F_MULTI,
+                            rdev, wdev, scan) < 0) {
+                    idx--;
+                    break;
+                }
+            }
+
+            cb->args[2] = idx;
+            nl80211_finish_wdev_dump(rdev);
+
+            return skb->len;
+        }
+
+        /* the netlink family */
+        static struct genl_family nl80211_fam = {
+            .id = GENL_ID_GENERATE,	/* don't bother with a hardcoded ID */
+            .name = "nl80211",	/* have users key off the name instead */
+            .hdrsize = 0,		/* no private header */
+            .version = 1,		/* no particular meaning now */
+            .maxattr = NL80211_ATTR_MAX,
+            .netnsok = true,
+            .pre_doit = nl80211_pre_doit,
+            .post_doit = nl80211_post_doit,
+        };
+
+        static int nl80211_send_bss(struct sk_buff *msg, struct netlink_callback *cb,
+			    u32 seq, int flags,
+			    struct cfg80211_registered_device *rdev,
+			    struct wireless_dev *wdev,
+			    struct cfg80211_internal_bss *intbss)
+        {
+            hdr = nl80211hdr_put(msg, NETLINK_CB(cb->skb).portid, seq, flags,
+                    NL80211_CMD_NEW_SCAN_RESULTS);
+
+            genl_dump_check_consistent(cb, hdr, &nl80211_fam);
+
+            if (nla_put_u32(msg, NL80211_ATTR_GENERATION, rdev->bss_generation))
+                goto nla_put_failure;
+            if (wdev->netdev &&
+                    nla_put_u32(msg, NL80211_ATTR_IFINDEX, wdev->netdev->ifindex))
+                goto nla_put_failure;
+            if (nla_put_u64(msg, NL80211_ATTR_WDEV, wdev_id(wdev)))
+                goto nla_put_failure;
+
+            bss = nla_nest_start(msg, NL80211_ATTR_BSS);
+
+            rcu_read_lock();
+            ies = rcu_dereference(res->ies);
+            if (ies) {
+                if (nla_put_u64(msg, NL80211_BSS_TSF, ies->tsf))
+                    goto fail_unlock_rcu;
+                tsf = true;
+                if (ies->len && nla_put(msg, NL80211_BSS_INFORMATION_ELEMENTS,
+                            ies->len, ies->data))
+                    goto fail_unlock_rcu;
+            }
+            ies = rcu_dereference(res->beacon_ies);
+            if (ies) {
+                if (!tsf && nla_put_u64(msg, NL80211_BSS_TSF, ies->tsf))
+                    goto fail_unlock_rcu;
+                if (ies->len && nla_put(msg, NL80211_BSS_BEACON_IES,
+                            ies->len, ies->data))
+                    goto fail_unlock_rcu;
+            }
+            rcu_read_unlock();
+
+            if (res->beacon_interval &&
+                    nla_put_u16(msg, NL80211_BSS_BEACON_INTERVAL, res->beacon_interval))
+                goto nla_put_failure;
+            if (nla_put_u16(msg, NL80211_BSS_CAPABILITY, res->capability) ||
+                    nla_put_u32(msg, NL80211_BSS_FREQUENCY, res->channel->center_freq) ||
+                    nla_put_u32(msg, NL80211_BSS_SEEN_MS_AGO,
+                        jiffies_to_msecs(jiffies - intbss->ts)))
+                goto nla_put_failure;
+
+            switch (rdev->wiphy.signal_type) {
+                case CFG80211_SIGNAL_TYPE_MBM:
+                    if (nla_put_u32(msg, NL80211_BSS_SIGNAL_MBM, res->signal))
+                        goto nla_put_failure;
+                    break;
+                case CFG80211_SIGNAL_TYPE_UNSPEC:
+                    if (nla_put_u8(msg, NL80211_BSS_SIGNAL_UNSPEC, res->signal))
+                        goto nla_put_failure;
+                    break;
+                default:
+                    break;
+            }
+
+            switch (wdev->iftype) {
+                case NL80211_IFTYPE_P2P_CLIENT:
+                case NL80211_IFTYPE_STATION:
+                    if (intbss == wdev->current_bss &&
+                            nla_put_u32(msg, NL80211_BSS_STATUS,
+                                NL80211_BSS_STATUS_ASSOCIATED))
+                        goto nla_put_failure;
+                    break;
+                case NL80211_IFTYPE_ADHOC:
+                    if (intbss == wdev->current_bss &&
+                            nla_put_u32(msg, NL80211_BSS_STATUS,
+                                NL80211_BSS_STATUS_IBSS_JOINED))
+                        goto nla_put_failure;
+                    break;
+                default:
+                    break;
+            }
+
+            nla_nest_end(msg, bss);
+
+            return genlmsg_end(msg, hdr);
+        }
+    }

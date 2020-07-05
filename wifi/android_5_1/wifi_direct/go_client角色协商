@@ -3,7 +3,7 @@ GO Client角色的协商过程
  协商参数 
 协商过程中，GO、Client角色由两个参数确定： 
 Intent：作为GO的优先级； 
-breaker：在Intent相同是，用于判定谁做GO； 
+breaker：在Intent相同时，用于判定谁做GO； 
 Intent的取值范围为：0~1(#define P2P_MAX_GO_INTENT 15) 
 该Intent初始化时为0，在每次P2P_CONNECT时，由上层传下来，android系统下，java层默认为6，该定义在： 
 /frameworks/opt/net/wifi/service/java/com/android/server/wifi/WifiNative.java 

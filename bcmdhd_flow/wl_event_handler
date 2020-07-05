@@ -1,0 +1,199 @@
+dhd_linux.c
+->  {
+        static int dhd_open(struct net_device *net)
+        {
+        #if defined(WL_CFG80211)
+            if (unlikely(wl_cfg80211_up(NULL))) {
+                DHD_ERROR(("%s: failed to bring up cfg80211\n", __FUNCTION__));
+                ret = -1;
+                goto exit;
+            }
+        #enfif
+        }
+    }
+-----------------------------------------------------------------------------------
+wl_cfg80211.c
+->  {
+        s32 wl_cfg80211_up(void *para)
+        {
+            err = __wl_cfg80211_up(cfg);
+        }
+        ->  {
+                static s32 __wl_cfg80211_up(struct bcm_cfg80211 *cfg)
+                {
+                    err = wl_create_event_handler(cfg);
+                    if (err) {
+                        WL_ERR(("wl_create_event_handler failed\n"));
+                        return err;
+                    }
+                    wl_init_event_handler(cfg);
+                }
+            }
+            ->  {
+                    static s32 wl_create_event_handler(struct bcm_cfg80211 *cfg)
+                    {
+                        int ret = 0;
+                        WL_DBG(("Enter \n"));
+
+                        /* Do not use DHD in cfg driver */
+                        cfg->event_tsk.thr_pid = -1;
+
+                        PROC_START(wl_event_handler, cfg, &cfg->event_tsk, 0, "wl_event_handler");
+                        if (cfg->event_tsk.thr_pid < 0)
+                            ret = -ENOMEM;
+                        return ret;
+                    }
+                }
+                ->  {
+                        static s32 wl_event_handler(void *data)
+                        {
+                            while ((e = wl_deq_event(cfg))) {
+                                WL_DBG(("event type (%d), ifidx: %d bssidx: %d \n",
+                                            e->etype, e->emsg.ifidx, e->emsg.bsscfgidx));
+
+                                if (e->emsg.ifidx > WL_MAX_IFS) {
+                                    WL_ERR((" Event ifidx not in range. val:%d \n", e->emsg.ifidx));
+                                    goto fail;
+                                }
+
+                                if (!(wdev = wl_get_wdev_by_bssidx(cfg, e->emsg.bsscfgidx))) {
+                                    /* For WLC_E_IF would be handled by wl_host_event */
+                                    if (e->etype != WLC_E_IF)
+                                        WL_ERR(("No wdev corresponding to bssidx: 0x%x found!"
+                                                    " Ignoring event.\n", e->emsg.bsscfgidx));
+                                } else if (e->etype < WLC_E_LAST && cfg->evt_handler[e->etype]) {
+                                    dhd_pub_t *dhd = (struct dhd_pub *)(cfg->pub);
+                                    if (dhd->busstate == DHD_BUS_DOWN) {
+                                        WL_ERR((": BUS is DOWN.\n"));
+                                    } else {
+                                    #ifdef DHD_IFDEBUG
+                                        if (cfg->iface_cnt == 0) {
+                                            wl_dump_ifinfo(cfg);
+                                        }
+                                    #endif
+                                        cfg->evt_handler[e->etype](cfg, wdev_to_cfgdev(wdev),
+                                                &e->emsg, e->edata);
+                                    }
+                                } else {
+                                    WL_DBG(("Unknown Event (%d): ignoring\n", e->etype));
+                                }
+fail:
+                                wl_put_event(e);
+                                DHD_EVENT_WAKE_UNLOCK(cfg->pub);
+                            }
+                        }
+                    }
+                    ->  {
+                            static void wl_init_event_handler(struct bcm_cfg80211 *cfg)
+                            {
+                                memset(cfg->evt_handler, 0, sizeof(cfg->evt_handler));
+
+                                cfg->evt_handler[WLC_E_SCAN_COMPLETE] = wl_notify_scan_status;
+                                cfg->evt_handler[WLC_E_AUTH] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_ASSOC] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_LINK] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_DEAUTH_IND] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_DEAUTH] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_DISASSOC_IND] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_ASSOC_IND] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_REASSOC_IND] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_ROAM] = wl_notify_roaming_status;
+                                cfg->evt_handler[WLC_E_MIC_ERROR] = wl_notify_mic_status;
+                                cfg->evt_handler[WLC_E_SET_SSID] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_ACTION_FRAME_RX] = wl_notify_rx_mgmt_frame;
+                                cfg->evt_handler[WLC_E_PROBREQ_MSG] = wl_notify_rx_mgmt_frame;
+                                cfg->evt_handler[WLC_E_P2P_PROBREQ_MSG] = wl_notify_rx_mgmt_frame;
+                                cfg->evt_handler[WLC_E_P2P_DISC_LISTEN_COMPLETE] = wl_cfgp2p_listen_complete;
+                                cfg->evt_handler[WLC_E_ACTION_FRAME_COMPLETE] = wl_cfgp2p_action_tx_complete;
+                                cfg->evt_handler[WLC_E_ACTION_FRAME_OFF_CHAN_COMPLETE] = wl_cfgp2p_action_tx_complete;
+                                cfg->evt_handler[WLC_E_JOIN] = wl_notify_connect_status;
+                                cfg->evt_handler[WLC_E_START] = wl_notify_connect_status;
+#ifdef PNO_SUPPORT
+                                cfg->evt_handler[WLC_E_PFN_NET_FOUND] = wl_notify_pfn_status;
+#endif /* PNO_SUPPORT */
+#ifdef GSCAN_SUPPORT
+                                cfg->evt_handler[WLC_E_PFN_BEST_BATCHING] = wl_notify_gscan_event;
+                                cfg->evt_handler[WLC_E_PFN_SCAN_COMPLETE] = wl_notify_gscan_event;
+                                cfg->evt_handler[WLC_E_PFN_GSCAN_FULL_RESULT] = wl_notify_gscan_event;
+                                cfg->evt_handler[WLC_E_PFN_SWC] = wl_notify_gscan_event;
+                                cfg->evt_handler[WLC_E_PFN_BSSID_NET_FOUND] = wl_notify_gscan_event;
+                                cfg->evt_handler[WLC_E_PFN_BSSID_NET_LOST] = wl_notify_gscan_event;
+#endif /* GSCAN_SUPPORT */
+#ifdef WLTDLS
+                                cfg->evt_handler[WLC_E_TDLS_PEER_EVENT] = wl_tdls_event_handler;
+#endif /* WLTDLS */
+                                cfg->evt_handler[WLC_E_BSSID] = wl_notify_roaming_status;
+#ifdef	WL_RELMCAST
+                                cfg->evt_handler[WLC_E_RMC_EVENT] = wl_notify_rmc_status;
+#endif
+#ifdef BT_WIFI_HANDOVER
+                                cfg->evt_handler[WLC_E_BT_WIFI_HANDOVER_REQ] = wl_notify_bt_wifi_handover_req;
+#endif
+#ifdef WL_NAN
+                                cfg->evt_handler[WLC_E_NAN] = wl_cfgnan_notify_nan_status;
+                                cfg->evt_handler[WLC_E_PROXD] = wl_cfgnan_notify_proxd_status;
+#endif /* WL_NAN */
+                                cfg->evt_handler[WLC_E_CSA_COMPLETE_IND] = wl_csa_complete_ind;
+#ifdef DHD_LOSSLESS_ROAMING
+                                cfg->evt_handler[WLC_E_ROAM_PREP] = wl_notify_roam_prep_status;
+#endif
+                                cfg->evt_handler[WLC_E_AP_STARTED] = wl_ap_start_ind;
+#ifdef CUSTOM_EVENT_PM_WAKE
+                                cfg->evt_handler[WLC_E_EXCESS_PM_WAKE_EVENT] = wl_check_pmstatus;
+#endif /* CUSTOM_EVENT_PM_WAKE */
+                                cfg->evt_handler[WLC_E_PSK_SUP] = wl_notify_idsup_status;
+                            }
+                        }
+                        ->  {
+                                static s32 wl_notify_connect_status(struct bcm_cfg80211 *cfg, bcm_struct_cfgdev *cfgdev,
+                                        const wl_event_msg_t *e, void *data)
+                                {
+                                    ndev = cfgdev_to_wlc_ndev(cfgdev, cfg);
+
+                                    if (wl_get_mode_by_netdev(cfg, ndev) == WL_MODE_AP) {
+                                        err = wl_notify_connect_status_ap(cfg, ndev, e, data);
+                                    } else if (wl_get_mode_by_netdev(cfg, ndev) == WL_MODE_IBSS) {
+                                        err = wl_notify_connect_status_ibss(cfg, ndev, e, data);
+                                    } else if (wl_get_mode_by_netdev(cfg, ndev) == WL_MODE_BSS) {
+                                        WL_DBG(("wl_notify_connect_status : event %d status : %d ndev %p\n",
+                                                    ntoh32(e->event_type), ntoh32(e->status), ndev));
+                                        if (event == WLC_E_ASSOC || event == WLC_E_AUTH) {
+                                            wl_get_auth_assoc_status(cfg, ndev, e);
+                                            return 0;
+                                        }
+                                        DHD_DISABLE_RUNTIME_PM((dhd_pub_t *)cfg->pub);
+                                        if (wl_is_linkup(cfg, e, ndev)) {
+                                            wl_link_up(cfg);
+                                            act = true;
+                                            if (!wl_get_drv_status(cfg, DISCONNECTING, ndev)) {
+#ifdef DHD_LOSSLESS_ROAMING
+                                                bool is_connected = wl_get_drv_status(cfg, CONNECTED, ndev);
+#endif
+
+                                                printf("wl_bss_connect_done succeeded with " MACDBG "\n",
+                                                        MAC2STRDBG((const u8*)(&e->addr)));
+                                                wl_bss_connect_done(cfg, ndev, e, data, true);
+                                                dhd_conf_set_intiovar(cfg->pub, WLC_SET_VAR, "phy_oclscdenable", cfg->pub->conf->phy_oclscdenable, 0, FALSE);
+                                                WL_DBG(("joined in BSS network \"%s\"\n",
+                                                            ((struct wlc_ssid *)
+                                                             wl_read_prof(cfg, ndev, WL_PROF_SSID))->SSID));
+#ifdef DHD_LOSSLESS_ROAMING
+                                                if (event == WLC_E_LINK && is_connected &&
+                                                        !cfg->roam_offload) {
+                                                    wl_bss_roaming_done(cfg, ndev, e, data);
+                                                }
+#endif /* DHD_LOSSLESS_ROAMING */
+
+                                            }
+                                            wl_update_prof(cfg, ndev, e, &act, WL_PROF_ACT);
+                                            wl_update_prof(cfg, ndev, NULL, (const void *)&e->addr, WL_PROF_BSSID);
+                                            dhd_conf_set_wme(cfg->pub, 0);
+                                            if (!memcmp(ndev->name, WL_P2P_INTERFACE_PREFIX, strlen(WL_P2P_INTERFACE_PREFIX))) {
+                                                dhd_conf_set_mchan_bw(cfg->pub, WL_P2P_IF_CLIENT, -1);
+                                            }
+
+                                        } else if (wl_is_linkdown(cfg, e)) {
+
+                                }
+                            }
+    }

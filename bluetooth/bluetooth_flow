@@ -177,7 +177,8 @@ IBluetoothManager.aidl(z:\home\ballack\prj\rk3288\frameworks\base\core\java\andr
         }
     }
 ------------------------------------------------------------------------------------------------------------------------>
-BluetoothManagerService服务是哪里启动的：
+在下面可以看到，是BluetoothManagerService服务实现的IBluetoothManager.Stub接口：
+那么BluetoothManagerService服务是哪里启动的：
 SystemServer.java (z:\home\ballack\prj\rk3288\frameworks\base\services\java\com\android\server)
 ->  {
         private void run() {
@@ -212,9 +213,153 @@ BluetoothManagerService.java (z:\home\ballack\prj\rk3288\frameworks\base\service
                         quietMode ? 1 : 0, 0));
         }
 
+        private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+
+                if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+                    synchronized(mReceiver) {
+                        if (mEnableExternal && isBluetoothPersistedStateOnBluetooth()) {
+                            //Enable
+                            if (DBG) Log.d(TAG, "Auto-enabling Bluetooth.");
+                            sendEnableMsg(mQuietEnableExternal);
+                        }
+                    }
+
+                    if (!isNameAndAddressSet()) {
+                        //Sync the Bluetooth name and address from the Bluetooth Adapter
+                        if (DBG) Log.d(TAG,"Retrieving Bluetooth Adapter name and address...");
+                        getNameAndAddress();
+                    }
+                }
+            }
+        }
+
+        public void getNameAndAddress() {
+            if (DBG) {
+                Log.d(TAG,"getNameAndAddress(): mBluetooth = " + mBluetooth +
+                        " mBinding = " + mBinding);
+            }
+            Message msg = mHandler.obtainMessage(MESSAGE_GET_NAME_AND_ADDRESS);         // 发送MESSAGE_GET_NAME_AND_ADDRESS消息！！
+            mHandler.sendMessage(msg);
+        }
+
+        private class BluetoothServiceConnection implements ServiceConnection {
+
+            /* Called when a connection to the Service has been established, with the 
+               {@link android.os.IBinder} of the communication channel to the Service. 
+            */
+            public void onServiceConnected(ComponentName className, IBinder service) {                      
+                Message msg = mHandler.obtainMessage(MESSAGE_BLUETOOTH_SERVICE_CONNECTED);  // 发送MESSAGE_BLUETOOTH_SERVICE_CONNECTED消息！！ 
+                if (className.getClassName().equals("com.android.bluetooth.btservice.AdapterService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTH;
+                } else if (className.getClassName().equals("com.android.bluetooth.gatt.GattService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTHGATT;
+                } else {
+                    Log.e(TAG, "Unknown service connected: " + className.getClassName());
+                    return;
+                }
+                msg.obj = service;
+                mHandler.sendMessage(msg);
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                Message msg = mHandler.obtainMessage(MESSAGE_BLUETOOTH_SERVICE_DISCONNECTED);
+                if (className.getClassName().equals("com.android.bluetooth.btservice.AdapterService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTH;
+                } else if (className.getClassName().equals("com.android.bluetooth.gatt.GattService")) {
+                    msg.arg1 = SERVICE_IBLUETOOTHGATT;
+                } else {
+                    Log.e(TAG, "Unknown service disconnected: " + className.getClassName());
+                    return;
+                }
+                mHandler.sendMessage(msg);
+            }
+        }
+
+        private IBluetooth mBluetooth;
+        private BluetoothServiceConnection mConnection = new BluetoothServiceConnection();
+
         private class BluetoothHandler extends Handler {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
+                    case MESSAGE_GET_NAME_AND_ADDRESS: {
+                        if ((mBluetooth == null) && (!mBinding)) {
+                            Intent i = new Intent(IBluetooth.class.getName());
+                            if (!doBind(i, mConnection,                                     // 执行doBind的时候，就会自动调用onServiceConnected
+                                    Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT,
+                                    UserHandle.CURRENT)) {
+                                mHandler.removeMessages(MESSAGE_TIMEOUT_BIND);
+                            } else {
+                                mBinding = true;
+                            }
+                        }
+                        else {
+                            Message saveMsg= mHandler.obtainMessage(MESSAGE_SAVE_NAME_AND_ADDRESS);
+                            saveMsg.arg1 = 0;
+                            if (mBluetooth != null) {
+                                mHandler.sendMessage(saveMsg);
+                            } else {
+                                // if enable is also called to bind the service
+                                // wait for MESSAGE_BLUETOOTH_SERVICE_CONNECTED
+                                mHandler.sendMessageDelayed(saveMsg, TIMEOUT_SAVE_MS);
+                            }
+                        }
+                    }
+                    break;
+
+                    case MESSAGE_SAVE_NAME_AND_ADDRESS: {
+                        synchronized(mConnection) {
+                            if (!mEnable && mBluetooth != null) {
+                                try {
+                                    mBluetooth.enable();
+                                } catch (RemoteException e) {
+                                    Log.e(TAG,"Unable to call enable()",e);
+                                }
+                            }
+                        }
+                        if (mBluetooth != null) waitForOnOff(true, false);
+                        synchronized(mConnection) {
+                            if (mBluetooth != null) {
+                                String name =  null;
+                                String address = null;
+                                try {
+                                    name =  mBluetooth.getName();
+                                    address = mBluetooth.getAddress();
+                                } catch (RemoteException re) {
+                                    Log.e(TAG,"",re);
+                                }
+
+                                if (name != null && address != null) {
+                                    storeNameAndAddress(name,address);
+                                    if (mConnection.isGetNameAddressOnly()) {
+                                        unbind = true;
+                                    }
+                                }
+
+                                if (!mEnable) {
+                                    try {
+                                        mBluetooth.disable();
+                                    } catch (RemoteException e) {
+                                        Log.e(TAG,"Unable to call disable()",e);
+                                    }
+                                }
+                            }
+                            else {
+                                // rebind service by Request GET NAME AND ADDRESS
+                                // if service is unbinded by disable or
+                                // MESSAGE_BLUETOOTH_SERVICE_CONNECTED is not received
+                                Message getMsg = mHandler.obtainMessage(MESSAGE_GET_NAME_AND_ADDRESS);
+                                mHandler.sendMessage(getMsg);
+                            }
+                        }
+                        if (!mEnable && mBluetooth != null) waitForOnOff(false, true);
+                        if (unbind) {
+                            unbindAndFinish();
+                        }
+                        break;
+                    }
+
                     case MESSAGE_ENABLE:
                         if (DBG) {
                             Log.d(TAG, "MESSAGE_ENABLE: mBluetooth = " + mBluetooth);
@@ -231,11 +376,71 @@ BluetoothManagerService.java (z:\home\ballack\prj\rk3288\frameworks\base\service
                             Log.d(TAG,"Added callback: " +  (callback == null? "null": callback)  +":" +added );
                         }
                         break;
+
+                    case MESSAGE_BLUETOOTH_SERVICE_CONNECTED:
+                        {
+                            IBinder service = (IBinder) msg.obj;
+                            synchronized(mConnection) {
+                                if (msg.arg1 == SERVICE_IBLUETOOTHGATT) {
+                                    mBluetoothGatt = IBluetoothGatt.Stub.asInterface(service);
+                                    break;
+                                } // else must be SERVICE_IBLUETOOTH
+
+                                //Remove timeout
+                                mHandler.removeMessages(MESSAGE_TIMEOUT_BIND);
+
+                                mBinding = false;
+                                mBluetooth = IBluetooth.Stub.asInterface(service);
+
+                                try {
+                                    boolean enableHciSnoopLog = (Settings.Secure.getInt(mContentResolver,       // 查看是否打开Hci Snoop Log
+                                                Settings.Secure.BLUETOOTH_HCI_LOG, 0) == 1);
+                                    if (!mBluetooth.configHciSnoopLog(enableHciSnoopLog)) {
+                                        Log.e(TAG,"IBluetooth.configHciSnoopLog return false");
+                                    }
+                                } catch (RemoteException e) {
+                                    Log.e(TAG,"Unable to call configHciSnoopLog", e);
+                                }
+
+                                //Register callback object
+                                try {
+                                    mBluetooth.registerCallback(mBluetoothCallback);                // 注册Callback
+                                } catch (RemoteException re) {
+                                    Log.e(TAG, "Unable to register BluetoothCallback",re);
+                                }
+                                //Inform BluetoothAdapter instances that service is up
+                                sendBluetoothServiceUpCallback();
+
+                                if (mQuietEnable == false) {
+                                    if(!mBluetooth.enable()) {
+                                        Log.e(TAG,"IBluetooth.enable() returned false");
+                                    }
+                                }
+                                else
+                                {
+                                    if(!mBluetooth.enableNoAutoConnect()) {
+                                        Log.e(TAG,"IBluetooth.enableNoAutoConnect() returned false");
+                                    }
+                                }
+                            }
+
+                            if (!mEnable) {
+                                waitForOnOff(true, false);
+                                handleDisable();
+                                waitForOnOff(false, false);
+                            }
+                        }
                 }
             }
         }
 
-        private IBluetooth mBluetooth;
+        private final IBluetoothCallback mBluetoothCallback =  new IBluetoothCallback.Stub() {
+            @Override
+                public void onBluetoothStateChange(int prevState, int newState) throws RemoteException  {
+                    Message msg = mHandler.obtainMessage(MESSAGE_BLUETOOTH_STATE_CHANGE,prevState,newState); //触发MESSAGE_BLUETOOTH_STATE_CHANGE
+                    mHandler.sendMessage(msg);
+                }
+        };
 
         private void handleEnable(boolean quietMode) {
             if (!mQuietEnable) {
@@ -254,12 +459,16 @@ BluetoothManagerService.java (z:\home\ballack\prj\rk3288\frameworks\base\service
 AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\android\bluetooth\btservice)
 ->  {
         public class AdapterService extends Service {
+            static {
+                classInitNative();                                                              // 调用classInitNative
+            }
+
             public void onCreate() {
                 mBinder = new AdapterServiceBinder(this);
                 mAdapterProperties = new AdapterProperties(this);
                 mAdapterStateMachine =  AdapterState.make(this, mAdapterProperties);
                 mJniCallbacks =  new JniCallbacks(mAdapterStateMachine, mAdapterProperties);
-                initNative();
+                initNative();                                                                   // 调用initNative 
                 mNativeAvailable=true;
                 mCallbacks = new RemoteCallbackList<IBluetoothCallback>();
                 //Load the name and address
@@ -270,19 +479,32 @@ AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\
 
                 registerReceiver(mAlarmBroadcastReceiver, new IntentFilter(ACTION_ALARM_WAKEUP));
             }
-        }
 
-        private static class AdapterServiceBinder extends IBluetooth.Stub {                         // AdapterServiceBinder实现了IBluetooth接口
-            public boolean enable() {
-                if ((Binder.getCallingUid() != Process.SYSTEM_UID) &&
-                        (!Utils.checkCaller())) {
-                    Log.w(TAG, "enable() - Not allowed for non-active user and non system user");
-                    return false;
+            private static class AdapterServiceBinder extends IBluetooth.Stub {               // AdapterServiceBinder实现了IBluetooth接口
+                private AdapterService mService;
+
+                public AdapterServiceBinder(AdapterService svc) {
+                    mService = svc;
                 }
 
-                AdapterService service = getService();
-                if (service == null) return false;
-                return service.enable();
+                public AdapterService getService() {
+                    if (mService  != null && mService.isAvailable()) {
+                        return mService;
+                    }
+                    return null;
+                }
+
+                public boolean enable() {
+                    if ((Binder.getCallingUid() != Process.SYSTEM_UID) &&
+                            (!Utils.checkCaller())) {
+                        Log.w(TAG, "enable() - Not allowed for non-active user and non system user");
+                        return false;
+                    }
+
+                    AdapterService service = getService();
+                    if (service == null) return false;
+                    return service.enable();
+                }
             }
         }
     }
@@ -361,7 +583,7 @@ AdapterService.java (z:\home\ballack\prj\rk3288\packages\apps\bluetooth\src\com\
                 setProfileServiceState(supportedProfileServices,BluetoothAdapter.STATE_ON);
             }else {
                 if (DBG) {debugLog("processStart(): Profile Services alreay started");}
-                mAdapterStateMachine.sendMessage(mAdapterStateMachine.obtainMessage(AdapterState.STARTED));
+                mAdapterStateMachine.sendMessage(mAdapterStateMachine.obtainMessage(AdapterState.STARTED));     // 发送STARTED命令
             }
         }
     }
@@ -476,15 +698,15 @@ com_android_bluetooth_btservice_AdapterService.cpp (z:\home\ballack\prj\rk3288\p
                 err = hw_get_module(BT_STACK_RTK_MODULE_ID, (hw_module_t const**)&module);
             } else {
                 ALOGD("%s, load %s.default.so", __func__, id);                              // bluetooth.default.so
-                err = hw_get_module(id, (hw_module_t const**)&module);
+                err = hw_get_module(id, (hw_module_t const**)&module);                      // 对应下面的HAL_MODULE_INFO_SYM
             }
 
             if (err == 0) {
                 hw_device_t* abstraction;
-                err = module->methods->open(module, id, &abstraction);
+                err = module->methods->open(module, id, &abstraction);                      // 对应下面的open_bluetooth_stack
                 if (err == 0) {
                     bluetooth_module_t* btStack = (bluetooth_module_t *)abstraction;
-                    sBluetoothInterface = btStack->get_bluetooth_interface();               // 获取蓝牙HAL控制接口
+                    sBluetoothInterface = btStack->get_bluetooth_interface();     // 获取蓝牙HAL控制接口, 对应bluetooth__get_bluetooth_interface
                 } else {
                     ALOGE("Error while opening Bluetooth library");
                 }
@@ -864,9 +1086,147 @@ Btif_core.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
             return BT_STATUS_SUCCESS;
         }
 
+        static void btif_fetch_local_bdaddr(bt_bdaddr_t *local_addr)
+        {
+            char val[256];
+            uint8_t valid_bda = FALSE;
+            int val_size = 0;
+            const uint8_t null_bdaddr[BD_ADDR_LEN] = {0,0,0,0,0,0};
+
+            {// cmy@2012-11-28: Get local bdaddr from vflash
+                int vflash_fd = open("/dev/vflash", O_RDONLY);                  // 先从/dev/vflash读取蓝牙MAC
+                if (vflash_fd > 0)
+                {
+                    char bd_addr[6] = {0};
+                    BTIF_TRACE_DEBUG("Get local bdaddr from vflash");
+                #define VFLASH_READ_BDA  0x01
+                    if(ioctl(vflash_fd, VFLASH_READ_BDA, (unsigned long)bd_addr) >= 0
+                            && memcmp(bd_addr, null_bdaddr, BD_ADDR_LEN) != 0)
+                    {
+                        local_addr->address[0] = bd_addr[5];
+                        local_addr->address[1] = bd_addr[4];
+                        local_addr->address[2] = bd_addr[3];
+                        local_addr->address[3] = bd_addr[2];
+                        local_addr->address[4] = bd_addr[1];
+                        local_addr->address[5] = bd_addr[0];
+
+                        local_addr->address[0] = local_addr->address[0] & 0xFE; // avoid multicast address
+                        valid_bda = TRUE;
+                        BTIF_TRACE_DEBUG("Got Factory BDA %02X:%02X:%02X:%02X:%02X:%02X",
+                                local_addr->address[0], local_addr->address[1], local_addr->address[2],
+                                local_addr->address[3], local_addr->address[4], local_addr->address[5]);
+                    }
+                    close(vflash_fd);
+                }
+            }
+
+            /* Get local bdaddr storage path from property */
+            if (!valid_bda && property_get(PROPERTY_BT_BDADDR_PATH, val, NULL))     // #define PROPERTY_BT_BDADDR_PATH   "ro.bt.bdaddr_path"
+            {
+                int addr_fd;
+
+                BTIF_TRACE_DEBUG("local bdaddr is stored in %s", val);
+
+                if ((addr_fd = open(val, O_RDONLY)) != -1)
+                {
+                    memset(val, 0, sizeof(val));
+                    read(addr_fd, val, FACTORY_BT_BDADDR_STORAGE_LEN);
+                    str2bd(val, local_addr);
+                    /* If this is not a reserved/special bda, then use it */
+                    if (memcmp(local_addr->address, null_bdaddr, BD_ADDR_LEN) != 0)
+                    {
+                        valid_bda = TRUE;
+                        BTIF_TRACE_DEBUG("Got Factory BDA %02X:%02X:%02X:%02X:%02X:%02X",
+                                local_addr->address[0], local_addr->address[1], local_addr->address[2],
+                                local_addr->address[3], local_addr->address[4], local_addr->address[5]);
+                    }
+
+                    close(addr_fd);
+                }
+            }
+
+            if(!valid_bda)
+            {
+                val_size = sizeof(val);
+                if(btif_config_get_str("Local", "Adapter", "Address", val, &val_size))
+                {
+                    str2bd(val, local_addr);
+                    BTIF_TRACE_DEBUG("local bdaddr from bt_config.xml is  %s", val);
+                    return;
+                }
+            }
+
+            /* No factory BDADDR found. Look for previously generated random BDA */
+            if ((!valid_bda) && \
+                    (property_get(PERSIST_BDADDR_PROPERTY, val, NULL)))     // #define PERSIST_BDADDR_PROPERTY  "persist.service.bdroid.bdaddr"
+            {
+                str2bd(val, local_addr);
+                valid_bda = TRUE;
+                BTIF_TRACE_DEBUG("Got prior random BDA %02X:%02X:%02X:%02X:%02X:%02X",
+                        local_addr->address[0], local_addr->address[1], local_addr->address[2],
+                        local_addr->address[3], local_addr->address[4], local_addr->address[5]);
+            }
+
+            /* Generate new BDA if necessary */
+            if (!valid_bda)
+            {
+                bdstr_t bdstr;
+                /* Seed the random number generator */
+                srand((unsigned int) (time(0)));
+
+                /* No autogen BDA. Generate one now. */
+                local_addr->address[0] = 0x22;
+                local_addr->address[1] = 0x22;
+                local_addr->address[2] = (uint8_t) ((rand() >> 8) & 0xFF);
+                local_addr->address[3] = (uint8_t) ((rand() >> 8) & 0xFF);
+                local_addr->address[4] = (uint8_t) ((rand() >> 8) & 0xFF);
+                local_addr->address[5] = (uint8_t) ((rand() >> 8) & 0xFF);
+
+                /* Convert to ascii, and store as a persistent property */
+                bd2str(local_addr, &bdstr);
+
+                BTIF_TRACE_DEBUG("No preset BDA. Generating BDA: %s for prop %s",
+                        (char*)bdstr, PERSIST_BDADDR_PROPERTY);
+
+                if (property_set(PERSIST_BDADDR_PROPERTY, (char*)bdstr) < 0)
+                    BTIF_TRACE_ERROR("Failed to set random BDA in prop %s",PERSIST_BDADDR_PROPERTY);
+            }
+
+            //save the bd address to config file
+            bdstr_t bdstr;
+            bd2str(local_addr, &bdstr);
+            val_size = sizeof(val);
+            if (btif_config_get_str("Local", "Adapter", "Address", val, &val_size))
+            {
+                if (strcmp(bdstr, val) ==0)
+                {
+                    // BDA is already present in the config file.
+                    return;
+                }
+            }
+            btif_config_set_str("Local", "Adapter", "Address", bdstr);
+            btif_config_save();
+        }
+
+        /*******************************************************************************
+         **
+         ** Function         btif_task
+         **
+         ** Description      BTIF task handler managing all messages being passed
+         **                  Bluetooth HAL and BTA.
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+
         static void btif_task(UINT32 params)
         {
+            UINT16   event;
+            BT_HDR   *p_msg;
+            UNUSED(params);
+
             BTIF_TRACE_DEBUG("btif task starting");
+
             btif_associate_evt();
 
             for(;;)
@@ -878,12 +1238,12 @@ Btif_core.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
                  * Wait for the trigger to init chip and stack. This trigger will
                  * be received by btu_task once the UART is opened and ready
                  */
-                if (event == BT_EVT_TRIGGER_STACK_INIT)
+                if (event == BT_EVT_TRIGGER_STACK_INIT)                             // 处理btu_task发出来的BT_EVT_TRIGGER_STACK_INIT命令
                 {
                     BTIF_TRACE_DEBUG("btif_task: received trigger stack init event");
-            #if (BLE_INCLUDED == TRUE)
+#if (BLE_INCLUDED == TRUE)
                     btif_dm_load_ble_local_keys();
-            #endif
+#endif
                     BTA_EnableBluetooth(bte_dm_evt);
                 }
 
@@ -1385,8 +1745,8 @@ Bte_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\main)
             bte_main_in_hw_init();
 
             bte_load_conf(BTE_STACK_CONF_FILE);                             // 默认是"/etc/bluetooth/bt_stack.conf"
-        #if (defined(BLE_INCLUDED) && (BLE_INCLUDED == TRUE))               // 默认是"/etc/bluetooth/ble_stack.conf"
-            bte_load_ble_conf(BTE_BLE_STACK_CONF_FILE);
+        #if (defined(BLE_INCLUDED) && (BLE_INCLUDED == TRUE))               
+            bte_load_ble_conf(BTE_BLE_STACK_CONF_FILE);                     // 默认是"/etc/bluetooth/ble_stack.conf"
         #endif
 
         #if (BTTRC_INCLUDED == TRUE)
@@ -1436,47 +1796,39 @@ Bte_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\main)
             GKI_run();
         }
     }
-    ->  {
-            static void bte_hci_enable(void)
-            {
-                APPL_TRACE_DEBUG("%s", __FUNCTION__);
+-------------------------------------------------------------------------------------------------------->
+Btu_init.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\stack\btu)
+->  {
+        #define BTU_DEFAULT_DATA_SIZE (0x2a0)
+        #define HCI_DATA_PREAMBLE_SIZE  4
 
-                preload_start_wait_timer();
+        /*****************************************************************************
+         **
+         ** Function         BTE_Init
+         **
+         ** Description      Initializes the BTU control block.
+         **
+         **                  NOTE: Must be called before creating any tasks
+         **                      (RPC, BTU, HCIT, APPL, etc.)
+         **
+         ** Returns          void
+         **
+         ******************************************************************************/
+        void BTE_Init(void)
+        {
+            int i = 0;
 
-                if (bt_hc_if)
-                {
-                    int result = bt_hc_if->init(&hc_callbacks, btif_local_bd_addr.address);
-                    APPL_TRACE_EVENT("libbt-hci init returns %d", result);
+            memset (&btu_cb, 0, sizeof (tBTU_CB));
+            btu_cb.hcit_acl_pkt_size = BTU_DEFAULT_DATA_SIZE + HCI_DATA_PREAMBLE_SIZE;
+        #if (BLE_INCLUDED == TRUE)
+            btu_cb.hcit_ble_acl_pkt_size = BTU_DEFAULT_BLE_DATA_SIZE + HCI_DATA_PREAMBLE_SIZE;
+        #endif
+            btu_cb.trace_level = HCI_INITIAL_TRACE_LEVEL;
 
-                    assert(result == BT_HC_STATUS_SUCCESS);
-
-                    if (hci_logging_enabled == TRUE || hci_logging_config == TRUE)
-                        bt_hc_if->logging(BT_HC_LOGGING_ON, hci_logfile, hci_save_log);
-
-                #if (defined (BT_CLEAN_TURN_ON_DISABLED) && BT_CLEAN_TURN_ON_DISABLED == TRUE)
-                    APPL_TRACE_DEBUG("%s  Not Turninig Off the BT before Turninig ON", __FUNCTION__);
-
-                    /* Do not power off the chip before powering on  if BT_CLEAN_TURN_ON_DISABLED flag
-                       is defined and set to TRUE to avoid below mentioned issue.
-
-                       Wingray kernel driver maintains a combined  counter to keep track of
-                       BT-Wifi state. Invoking  set_power(BT_HC_CHIP_PWR_OFF) when the BT is already
-                       in OFF state causes this counter to be incorrectly decremented and results in undesired
-                       behavior of the chip.
-
-                       This is only a workaround and when the issue is fixed in the kernel this work around
-                       should be removed. */
-                #else
-                    /* toggle chip power to ensure we will reset chip in case
-                       a previous stack shutdown wasn't completed gracefully */
-                    bt_hc_if->set_power(BT_HC_CHIP_PWR_OFF);
-                #endif
-                    bt_hc_if->set_power(BT_HC_CHIP_PWR_ON);
-
-                    bt_hc_if->preload(NULL);
-                }
-            }
+            for ( i = 0; i < BTU_MAX_LOCAL_CTRLS; i++ ) /* include BR/EDR */
+                btu_cb.hci_cmd_cb[i].cmd_window = 1;
         }
+    }
 -------------------------------------------------------------------------------------------------------->
 Btu_init.c (external\bluetooth\bluedroid\stack\btu)	4627	11/19/2018
 ->  {
@@ -1536,6 +1888,17 @@ Btu_init.c (external\bluetooth\bluedroid\stack\btu)	4627	11/19/2018
 -------------------------------------------------------------------------------------------------------->
 Btu_task.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\stack\btu)
 ->  {
+        /*******************************************************************************
+         **
+         ** Function         btu_task
+         **
+         ** Description      This is the main task of the Bluetooth Upper Layers unit.
+         **                  It sits in a loop waiting for messages, and dispatches them
+         **                  to the appropiate handlers.
+         **
+         ** Returns          should never return
+         **
+         *******************************************************************************/
         BTU_API UINT32 btu_task (UINT32 param) {
             /* Initialize the mandatory core stack control blocks
                (BTU, BTM, L2CAP, and SDP)
@@ -1552,18 +1915,37 @@ Btu_task.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\stack\btu)
         #if ( BT_USE_TRACES==TRUE )
             BTE_InitTraceLevels();
         #endif
-
-            /* Send a startup evt message to BTIF_TASK to kickstart the init procedure */
-            GKI_send_event(BTIF_TASK, BT_EVT_TRIGGER_STACK_INIT);               // 向btif_task发送BT_EVT_TRIGGER_STACK_INIT消息
+	    
+	    /* Send a startup evt message to BTIF_TASK to kickstart the init procedure */
+            GKI_send_event(BTIF_TASK, BT_EVT_TRIGGER_STACK_INIT);           // 这里就会向BTIF_TASK发送BT_EVT_TRIGGER_STACK_INIT
 
             prctl(PR_SET_NAME, (unsigned long)"BTU TASK", 0, 0, 0);
 
-            raise_priority_a2dp(TASK_HIGH_BTU);                                 // 提高A2DP优先级！
+            raise_priority_a2dp(TASK_HIGH_BTU);                             // 提高A2DP的优先级， 这里有时间继续研究！！
 
             /* Wait for, and process, events */
             for (;;) {
-                // 待研究...
+                // ...
+                
+                #if (defined(BTU_BTA_INCLUDED) && BTU_BTA_INCLUDED == TRUE)
+                if (event & TASK_MBOX_2_EVT_MASK)
+                {
+                    while ((p_msg = (BT_HDR *) GKI_read_mbox(TASK_MBOX_2)) != NULL)         // 这里就处理下面bta_sys_sendmsg发出的消息
+                    {
+                        bta_sys_event(p_msg);
+                    }
+                }
+
+                if (event & TIMER_1_EVT_MASK)
+                {
+                    bta_sys_timer_update();
+                }
+                #endif
+                
+                // ...
             }
+        }
+    }
         }
     }
 -------------------------------------------------------------------------------------------------------->
@@ -1719,6 +2101,337 @@ Bte_init.c (external\bluetooth\bluedroid\main)
         }
     }
 ---------------------------------------------------------------------------------------------------------->
+
+-----------------------------------------------------------------------------------------------
+Btu_init.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\stack\btu)
+->  {
+        void btu_init_core(void)
+        {
+            /* Initialize the mandatory core stack components */
+            btm_init();
+
+            l2c_init();
+
+            sdp_init();
+
+        #if BLE_INCLUDED == TRUE
+            gatt_init();
+        #if (defined(SMP_INCLUDED) && SMP_INCLUDED == TRUE)
+            SMP_Init();
+        #endif
+            btm_ble_init();
+        #endif
+        }
+    }
+----------------------------------------------------------------------------------------------------------
+Bta_sys_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        static const tBTA_SYS_REG bta_sys_hw_reg =
+        {
+            bta_sys_sm_execute,
+            NULL
+        };
+
+        /*******************************************************************************
+         **
+         ** Function         bta_sys_init
+         **
+         ** Description      BTA initialization; called from task initialization.
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        BTA_API void bta_sys_init(void)
+        {
+            memset(&bta_sys_cb, 0, sizeof(tBTA_SYS_CB));
+            ptim_init(&bta_sys_cb.ptim_cb, BTA_SYS_TIMER_PERIOD, p_bta_sys_cfg->timer);
+            bta_sys_cb.task_id = GKI_get_taskid();
+            appl_trace_level = p_bta_sys_cfg->trace_level;
+
+            /* register BTA SYS message handler */
+            bta_sys_register( BTA_ID_SYS,  &bta_sys_hw_reg);                // 注册BTA_ID_SYS的处理函数 
+
+            p_hci_if = &hci_h4_func_table;
+            p_hci_if->init();
+
+            userial_init();
+            lpm_init();
+
+            // Set prio here and let hci worker thread inherit prio
+            // remove once new thread api (thread_set_priority() ?)
+            // can switch prio
+            raise_priority_a2dp(TASK_HIGH_HCI_WORKER);
+
+            hc_cb.worker_thread = thread_new("bt_hc_worker");
+	    
+            /* register for BTM notifications */
+            BTM_RegisterForDeviceStatusNotif ((tBTM_DEV_STATUS_CB*)&bta_sys_hw_btm_cback );
+
+        #if( defined BTA_AR_INCLUDED ) && (BTA_AR_INCLUDED == TRUE)
+            bta_ar_init();
+        #endif
+        }
+    }
+---------------------------------------------------------------------------------------------------------->
+btu_task向BTIF_TASK, 即btif_task发送BT_EVT_TRIGGER_STACK_INIT之后，调用BTA_EnableBluetooth(bte_dm_evt);
+
+Bta_sys.h (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)	
+->  {
+        /* registration structure */
+        typedef struct
+        {
+            tBTA_SYS_EVT_HDLR   *evt_hdlr;
+            tBTA_SYS_DISABLE    *disable;
+        } tBTA_SYS_REG;
+    }
+---------------------------------------------------------------------------------------
+Bta_dm_api.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\dm)
+->  {
+        static const tBTA_SYS_REG bta_dm_reg =
+        {
+            bta_dm_sm_execute,
+            bta_dm_sm_disable
+        };
+
+        static const tBTA_SYS_REG bta_dm_search_reg =
+        {
+            bta_dm_search_sm_execute,
+            bta_dm_search_sm_disable
+        };
+    
+        /*******************************************************************************
+         **
+         ** Function         BTA_EnableBluetooth
+         **
+         ** Description      Enables bluetooth service.  This function must be
+         **                  called before any other functions in the BTA API are called.
+         **
+         **
+         ** Returns          tBTA_STATUS
+         **
+         *******************************************************************************/
+        tBTA_STATUS BTA_EnableBluetooth(tBTA_DM_SEC_CBACK *p_cback)
+        {
+            tBTA_DM_API_ENABLE    *p_msg;
+
+            /* Bluetooth disabling is in progress */
+            if (bta_dm_cb.disabling)
+                return BTA_FAILURE;
+
+            memset(&bta_dm_cb, 0, sizeof(bta_dm_cb));
+
+            bta_sys_register (BTA_ID_DM, &bta_dm_reg );                     // 注册BTA_ID_DM处理函数
+            bta_sys_register (BTA_ID_DM_SEARCH, &bta_dm_search_reg );       // 注册BTA_ID_DM_SEARCH处理函数
+
+            /* if UUID list is not provided as static data */
+            bta_sys_eir_register(bta_dm_eir_update_uuid);
+
+            if ((p_msg = (tBTA_DM_API_ENABLE *) GKI_getbuf(sizeof(tBTA_DM_API_ENABLE))) != NULL)
+            {
+                p_msg->hdr.event = BTA_DM_API_ENABLE_EVT;
+                p_msg->p_sec_cback = p_cback;
+                bta_sys_sendmsg(p_msg);                         // 发送BTA_DM_API_ENABLE_EVT消息！！
+                return BTA_SUCCESS;
+            }
+            return BTA_FAILURE;
+        }
+    }
+------------------------------------------------------------------------------------------------------->
+Hci_h4.c (external\bluetooth\bluedroid\hci\src)
+->  {
+        /******************************************************************************
+         **  HCI H4 Services interface table
+         ******************************************************************************/
+
+        const tHCI_IF hci_h4_func_table =
+        {
+            hci_h4_init,
+            hci_h4_cleanup,
+            hci_h4_send_msg,
+            hci_h4_send_int_cmd,
+            hci_h4_get_acl_data_length,
+            hci_h4_receive_msg
+        };
+
+        void hci_h4_init(void)
+        {
+            HCIDBG("hci_h4_init");
+
+            memset(&h4_cb, 0, sizeof(tHCI_H4_CB));
+            utils_queue_init(&(h4_cb.acl_rx_q));
+
+            /* Per HCI spec., always starts with 1 */
+            num_hci_cmd_pkts = 1;
+
+            /* Give an initial values of Host Controller's ACL data packet length
+             * Will update with an internal HCI(_LE)_Read_Buffer_Size request
+             */
+            h4_cb.hc_acl_data_size = 1021;
+            h4_cb.hc_ble_acl_data_size = 27;
+        }
+    }
+------------------------------------------------------------------------------------------------------->
+Vendor.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
+----------------------------------------------------------------------------------------------------------
+Bta_sys.h (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        /* Calculate start of event enumeration; id is top 8 bits of event */
+        #define BTA_SYS_EVT_START(id)       ((id) << 8)
+    }
+----------------------------------------------------------------------------------------------------------
+Bta_dm_int.h (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\dm)
+->  {
+        enum
+        {
+            /* device manager local device API events */
+            BTA_DM_API_ENABLE_EVT = BTA_SYS_EVT_START(BTA_ID_DM),               // BTA_DM_API_ENABLE_EVT其实是BTA_ID_DM左移8位得到的值
+        }
+    }
+---------------------------------------------------------------------------------------------------------->
+Bta_sys_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        /*******************************************************************************
+         **
+         ** Function         bta_sys_register
+         **
+         ** Description      Called by other BTA subsystems to register their event
+         **                  handler.
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        void bta_sys_register(UINT8 id, const tBTA_SYS_REG *p_reg)
+        {
+            bta_sys_cb.reg[id] = (tBTA_SYS_REG *) p_reg;
+            bta_sys_cb.is_reg[id] = TRUE;
+        }
+
+        /*******************************************************************************
+         **
+         ** Function         bta_sys_sendmsg
+         **
+         ** Description      Send a GKI message to BTA.  This function is designed to
+         **                  optimize sending of messages to BTA.  It is called by BTA
+         **                  API functions and call-in functions.
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        void bta_sys_sendmsg(void *p_msg)
+        {
+            GKI_send_msg(bta_sys_cb.task_id, p_bta_sys_cfg->mbox, p_msg);       // 从下面可以看到是往BTA_MBOX发消息
+        }
+    }
+---------------------------------------------------------------------------------------------------------->
+Bta_sys_cfg.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        /* GKI task mailbox for BTA. */
+        #ifndef BTA_MBOX
+        #define BTA_MBOX                    TASK_MBOX_2                         // 可以看到BTA_MBOX就是TASK_MBOX_2
+        #endif
+
+        const tBTA_SYS_CFG bta_sys_cfg =
+        {
+            BTA_MBOX_EVT,               /* GKI mailbox event */
+            BTA_MBOX,                   /* GKI mailbox id */
+            BTA_TIMER,                  /* GKI timer id */
+            APPL_INITIAL_TRACE_LEVEL    /* initial trace level */
+        };
+
+        tBTA_SYS_CFG *p_bta_sys_cfg = (tBTA_SYS_CFG *)&bta_sys_cfg;
+    }
+----------------------------------------------------------------------------------------------------------
+由上面可以知道， 最后是由bta_sys_event来处理BTA_DM_API_ENABLE_EVT消息：
+
+Bta_sys_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        /*******************************************************************************
+         **
+         ** Function         bta_sys_event
+         **
+         ** Description      BTA event handler; called from task event handler.
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        BTA_API void bta_sys_event(BT_HDR *p_msg)
+        {
+            UINT8       id;
+            BOOLEAN     freebuf = TRUE;
+
+            APPL_TRACE_EVENT("BTA got event 0x%x", p_msg->event);
+
+            /* get subsystem id from event */
+            id = (UINT8) (p_msg->event >> 8);                               // 右移8位，得到真正的id, 
+                                                                            // 比如上面的BTA_DM_API_ENABLE_EVT, 右移8位后，变成BTA_ID_DM了
+
+            /* verify id and call subsystem event handler */
+            if ((id < BTA_ID_MAX) && (bta_sys_cb.reg[id] != NULL))
+            {
+                freebuf = (*bta_sys_cb.reg[id]->evt_hdlr)(p_msg);           // 所以处理函数就是bta_dm_reg的bta_dm_sm_execute, 这个函数后面分析
+            }
+            else
+            {
+                APPL_TRACE_WARNING("BTA got unregistered event id %d", id);
+            }
+
+            if (freebuf)
+            {
+                GKI_freebuf(p_msg);
+            }
+
+        }
+    }
+-----------------------------------------------------------------------------------------------------------
+继续上面的bte_hci_enable：
+
+Bte_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\main)
+->  {
+        static void bte_hci_enable(void)
+        {
+            APPL_TRACE_DEBUG("%s", __FUNCTION__);
+
+            preload_start_wait_timer();
+
+            if (bt_hc_if)
+            {
+                int result = bt_hc_if->init(&hc_callbacks, btif_local_bd_addr.address);
+                APPL_TRACE_EVENT("libbt-hci init returns %d", result);
+
+                assert(result == BT_HC_STATUS_SUCCESS);
+
+                if (hci_logging_enabled == TRUE || hci_logging_config == TRUE)
+                    bt_hc_if->logging(BT_HC_LOGGING_ON, hci_logfile, hci_save_log);
+
+#if (defined (BT_CLEAN_TURN_ON_DISABLED) && BT_CLEAN_TURN_ON_DISABLED == TRUE)
+                APPL_TRACE_DEBUG("%s  Not Turninig Off the BT before Turninig ON", __FUNCTION__);
+
+                /* Do not power off the chip before powering on  if BT_CLEAN_TURN_ON_DISABLED flag
+                   is defined and set to TRUE to avoid below mentioned issue.
+
+                   Wingray kernel driver maintains a combined  counter to keep track of
+                   BT-Wifi state. Invoking  set_power(BT_HC_CHIP_PWR_OFF) when the BT is already
+                   in OFF state causes this counter to be incorrectly decremented and results in undesired
+                   behavior of the chip.
+
+                   This is only a workaround and when the issue is fixed in the kernel this work around
+                   should be removed. */
+#else
+                /* toggle chip power to ensure we will reset chip in case
+                   a previous stack shutdown wasn't completed gracefully */
+                bt_hc_if->set_power(BT_HC_CHIP_PWR_OFF);
+#endif
+                bt_hc_if->set_power(BT_HC_CHIP_PWR_ON);
+
+                bt_hc_if->preload(NULL);
+            }
+        }
+    }
+----------------------------------------------------------------------------------------------------------->
 Bt_hci_bdroid.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
 ->  {
         static const bt_hc_interface_t bluetoothHCLibInterface = {
@@ -1754,16 +2467,11 @@ Bt_hci_bdroid.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src
 
             p_hci_if = &hci_h4_func_table;
             p_hci_if->init();
-
-            userial_init();
-            lpm_init();
-
+`
             // Set prio here and let hci worker thread inherit prio
             // remove once new thread api (thread_set_priority() ?)
             // can switch prio
-            raise_priority_a2dp(TASK_HIGH_HCI_WORKER);
-
-            hc_cb.worker_thread = thread_new("bt_hc_worker");
+            raise_priority_a2dp(TASK_HIGH_HCI_WORKER);                          // 这里又是提高A2DP优先级？ 
         }
 
         /** Chip power control */
@@ -1789,40 +2497,6 @@ Bt_hci_bdroid.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src
                     vendor_send_command(BT_VND_OP_FW_CFG, NULL);
                 }
             }
-    }
-------------------------------------------------------------------------------------------------------->
-Hci_h4.c (external\bluetooth\bluedroid\hci\src)
-->  {
-        /******************************************************************************
-         **  HCI H4 Services interface table
-         ******************************************************************************/
-
-        const tHCI_IF hci_h4_func_table =
-        {
-            hci_h4_init,
-            hci_h4_cleanup,
-            hci_h4_send_msg,
-            hci_h4_send_int_cmd,
-            hci_h4_get_acl_data_length,
-            hci_h4_receive_msg
-        };
-
-        void hci_h4_init(void)
-        {
-            HCIDBG("hci_h4_init");
-
-            memset(&h4_cb, 0, sizeof(tHCI_H4_CB));
-            utils_queue_init(&(h4_cb.acl_rx_q));
-
-            /* Per HCI spec., always starts with 1 */
-            num_hci_cmd_pkts = 1;
-
-            /* Give an initial values of Host Controller's ACL data packet length
-             * Will update with an internal HCI(_LE)_Read_Buffer_Size request
-             */
-            h4_cb.hc_acl_data_size = 1021;
-            h4_cb.hc_ble_acl_data_size = 27;
-        }
     }
 ------------------------------------------------------------------------------------------------------->
 Vendor.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
@@ -1899,7 +2573,7 @@ Bt_vendor_brcm.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
             vnd_load_conf(VENDOR_LIB_CONF_FILE);                        // 默认是"/etc/bluetooth/bt_vendor.conf", 解析并执行相应函数
 
             /* store reference to user callbacks */
-            bt_vendor_cbacks = (bt_vendor_callbacks_t *) p_cb;          // 保存回调
+            bt_vendor_cbacks = (bt_vendor_callbacks_t *) p_cb;          // 保存回调, 即vendor_callbacks
 
             /* This is handed over from the stack */
             memcpy(vnd_local_bd_addr, local_bdaddr, 6);
@@ -1953,96 +2627,6 @@ Bt_vendor_brcm.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
                     }
                     break;
             }
-
-            static const tUSERIAL_CFG userial_init_cfg =
-            {
-                (USERIAL_DATABITS_8 | USERIAL_PARITY_NONE | USERIAL_STOPBITS_1),
-                USERIAL_BAUD_115200
-            };
-
-            int userial_vendor_open(tUSERIAL_CFG *p_cfg)
-            {
-                uint32_t baud;
-                uint8_t data_bits;
-                uint16_t parity;
-                uint8_t stop_bits;
-
-                vnd_userial.fd = -1;
-
-                if (!userial_to_tcio_baud(p_cfg->baud, &baud))
-                {
-                    return -1;
-                }
-
-                if(p_cfg->fmt & USERIAL_DATABITS_8)
-                    data_bits = CS8;
-                else if(p_cfg->fmt & USERIAL_DATABITS_7)
-                    data_bits = CS7;
-                else if(p_cfg->fmt & USERIAL_DATABITS_6)
-                    data_bits = CS6;
-                else if(p_cfg->fmt & USERIAL_DATABITS_5)
-                    data_bits = CS5;
-                else
-                {
-                    ALOGE("userial vendor open: unsupported data bits");
-                    return -1;
-                }
-
-                if(p_cfg->fmt & USERIAL_PARITY_NONE)
-                    parity = 0;
-                else if(p_cfg->fmt & USERIAL_PARITY_EVEN)
-                    parity = PARENB;
-                else if(p_cfg->fmt & USERIAL_PARITY_ODD)
-                    parity = (PARENB | PARODD);
-                else
-                {
-                    ALOGE("userial vendor open: unsupported parity bit mode");
-                    return -1;
-                }
-
-                if(p_cfg->fmt & USERIAL_STOPBITS_1)
-                    stop_bits = 0;
-                else if(p_cfg->fmt & USERIAL_STOPBITS_2)
-                    stop_bits = CSTOPB;
-                else
-                {
-                    ALOGE("userial vendor open: unsupported stop bits");
-                    return -1;
-                }
-
-                ALOGI("userial vendor open: opening %s", vnd_userial.port_name);
-
-                if ((vnd_userial.fd = open(vnd_userial.port_name, O_RDWR)) == -1)
-                {
-                    ALOGE("userial vendor open: unable to open %s", vnd_userial.port_name);
-                    return -1;
-                }
-
-                tcflush(vnd_userial.fd, TCIOFLUSH);
-
-                tcgetattr(vnd_userial.fd, &vnd_userial.termios);
-                cfmakeraw(&vnd_userial.termios);
-                vnd_userial.termios.c_cflag |= (CRTSCTS | stop_bits);
-                tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
-                tcflush(vnd_userial.fd, TCIOFLUSH);
-
-                tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
-                tcflush(vnd_userial.fd, TCIOFLUSH);
-                tcflush(vnd_userial.fd, TCIOFLUSH);
-
-                /* set input/output baudrate */
-                cfsetospeed(&vnd_userial.termios, baud);
-                cfsetispeed(&vnd_userial.termios, baud);
-                tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
-
-            #if (BT_WAKE_VIA_USERIAL_IOCTL==TRUE)
-                userial_ioctl_init_bt_wake(vnd_userial.fd);
-            #endif
-
-                ALOGI("device fd = %d open", vnd_userial.fd);
-
-                return vnd_userial.fd;
-            }
         }
     }
 -------------------------------------------------------------------------------------------------->
@@ -2052,7 +2636,7 @@ Userial_vendor.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
         {
             vnd_userial.fd = -1;
             snprintf(vnd_userial.port_name, VND_PORT_NAME_MAXLEN, "%s", \
-                    BLUETOOTH_UART_DEVICE_PORT);                            // 默认是"/dev/ttyO1", 这个会在外面定义
+                    BLUETOOTH_UART_DEVICE_PORT);                       // 默认是"/dev/ttyO1", BLUETOOTH_UART_DEVICE_PORT会在vnd_rk30sdk.txt定义
         }
 
         int userial_set_port(char *p_conf_name, char *p_conf_value, int param)
@@ -2069,6 +2653,40 @@ Userial_vendor.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
 
             return 0;
         }
+    }
+------------------------------------------------------------------------------------------
+Android.mk (/home/ballack/prj/rk3288/device/common/bluetooth/libbt/)
+->  {
+        include $(LOCAL_PATH)/vnd_buildcfg.mk
+    }
+    ->  {
+            vnd_buildcfg.mk
+            ->  {
+                    SRC := $(call my-dir)/include/vnd_rk30sdk.txt
+                }
+        }
+--------------------------------------------------------------------------------------------
+vnd_rk30sdk.txt (/home/ballack/prj/rk3288/device/common/bluetooth/libbt/include)
+->  {
+        BLUETOOTH_UART_DEVICE_PORT = "/dev/ttyS0"
+        FW_PATCHFILE_LOCATION = "/vendor/firmware/"
+        UART_TARGET_BAUD_RATE = 1500000
+        LPM_IDLE_TIMEOUT_MULTIPLE = 5
+        BTVND_DBG = FALSE
+        BTHW_DBG = TRUE
+        VNDUSERIAL_DBG = FALSE
+        UPIO_DBG = FALSE
+        BT_WAKE_VIA_PROC = TRUE
+        SCO_PCM_ROUTING = 0
+        SCO_PCM_IF_CLOCK_RATE = 1
+        SCO_PCM_IF_FRAME_TYPE = 0
+        SCO_PCM_IF_SYNC_MODE = 1
+        SCO_PCM_IF_CLOCK_MODE = 1
+        PCM_DATA_FMT_SHIFT_MODE = 0
+        PCM_DATA_FMT_FILL_BITS = 0
+        PCM_DATA_FMT_FILL_METHOD = 0
+        PCM_DATA_FMT_FILL_NUM = 0
+        PCM_DATA_FMT_JUSTIFY_MODE = 0
     }
 ----------------------------------------------------------------------------------------------------->
 Conf.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
@@ -2187,6 +2805,8 @@ Upio.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
         }
     }
 --------------------------------------------------------------------------------------------------------------------->
+继续preload的处理：
+
 Userial.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
 ->  {
         bool userial_open(userial_port_t port) {       
@@ -2200,7 +2820,559 @@ Userial.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\hci\src)
             userial_cb.port = port;
         }
     }
+--------------------------------------------------------------------------------------------------------------------
+Bt_vendor_brcm.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
+->  {
+        static const tUSERIAL_CFG userial_init_cfg =
+        {
+            (USERIAL_DATABITS_8 | USERIAL_PARITY_NONE | USERIAL_STOPBITS_1),
+            USERIAL_BAUD_115200
+        };
+
+        int userial_vendor_open(tUSERIAL_CFG *p_cfg)
+        {
+            uint32_t baud;
+            uint8_t data_bits;
+            uint16_t parity;
+            uint8_t stop_bits;
+
+            vnd_userial.fd = -1;
+
+            if (!userial_to_tcio_baud(p_cfg->baud, &baud))
+            {
+                return -1;
+            }
+
+            if(p_cfg->fmt & USERIAL_DATABITS_8)
+                data_bits = CS8;
+            else if(p_cfg->fmt & USERIAL_DATABITS_7)
+                data_bits = CS7;
+            else if(p_cfg->fmt & USERIAL_DATABITS_6)
+                data_bits = CS6;
+            else if(p_cfg->fmt & USERIAL_DATABITS_5)
+                data_bits = CS5;
+            else
+            {
+                ALOGE("userial vendor open: unsupported data bits");
+                return -1;
+            }
+
+            if(p_cfg->fmt & USERIAL_PARITY_NONE)
+                parity = 0;
+            else if(p_cfg->fmt & USERIAL_PARITY_EVEN)
+                parity = PARENB;
+            else if(p_cfg->fmt & USERIAL_PARITY_ODD)
+                parity = (PARENB | PARODD);
+            else
+            {
+                ALOGE("userial vendor open: unsupported parity bit mode");
+                return -1;
+            }
+
+            if(p_cfg->fmt & USERIAL_STOPBITS_1)
+                stop_bits = 0;
+            else if(p_cfg->fmt & USERIAL_STOPBITS_2)
+                stop_bits = CSTOPB;
+            else
+            {
+                ALOGE("userial vendor open: unsupported stop bits");
+                return -1;
+            }
+
+            ALOGI("userial vendor open: opening %s", vnd_userial.port_name);
+
+            if ((vnd_userial.fd = open(vnd_userial.port_name, O_RDWR)) == -1)
+            {
+                ALOGE("userial vendor open: unable to open %s", vnd_userial.port_name);
+                return -1;
+            }
+
+            tcflush(vnd_userial.fd, TCIOFLUSH);
+
+            tcgetattr(vnd_userial.fd, &vnd_userial.termios);
+            cfmakeraw(&vnd_userial.termios);
+            vnd_userial.termios.c_cflag |= (CRTSCTS | stop_bits);
+            tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+            tcflush(vnd_userial.fd, TCIOFLUSH);
+
+            tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+            tcflush(vnd_userial.fd, TCIOFLUSH);
+            tcflush(vnd_userial.fd, TCIOFLUSH);
+
+            /* set input/output baudrate */
+            cfsetospeed(&vnd_userial.termios, baud);
+            cfsetispeed(&vnd_userial.termios, baud);
+            tcsetattr(vnd_userial.fd, TCSANOW, &vnd_userial.termios);
+
+#if (BT_WAKE_VIA_USERIAL_IOCTL==TRUE)
+            userial_ioctl_init_bt_wake(vnd_userial.fd);
+#endif
+
+            ALOGI("device fd = %d open", vnd_userial.fd);
+
+            return vnd_userial.fd;
+        }
+    }
 -------------------------------------------------------------------------------------------------------------------->
+userial_open处理完后继续BT_VND_OP_FW_CFG的处理：
+
+Hardware.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
+->  {
+        void hw_config_start(void) {
+            /* Start from sending HCI_RESET */
+
+            if (bt_vendor_cbacks)
+            {
+                p_buf = (HC_BT_HDR *) bt_vendor_cbacks->alloc(BT_HC_HDR_SIZE + \
+                        HCI_CMD_PREAMBLE_SIZE);
+            }
+
+            if (p_buf)
+            {
+                p_buf->event = MSG_STACK_TO_HC_HCI_CMD;     // #define MSG_STACK_TO_HC_HCI_CMD  0x2000 /* eq. BT_EVT_TO_LM_HCI_CMD */
+                p_buf->offset = 0;
+                p_buf->layer_specific = 0;
+                p_buf->len = HCI_CMD_PREAMBLE_SIZE;
+
+                p = (uint8_t *) (p_buf + 1);
+                UINT16_TO_STREAM(p, HCI_RESET);
+                *p = 0; /* parameter length */
+
+                hw_cfg_cb.state = HW_CFG_START;
+
+                bt_vendor_cbacks->xmit_cb(HCI_RESET, p_buf, hw_config_cback);   // #define HCI_RESET  0x0C03
+            }
+        }
+    }
+------------------------------------------------------------------------------------------------
+继续上面的bta_dm_sm_execute函数分析 :
+
+Bta_dm_api.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\dm)
+->  {
+        /*******************************************************************************
+         **
+         ** Function         bta_dm_sm_execute
+         **
+         ** Description      State machine event handling function for DM
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        BOOLEAN bta_dm_sm_execute(BT_HDR *p_msg)
+        {
+            UINT16  event = p_msg->event & 0x00ff;                  // 因为BTA_DM_API_ENABLE_EVT是BTA_ID_DM左移8位得到，所以&0xff，其实就是0
+
+            APPL_TRACE_EVENT("bta_dm_sm_execute event:0x%x", event);
+
+            /* execute action functions */
+            if(event < BTA_DM_NUM_ACTIONS)
+            {
+                (*bta_dm_action[event])( (tBTA_DM_MSG*) p_msg);     // 所以调用的就是下面的bta_dm_enable
+            }
+
+            return TRUE;
+        }
+    }
+------------------------------------------------------------------------------------------------
+Bta_dm_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\dm)
+->  {
+        /* action function list */
+        const tBTA_DM_ACTION bta_dm_action[] =
+        {
+
+            /* device manager local device API events */
+            bta_dm_enable,            /* 0  BTA_DM_API_ENABLE_EVT */
+            bta_dm_disable,           /* 1  BTA_DM_API_DISABLE_EVT */
+            bta_dm_set_dev_name,      /* 2  BTA_DM_API_SET_NAME_EVT */
+            bta_dm_set_visibility,    /* 3  BTA_DM_API_SET_VISIBILITY_EVT */
+            bta_dm_set_afhchannels,   /* 4  BTA_DM_API_SET_AFH_CHANNELS_EVT */
+            bta_dm_signal_strength,   /* 5  BTA_API_DM_SIG_STRENGTH_EVT */
+            bta_dm_vendor_spec_command,/* 6  BTA_DM_API_VENDOR_SPECIFIC_COMMAND_EVT */
+            bta_dm_tx_inqpower,       /* 7  BTA_DM_API_SIG_STRENGTH_EVT */
+            bta_dm_acl_change,        /* 8  BTA_DM_ACL_CHANGE_EVT */
+            bta_dm_add_device,        /* 9  BTA_DM_API_ADD_DEVICE_EVT */
+            bta_dm_close_acl,         /* 10 BTA_DM_API_ADD_DEVICE_EVT */
+
+            /* security API events */
+            bta_dm_bond,              /* 11  BTA_DM_API_BOND_EVT */
+            bta_dm_bond_cancel,       /* 12  BTA_DM_API_BOND_CANCEL_EVT */
+            bta_dm_pin_reply,         /* 13 BTA_DM_API_PIN_REPLY_EVT */
+            bta_dm_link_policy,       /* 14 BTA_DM_API_LINK_POLICY_EVT */
+            bta_dm_auth_reply,        /* 15 BTA_DM_API_AUTH_REPLY_EVT */
+
+            /* power manger events */
+            bta_dm_pm_btm_status,     /* 16 BTA_DM_PM_BTM_STATUS_EVT */
+            bta_dm_pm_timer,          /* 17 BTA_DM_PM_TIMER_EVT*/
+
+            /* simple pairing events */
+            bta_dm_confirm,           /* 18 BTA_DM_API_CONFIRM_EVT */
+
+            bta_dm_set_encryption,    /* BTA_DM_API_SET_ENCRYPTION_EVT */
+
+#if (BTM_LOCAL_IO_CAPS != BTM_IO_CAP_NONE)
+            bta_dm_passkey_cancel,    /* 19 BTA_DM_API_PASKY_CANCEL_EVT */
+#endif
+#if (BTM_OOB_INCLUDED == TRUE)
+            bta_dm_loc_oob,           /* 20 BTA_DM_API_LOC_OOB_EVT */
+            bta_dm_ci_io_req_act,     /* 21 BTA_DM_CI_IO_REQ_EVT */
+            bta_dm_ci_rmt_oob_act,    /* 22 BTA_DM_CI_RMT_OOB_EVT */
+#endif /* BTM_OOB_INCLUDED */
+
+            bta_dm_remove_device,      /*  BTA_DM_API_REMOVE_DEVICE_EVT */
+
+#if BLE_INCLUDED == TRUE
+            bta_dm_add_blekey,          /*  BTA_DM_API_ADD_BLEKEY_EVT           */
+            bta_dm_add_ble_device,      /*  BTA_DM_API_ADD_BLEDEVICE_EVT        */
+            bta_dm_ble_passkey_reply,   /*  BTA_DM_API_BLE_PASSKEY_REPLY_EVT    */
+            bta_dm_security_grant,
+            bta_dm_ble_set_bg_conn_type,
+            bta_dm_ble_set_conn_params,      /* BTA_DM_API_BLE_CONN_PARAM_EVT */
+            bta_dm_ble_set_scan_params,      /* BTA_DM_API_BLE_SCAN_PARAM_EVT */
+            bta_dm_ble_observe,
+            bta_dm_ble_update_conn_params,   /* BTA_DM_API_UPDATE_CONN_PARAM_EVT */
+#if BLE_PRIVACY_SPT == TRUE
+            bta_dm_ble_config_local_privacy,   /* BTA_DM_API_LOCAL_PRIVACY_EVT */
+#endif
+            bta_dm_ble_set_adv_params,     /* BTA_DM_API_BLE_SCAN_PARAM_EVT */
+            bta_dm_ble_set_adv_config,     /* BTA_DM_API_BLE_SET_ADV_CONFIG_EVT */
+            bta_dm_ble_set_scan_rsp,       /* BTA_DM_API_BLE_SET_SCAN_RSP_EVT */
+            bta_dm_ble_broadcast,          /* BTA_DM_API_BLE_BROADCAST_EVT */
+#if BLE_ANDROID_CONTROLLER_SCAN_FILTER == TRUE
+            bta_dm_cfg_filter_cond,         /* BTA_DM_API_CFG_FILTER_COND_EVT */
+            bta_dm_scan_filter_param_setup, /* BTA_DM_API_SCAN_FILTER_SETUP_EVT */
+            bta_dm_enable_scan_filter,      /* BTA_DM_API_SCAN_FILTER_ENABLE_EVT */
+#endif
+            bta_dm_ble_multi_adv_enb,           /*  BTA_DM_API_BLE_MULTI_ADV_ENB_EVT*/
+            bta_dm_ble_multi_adv_upd_param,     /*  BTA_DM_API_BLE_MULTI_ADV_PARAM_UPD_EVT */
+            bta_dm_ble_multi_adv_data,          /*  BTA_DM_API_BLE_MULTI_ADV_DATA_EVT */
+            btm_dm_ble_multi_adv_disable,       /*  BTA_DM_API_BLE_MULTI_ADV_DISABLE_EVT */
+            bta_dm_ble_setup_storage,      /* BTA_DM_API_BLE_SETUP_STORAGE_EVT */
+            bta_dm_ble_enable_batch_scan,  /* BTA_DM_API_BLE_ENABLE_BATCH_SCAN_EVT */
+            bta_dm_ble_disable_batch_scan, /* BTA_DM_API_BLE_DISABLE_BATCH_SCAN_EVT */
+            bta_dm_ble_read_scan_reports,  /* BTA_DM_API_BLE_READ_SCAN_REPORTS_EVT */
+            bta_dm_ble_track_advertiser,   /* BTA_DM_API_BLE_TRACK_ADVERTISER_EVT */
+            bta_dm_ble_get_energy_info,    /* BTA_DM_API_BLE_ENERGY_INFO_EVT */
+#endif
+
+#if ( BTM_EIR_SERVER_INCLUDED == TRUE )&&( BTA_EIR_CANNED_UUID_LIST != TRUE )&&(BTA_EIR_SERVER_NUM_CUSTOM_UUID > 0)
+            bta_dm_update_eir_uuid,     /*  BTA_DM_API_UPDATE_EIR_UUID_EVT      */
+#endif
+#if (BTM_EIR_SERVER_INCLUDED == TRUE)
+            bta_dm_set_eir_config,      /*  BTA_DM_API_SET_EIR_CONFIG_EVT       */
+#endif
+
+            bta_dm_enable_test_mode,    /*  BTA_DM_API_ENABLE_TEST_MODE_EVT     */
+            bta_dm_disable_test_mode,   /*  BTA_DM_API_DISABLE_TEST_MODE_EVT    */
+            bta_dm_execute_callback,     /*  BTA_DM_API_EXECUTE_CBACK_EVT        */
+            bta_dm_set_afh_channel_assesment      /* BTA_DM_API_SET_AFH_CHANNEL_ASSESMENT_EVT */
+        };
+    }
+--------------------------------------------------------------------------------------------------
+Bta_dm_act.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\dm)
+->  {
+        /*******************************************************************************
+         **
+         ** Function         bta_dm_enable
+         **
+         ** Description      Initialises the BT device manager
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        void bta_dm_enable(tBTA_DM_MSG *p_data)
+        {
+            tBTA_SYS_HW_MSG *sys_enable_event;
+            tBTA_DM_SEC sec_event;
+
+            /* if already in use, return an error */
+            if( bta_dm_cb.is_bta_dm_active == TRUE  )
+            {
+                APPL_TRACE_WARNING("bta_dm_enable - device already started by another application");
+                memset(&sec_event.enable, 0, sizeof ( tBTA_DM_ENABLE ));
+                sec_event.enable.status = BTA_FAILURE;
+                if( p_data->enable.p_sec_cback != NULL  )
+                    p_data->enable.p_sec_cback (BTA_DM_ENABLE_EVT, &sec_event);
+                return;
+            }
+
+            /* first, register our callback to SYS HW manager */
+            bta_sys_hw_register( BTA_SYS_HW_BLUETOOTH, bta_dm_sys_hw_cback );       // 注册BTA_SYS_HW_BLUETOOTH回调函数
+
+            /* make sure security callback is saved - if no callback, do not erase the previous one,
+               it could be an error recovery mechanism */
+            if( p_data->enable.p_sec_cback != NULL  )
+                bta_dm_cb.p_sec_cback = p_data->enable.p_sec_cback;
+            /* notify BTA DM is now active */
+            bta_dm_cb.is_bta_dm_active = TRUE;
+
+            /* send a message to BTA SYS */
+            if ((sys_enable_event = (tBTA_SYS_HW_MSG *) GKI_getbuf(sizeof(tBTA_SYS_HW_MSG))) != NULL)
+            {
+                sys_enable_event->hdr.event = BTA_SYS_API_ENABLE_EVT;
+                sys_enable_event->hw_module = BTA_SYS_HW_BLUETOOTH;
+
+                bta_sys_sendmsg(sys_enable_event);
+            }
+        }
+
+        /*******************************************************************************
+         **
+         ** Function         bta_dm_sys_hw_cback
+         **
+         ** Description     callback register to SYS to get HW status updates
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        static void bta_dm_sys_hw_cback( tBTA_SYS_HW_EVT status )
+        {
+            DEV_CLASS   dev_class;
+            tBTA_DM_SEC_CBACK           *temp_cback;
+#if BLE_INCLUDED == TRUE
+            UINT8                   key_mask = 0;
+            BT_OCTET16              er;
+            tBTA_BLE_LOCAL_ID_KEYS  id_key;
+            tBT_UUID                app_uuid = {LEN_UUID_128,{0}};
+#endif
+            APPL_TRACE_DEBUG(" bta_dm_sys_hw_cback with event: %i" , status );
+
+            /* On H/W error evt, report to the registered DM application callback */
+            if (status == BTA_SYS_HW_ERROR_EVT) {
+                if( bta_dm_cb.p_sec_cback != NULL )
+                    bta_dm_cb.p_sec_cback(BTA_DM_HW_ERROR_EVT, NULL);
+                return;
+            }
+            if( status == BTA_SYS_HW_OFF_EVT )
+            {
+                if( bta_dm_cb.p_sec_cback != NULL )
+                    bta_dm_cb.p_sec_cback(BTA_DM_DISABLE_EVT, NULL);
+
+                /* reinitialize the control block */
+                memset(&bta_dm_cb, 0, sizeof(bta_dm_cb));
+
+                /* unregister from SYS */
+                bta_sys_hw_unregister( BTA_SYS_HW_BLUETOOTH );
+                /* notify BTA DM is now unactive */
+                bta_dm_cb.is_bta_dm_active = FALSE;
+            }
+            else
+                if( status == BTA_SYS_HW_ON_EVT )
+                {
+                    /* FIXME: We should not unregister as the SYS shall invoke this callback on a H/W error.
+                     * We need to revisit when this platform has more than one BLuetooth H/W chip */
+                    //bta_sys_hw_unregister( BTA_SYS_HW_BLUETOOTH);
+
+                    /* save security callback */
+                    temp_cback = bta_dm_cb.p_sec_cback;
+                    /* make sure the control block is properly initialized */
+                    memset(&bta_dm_cb, 0, sizeof(bta_dm_cb));
+                    /* and retrieve the callback */
+                    bta_dm_cb.p_sec_cback=temp_cback;
+                    bta_dm_cb.is_bta_dm_active = TRUE;
+
+                    /* hw is ready, go on with BTA DM initialization */
+                    memset(&bta_dm_search_cb, 0x00, sizeof(bta_dm_search_cb));
+                    memset(&bta_dm_conn_srvcs, 0x00, sizeof(bta_dm_conn_srvcs));
+                    memset(&bta_dm_di_cb, 0, sizeof(tBTA_DM_DI_CB));
+
+                    memcpy(dev_class, bta_dm_cfg.dev_class, sizeof(dev_class));
+                    BTM_SetDeviceClass (dev_class);
+
+#if (defined BLE_INCLUDED && BLE_INCLUDED == TRUE)
+                    /* load BLE local information: ID keys, ER if available */
+                    bta_dm_co_ble_load_local_keys(&key_mask, er, &id_key);
+
+                    if (key_mask & BTA_BLE_LOCAL_KEY_TYPE_ER)
+                    {
+                        BTM_BleLoadLocalKeys(BTA_BLE_LOCAL_KEY_TYPE_ER, (tBTM_BLE_LOCAL_KEYS *)&er);
+                    }
+                    if (key_mask & BTA_BLE_LOCAL_KEY_TYPE_ID)
+                    {
+                        BTM_BleLoadLocalKeys(BTA_BLE_LOCAL_KEY_TYPE_ID, (tBTM_BLE_LOCAL_KEYS *)&id_key);
+                    }
+#if ((defined BTA_GATT_INCLUDED) && (BTA_GATT_INCLUDED == TRUE))
+                    bta_dm_search_cb.conn_id = BTA_GATT_INVALID_CONN_ID;
+#endif
+#endif
+
+                    BTM_SecRegister((tBTM_APPL_INFO*)&bta_security);
+                    BTM_SetDefaultLinkSuperTout(bta_dm_cfg.link_timeout);
+                    BTM_WritePageTimeout(bta_dm_cfg.page_timeout);
+                    bta_dm_cb.cur_policy = bta_dm_cfg.policy_settings;
+                    BTM_SetDefaultLinkPolicy(bta_dm_cb.cur_policy);
+#if (defined(BTM_BUSY_LEVEL_CHANGE_INCLUDED) && BTM_BUSY_LEVEL_CHANGE_INCLUDED == TRUE)
+                    BTM_RegBusyLevelNotif (bta_dm_bl_change_cback, NULL, BTM_BL_UPDATE_MASK|BTM_BL_ROLE_CHG_MASK);
+#else
+                    BTM_AclRegisterForChanges(bta_dm_acl_change_cback);
+#endif
+
+#if BLE_VND_INCLUDED == TRUE
+                    BTM_BleReadControllerFeatures (bta_dm_ctrl_features_rd_cmpl_cback);
+#endif
+
+                    /* Earlier, we used to invoke BTM_ReadLocalAddr which was just copying the bd_addr
+                       from the control block and invoking the callback which was sending the DM_ENABLE_EVT.
+                       But then we have a few HCI commands being invoked above which were still in progress
+                       when the ENABLE_EVT was sent. So modified this to fetch the local name which forces
+                       the DM_ENABLE_EVT to be sent only after all the init steps are complete */
+                    BTM_ReadLocalDeviceNameFromController((tBTM_CMPL_CB *)bta_dm_local_name_cback);
+
+                    bta_sys_rm_register((tBTA_SYS_CONN_CBACK*)bta_dm_rm_cback);
+
+                    /* initialize bluetooth low power manager */
+                    bta_dm_init_pm();
+
+                    bta_sys_policy_register((tBTA_SYS_CONN_CBACK*)bta_dm_policy_cback);
+
+#if (BLE_INCLUDED == TRUE && BTA_GATT_INCLUDED == TRUE)
+                    memset (&app_uuid.uu.uuid128, 0x87, LEN_UUID_128);
+                    bta_dm_gattc_register();
+#endif
+
+                }
+                else
+                    APPL_TRACE_DEBUG(" --- ignored event");
+
+        }
+    }
+-------------------------------------------------------------------------------------------------
+Bta_sys_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        void bta_sys_hw_register( tBTA_SYS_HW_MODULE module, tBTA_SYS_HW_CBACK *cback)
+        {
+            bta_sys_cb.sys_hw_cback[module]=cback;
+        }
+
+        /*******************************************************************************
+         **
+         ** Function         bta_sys_sendmsg
+         **
+         ** Description      Send a GKI message to BTA.  This function is designed to
+         **                  optimize sending of messages to BTA.  It is called by BTA
+         **                  API functions and call-in functions.
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        void bta_sys_sendmsg(void *p_msg)
+        {
+            GKI_send_msg(bta_sys_cb.task_id, p_bta_sys_cfg->mbox, p_msg);
+        }
+    }
+-------------------------------------------------------------------------------------------------
+Bta_sys.h (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        /* events sent to SYS HW manager - must be kept synchronized with tables in bta_sys_main.c */
+        enum
+        {
+            /* device manager local device API events */
+            BTA_SYS_API_ENABLE_EVT = BTA_SYS_EVT_START(BTA_ID_SYS),             // BTA_SYS_API_ENABLE_EVT其实是BTA_ID_SYS左移8位得到的值
+            BTA_SYS_EVT_ENABLED_EVT,
+            BTA_SYS_EVT_STACK_ENABLED_EVT,
+            BTA_SYS_API_DISABLE_EVT,
+            BTA_SYS_EVT_DISABLED_EVT,
+            BTA_SYS_ERROR_EVT,
+
+            BTA_SYS_MAX_EVT
+        };
+    }
+------------------------------------------------------------------------------------------------
+所以BTA_ID_SYS的处理函数就是由bta_sys_hw_reg的bta_sys_sm_execute处理：
+
+Bta_sys_main.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\bta\sys)
+->  {
+        /* action function list */
+        const tBTA_SYS_ACTION bta_sys_action[] =
+        {
+            /* device manager local device API events - cf bta_sys.h for events */
+            bta_sys_hw_api_enable,             /* 0  BTA_SYS_HW_API_ENABLE_EVT    */
+            bta_sys_hw_evt_enabled,           /* 1  BTA_SYS_HW_EVT_ENABLED_EVT */
+            bta_sys_hw_evt_stack_enabled,       /* 2  BTA_SYS_HW_EVT_STACK_ENABLED_EVT */
+            bta_sys_hw_api_disable,             /* 3  BTA_SYS_HW_API_DISABLE_EVT     */
+            bta_sys_hw_evt_disabled,           /* 4  BTA_SYS_HW_EVT_DISABLED_EVT  */
+            bta_sys_hw_error                        /* 5   BTA_SYS_HW_ERROR_EVT  */
+        };
+    
+        /*******************************************************************************
+         **
+         ** Function         bta_dm_sm_execute
+         **
+         ** Description      State machine event handling function for DM
+         **
+         **
+         ** Returns          void
+         **
+         *******************************************************************************/
+        BOOLEAN bta_sys_sm_execute(BT_HDR *p_msg)
+        {
+            BOOLEAN freebuf = TRUE;
+            tBTA_SYS_ST_TBL      state_table;
+            UINT8               action;
+            int                 i;
+
+            APPL_TRACE_EVENT("bta_sys_sm_execute state:%d, event:0x%x",  bta_sys_cb.state, p_msg->event);
+
+            /* look up the state table for the current state */
+            state_table = bta_sys_st_tbl[bta_sys_cb.state];
+            /* update state */
+            bta_sys_cb.state = state_table[p_msg->event & 0x00ff][BTA_SYS_NEXT_STATE];
+
+            /* execute action functions */
+            for (i = 0; i < BTA_SYS_ACTIONS; i++)
+            {
+                if ((action = state_table[p_msg->event & 0x00ff][i]) != BTA_SYS_IGNORE)
+                {
+                    (*bta_sys_action[action])( (tBTA_SYS_HW_MSG*) p_msg);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return freebuf;
+        }
+
+        /*******************************************************************************
+         **
+         ** Function         bta_sys_hw_enable
+         **
+         ** Description     this function is called after API enable and HW has been turned on
+         **
+         **
+         ** Returns          success or failure
+         **
+         *******************************************************************************/
+
+        void bta_sys_hw_api_enable( tBTA_SYS_HW_MSG *p_sys_hw_msg )
+        {
+            if ((!bta_sys_cb.sys_hw_module_active) && (bta_sys_cb.state != BTA_SYS_HW_ON))
+            {
+                /* register which HW module was turned on */
+                bta_sys_cb.sys_hw_module_active |=  ((UINT32)1 << p_sys_hw_msg->hw_module );
+
+                /* use call-out to power-up HW */
+                bta_sys_hw_co_enable(p_sys_hw_msg->hw_module);
+            }
+            else
+            {
+                /* register which HW module was turned on */
+                bta_sys_cb.sys_hw_module_active |=  ((UINT32)1 << p_sys_hw_msg->hw_module );
+
+                /* HW already in use, so directly notify the caller */
+                if (bta_sys_cb.sys_hw_cback[p_sys_hw_msg->hw_module ]!= NULL )
+                    bta_sys_cb.sys_hw_cback[p_sys_hw_msg->hw_module ](  BTA_SYS_HW_ON_EVT   );  // 调用bta_dm_sys_hw_cback，传参BTA_SYS_HW_ON_EVT
+            }
+
+            APPL_TRACE_EVENT ("bta_sys_hw_api_enable for %d, active modules 0x%04X",
+                    p_sys_hw_msg->hw_module, bta_sys_cb.sys_hw_module_active);
+
+        }
+    }
+-------------------------------------------------------------------------------------------------
 Bluetooth.h (z:\home\ballack\prj\rk3288\hardware\libhardware\include\hardware)
 ->  {
         typedef struct {
@@ -2477,44 +3649,5 @@ Btif_dm.c (z:\home\ballack\prj\rk3288\external\bluetooth\bluedroid\btif\src)
         }
     }
 --------------------------------------------------------------------------------------------------------------------->
-Hardware.c (z:\home\ballack\prj\rk3288\device\common\bluetooth\libbt\src)
-->  {
-        void hw_config_start(void) {
-            p_buf->event = MSG_STACK_TO_HC_HCI_CMD;
-            p_buf->offset = 0;
-            p_buf->layer_specific = 0;
-            p_buf->len = HCI_CMD_PREAMBLE_SIZE;
 
-            p = (uint8_t *) (p_buf + 1);
-            UINT16_TO_STREAM(p, HCI_RESET);
-            *p = 0; /* parameter length */
-
-            hw_cfg_cb.state = HW_CFG_START;
-
-            bt_vendor_cbacks->xmit_cb(HCI_RESET, p_buf, hw_config_cback);
-        }
-    }
------------------------------------------------------------------------------------------------------>
-vnd_rk30sdk.txt (/home/ballack/prj/rk3288/device/common/bluetooth/libbt/include)
-->  {
-        BLUETOOTH_UART_DEVICE_PORT = "/dev/ttyS0"
-        FW_PATCHFILE_LOCATION = "/vendor/firmware/"
-        UART_TARGET_BAUD_RATE = 1500000
-        LPM_IDLE_TIMEOUT_MULTIPLE = 5
-        BTVND_DBG = FALSE
-        BTHW_DBG = TRUE
-        VNDUSERIAL_DBG = FALSE
-        UPIO_DBG = FALSE
-        BT_WAKE_VIA_PROC = TRUE
-        SCO_PCM_ROUTING = 0
-        SCO_PCM_IF_CLOCK_RATE = 1
-        SCO_PCM_IF_FRAME_TYPE = 0
-        SCO_PCM_IF_SYNC_MODE = 1
-        SCO_PCM_IF_CLOCK_MODE = 1
-        PCM_DATA_FMT_SHIFT_MODE = 0
-        PCM_DATA_FMT_FILL_BITS = 0
-        PCM_DATA_FMT_FILL_METHOD = 0
-        PCM_DATA_FMT_FILL_NUM = 0
-        PCM_DATA_FMT_JUSTIFY_MODE = 0
-    }
 

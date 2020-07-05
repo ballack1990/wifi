@@ -930,6 +930,70 @@ err_out:
 
             rdev->scan_req = request;
             err = rdev_scan(rdev, request);
+    
+            if (!err) {
+                nl80211_send_scan_start(rdev, wdev);
+                if (wdev->netdev)
+                    dev_hold(wdev->netdev);
+            }
+        }
+        ->  {
+                void nl80211_send_scan_start(struct cfg80211_registered_device *rdev,
+                        struct wireless_dev *wdev)
+                {
+                    struct sk_buff *msg;
+
+                    msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
+                    if (!msg)
+                        return;
+
+                    if (nl80211_send_scan_msg(msg, rdev, wdev, 0, 0, 0,
+                                NL80211_CMD_TRIGGER_SCAN) < 0) {
+                        nlmsg_free(msg);
+                        return;
+                    }
+
+                    genlmsg_multicast_netns(wiphy_net(&rdev->wiphy), msg, 0,
+                            nl80211_scan_mcgrp.id, GFP_KERNEL);
+                }
+            }
+
+        static int nl80211_dump_scan(struct sk_buff *skb, struct netlink_callback *cb)
+        {
+            struct cfg80211_registered_device *rdev;
+            struct cfg80211_internal_bss *scan;
+            struct wireless_dev *wdev;
+            int start = cb->args[2], idx = 0;
+            int err;
+
+            err = nl80211_prepare_wdev_dump(skb, cb, &rdev, &wdev);
+            if (err)
+                return err;
+
+            wdev_lock(wdev);
+            spin_lock_bh(&rdev->bss_lock);
+            cfg80211_bss_expire(rdev);
+
+            cb->seq = rdev->bss_generation;
+
+            list_for_each_entry(scan, &rdev->bss_list, list) {
+                if (++idx <= start)
+                    continue;
+                if (nl80211_send_bss(skb, cb,
+                            cb->nlh->nlmsg_seq, NLM_F_MULTI,
+                            rdev, wdev, scan) < 0) {
+                    idx--;
+                    break;
+                }
+            }
+
+            spin_unlock_bh(&rdev->bss_lock);
+            wdev_unlock(wdev);
+
+            cb->args[2] = idx;
+            nl80211_finish_wdev_dump(rdev);
+
+            return skb->len;
         }
     }
 --------------------------------------------------------------------------------------------->

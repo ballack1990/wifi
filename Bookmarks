@@ -1,0 +1,2147 @@
+{
+   "checksum": "563948e048ca57fecf0d2f5cb7f06a7c",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13204035887574937",
+            "id": "407",
+            "meta_info": {
+               "last_visited_desktop": "13232609520889813"
+            },
+            "name": "Outlook Web App",
+            "type": "url",
+            "url": "https://ampak.com.tw/owa/auth/logon.aspx?url=https://ampak.com.tw/owa/&reason=3"
+         }, {
+            "date_added": "13204859443808654",
+            "id": "410",
+            "meta_info": {
+               "last_visited_desktop": "13232637481738463"
+            },
+            "name": "WeChat for Web",
+            "type": "url",
+            "url": "https://wx.qq.com/"
+         }, {
+            "date_added": "13232189713044681",
+            "id": "522",
+            "name": "",
+            "type": "url",
+            "url": "https://thirdwx.qlogo.cn/mmopen/vi_32/NCoCUw7VWQb1jykkVts7z5juNeGTnYia3sCicZvZGAG6o8VTqRDu4iaicGF6gu9ibkiagoZSvpIoFJdgJ9PDNNcLVkCA/132"
+         }, {
+            "date_added": "13137185695168119",
+            "id": "9",
+            "meta_info": {
+               "last_visited_desktop": "13232168445196914"
+            },
+            "name": "Firefly-RK3288/Build android lollipop - Firefly wiki",
+            "type": "url",
+            "url": "http://wiki.t-firefly.com/index.php/Firefly-RK3288/Build_android_lollipop#.E4.B8.8B.E8.BD.BD_Android_SDK1"
+         }, {
+            "date_added": "13215861799037487",
+            "id": "459",
+            "meta_info": {
+               "last_visited_desktop": "13232168302072716"
+            },
+            "name": "【ballack_linux的专栏】wifi_闲谈_单片机 - CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/ballack_linux"
+         }, {
+            "date_added": "13137234932943422",
+            "id": "13",
+            "meta_info": {
+               "last_visited_desktop": "13221905306281762"
+            },
+            "name": "ARM Linux 3.x的设备树（Device Tree） - 宋宝华的blog - 博客频道 - CSDN.NET",
+            "type": "url",
+            "url": "http://blog.csdn.net/21cnbao/article/details/8457546"
+         }, {
+            "date_added": "13137234515069033",
+            "id": "12",
+            "meta_info": {
+               "last_visited_desktop": "13215778933216486"
+            },
+            "name": "Device Tree常用方法解析 - Feed Technology - 博客频道 - CSDN.NET",
+            "type": "url",
+            "url": "http://blog.csdn.net/airk000/article/details/21345159"
+         }, {
+            "date_added": "13137319093803749",
+            "id": "19",
+            "meta_info": {
+               "last_visited_desktop": "13211869262287178"
+            },
+            "name": "linux设备驱动归纳总结-diytvgy-ChinaUnix博客",
+            "type": "url",
+            "url": "http://blog.chinaunix.net/uid-25014876-id-59420.html"
+         }, {
+            "date_added": "13138355972238030",
+            "id": "29",
+            "meta_info": {
+               "last_visited_desktop": "13138355972238987"
+            },
+            "name": "Linux驱动late_initcall和module_init相关分析-wh2010td-ChinaUnix博客",
+            "type": "url",
+            "url": "http://blog.chinaunix.net/uid-29570002-id-4387097.html"
+         }, {
+            "date_added": "13138362548910129",
+            "id": "30",
+            "meta_info": {
+               "last_visited_desktop": "13150879067373577"
+            },
+            "name": "浅析/sys/class目录的创建流程-Liuqz2009-ChinaUnix博客",
+            "type": "url",
+            "url": "http://blog.chinaunix.net/uid-23215128-id-2521161.html"
+         }, {
+            "date_added": "13139029447676114",
+            "id": "53",
+            "meta_info": {
+               "last_visited_desktop": "13196398902616366"
+            },
+            "name": "深入MountService、vold（五） MountService中通信（NativeDaemonConnector）(and5.1) - kc58236582的博客 - 博客频道 - CSDN.NET",
+            "type": "url",
+            "url": "http://blog.csdn.net/kc58236582/article/details/47447153"
+         }, {
+            "date_added": "13144131177361895",
+            "id": "113",
+            "meta_info": {
+               "last_visited_desktop": "13144142818224533"
+            },
+            "name": "U-BOOT移植过程详解: u-boot.bin - linuxarmsummary的专栏 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/linuxarmsummary/article/details/44836363"
+         }, {
+            "date_added": "13144148792278181",
+            "id": "114",
+            "meta_info": {
+               "last_visited_desktop": "13175075636041596"
+            },
+            "name": "u-boot与linux内核间的参数传递过程分析 - Gezhengzhong的专栏 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/u012075739/article/details/52252991"
+         }, {
+            "date_added": "13144751156338058",
+            "id": "118",
+            "meta_info": {
+               "last_visited_desktop": "13144751156338200"
+            },
+            "name": "container_of分析 - 冀博 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/tigerjibo/article/details/8299589"
+         }, {
+            "date_added": "13145611323727005",
+            "id": "130",
+            "meta_info": {
+               "last_visited_desktop": "13146561405255433"
+            },
+            "name": "基于S3C2440的Linux-3.6.6移植——SD卡的应用（一），SD卡的插拔检测 - 赵春江的专栏 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/zhaocj/article/details/18600749"
+         }, {
+            "children": [ {
+               "date_added": "13147869367920842",
+               "id": "134",
+               "meta_info": {
+                  "last_visited_desktop": "13196329515264471"
+               },
+               "name": "Android 蓝牙开发基本流程 - q610098308的专栏 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/q610098308/article/details/45248423"
+            }, {
+               "date_added": "13172746357273166",
+               "id": "219",
+               "meta_info": {
+                  "last_visited_desktop": "13196329599020678"
+               },
+               "name": "蓝牙协议分析_基本概念及Android4.4 BT代码架构 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/hubinbin595959/article/details/53997339"
+            }, {
+               "date_added": "13172747665228564",
+               "id": "220",
+               "meta_info": {
+                  "last_visited_desktop": "13198670212248850"
+               },
+               "name": "蓝牙协议分析(1)_基本概念",
+               "type": "url",
+               "url": "http://www.wowotech.net/bluetooth/bt_overview.html"
+            }, {
+               "date_added": "13172748638924423",
+               "id": "221",
+               "meta_info": {
+                  "last_visited_desktop": "13172748638932916"
+               },
+               "name": "Android下bluedroid、bluetooth apk介绍 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/zjli321/article/details/52402968"
+            }, {
+               "date_added": "13175936565143866",
+               "id": "248",
+               "meta_info": {
+                  "last_visited_desktop": "13175936565144088"
+               },
+               "name": "RK Android WiFi BT配置及常见问题说明v1.3-第一范文网",
+               "type": "url",
+               "url": "https://www.lanxicy.com/read/7625d8030268899bb10884f7.html"
+            }, {
+               "date_added": "13181462662384346",
+               "id": "300",
+               "meta_info": {
+                  "last_visited_desktop": "13211016499079212"
+               },
+               "name": "Packet Sniffers & Protocol Analyzers for Bluetooth, USB, RS-232/422/485, & Industrial Networks (Ethernet, Modbus, DH+, DeviceNet, ControlNet & More",
+               "type": "url",
+               "url": "http://www.fte.com/default.aspx"
+            }, {
+               "date_added": "13189166976160093",
+               "id": "353",
+               "meta_info": {
+                  "last_visited_desktop": "13192789625763530"
+               },
+               "name": "蓝牙协议分析(3)_蓝牙低功耗(BLE)协议栈介绍",
+               "type": "url",
+               "url": "http://www.wowotech.net/bluetooth/ble_stack_overview.html"
+            }, {
+               "date_added": "13189231655439365",
+               "id": "356",
+               "meta_info": {
+                  "last_visited_desktop": "13189231655439527"
+               },
+               "name": "The Scanner class — bluepy 0.9.11 documentation",
+               "type": "url",
+               "url": "http://ianharvey.github.io/bluepy-doc/scanner.html"
+            }, {
+               "date_added": "13189248049395758",
+               "id": "357",
+               "meta_info": {
+                  "last_visited_desktop": "13189248049395952"
+               },
+               "name": "Generic Access Profile | Bluetooth Technology Website",
+               "type": "url",
+               "url": "https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile"
+            }, {
+               "date_added": "13189248205372340",
+               "id": "358",
+               "meta_info": {
+                  "last_visited_desktop": "13189248205372520"
+               },
+               "name": "eddystone/protocol-specification.md at master · google/eddystone · GitHub",
+               "type": "url",
+               "url": "https://github.com/google/eddystone/blob/master/protocol-specification.md"
+            }, {
+               "date_added": "13189511702033285",
+               "id": "361",
+               "meta_info": {
+                  "last_visited_desktop": "13198670193099707"
+               },
+               "name": "玩转BLE(3)_使用微信蓝牙精简协议伪造记步数据",
+               "type": "url",
+               "url": "http://www.wowotech.net/bluetooth/weixin_ble_1.html"
+            }, {
+               "date_added": "13189661342462240",
+               "id": "364",
+               "meta_info": {
+                  "last_visited_desktop": "13189661342462384"
+               },
+               "name": "微信硬件平台",
+               "type": "url",
+               "url": "https://iot.weixin.qq.com/wiki/new/index.html?page=4-3"
+            }, {
+               "date_added": "13223103666876477",
+               "id": "477",
+               "meta_info": {
+                  "last_visited_desktop": "13223103666876582"
+               },
+               "name": "BlueZ",
+               "type": "url",
+               "url": "http://www.bluez.org/"
+            }, {
+               "date_added": "13223110263736103",
+               "id": "478",
+               "meta_info": {
+                  "last_visited_desktop": "13223110263736255"
+               },
+               "name": "nexus5手机AOSP下载编译 - 简书",
+               "type": "url",
+               "url": "https://www.jianshu.com/p/6ebe2d01fd7f"
+            }, {
+               "date_added": "13223700670958987",
+               "id": "485",
+               "meta_info": {
+                  "last_visited_desktop": "13228389260399193"
+               },
+               "name": "sample-bluetooth-le-gattserver/GattServerActivity.kt at master · androidthings/sample-bluetooth-le-gattserver · GitHub",
+               "type": "url",
+               "url": "https://github.com/androidthings/sample-bluetooth-le-gattserver/blob/master/kotlin/app/src/main/kotlin/com/example/androidthings/gattserver/GattServerActivity.kt"
+            } ],
+            "date_added": "13147869381511941",
+            "date_modified": "13226854293258736",
+            "id": "135",
+            "name": "蓝牙",
+            "type": "folder"
+         }, {
+            "children": [ {
+               "date_added": "13137238853948213",
+               "id": "16",
+               "meta_info": {
+                  "last_visited_desktop": "13196231187085398"
+               },
+               "name": "Linux SD卡驱动开发(一) —— SD 相关基础概念 - 知秋一叶 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/zqixiao_09/article/details/51039378"
+            }, {
+               "date_added": "13137656069140015",
+               "id": "22",
+               "meta_info": {
+                  "last_visited_desktop": "13196231325290563"
+               },
+               "name": "wifi详解（三） - dongdong7664的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/dongdong7664/article/details/38034395"
+            }, {
+               "date_added": "13137687854319083",
+               "id": "26",
+               "meta_info": {
+                  "last_visited_desktop": "13191406582171805"
+               },
+               "name": "Smart Link技术介绍_百度文库",
+               "type": "url",
+               "url": "https://wenku.baidu.com/view/143a04bfc77da26925c5b0fb.html"
+            }, {
+               "date_added": "13140680825744888",
+               "id": "89",
+               "meta_info": {
+                  "last_visited_desktop": "13191406608955554"
+               },
+               "name": "SmartLink - Jason_YYu - 博客园",
+               "type": "url",
+               "url": "http://www.cnblogs.com/80scd/p/5881993.html"
+            }, {
+               "date_added": "13138448219374483",
+               "id": "33",
+               "meta_info": {
+                  "last_visited_desktop": "13196231857730856"
+               },
+               "name": "十分钟让你明白Wpa supplicant是什么_百度文库",
+               "type": "url",
+               "url": "https://wenku.baidu.com/view/a8689af7fd0a79563c1e72f2.html"
+            }, {
+               "date_added": "13138448480441980",
+               "id": "34",
+               "meta_info": {
+                  "last_visited_desktop": "13229080657055244"
+               },
+               "name": "WPA supplicant - ArchWiki",
+               "type": "url",
+               "url": "https://wiki.archlinux.org/index.php/WPA_supplicant"
+            }, {
+               "date_added": "13138448496241272",
+               "id": "36",
+               "meta_info": {
+                  "last_visited_desktop": "13228900213027234"
+               },
+               "name": "Linux WPA Supplicant (IEEE 802.1X, WPA, WPA2, RSN, IEEE 802.11i)",
+               "type": "url",
+               "url": "http://w1.fi/wpa_supplicant/"
+            }, {
+               "date_added": "13138769774775047",
+               "id": "39",
+               "meta_info": {
+                  "last_visited_desktop": "13219918444310667"
+               },
+               "name": "Android4.4 WIFI开机启动流程详析 - kevin's cache的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/dkbdkbdkb/article/details/52251812"
+            }, {
+               "date_added": "13138769781288733",
+               "id": "40",
+               "meta_info": {
+                  "last_visited_desktop": "13219918461269718"
+               },
+               "name": "#Android#Android平台WIFI启动流程之二_测试大师MT_新浪博客",
+               "type": "url",
+               "url": "http://blog.sina.com.cn/s/blog_13146f9590101wji1.html"
+            }, {
+               "date_added": "13138448490165864",
+               "id": "35",
+               "meta_info": {
+                  "last_visited_desktop": "13196242778313114"
+               },
+               "name": "wpa_supplicant / hostapd: Developers' documentation for wpa_supplicant and hostapd",
+               "type": "url",
+               "url": "http://w1.fi/wpa_supplicant/devel/"
+            }, {
+               "date_added": "13138772173943026",
+               "id": "42",
+               "meta_info": {
+                  "last_visited_desktop": "13138971866600285"
+               },
+               "name": "Android学习 StateMachine与State模式 - __Shadow - 博客园",
+               "type": "url",
+               "url": "http://www.cnblogs.com/bastard/archive/2012/06/05/2536258.html"
+            }, {
+               "date_added": "13138774581477232",
+               "id": "43",
+               "meta_info": {
+                  "last_visited_desktop": "13138787336246739"
+               },
+               "name": "android状态机statemachine详解 - pi9nc的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/pi9nc/article/details/27503071"
+            }, {
+               "date_added": "13138963946007675",
+               "id": "46",
+               "meta_info": {
+                  "last_visited_desktop": "13145450293575252"
+               },
+               "name": "[RK3288][Android6.0] Settings中开启Wifi热点(SoftAP)流程小结 - 学会分享 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/kris_fei/article/details/70740037"
+            }, {
+               "date_added": "13138964512990110",
+               "id": "47",
+               "meta_info": {
+                  "last_visited_desktop": "13165482796141392"
+               },
+               "name": "Android 中SoftAP架构研究 - 岑西哲的狗窝 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/tony_hrwk/article/details/17550497"
+            }, {
+               "date_added": "13138966880437753",
+               "id": "48",
+               "meta_info": {
+                  "last_visited_desktop": "13140079400920294"
+               },
+               "name": "Android SoftAp支持 （一） - 随风 linux android - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/jshazk1989/article/details/8988444"
+            }, {
+               "date_added": "13138976718019136",
+               "id": "50",
+               "meta_info": {
+                  "last_visited_desktop": "13155902266850352"
+               },
+               "name": "Android 4.1 Netd详细分析（一）概述与应用实例",
+               "type": "url",
+               "url": "http://www.360doc.com/content/13/0817/17/9171956_307859123.shtml"
+            }, {
+               "date_added": "13139051669916596",
+               "id": "54",
+               "meta_info": {
+                  "last_visited_desktop": "13191408369955100"
+               },
+               "name": "Netd和framework层的通信，主要解释socket - seuduck的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/seuduck/article/details/12194303"
+            }, {
+               "date_added": "13139055664912413",
+               "id": "55",
+               "meta_info": {
+                  "last_visited_desktop": "13140770325347862"
+               },
+               "name": "Android netd和Framework以及netd和kernel之间的通信 - cyz_1257的博客 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/cyz_1257/article/details/51591044"
+            }, {
+               "date_added": "13139390721669086",
+               "id": "58",
+               "meta_info": {
+                  "last_visited_desktop": "13139397296789383"
+               },
+               "name": "WiFi Tethering & Usb Tethering - census的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/census/article/details/46639303"
+            }, {
+               "date_added": "13139391616118540",
+               "id": "59",
+               "meta_info": {
+                  "last_visited_desktop": "13139391616118696"
+               },
+               "name": "Android SoftAp支持 （二） - 随风 linux android - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/jshazk1989/article/details/17094415"
+            }, {
+               "date_added": "13139395874332186",
+               "id": "60",
+               "meta_info": {
+                  "last_visited_desktop": "13140670640916119"
+               },
+               "name": "Android WiFi之SoftAP - 程序改变生活 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/tankai19880619/article/details/42146287"
+            }, {
+               "date_added": "13139399315193015",
+               "id": "63",
+               "meta_info": {
+                  "last_visited_desktop": "13139399315193201"
+               },
+               "name": "Android USB tethering相关代码 - kv110的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/kv110/article/details/40019487"
+            }, {
+               "date_added": "13139465316208420",
+               "id": "66",
+               "meta_info": {
+                  "last_visited_desktop": "13139465316208612"
+               },
+               "name": "linux 内核与用户空间通信之netlink使用方法-cainiao413-ChinaUnix博客",
+               "type": "url",
+               "url": "http://blog.chinaunix.net/uid-24227137-id-3025783.html"
+            }, {
+               "date_added": "13139471456225569",
+               "id": "67",
+               "meta_info": {
+                  "last_visited_desktop": "13196242894560916"
+               },
+               "name": "淺析android下如何通過jni監控wifi網絡連接、dhcpcd執行和power電源控制 - 嵌入式系统编程 - 电子工程世界-论坛",
+               "type": "url",
+               "url": "http://bbs.eeworld.com.cn/thread-461436-1-1.html"
+            }, {
+               "date_added": "13139477615478073",
+               "id": "68",
+               "meta_info": {
+                  "last_visited_desktop": "13139477615478364"
+               },
+               "name": "linux用户态和内核态通信之netlink机制 - zcabcd123的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/zcabcd123/article/details/8272360"
+            }, {
+               "date_added": "13139549524209735",
+               "id": "71",
+               "meta_info": {
+                  "last_visited_desktop": "13196243338579871"
+               },
+               "name": "WIFI学习总结 - MBA智库文档",
+               "type": "url",
+               "url": "http://doc.mbalib.com/view/25848552b327bc44b9279f910b1aa4ba.html"
+            }, {
+               "date_added": "13139924751052554",
+               "id": "74",
+               "meta_info": {
+                  "last_visited_desktop": "13219918479259780"
+               },
+               "name": "Android WiFi Toggle ON/OFF流程分析 - ydmgr的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/ydmgr/article/details/38831343"
+            }, {
+               "date_added": "13139924754324759",
+               "id": "75",
+               "meta_info": {
+                  "last_visited_desktop": "13206499215238195"
+               },
+               "name": "Android-内功篇-WifiP2p-WifiP2pService的启动以及P2P的连接 - ZWAlert的博客 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/zwalert/article/details/49664041"
+            }, {
+               "date_added": "13140068259988146",
+               "id": "78",
+               "meta_info": {
+                  "last_visited_desktop": "13142074298333594"
+               },
+               "name": "Android StateMachine和AsyncChannel - ydmgr的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/ydmgr/article/details/38831007"
+            }, {
+               "date_added": "13140086808939426",
+               "id": "79",
+               "meta_info": {
+                  "last_visited_desktop": "13187415588448259"
+               },
+               "name": "Android WiFi 扫描和连接热点 - ydmgr的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/ydmgr/article/details/38831459"
+            }, {
+               "date_added": "13141471946161610",
+               "id": "92",
+               "meta_info": {
+                  "last_visited_desktop": "13145080522146761"
+               },
+               "name": "android_wifi读书笔记之8-SDIO驱动架构 - joqian的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/joqian/article/details/27197443"
+            }, {
+               "date_added": "13141992920364111",
+               "id": "95",
+               "meta_info": {
+                  "last_visited_desktop": "13187084820368244"
+               },
+               "name": "Wifi服务框架介绍（原） - u010961631的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/u010961631/article/details/48291095"
+            }, {
+               "date_added": "13142058872583343",
+               "id": "98",
+               "meta_info": {
+                  "last_visited_desktop": "13142058872583483"
+               },
+               "name": "AsyncChannel的使用和原理（原） - u010961631的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/u010961631/article/details/48179305"
+            }, {
+               "date_added": "13143613177343607",
+               "id": "101",
+               "meta_info": {
+                  "last_visited_desktop": "13149066691010756"
+               },
+               "name": "Android wpa_supplicant源码分析---nl80211内核通信Generic Netlink - cuijiyue的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/cuijiyue/article/details/51602314"
+            }, {
+               "date_added": "13143613986545543",
+               "id": "102",
+               "meta_info": {
+                  "last_visited_desktop": "13185273599748387"
+               },
+               "name": "android driver_nl80211.c源码解析 - Lai18.com IT技术文章收藏夹",
+               "type": "url",
+               "url": "http://www.lai18.com/content/2476159.html?from=cancel"
+            }, {
+               "date_added": "13143614307666326",
+               "id": "103",
+               "meta_info": {
+                  "last_visited_desktop": "13187264619520688"
+               },
+               "name": "Android wpa_supplicant源码分析---内核通信Netlink简介 - cuijiyue的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/cuijiyue/article/details/51597306"
+            }, {
+               "date_added": "13143617530399986",
+               "id": "104",
+               "meta_info": {
+                  "last_visited_desktop": "13149066633071736"
+               },
+               "name": "Android wpa_supplicant源码分析--运行方式 - cuijiyue的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/cuijiyue/article/details/51448206"
+            }, {
+               "date_added": "13143620858283996",
+               "id": "105",
+               "meta_info": {
+                  "last_visited_desktop": "13143620858284184"
+               },
+               "name": "Android wpa_supplicant源码分析--conf配置文件 - cuijiyue的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/cuijiyue/article/details/51428835"
+            }, {
+               "date_added": "13143622664582827",
+               "id": "106",
+               "meta_info": {
+                  "last_visited_desktop": "13143622664582968"
+               },
+               "name": "Android wpa_supplicant源码分析--启动之网络接口初始化 - cuijiyue的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/cuijiyue/article/details/51419756"
+            }, {
+               "date_added": "13143630123943528",
+               "id": "107",
+               "meta_info": {
+                  "last_visited_desktop": "13232102024354210"
+               },
+               "name": "IEEE 802.11i-2004 - Wikipedia",
+               "type": "url",
+               "url": "https://en.wikipedia.org/wiki/IEEE_802.11i-2004#The_Four-Way_Handshake"
+            }, {
+               "date_added": "13143632219433123",
+               "id": "108",
+               "meta_info": {
+                  "last_visited_desktop": "13143632219433265"
+               },
+               "name": "mac80211解析一 - viewsky11的专栏 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/viewsky11/article/details/55271995"
+            }, {
+               "date_added": "13143634302254931",
+               "id": "109",
+               "meta_info": {
+                  "last_visited_desktop": "13143634302255072"
+               },
+               "name": "Generic Netlink HOW-TO based on Jamal's original doc [LWN.net]",
+               "type": "url",
+               "url": "https://lwn.net/Articles/211209/"
+            }, {
+               "date_added": "13143634940678702",
+               "id": "110",
+               "meta_info": {
+                  "last_visited_desktop": "13155900980113766"
+               },
+               "name": "wpa_supplicant子系统分析 android 5.1 - SpringTracker的博客 - 博客频道 - CSDN.NET",
+               "type": "url",
+               "url": "http://blog.csdn.net/SpringTracker/article/details/52249924"
+            }, {
+               "date_added": "13144734071297417",
+               "id": "117",
+               "meta_info": {
+                  "last_visited_desktop": "13164188041555190"
+               },
+               "name": "基于linux-2.6.38.8内核的SDIO/wifi驱动分析 - 快乐&&平凡 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/wh_19910525/article/details/7392518"
+            }, {
+               "date_added": "13148473003688075",
+               "id": "138",
+               "meta_info": {
+                  "last_visited_desktop": "13176369374952367"
+               },
+               "name": "WiFi Display开发分析——日记1【WFD协议分析】 - androidboy365的专栏 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/androidboy365/article/details/8205588"
+            }, {
+               "date_added": "13147844419862952",
+               "id": "133",
+               "meta_info": {
+                  "last_visited_desktop": "13147850505264586"
+               },
+               "name": "Wl command - DD-WRT Wiki",
+               "type": "url",
+               "url": "http://www.dd-wrt.com/wiki/index.php/Wl_command"
+            }, {
+               "date_added": "13145083630041530",
+               "id": "121",
+               "meta_info": {
+                  "last_visited_desktop": "13145083630041748"
+               },
+               "name": "网络性能测试工具iperf详细使用图文教程 - 悠悠余香 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/zm_21/article/details/25868589"
+            }, {
+               "date_added": "13145099229952233",
+               "id": "124",
+               "meta_info": {
+                  "last_visited_desktop": "13155900659835437"
+               },
+               "name": "分析：Android_Wifi_HAL层 - manman18957的专栏 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/manman18957/article/details/8537932"
+            }, {
+               "date_added": "13145439577175987",
+               "id": "127",
+               "meta_info": {
+                  "last_visited_desktop": "13145439577176195"
+               },
+               "name": "wifi详解2(zz)_xuedinge_新浪博客",
+               "type": "url",
+               "url": "http://blog.sina.com.cn/s/blog_46deceb30101ag17.html"
+            }, {
+               "date_added": "13150973820367577",
+               "id": "147",
+               "meta_info": {
+                  "last_visited_desktop": "13150974585009205"
+               },
+               "name": "WIFI基本知识整理 - 挣扎的猪 - 博客园",
+               "type": "url",
+               "url": "http://www.cnblogs.com/darkpig/p/5863735.html"
+            }, {
+               "date_added": "13156830699996327",
+               "id": "156",
+               "meta_info": {
+                  "last_visited_desktop": "13156830699996514"
+               },
+               "name": "ap6212移植 - zjngogo的博客 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/zjngogo/article/details/46739683?locationNum=7&fps=1"
+            }, {
+               "date_added": "13157707975666924",
+               "id": "175",
+               "meta_info": {
+                  "last_visited_desktop": "13162370189431399"
+               },
+               "name": "[RK3288][Android6.0] WiFi的wifi_bt_common.mk文件说明 - Kris Fei's blog - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/kris_fei/article/details/73647370"
+            }, {
+               "date_added": "13161256794641084",
+               "id": "185",
+               "meta_info": {
+                  "last_visited_desktop": "13161425648663318"
+               },
+               "name": "SDIO驱动(5)sdio总线上的probe - u013686019的专栏 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/u013686019/article/details/71310194"
+            }, {
+               "date_added": "13164195084627360",
+               "id": "188",
+               "meta_info": {
+                  "last_visited_desktop": "13187237824185090"
+               },
+               "name": "Android wpa_supplicant源码分析–扫描scan过程 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/cuijiyue/article/details/51673155"
+            }, {
+               "date_added": "13164198760654609",
+               "id": "189",
+               "meta_info": {
+                  "last_visited_desktop": "13164875897554627"
+               },
+               "name": "基于wpa_supplicant库的WIFI连接功能实现--wpa_cli命令代码改写 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/jy1075518049/article/details/51304346"
+            }, {
+               "date_added": "13164198766092169",
+               "id": "191",
+               "meta_info": {
+                  "last_visited_desktop": "13196317590337193"
+               },
+               "name": "Android JB2 Wifi scan机制 - CSDN博客",
+               "type": "url",
+               "url": "http://blog.csdn.net/kuanshang/article/details/76358651"
+            }, {
+               "date_added": "13168443635937080",
+               "id": "205",
+               "meta_info": {
+                  "last_visited_desktop": "13222940815329038"
+               },
+               "name": "0-Linux 网络编程学习笔记导航 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/q1007729991/article/details/69091877"
+            }, {
+               "date_added": "13168443687955007",
+               "id": "206",
+               "meta_info": {
+                  "last_visited_desktop": "13222940833036709"
+               },
+               "name": "0-linux 编程学习笔记导航 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/q1007729991/article/details/52770103"
+            }, {
+               "date_added": "13172664669326542",
+               "id": "216",
+               "meta_info": {
+                  "last_visited_desktop": "13216296086077670"
+               },
+               "name": "P2P GO Client角色的协商 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/zjli321/article/details/51944887"
+            }, {
+               "date_added": "13175249090260605",
+               "id": "244",
+               "meta_info": {
+                  "last_visited_desktop": "13175249090260817"
+               },
+               "name": "用pdnsd实现DNS解析加速",
+               "type": "url",
+               "url": "https://wordpress.youran.me/pdnsd/"
+            }, {
+               "date_added": "13175249096413716",
+               "id": "245",
+               "meta_info": {
+                  "last_visited_desktop": "13175249096413921"
+               },
+               "name": "详解NTPD工作原理_搜狐科技_搜狐网",
+               "type": "url",
+               "url": "https://www.sohu.com/a/193197230_610671"
+            }, {
+               "date_added": "13175941466316345",
+               "id": "249",
+               "meta_info": {
+                  "last_visited_desktop": "13175943799333326"
+               },
+               "name": "【图文】WiFi测试指标EVM介绍20141216_百度文库",
+               "type": "url",
+               "url": "https://wenku.baidu.com/view/b32b9e55af45b307e87197bd.html"
+            }, {
+               "date_added": "13176372172652143",
+               "id": "252",
+               "meta_info": {
+                  "last_visited_desktop": "13206499251184998"
+               },
+               "name": "Android下WiFiDisplay功能探究 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/srw11/article/details/38902717"
+            }, {
+               "date_added": "13176373778203633",
+               "id": "253",
+               "meta_info": {
+                  "last_visited_desktop": "13196318091871814"
+               },
+               "name": "DLNA介绍(包括UPnP，6月20日更新) - peirenlei - ITeye博客",
+               "type": "url",
+               "url": "http://peirenlei.iteye.com/blog/1687409"
+            }, {
+               "date_added": "13176375103891569",
+               "id": "254",
+               "meta_info": {
+                  "last_visited_desktop": "13206499259651083"
+               },
+               "name": "（wifi-display specification）RTSP交互信息详解 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/lele_cheny/article/details/20220921"
+            }, {
+               "date_added": "13176382964165373",
+               "id": "255",
+               "meta_info": {
+                  "last_visited_desktop": "13206499262032909"
+               },
+               "name": "Android 4.2 Wifi Display 之 Settings 源码分析 - 指针空间 - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/seven-sky/p/4875711.html"
+            }, {
+               "date_added": "13177663737920926",
+               "id": "267",
+               "meta_info": {
+                  "last_visited_desktop": "13205493637804971"
+               },
+               "name": "WIFI参数Beacon Interval、DTIM、Fragment Length、RTS Length - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/zxygww/article/details/23452835"
+            }, {
+               "date_added": "13181140548847843",
+               "id": "290",
+               "meta_info": {
+                  "last_visited_desktop": "13226731966360863"
+               },
+               "name": "802.11协议精读11：节能模式（APSD，PSMP，SMPS） - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/rs_network/article/details/52193131"
+            }, {
+               "date_added": "13181141038784464",
+               "id": "291",
+               "meta_info": {
+                  "last_visited_desktop": "13226731959582749"
+               },
+               "name": "802.11基本传输方式-信道竞争机制及QoS的实现机制 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/eydwyz/article/details/53320483"
+            }, {
+               "date_added": "13181303604465665",
+               "id": "294",
+               "meta_info": {
+                  "last_visited_desktop": "13204889670015215"
+               },
+               "name": "网络唤醒原理浅析(Wake On LAN) - valenhua的专栏 - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/valenhua/archive/2017/09/04/7476474.html"
+            }, {
+               "date_added": "13181996751418289",
+               "id": "303",
+               "meta_info": {
+                  "last_visited_desktop": "13181996751418486"
+               },
+               "name": "浅谈802.1X认证 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/u013181216/article/details/51490044"
+            }, {
+               "date_added": "13181996769977724",
+               "id": "304",
+               "meta_info": {
+                  "last_visited_desktop": "13181996769977867"
+               },
+               "name": "802.1x认证详细剖析 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/banruoju/article/details/78050098?locationNum=10&fps=1"
+            }, {
+               "date_added": "13185270805349848",
+               "id": "310",
+               "meta_info": {
+                  "last_visited_desktop": "13185270805350076"
+               },
+               "name": "wpa_supplicant-2.5源码解析 - hpp205的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/hpp205/article/details/50737194"
+            }, {
+               "date_added": "13185273902109815",
+               "id": "311",
+               "meta_info": {
+                  "last_visited_desktop": "13192535180816241"
+               },
+               "name": "wifi的扫描调用过程（从supplicant到kernel） - 简单的过客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/zjli321/article/details/52004521"
+            }, {
+               "date_added": "13185276254077545",
+               "id": "312",
+               "meta_info": {
+                  "last_visited_desktop": "13185339234051089"
+               },
+               "name": "《深入理解Android：Wi-Fi，NFC和GPS》章节连载[节选]--第四章 深入理解wpa_supplicant - Innost的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/innost/article/details/20862875"
+            }, {
+               "date_added": "13185340223260756",
+               "id": "315",
+               "meta_info": {
+                  "last_visited_desktop": "13232099906012044"
+               },
+               "name": "Extensible Authentication Protocol - Wikipedia",
+               "type": "url",
+               "url": "https://en.wikipedia.org/wiki/Extensible_Authentication_Protocol"
+            }, {
+               "date_added": "13185340578652464",
+               "id": "316",
+               "meta_info": {
+                  "last_visited_desktop": "13187433606434579"
+               },
+               "name": "en:users:documentation:wowlan [Linux Wireless]",
+               "type": "url",
+               "url": "https://wireless.wiki.kernel.org/en/users/Documentation/WoWLAN"
+            }, {
+               "date_added": "13185341022533333",
+               "id": "317",
+               "meta_info": {
+                  "last_visited_desktop": "13232099746230811"
+               },
+               "name": "Wake-on-Wireless LAN | Microsoft Docs",
+               "type": "url",
+               "url": "https://docs.microsoft.com/en-us/previous-versions/windows/hardware/wireless/wake-on-wireless-lan"
+            }, {
+               "date_added": "13186809242632246",
+               "id": "330",
+               "meta_info": {
+                  "last_visited_desktop": "13186809242632539"
+               },
+               "name": "Transmission Control Protocol (TCP) Parameters",
+               "type": "url",
+               "url": "https://www.iana.org/assignments/tcp-parameters/tcp-parameters.xhtml"
+            }, {
+               "date_added": "13186809385982359",
+               "id": "331",
+               "meta_info": {
+                  "last_visited_desktop": "13186809385982508"
+               },
+               "name": "在 Linux 命令行中使用 tcpdump 抓包_Linux教程_Linux公社-Linux系统门户网站",
+               "type": "url",
+               "url": "https://www.linuxidc.com/Linux/2018-11/155167.htm"
+            }, {
+               "date_added": "13186810955494609",
+               "id": "332",
+               "meta_info": {
+                  "last_visited_desktop": "13186810955494799"
+               },
+               "name": "TCPDUMP/LIBPCAP public repository",
+               "type": "url",
+               "url": "http://www.tcpdump.org/#"
+            }, {
+               "date_added": "13186811110974599",
+               "id": "333",
+               "meta_info": {
+                  "last_visited_desktop": "13186811110974747"
+               },
+               "name": "An introduction to using tcpdump at the Linux command line | Opensource.com",
+               "type": "url",
+               "url": "https://opensource.com/article/18/10/introduction-tcpdump"
+            }, {
+               "date_added": "13187418966040370",
+               "id": "339",
+               "meta_info": {
+                  "last_visited_desktop": "13187418966040519"
+               },
+               "name": "wifi作为station的连接ap的代码简要流程 - taochao90的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/taochao90/article/details/79789875"
+            }, {
+               "date_added": "13187431626841748",
+               "id": "340",
+               "meta_info": {
+                  "last_visited_desktop": "13215861212814195"
+               },
+               "name": "无线局域网安全（四）————身份认证之4路握手 - 奔跑的路 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/lee244868149/article/details/52743302"
+            }, {
+               "date_added": "13187439789180807",
+               "id": "343",
+               "meta_info": {
+                  "last_visited_desktop": "13187439789180954"
+               },
+               "name": "Android wpa_supplicant源码分析---nl80211内核通信Generic Netlink - cuijiyue的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/cuijiyue/article/details/51602314"
+            }, {
+               "date_added": "13187693998047749",
+               "id": "346",
+               "meta_info": {
+                  "last_visited_desktop": "13187756490074817"
+               },
+               "name": "hostapd的radius/eap server代码分析(1)-main - 朱金华的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/njzhujinhua/article/details/5473970"
+            }, {
+               "date_added": "13187784583700092",
+               "id": "349",
+               "meta_info": {
+                  "last_visited_desktop": "13188990504934550"
+               },
+               "name": "【 分类 】- 软件开发 - 朱金华的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/njzhujinhua/article/category/2442809"
+            }, {
+               "date_added": "13187784628160442",
+               "id": "350",
+               "meta_info": {
+                  "last_visited_desktop": "13188990515960592"
+               },
+               "name": "EAP状态机.pdf-CSDN下载",
+               "type": "url",
+               "url": "https://download.csdn.net/download/lee244868149/8288875"
+            }, {
+               "date_added": "13189664097486598",
+               "id": "365",
+               "meta_info": {
+                  "last_visited_desktop": "13191408340974580"
+               },
+               "name": "网络协议之mDNS20170217 - 风味鱼 - 博客园",
+               "type": "url",
+               "url": "http://www.cnblogs.com/yuweifeng/p/6409182.html"
+            }, {
+               "date_added": "13191402337095658",
+               "id": "371",
+               "meta_info": {
+                  "last_visited_desktop": "13215859787935407"
+               },
+               "name": "IEEE 802.11w-2009 - Wikipedia",
+               "type": "url",
+               "url": "https://en.wikipedia.org/wiki/IEEE_802.11w-2009"
+            }, {
+               "date_added": "13191404112751261",
+               "id": "372",
+               "meta_info": {
+                  "last_visited_desktop": "13191404112751423"
+               },
+               "name": "Android 4.1 Netd详细分析（一）概述与应用实例 - Hi~ xiaokeweng - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/xiaokeweng/article/details/8130218"
+            }, {
+               "date_added": "13192531446336963",
+               "id": "375",
+               "meta_info": {
+                  "last_visited_desktop": "13216461409691155"
+               },
+               "name": "【 分类 】- 子类__WiFi - Kris Fei's blog（让分享成为一种习惯） - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/kris_fei/article/category/6986235"
+            }, {
+               "date_added": "13193390988843283",
+               "id": "378",
+               "meta_info": {
+                  "last_visited_desktop": "13193390988843586"
+               },
+               "name": "android网络的评分机制、连接国内ap wifi不回连问题 - 简单的过客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/zjli321/article/details/52424434?utm_source=blogxgwz1"
+            }, {
+               "date_added": "13194410756784475",
+               "id": "381",
+               "meta_info": {
+                  "last_visited_desktop": "13194410756784677"
+               },
+               "name": "[sd card] mmc硬件总线扫描流程（以sd card为例） - ooonebook的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/ooonebook/article/details/63253683"
+            }, {
+               "date_added": "13194583033553565",
+               "id": "384",
+               "meta_info": {
+                  "last_visited_desktop": "13194583033553850"
+               },
+               "name": "【经验分享】ping 返回no buffer space available 解决方法 - IT技术服务联盟之家 | IT技术服务联盟之家",
+               "type": "url",
+               "url": "http://www.itts-union.com/3283.html"
+            }, {
+               "date_added": "13195716186174548",
+               "id": "387",
+               "meta_info": {
+                  "last_visited_desktop": "13196160378828612"
+               },
+               "name": "WI-FI LOGO认证学习记录 - tufenge的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/tufenge/article/details/85068808"
+            }, {
+               "date_added": "13195929082233872",
+               "id": "390",
+               "meta_info": {
+                  "last_visited_desktop": "13205900791999669"
+               },
+               "name": "(1条消息)Wi-Fi Sigma测试系统 - Ke8323的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/huangke2012hk/article/details/51347645"
+            }, {
+               "date_added": "13195929544259345",
+               "id": "391",
+               "meta_info": {
+                  "last_visited_desktop": "13196228057568234"
+               },
+               "name": "WIFI测试常见问题总结 - 图文 - 百度文库",
+               "type": "url",
+               "url": "https://wenku.baidu.com/view/e9db148771fe910ef12df8bc.html"
+            }, {
+               "date_added": "13198314389747180",
+               "id": "394",
+               "meta_info": {
+                  "last_visited_desktop": "13198314389747446"
+               },
+               "name": "wpa_cli工具的使用方法及分析 - li_liuliu的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/li_liuliu/article/details/83145946"
+            }, {
+               "date_added": "13199868291052060",
+               "id": "397",
+               "meta_info": {
+                  "last_visited_desktop": "13215856861658702"
+               },
+               "name": "Protected Management Frames 怎么用华硕无线路由技术交流论坛 - Powered by Discuz!",
+               "type": "url",
+               "url": "http://www.52asus.com/thread-2879-1-1.html"
+            }, {
+               "date_added": "13205904469620708",
+               "id": "413",
+               "meta_info": {
+                  "last_visited_desktop": "13215856839667574"
+               },
+               "name": "Wi-Fi EasyMesh | Wi-Fi Alliance",
+               "type": "url",
+               "url": "https://www.wi-fi.org/discover-wi-fi/wi-fi-easymesh"
+            }, {
+               "date_added": "13206420725277481",
+               "id": "416",
+               "meta_info": {
+                  "last_visited_desktop": "13206420725277620"
+               },
+               "name": "Git repository browser",
+               "type": "url",
+               "url": "https://git.sipsolutions.net/"
+            }, {
+               "date_added": "13206430465219481",
+               "id": "417",
+               "meta_info": {
+                  "last_visited_desktop": "13206430465219637"
+               },
+               "name": "Index of /pub/software/network/iw/",
+               "type": "url",
+               "url": "https://mirrors.edge.kernel.org/pub/software/network/iw/"
+            }, {
+               "date_added": "13206435078963196",
+               "id": "418",
+               "meta_info": {
+                  "last_visited_desktop": "13206435078963335"
+               },
+               "name": "en:users:documentation:iw [Linux Wireless]",
+               "type": "url",
+               "url": "https://wireless.wiki.kernel.org/en/users/Documentation/iw"
+            }, {
+               "date_added": "13207304849316399",
+               "id": "421",
+               "meta_info": {
+                  "last_visited_desktop": "13207304894290884"
+               },
+               "name": "WIFI Power Save 省電機制介紹 （PS-POLL APSD） - IT閱讀",
+               "type": "url",
+               "url": "https://www.itread01.com/content/1545009144.html"
+            }, {
+               "date_added": "13208425317041033",
+               "id": "424",
+               "meta_info": {
+                  "last_visited_desktop": "13208425317041194"
+               },
+               "name": "CaptureFilters - The Wireshark Wiki",
+               "type": "url",
+               "url": "https://wiki.wireshark.org/CaptureFilters#Useful_Filters"
+            }, {
+               "date_added": "13208433242569233",
+               "id": "425",
+               "meta_info": {
+                  "last_visited_desktop": "13208491764539335"
+               },
+               "name": "微信硬件平台",
+               "type": "url",
+               "url": "https://iot.weixin.qq.com/wiki/new/index.html?page=4-1-2"
+            }, {
+               "date_added": "13208523261684631",
+               "id": "428",
+               "meta_info": {
+                  "last_visited_desktop": "13215583899816493"
+               },
+               "name": "Search",
+               "type": "url",
+               "url": "http://androidxref.com/9.0.0_r3/search?q=BluetoothDevice.ACTION_BOND_STATE_CHANGED&defs=&refs=&path=&hist=&project=art&project=bionic&project=bootable&project=build&project=compatibility&project=cts&project=dalvik&project=developers&project=development&project=device&project=external&project=frameworks&project=hardware&project=kernel&project=libcore&project=libnativehelper&project=packages&project=pdk&project=platform_testing&project=prebuilts&project=sdk&project=system&project=test&project=toolchain&project=tools"
+            }, {
+               "date_added": "13208523407135158",
+               "id": "429",
+               "meta_info": {
+                  "last_visited_desktop": "13231677425309725"
+               },
+               "name": "androidxref.com/9.0.0_r3/search?q=supplicant",
+               "type": "url",
+               "url": "http://androidxref.com/9.0.0_r3/search?q=supplicant"
+            }, {
+               "date_added": "13208586127119029",
+               "id": "432",
+               "meta_info": {
+                  "last_visited_desktop": "13208586127119298"
+               },
+               "name": "(4条消息)Android- IP LOST_PROVISIONING 的机制 - 蓝精灵的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/u011006622/article/details/78850097"
+            }, {
+               "date_added": "13209554018887911",
+               "id": "435",
+               "meta_info": {
+                  "last_visited_desktop": "13209554018888104"
+               },
+               "name": "[na]完全理解icmp协议 - _毛台 - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/iiiiher/p/8513748.html"
+            }, {
+               "date_added": "13213353261937576",
+               "id": "449",
+               "meta_info": {
+                  "last_visited_desktop": "13213357621541647"
+               },
+               "name": "netfilter/iptables project homepage - The netfilter.org project",
+               "type": "url",
+               "url": "https://www.netfilter.org/"
+            }, {
+               "date_added": "13215167771425625",
+               "id": "452",
+               "meta_info": {
+                  "last_visited_desktop": "13229590727954071"
+               },
+               "name": "Builds & Downloads - Linaro",
+               "type": "url",
+               "url": "https://www.linaro.org/downloads/"
+            }, {
+               "date_added": "13215760837038988",
+               "id": "455",
+               "meta_info": {
+                  "last_visited_desktop": "13215760837039274"
+               },
+               "name": "(1条消息)[转载] wifi 通过omnipeek 查看 pmf是否生效 - 刚刚好的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/m0_37905055/article/details/93465376"
+            }, {
+               "date_added": "13215779115811143",
+               "id": "456",
+               "meta_info": {
+                  "last_visited_desktop": "13215779115811379"
+               },
+               "name": "透过管理帧保护看WAPI协议安全性 - 百度文库",
+               "type": "url",
+               "url": "https://wenku.baidu.com/view/090988e1afaad1f34693daef5ef7ba0d4a736dbb.html"
+            }, {
+               "date_added": "13216379605876627",
+               "id": "462",
+               "meta_info": {
+                  "last_visited_desktop": "13216379605876820"
+               },
+               "name": "WifiP2pService的启动以及P2P的连接 - sadamoo的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/sadamoo/article/details/38611553"
+            }, {
+               "date_added": "13216384297326531",
+               "id": "463",
+               "meta_info": {
+                  "last_visited_desktop": "13216443611662570"
+               },
+               "name": "Android Wi-Fi Display（Miracast）介绍 - Innost的专栏 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/innost/article/details/8474683"
+            }, {
+               "date_added": "13216384369878114",
+               "id": "464",
+               "meta_info": {
+                  "last_visited_desktop": "13218603680394992"
+               },
+               "name": "深入理解Wi-Fi P2P - 简书",
+               "type": "url",
+               "url": "https://www.jianshu.com/p/38da33064659"
+            }, {
+               "date_added": "13216448343480881",
+               "id": "467",
+               "meta_info": {
+                  "last_visited_desktop": "13216721551242986"
+               },
+               "name": "WIFI Direct/WIFI P2P - wirelessdisplay的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/wirelessdisplay/article/details/53365377"
+            }, {
+               "date_added": "13216730244129541",
+               "id": "470",
+               "meta_info": {
+                  "last_visited_desktop": "13216730244142529"
+               },
+               "name": "Android wifi框架分析一：初步认识wpa_supplicant与wifi框架梳理 - Android移动开发技术文章_手机开发 - 红黑联盟",
+               "type": "url",
+               "url": "https://www.2cto.com/kf/201610/554783.html"
+            }, {
+               "date_added": "13223473994303851",
+               "id": "481",
+               "meta_info": {
+                  "last_visited_desktop": "13223473994304028"
+               },
+               "name": "通过脚本调试miracast的p2p部分_wirelessdisplay的博客-CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/wirelessdisplay/article/details/56833189"
+            }, {
+               "date_added": "13223474183689051",
+               "id": "482",
+               "meta_info": {
+                  "last_visited_desktop": "13223474183689198"
+               },
+               "name": "深入理解Wi-Fi P2P",
+               "type": "url",
+               "url": "http://www.mamicode.com/info-detail-1368185.html"
+            }, {
+               "date_added": "13226854293258736",
+               "id": "488",
+               "meta_info": {
+                  "last_visited_desktop": "13226854293258903"
+               },
+               "name": "CWAP 802.11 Ctrl : PS-Poll | mrn-cciew",
+               "type": "url",
+               "url": "https://mrncciew.com/2014/11/01/cwap-802-11-ctrl-ps-poll/"
+            }, {
+               "date_added": "13227353876282401",
+               "id": "491",
+               "meta_info": {
+                  "last_visited_desktop": "13227522387594262"
+               },
+               "name": "Now-Fixed WiFi Vulnerability Left Apple Devices Open to Attack - MacRumors",
+               "type": "url",
+               "url": "https://www.macrumors.com/2020/02/26/wifi-vulnerability-broadcom-apple-devices/"
+            }, {
+               "date_added": "13227678255810187",
+               "id": "494",
+               "meta_info": {
+                  "last_visited_desktop": "13231570140778172"
+               },
+               "name": "IEEE 802.11ax - Wikipedia",
+               "type": "url",
+               "url": "https://en.wikipedia.org/wiki/IEEE_802.11ax"
+            }, {
+               "date_added": "13227960891955357",
+               "id": "497",
+               "meta_info": {
+                  "last_visited_desktop": "13227960891955568"
+               },
+               "name": "WiFi安全漏洞KRACK深度解读_网络_yuaninbj的博客-CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/yuaninbj/article/details/78794159"
+            }, {
+               "date_added": "13228562090118823",
+               "id": "500",
+               "meta_info": {
+                  "last_visited_desktop": "13228794941079617"
+               },
+               "name": "Linux下Ping命令在内核中动态运行过程的跟踪与分析 - 图文 - 百度文库",
+               "type": "url",
+               "url": "https://wenku.baidu.com/view/39038a0e2cc58bd63086bd33.html"
+            }, {
+               "date_added": "13228641968262133",
+               "id": "503",
+               "meta_info": {
+                  "last_visited_desktop": "13228794938747721"
+               },
+               "name": "网络数据包收发流程(一)：从驱动到协议栈 - CasonChan - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/CasonChan/p/5166191.html"
+            }, {
+               "date_added": "13228643759352891",
+               "id": "504",
+               "meta_info": {
+                  "last_visited_desktop": "13228794934448491"
+               },
+               "name": "linux TCP/IP L2层数据包接收流程，eth_rx&netif_receive_skb处理流程_运维_在路上-CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/u012247418/article/details/90137663"
+            }, {
+               "date_added": "13228654537394096",
+               "id": "505",
+               "meta_info": {
+                  "last_visited_desktop": "13228794914177114"
+               },
+               "name": "Linux内核网络报文简单流程 -chenmeng11-ChinaUnix博客",
+               "type": "url",
+               "url": "http://blog.chinaunix.net/uid-15014334-id-4411101.html"
+            }, {
+               "date_added": "13228664078046613",
+               "id": "506",
+               "meta_info": {
+                  "last_visited_desktop": "13228794897846894"
+               },
+               "name": "数据报的接收过程详解",
+               "type": "url",
+               "url": "http://www.360doc.com/content/14/0429/09/2306903_373124629.shtml"
+            }, {
+               "date_added": "13229422475483742",
+               "id": "509",
+               "meta_info": {
+                  "last_visited_desktop": "13232637500976298"
+               },
+               "name": "微信网页版",
+               "type": "url",
+               "url": "https://wx2.qq.com/"
+            }, {
+               "date_added": "13229424484127618",
+               "id": "510",
+               "meta_info": {
+                  "last_visited_desktop": "13229490397391363"
+               },
+               "name": "(1条消息)（五十四）Android O WiFi 获取扫描结果流程梳理_移动开发_JT的专栏-CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/sinat_20059415/article/details/80864493"
+            }, {
+               "date_added": "13230008507086191",
+               "id": "513",
+               "meta_info": {
+                  "last_visited_desktop": "13231479003575082"
+               },
+               "name": "en.wikipedia.org",
+               "type": "url",
+               "url": "https://en.wikipedia.org/wiki/List_of_WLAN_channels"
+            } ],
+            "date_added": "13157620346440726",
+            "date_modified": "13230359606911955",
+            "id": "167",
+            "name": "wifi",
+            "type": "folder"
+         }, {
+            "date_added": "13149075293207224",
+            "id": "141",
+            "meta_info": {
+               "last_visited_desktop": "13196311449372118"
+            },
+            "name": "Shell 教程 | 菜鸟教程",
+            "type": "url",
+            "url": "http://www.runoob.com/linux/linux-shell.html"
+         }, {
+            "children": [ {
+               "date_added": "13171369586277866",
+               "id": "212",
+               "meta_info": {
+                  "last_visited_desktop": "13186142311069260"
+               },
+               "name": "深入理解HTTPS及在iOS系统中适配HTTPS类型网络请求(上) - 珲少",
+               "type": "url",
+               "url": "https://my.oschina.net/u/2340880/blog/807358"
+            } ],
+            "date_added": "13171369597265959",
+            "date_modified": "13172664669326542",
+            "id": "213",
+            "name": "ios",
+            "type": "folder"
+         }, {
+            "children": [ {
+               "date_added": "13174645983050146",
+               "id": "228",
+               "meta_info": {
+                  "last_visited_desktop": "13176787337612378"
+               },
+               "name": "CentOS7安装MySQL - 一张对二 - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/bigbrotherer/p/7241845.html"
+            }, {
+               "date_added": "13174650028492805",
+               "id": "230",
+               "meta_info": {
+                  "last_visited_desktop": "13174728249621530"
+               },
+               "name": "PHP 5.6编译安装 - 烟花❤易冷 - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/Jack1023/p/7219035.html"
+            }, {
+               "date_added": "13174650084837914",
+               "id": "231",
+               "meta_info": {
+                  "last_visited_desktop": "13174728254718744"
+               },
+               "name": "【CNMP系列】CentOS7.0下安装PHP5.6.30服务 - 枫爷 - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/riverdubu/p/6428226.html"
+            }, {
+               "date_added": "13174712593406409",
+               "id": "234",
+               "meta_info": {
+                  "last_visited_desktop": "13174727193779074"
+               },
+               "name": "p-7.1.3centos7安装ph",
+               "type": "url",
+               "url": "http://zixuephp.net/article-207.html"
+            }, {
+               "date_added": "13174712922733899",
+               "id": "235",
+               "meta_info": {
+                  "last_visited_desktop": "13174727203568865"
+               },
+               "name": "启动PHP报错ERROR: [pool www] cannot get uid for user '@php_fpm_user@' - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/loveaborn/article/details/20296411"
+            }, {
+               "date_added": "13174714628015074",
+               "id": "236",
+               "meta_info": {
+                  "last_visited_desktop": "13174727209646958"
+               },
+               "name": "php7的php-fpm开机启动centos7.2添加",
+               "type": "url",
+               "url": "http://www.zixuephp.net/article-265.html"
+            }, {
+               "date_added": "13174715212948845",
+               "id": "237",
+               "meta_info": {
+                  "last_visited_desktop": "13175082212192242"
+               },
+               "name": "CentOS 7.3下配置 Apache2.4 + MySQL5.7 + PHP7.1.8_服务器应用_Linux公社-Linux系统门户网站",
+               "type": "url",
+               "url": "https://www.linuxidc.com/Linux/2017-08/146220.htm"
+            }, {
+               "date_added": "13174727061077019",
+               "id": "238",
+               "meta_info": {
+                  "last_visited_desktop": "13174727224580730"
+               },
+               "name": "在linux中使用phpize安装php扩展模块 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/haiqiao_2010/article/details/46005841"
+            }, {
+               "date_added": "13174731851348039",
+               "id": "239",
+               "meta_info": {
+                  "last_visited_desktop": "13175082149300291"
+               },
+               "name": "详解PHPMyadmin的配置-php教程-PHP中文网",
+               "type": "url",
+               "url": "http://www.php.cn/php-weizijiaocheng-383120.html"
+            }, {
+               "date_added": "13174731939426952",
+               "id": "240",
+               "meta_info": {
+                  "last_visited_desktop": "13175148958750016"
+               },
+               "name": "phpMyAdmin程序安装讲解-php教程-PHP中文网",
+               "type": "url",
+               "url": "http://www.php.cn/php-weizijiaocheng-357397.html"
+            }, {
+               "date_added": "13174737240231834",
+               "id": "241",
+               "meta_info": {
+                  "last_visited_desktop": "13175148978216162"
+               },
+               "name": "mac 连接mysql提示 Warning: mysqli::real_connect(): (HY000/2002): No such file or directory - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/liuguanghui1988/article/details/55683509"
+            }, {
+               "date_added": "13167413314217984",
+               "id": "198",
+               "meta_info": {
+                  "last_visited_desktop": "13167414399493703"
+               },
+               "name": "centos mysql 安装及配置_百度经验",
+               "type": "url",
+               "url": "https://jingyan.baidu.com/article/fec7a1e5f8d3201190b4e782.html"
+            }, {
+               "date_added": "13167413525269074",
+               "id": "199",
+               "meta_info": {
+                  "last_visited_desktop": "13167413525269238"
+               },
+               "name": "CentOS下的Mysql的安装和使用 - 炉火纯青 - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/pangguoming/p/8628570.html"
+            }, {
+               "date_added": "13200891875557442",
+               "id": "400",
+               "meta_info": {
+                  "last_visited_desktop": "13200891875558021"
+               },
+               "name": "80211 BA/BAR - Saimon的博客 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/h784707460/article/details/80731772"
+            } ],
+            "date_added": "13174645996780858",
+            "date_modified": "13201582010847092",
+            "id": "229",
+            "name": "centos7",
+            "type": "folder"
+         }, {
+            "children": [ {
+               "date_added": "13177502420256146",
+               "id": "259",
+               "meta_info": {
+                  "last_visited_desktop": "13177562769876883"
+               },
+               "name": "luci页面“save&apply”的实现分析 - hbg-rohens - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/rohens-hbg/p/5358307.html"
+            }, {
+               "date_added": "13177567420602831",
+               "id": "262",
+               "meta_info": {
+                  "last_visited_desktop": "13178704868943271"
+               },
+               "name": "vmware 12中安装OpenWRT - AUOONG - 博客园",
+               "type": "url",
+               "url": "https://www.cnblogs.com/AUOONG/p/6888054.html"
+            }, {
+               "date_added": "13177573122220253",
+               "id": "263",
+               "meta_info": {
+                  "last_visited_desktop": "13178704857305710"
+               },
+               "name": "Ubuntu 14.04安装openwrt - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/xinmulan/article/details/44871035"
+            }, {
+               "date_added": "13177579573304419",
+               "id": "264",
+               "meta_info": {
+                  "last_visited_desktop": "13178707712230759"
+               },
+               "name": "Index of /chaos_calmer/",
+               "type": "url",
+               "url": "https://archive.openwrt.org/chaos_calmer/"
+            }, {
+               "date_added": "13178703576257289",
+               "id": "273",
+               "meta_info": {
+                  "last_visited_desktop": "13178712880502865"
+               },
+               "name": "openwrt 之 DNS配置文件修改 - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/zjqlovell/article/details/78598959"
+            }, {
+               "date_added": "13178790581975451",
+               "id": "276",
+               "meta_info": {
+                  "last_visited_desktop": "13178790581975621"
+               },
+               "name": "恩山无线论坛 - Powered by Discuz!",
+               "type": "url",
+               "url": "http://www.right.com.cn/forum/forum.php"
+            }, {
+               "date_added": "13178950226723179",
+               "id": "279",
+               "meta_info": {
+                  "last_visited_desktop": "13178950226723347"
+               },
+               "name": "内网穿透利器——frp - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/lvshaorong/article/details/78248649"
+            }, {
+               "date_added": "13178962640411688",
+               "id": "280",
+               "meta_info": {
+                  "last_visited_desktop": "13178962640411923"
+               },
+               "name": "mjpg-streamer项目源码分析[转载] - CSDN博客",
+               "type": "url",
+               "url": "https://blog.csdn.net/zhengqijun_/article/details/72473177"
+            }, {
+               "date_added": "13179228859004014",
+               "id": "283",
+               "meta_info": {
+                  "last_visited_desktop": "13179228859004173"
+               },
+               "name": "How to create an ipk",
+               "type": "url",
+               "url": "http://ftp.nluug.nl/ibiblio/distributions/pdaxrom/download/contrib/docs/making_ipkg_howto.html"
+            } ],
+            "date_added": "13177502412345347",
+            "date_modified": "13181115409143876",
+            "id": "258",
+            "name": "openwrt",
+            "type": "folder"
+         }, {
+            "date_added": "13217486253958584",
+            "id": "474",
+            "name": "Google Wifi jetstream-BV10174_RC0005 APK Download by Google LLC - APKMirror",
+            "type": "url",
+            "url": "https://www.apkmirror.com/apk/google-inc/google-wifi/google-wifi-jetstream-bv10174_rc0005-release/"
+         }, {
+            "date_added": "13230359606911955",
+            "id": "516",
+            "meta_info": {
+               "last_visited_desktop": "13230359606912158"
+            },
+            "name": "ARM交叉编译工具_嵌入式_keith_y的专栏-CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/keith_y/article/details/82746340"
+         }, {
+            "date_added": "13232183941341592",
+            "id": "519",
+            "meta_info": {
+               "last_visited_desktop": "13232183941341875"
+            },
+            "name": "Android调试wifi使用wpa_supplicant和wpa_cli总结_移动开发_只是一些暗恋而已的博客-CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/qq_30624591/article/details/95825699"
+         } ],
+         "date_added": "13137147240643878",
+         "date_modified": "13232189713044681",
+         "id": "1",
+         "name": "书签栏",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "date_added": "13140172600684047",
+            "id": "82",
+            "meta_info": {
+               "last_visited_desktop": "13154597889510646"
+            },
+            "name": "我等到花儿也谢了 - A-Lin - 百度音乐盒",
+            "type": "url",
+            "url": "http://play.baidu.com/?__m=mboxCtrl.playSong&__a=275350656_268416607_116013448_268425162_268419327_268424122_268426475_284624436_246843144_268275392_268457571_268273629_268274910_131095273_334058857_129997577_268440616_268428054_265026465_268422633_268455730_539689477_268425594_539689471_270696895_129997331_539689472_126380243_129997459_129997379_125407799_539689473_270696283_539689469_533383564_539689476_129997608_267936925_121959928_129997528_129997514_129997551_539689475_539689474_539689470_310749010&__o=/artist/1968||playhot&fr=-1||www.baidu.com#"
+         }, {
+            "date_added": "13140338244199197",
+            "id": "85",
+            "meta_info": {
+               "last_visited_desktop": "13140338244199361"
+            },
+            "name": "ubuntu14.04 连接mi3 miui V6_小米手机3_MIUI论坛",
+            "type": "url",
+            "url": "http://www.miui.com/thread-2351340-1-1.html"
+         }, {
+            "date_added": "13140675182158107",
+            "id": "88",
+            "meta_info": {
+               "last_visited_desktop": "13140681973868102"
+            },
+            "name": "安装wine时的依赖问题,好头疼,帮忙解决有好处.【ubuntu吧】_百度贴吧",
+            "type": "url",
+            "url": "http://tieba.baidu.com/p/4327332043"
+         }, {
+            "date_added": "13150968173403846",
+            "id": "144",
+            "meta_info": {
+               "last_visited_desktop": "13167718177996176"
+            },
+            "name": "文章列表 - CSDN博客",
+            "type": "url",
+            "url": "http://write.blog.csdn.net/postlist"
+         }, {
+            "date_added": "13154681430596559",
+            "id": "150",
+            "meta_info": {
+               "last_visited_desktop": "13154681430596765"
+            },
+            "name": "Linux的交叉编译 及configure配置 - Hello~again - 博客园",
+            "type": "url",
+            "url": "https://www.cnblogs.com/louyihang-loves-baiyan/p/4171368.html"
+         }, {
+            "date_added": "13156585030064721",
+            "id": "153",
+            "meta_info": {
+               "last_visited_desktop": "13156585530375779"
+            },
+            "name": "Android源代码编译命令m/mm/mmm/make分析 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/luoshengyang/article/details/19023609"
+         }, {
+            "date_added": "13157106352168874",
+            "id": "160",
+            "meta_info": {
+               "last_visited_desktop": "13157520947377876"
+            },
+            "name": "第一章 Web MVC简介 —— 跟开涛学SpringMVC - zhang的笔记 - 记笔记 - 私塾在线 - 只做精品视频课程服务",
+            "type": "url",
+            "url": "http://sishuok.com/forum/blogPost/list/5050.html#15499"
+         }, {
+            "date_added": "13157535658974476",
+            "id": "163",
+            "meta_info": {
+               "last_visited_desktop": "13157535658974744"
+            },
+            "name": "面向站长和网站管理员的Web缓存加速指南[翻译] (笔记 by 车东)",
+            "type": "url",
+            "url": "https://www.chedong.com/tech/cache_docs.html"
+         }, {
+            "date_added": "13157620331047493",
+            "id": "166",
+            "meta_info": {
+               "last_visited_desktop": "13157620331047659"
+            },
+            "name": "android usb解析（一）UsbDeviceManager(and5.1) - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/kc58236582/article/details/47810987"
+         }, {
+            "date_added": "13157622728056738",
+            "id": "168",
+            "meta_info": {
+               "last_visited_desktop": "13157629872557430"
+            },
+            "name": "USB基础知识概论",
+            "type": "url",
+            "url": "https://www.crifan.com/files/doc/docbook/usb_basic/release/html/usb_basic.html"
+         }, {
+            "date_added": "13157623477642436",
+            "id": "169",
+            "meta_info": {
+               "last_visited_desktop": "13157623477642631"
+            },
+            "name": "Android实战技巧之四十九：Usb通信之USB Host - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/lincyang/article/details/50739342"
+         }, {
+            "date_added": "13157626919415072",
+            "id": "170",
+            "meta_info": {
+               "last_visited_desktop": "13157626919415295"
+            },
+            "name": "usb中的endpoint(端点)和传输模式-mychz2011-ChinaUnix博客",
+            "type": "url",
+            "url": "http://blog.chinaunix.net/uid-25314474-id-3040231.html"
+         }, {
+            "date_added": "13157627365450760",
+            "id": "171",
+            "meta_info": {
+               "last_visited_desktop": "13157627365450945"
+            },
+            "name": "Android USB Host与HID通讯 - 酷联云视 - 博客园",
+            "type": "url",
+            "url": "http://www.cnblogs.com/doorsky/p/4388849.html"
+         }, {
+            "date_added": "13157629260261510",
+            "id": "172",
+            "meta_info": {
+               "last_visited_desktop": "13157691749536292"
+            },
+            "name": "Android USB Host开发笔记 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/shenyu_njau/article/details/51792187"
+         }, {
+            "date_added": "13157716153439587",
+            "id": "176",
+            "meta_info": {
+               "last_visited_desktop": "13157716153439840"
+            },
+            "name": "Android中usb和sdio两种wifi兼容 - Android/Linux的专栏 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/kangear/article/details/16901653"
+         }, {
+            "date_added": "13158378822825148",
+            "id": "179",
+            "meta_info": {
+               "last_visited_desktop": "13158378822841055"
+            },
+            "name": "Android中CPU频率查看和修改 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/zhangyongfeiyong/article/details/52923563"
+         }, {
+            "date_added": "13160479415642738",
+            "id": "182",
+            "meta_info": {
+               "last_visited_desktop": "13160479415642973"
+            },
+            "name": "关于eclipse导入工程出现“SystemProperties cannot be resolved”时的解决方法 - CSDN博客",
+            "type": "url",
+            "url": "http://blog.csdn.net/bilifo/article/details/49758873"
+         }, {
+            "date_added": "13167209110327123",
+            "id": "194",
+            "meta_info": {
+               "last_visited_desktop": "13167409207115323"
+            },
+            "name": "linux下怎么启动mysql服务_百度经验",
+            "type": "url",
+            "url": "https://jingyan.baidu.com/article/19020a0a604145529d2842e1.html"
+         }, {
+            "date_added": "13167220973114674",
+            "id": "195",
+            "meta_info": {
+               "last_visited_desktop": "13167299088412481"
+            },
+            "name": "Java Archive Downloads - Java SE 6",
+            "type": "url",
+            "url": "http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html"
+         }, {
+            "date_added": "13167739389081048",
+            "id": "202",
+            "meta_info": {
+               "last_visited_desktop": "13167739389152329"
+            },
+            "name": "Linux 网络设备驱动开发（一） —— linux内核网络分层结构 - CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/zqixiao_09/article/details/51146541"
+         }, {
+            "date_added": "13174036429409572",
+            "id": "225",
+            "meta_info": {
+               "last_visited_desktop": "13174036429409750"
+            },
+            "name": "Eclipse Paho - MQTT and MQTT-SN software",
+            "type": "url",
+            "url": "https://www.eclipse.org/paho/clients/c/"
+         }, {
+            "date_added": "13178623703558693",
+            "id": "270",
+            "meta_info": {
+               "last_visited_desktop": "13178700811984088"
+            },
+            "name": "Vmware虚拟机三种网络模式详解 - 林加欣 - 博客园",
+            "type": "url",
+            "url": "https://www.cnblogs.com/linjiaxin/p/6476480.html"
+         }, {
+            "date_added": "13181115409143876",
+            "id": "286",
+            "meta_info": {
+               "last_visited_desktop": "13181223602776244"
+            },
+            "name": "软件服务社：Saa的倡导者，免费的高端ERP软件的提供者—OA系统 培训系统 付款审批及预算系统 客户关系管理系统 HR系统 财务系统…",
+            "type": "url",
+            "url": "http://www.fuwushe.org/"
+         }, {
+            "date_added": "13183452451941067",
+            "id": "307",
+            "meta_info": {
+               "last_visited_desktop": "13186461626207540"
+            },
+            "name": "vim 配置 - 云烟阁 - CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/ebw123/article/details/47258991"
+         }, {
+            "date_added": "13185447036140938",
+            "id": "320",
+            "meta_info": {
+               "last_visited_desktop": "13185447036141124"
+            },
+            "name": "一个不错的shell 脚本教程 - 昊的专栏 - CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/managergh/article/details/1208444"
+         }, {
+            "date_added": "13186044387593305",
+            "id": "323",
+            "meta_info": {
+               "last_visited_desktop": "13186226159816831"
+            },
+            "name": "Beyond Compare Technical Support",
+            "type": "url",
+            "url": "http://www.scootersoftware.com/support.php?c=kb_vcs.php"
+         }, {
+            "date_added": "13186488096606696",
+            "id": "326",
+            "meta_info": {
+               "last_visited_desktop": "13186488096606927"
+            },
+            "name": "Ubuntu 16.04下快速搭建OpenGrok for Android N_Linux教程_Linux公社-Linux系统门户网站",
+            "type": "url",
+            "url": "https://www.linuxidc.com/Linux/2017-11/148466.htm"
+         }, {
+            "date_added": "13186812061543358",
+            "id": "334",
+            "meta_info": {
+               "last_visited_desktop": "13186812061543680"
+            },
+            "name": "技术|17 种查看 Linux 物理内存的方法",
+            "type": "url",
+            "url": "https://linux.cn/article-10235-1.html"
+         }, {
+            "date_added": "13186812170391567",
+            "id": "335",
+            "meta_info": {
+               "last_visited_desktop": "13186812170391698"
+            },
+            "name": "技术|Sed 命令完全指南",
+            "type": "url",
+            "url": "https://linux.cn/article-10232-1.html"
+         }, {
+            "date_added": "13187413569401773",
+            "id": "338",
+            "meta_info": {
+               "last_visited_desktop": "13187413569401954"
+            },
+            "name": "WifiDocs/MasterMode - Community Help Wiki",
+            "type": "url",
+            "url": "https://help.ubuntu.com/community/WifiDocs/MasterMode"
+         }, {
+            "date_added": "13191323107277192",
+            "id": "368",
+            "meta_info": {
+               "last_visited_desktop": "13200569471690488"
+            },
+            "name": "mips平台报错：报错信息：CPU 0 Unable to handle kernel paging request at virtual address 00000000, epc == 802bc - zerolity的博客 - CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/zerolity/article/details/78110335"
+         }, {
+            "date_added": "13169029107549445",
+            "id": "209",
+            "meta_info": {
+               "last_visited_desktop": "13169029107549675"
+            },
+            "name": "怎样理解阻塞非阻塞与同步异步的区别？ - 知乎",
+            "type": "url",
+            "url": "https://www.zhihu.com/question/19732473"
+         }, {
+            "date_added": "13174021038930539",
+            "id": "224",
+            "meta_info": {
+               "last_visited_desktop": "13174021861223413"
+            },
+            "name": "深度剖析MQTT协议的整个通信流程 - kuroniko - 博客园",
+            "type": "url",
+            "url": "https://www.cnblogs.com/xiaohanlin/p/8683503.html"
+         }, {
+            "date_added": "13201582010847092",
+            "id": "403",
+            "meta_info": {
+               "last_visited_desktop": "13201582010847292"
+            },
+            "name": "深圳市公安局交通警察局-网上车管所",
+            "type": "url",
+            "url": "http://szjj.sz.gov.cn/CGZL/"
+         }, {
+            "date_added": "13201582472689424",
+            "id": "404",
+            "meta_info": {
+               "last_visited_desktop": "13201582604943560"
+            },
+            "name": "广东省公安厅交通管理局互联网交通安全服务管理平台",
+            "type": "url",
+            "url": "https://gd.122.gov.cn/"
+         }, {
+            "date_added": "13210916318645902",
+            "id": "438",
+            "meta_info": {
+               "last_visited_desktop": "13210920806695643"
+            },
+            "name": "注册",
+            "type": "url",
+            "url": "http://www.stmls.cn/register.aspx"
+         }, {
+            "date_added": "13211282598776333",
+            "id": "441",
+            "meta_info": {
+               "last_visited_desktop": "13211282600573252"
+            },
+            "name": "Android 8.0 wifi架构 - gh201030460222的博客 - CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/gh201030460222/article/details/80717604"
+         }, {
+            "date_added": "13212471729238599",
+            "id": "444",
+            "meta_info": {
+               "last_visited_desktop": "13212471812310067"
+            },
+            "name": "Gmail",
+            "type": "url",
+            "url": "https://mail.google.com/mail/u/0/"
+         }, {
+            "date_added": "13212496228934118",
+            "id": "445",
+            "meta_info": {
+               "last_visited_desktop": "13212496228934362"
+            },
+            "name": "(1条消息)ubuntu安装Beyond Compare 4 并破解 - γìńɡ雄尐年ぐ的博客 - CSDN博客",
+            "type": "url",
+            "url": "https://blog.csdn.net/qq_26012495/article/details/86514147"
+         }, {
+            "date_added": "13217484223141450",
+            "id": "473",
+            "meta_info": {
+               "last_visited_desktop": "13217485572067304"
+            },
+            "name": "Google Play services 19.4.20 (020408-271418971) (020408) APK Download by Google LLC - APKMirror",
+            "type": "url",
+            "url": "https://www.apkmirror.com/apk/google-inc/google-play-services/google-play-services-19-4-20-release/google-play-services-19-4-20-020408-271418971-android-apk-download/download/"
+         } ],
+         "date_added": "13137147240643885",
+         "date_modified": "13217486253958584",
+         "id": "2",
+         "name": "其他书签",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13137147240643886",
+         "date_modified": "0",
+         "id": "3",
+         "name": "移动设备书签",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}

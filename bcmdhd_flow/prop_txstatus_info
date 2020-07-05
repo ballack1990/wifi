@@ -1,0 +1,67 @@
+Makefile
+->  {
+        #PROPTXSTATUS
+        ifeq ($(CONFIG_BCMDHD_PROPTXSTATUS),y)
+        ifneq ($(CONFIG_BCMDHD_USB),)
+            DHDCFLAGS += -DPROP_TXSTATUS
+        endif
+        ifneq ($(CONFIG_BCMDHD_SDIO),)
+            DHDCFLAGS += -DPROP_TXSTATUS
+        endif
+        ifneq ($(CONFIG_CFG80211),)
+            DHDCFLAGS += -DPROP_TXSTATUS_VSDB
+        endif
+        endif
+    }
+--------------------------------------------------------------------------------------
+dhd_config.c
+->  {
+        #ifdef PROP_TXSTATUS
+        int dhd_conf_get_disable_proptx(dhd_pub_t *dhd)
+        {
+            struct dhd_conf *conf = dhd->conf;
+            int disable_proptx = -1;
+            int fw_proptx = 0;
+
+            /* check fw proptx priority:
+             * 1st: check fw support by wl cap
+             * 2nd: 4334/43340/43341/43241 support proptx but not show in wl cap, so enable it by default
+             * 	   if you would like to disable it, please set disable_proptx=1 in config.txt
+             * 3th: disable when proptxstatus not support in wl cap
+             */
+            if (FW_SUPPORTED(dhd, proptxstatus)) {
+                fw_proptx = 1;
+            } else if (conf->chip == BCM4334_CHIP_ID || conf->chip == BCM43340_CHIP_ID ||
+                    dhd->conf->chip == BCM43340_CHIP_ID || conf->chip == BCM4324_CHIP_ID) {
+                fw_proptx = 1;
+            } else {
+                fw_proptx = 0;
+            }
+
+            /* returned disable_proptx value:
+             * -1: disable in STA and enable in P2P(follow original dhd settings when PROP_TXSTATUS_VSDB enabled)
+             * 0: depend on fw support
+             * 1: always disable proptx
+             */
+            if (conf->disable_proptx == 0) {
+                // check fw support as well
+                if (fw_proptx)
+                    disable_proptx = 0;
+                else
+                    disable_proptx = 1;
+            } else if (conf->disable_proptx >= 1) {
+                disable_proptx = 1;
+            } else {
+                // check fw support as well
+                if (fw_proptx)
+                    disable_proptx = -1;
+                else
+                    disable_proptx = 1;
+            }
+
+            CONFIG_MSG("fw_proptx=%d, disable_proptx=%d\n", fw_proptx, disable_proptx);
+
+            return disable_proptx;
+        }
+        #endif
+    }

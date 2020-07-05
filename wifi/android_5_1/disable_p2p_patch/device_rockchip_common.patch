@@ -1,0 +1,30 @@
+diff --git a/device.mk b/device.mk
+index 9f47d9e..33f5c34 100644
+--- a/device.mk
++++ b/device.mk
+@@ -204,8 +204,8 @@ endif
+ 
+ ifeq ($(BOARD_WIFI_SUPPORT),true)
+ PRODUCT_COPY_FILES += \
+-    frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
+-    frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml
++    frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml
++#    frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml
+ endif
+ 
+ ifeq ($(BOARD_HAS_GPS),true)
+diff --git a/wpa_config.txt b/wpa_config.txt
+index 6fa3759..e0d298c 100644
+--- a/wpa_config.txt
++++ b/wpa_config.txt
+@@ -3,9 +3,7 @@
+ -iwlan0
+ -Dnl80211
+ -c/data/misc/wifi/wpa_supplicant.conf
+--I/vendor/etc/wifi/p2p_supplicant_overlay.conf
+--puse_p2p_group_interface=1p2p_device=1
+--m/data/misc/wifi/p2p_supplicant.conf
++-I/vendor/etc/wifi/wpa_supplicant_overlay.conf
+ -e/data/misc/wifi/entropy.bin
+ -O/data/misc/wifi/sockets
+ -g@android:wpa_wlan0
