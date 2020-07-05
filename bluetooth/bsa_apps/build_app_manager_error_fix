@@ -1,0 +1,108 @@
+编译app_manager报错如下：
+
+Linking application ../../../../../../3rdparty/embedded/bsa_examples/linux/app_manager/build/x86_64/app_manager with libbsa.a
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_mgt_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_mgt_int.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_dm_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_cl_dm_int.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_disc_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_disc_int.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_sec_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_sec_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_trace.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_tm_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_cl_tm_int.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_fts_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ftc_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_hh_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_hd_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_mce_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_pbs_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_sc_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_sac_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_pbc_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ops_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_opc_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_cl_av_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_avk_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_hs_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_dg_int.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_fm_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_pan_int.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ag_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_cl_hl_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ble_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_cce_int.o): relocation R_X86_64_32S against `.rodata' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(gki_linux.o): relocation R_X86_64_32 against undefined symbol `gki_cb' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(gki_buffer.o): relocation R_X86_64_32 against undefined symbol `gki_cb' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc.o): relocation R_X86_64_32 against undefined symbol `uipc_cb' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_socket.o): relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_fifo.o): relocation R_X86_64_32S against undefined symbol `uipc_fifo_cb' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_rb.o): relocation R_X86_64_32 against undefined symbol `uipc_rb_cb' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_shm.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_thread.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_sema.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_hh.o): relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_av.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_av_bav.o): relocation R_X86_64_32 against `.bss' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_avk.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_pbc.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_pbs.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_mce_rx.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_mce_tx.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_sco.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_dg.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_pan.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_hl.o): relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_sac.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cce.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_sys.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_fts_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ftc_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_hh_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_hd_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_mce_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_pbs_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_sc_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_sac_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_pbc_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ops_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_opc_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_cl_av_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_avk_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_hs_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_dg_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_fm_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_pan_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ag_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_hl_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_ble_api.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_cce_api.o): relocation R_X86_64_32 against `.rodata.str1.1' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_cl_control.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(uipc_mutex.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: ../../../../../../3rdparty/embedded/bsa_examples/linux/libbsa/build/x86_64//libbsa.a(bsa_strm_dec.o): relocation R_X86_64_32 against `.rodata.str1.8' can not be used when making a PIE object; recompile with -fPIC
+/usr/bin/ld: final link failed: Nonrepresentable section on output
+collect2: error: ld returned 1 exit status
+../../../../../../3rdparty/embedded/bsa_examples/linux/app_common/build/make_sample_apps.common:74: recipe for target '../../../../../../3rdparty/embedded/bsa_examples/linux/app_manager/build/x86_64/app_manager' failed
+make: *** [../../../../../../3rdparty/embedded/bsa_examples/linux/app_manager/build/x86_64/app_manager] Error 1
+
+修改方法：
+3rdparty/embedded/bsa_examples/linux/app_common/build/make.common
+->  {
+        ifeq ($(CPU), x86_64)
+
+            LINK := gcc
+            CC := gcc
+            CCCPUFLAGS := $(X86_64CCFLAGS) -m64 
+            LINKCPUFLAGS := $(patsubst %,-L %,$(X86_64GCCLIBPATH)) $(X86_64LINKFLAG) -m64 
+    }
+    改为
+->  {
+        ifeq ($(CPU), x86_64)
+
+            LINK := gcc
+            CC := gcc
+            CCCPUFLAGS := $(X86_64CCFLAGS) -m64 
+            LINKCPUFLAGS := $(patsubst %,-L %,$(X86_64GCCLIBPATH)) $(X86_64LINKFLAG) -m64 -no-pie
+    }
+
